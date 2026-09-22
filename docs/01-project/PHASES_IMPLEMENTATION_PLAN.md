@@ -57,6 +57,24 @@ If a conflict appears, ROADMAP.md governs functional objectives while this docum
 
 ---
 
+# Roadmap And Technical Phase Mapping
+
+The roadmap defines functional milestones.
+
+This document defines the technical implementation sequence required to reach those milestones.
+
+The relationship is:
+
+```text
+Technical Phases
+↓
+Produce the capabilities required by
+↓
+Functional Roadmap Phases
+```
+
+---
+
 # Implementation Governance
 
 Implementation planning must comply with:
@@ -121,43 +139,72 @@ No phase may begin until all governance requirements are satisfied.
 
 ---
 
+# Required Architecture Flow
+
+All implementation phases must preserve the following dependency flow:
+
+```text
+GUI
+↓
+Application / IPC
+↓
+Services
+↓
+Repositories
+↓
+RepositorySync
+↓
+Remote Sources
+```
+
+---
+
 # PHASE 0
 
 # FOUNDATION
 
+Status: Foundation Defined
 
+The documentation foundation, architecture, governance rules, domain boundaries, schemas, and initial source structure have been established.
 
-Status: Current Starting Phase
+The project is transitioning from foundation definition to controlled implementation.
 
+Existing implementation areas include:
 
+- GUI structure
+- Application services
+- Repository structure
+- Project management
+- Internationalization
+- Electron IPC structure
+- Runtime schemas
+- Shared types
+- Analysis engines
+- Recommendation engines
+- Optimization engines
+- Storage structure
+- Recovery structure
 
 ---
 
-
-
 ## Objectives
-
-
 
 Create the project foundation.
 
+Phase 0 does not deliver completed business functionality.
 
+The project may contain documented interfaces, source folders, type definitions, schemas, services, repositories, and initial module structures.
 
-No business logic.
+However, the following functionality is not considered complete during Phase 0:
 
-
-
-No STL support.
-
-
-
-No AI support.
-
-
-
-No analysis.
-
-
+- Complete business workflows
+- Complete STL processing
+- Complete 3MF processing
+- Complete AI behavior
+- Complete model analysis
+- Complete recommendation generation
+- Complete optimization workflows
+- Complete production persistence
 
 ---
 
@@ -185,8 +232,6 @@ Initialize Git Repository
 
 ### Create Root Structure
 
-
-
 ```text
 
 docs/
@@ -204,18 +249,11 @@ public/
 
 ```
 
-
-
 ---
-
-
 
 ### Create Documentation Structure
 
-
-
 Verify all documentation exists.
-
 
 
 ```text
@@ -231,8 +269,6 @@ DATA\_SCHEMA.md
 ...
 
 ```
-
-
 
 ---
 
@@ -302,38 +338,22 @@ Documentation Complete
 
 # PHASE 1
 
-
-
 # PROJECT BOOTSTRAP
 
-
-
 ---
-
-
 
 ## Objectives
 
-
-
 Create working application shell.
-
-
 
 ---
 
-
-
 ## Tasks
-
-
 
 ### Create React Application
 
 
-
 Technology:
-
 
 
 ```text
@@ -345,8 +365,6 @@ TypeScript
 Vite
 
 ```
-
-
 
 ---
 
@@ -390,109 +408,78 @@ Strict Mode
 
 ### Configure Electron
 
-
-
 Create:
-
-
 
 ```text
 
-src-electron/
-
-
+src/electron/
 
 main.ts
 
-
-
 preload.ts
 
+ipc/
+
 ```
-
-
 
 ---
 
 
-
 ### Validation
-
-
 
 ```text
 
 Application Starts
 
-
-
 Electron Works
 
-
-
 React Works
-
-
 
 Build Successful
 
 ```
 
+The Electron communication structure must follow:
 
+```text
+Renderer
+↓
+IPC Layer
+↓
+Services
+↓
+Repositories
+↓
+Storage or Remote Sources
 
 ---
-
 
 
 # PHASE 2
 
-
-
 # CORE DEPENDENCIES
 
-
-
 ---
-
-
 
 ## Objectives
 
-
-
 Install and configure project dependencies.
-
-
 
 ---
 
-
-
 ## Install
-
-
 
 ```text
 
 Three.js
 
-
-
 Zustand
-
-
 
 Zod
 
-
-
 Tailwind CSS
 
-
-
 shadcn/ui
-
-
 
 Lucide React
 
@@ -526,8 +513,6 @@ Dependencies Working
 
 # PHASE 3
 
-
-
 # GUI FOUNDATION
 
 
@@ -539,37 +524,23 @@ Dependencies Working
 ## Objectives
 
 
-
 Create the graphical interface.
-
-
 
 No STL support.
 
-
-
 No analysis.
-
-
 
 No AI.
 
-
-
 ---
-
 
 
 ## Create
 
-
-
 ### Main Window
 
 
-
 ---
-
 
 
 ### Top Menu
@@ -580,27 +551,15 @@ No AI.
 
 File
 
-
-
 Edit
-
-
 
 View
 
-
-
 Printer
-
-
 
 Material
 
-
-
 Tools
-
-
 
 Help
 
@@ -620,85 +579,86 @@ Help
 
 Import
 
-
-
 Save
-
-
 
 Undo
 
-
-
 Redo
-
-
 
 Move
 
-
-
 Rotate
-
-
 
 Scale
 
 ```
 
 
-
 ---
-
 
 
 ### Left Panel
 
-
-
 Object List
 
 
-
 ---
-
-
 
 ### Center
 
-
-
 Viewport Placeholder
 
-
-
 ---
-
-
 
 ### Right Panel
 
-
-
 Properties
 
-
-
 ---
-
-
 
 ### Bottom
 
-
-
 Status Bar
-
-
 
 ---
 
+### Internationalization
 
+Create:
+
+src/i18n/
+
+LanguageManager.ts
+
+LocalizationService.ts
+
+TranslationLoader.ts
+
+public/locales/
+
+en.json
+
+fr.json
+
+he.json
+
+---
+
+### Localization Requirements
+
+All user-facing text must be externalized.
+
+The GUI must not contain hardcoded user-facing text.
+
+Supported initial languages:
+
+```text
+English
+French
+Hebrew
+```
+
+---
 
 ### Validation
 
@@ -990,11 +950,7 @@ Manipulate models.
 
 X
 
-
-
 Y
-
-
 
 Z
 
@@ -1009,54 +965,34 @@ Z
 ### Rotate
 
 
-
 ```text
 
 X
 
-
-
 Y
-
-
 
 Z
 
 ```
 
-
-
 ---
 
-
-
 ### Scale
-
 
 
 ```text
 
 Uniform
 
-
-
 Independent
 
 ```
 
-
-
 ---
-
-
 
 ### Reset
 
-
-
 ---
-
-
 
 ### Validation
 
@@ -1066,62 +1002,35 @@ Redo Works
 
 Multi-Step History Works
 
-
 ```text
 
 Accurate Transforms
-
-
 
 Multiple Objects Supported
 
 ```
 
-
-
 ---
-
-
 
 # PHASE 7
 
-
-
 # PRINTER DATABASE
 
-
-
 ---
-
-
 
 ## Objectives
 
-
-
 Manage printers.
 
-
-
 ---
-
-
 
 ## Create
 
-
-
 ### Printer Database
-
-
 
 ---
 
-
-
 ### Printer Selection
-
-
 
 ---
 
@@ -1137,7 +1046,31 @@ Manage printers.
 
 ### GitHub Repository Support
 
+Repository Layer Responsibilities:
 
+- Load local profiles
+- Save local profiles
+- Validate profile data
+- Expose repository operations to Services
+
+RepositorySync Responsibilities:
+
+- Synchronize external profile sources
+- Download remote profile data
+- Validate remote data
+- Track synchronization status
+- Handle remote source failures
+- Prevent direct GUI access to remote sources
+
+Remote Source Rule:
+
+```text
+Repositories
+↓
+RepositorySync
+↓
+Remote Sources
+```
 
 ---
 
@@ -1151,21 +1084,14 @@ Manage printers.
 
 Printer Loads
 
-
-
 Plate Updates
 
 ```
 
 
-
 ---
 
-
-
 # PHASE 8
-
-
 
 # MATERIAL DATABASE
 
@@ -1451,87 +1377,88 @@ Warnings Produced
 
 # PHASE 11
 
-
-
 # OPTIMIZATION ENGINE
 
-
-
 ---
-
-
 
 ## Objectives
 
-
-
 Optimize settings.
-
-
 
 ---
 
-
-
 ## Create
-
-
 
 ### Orientation Search
 
 
-
 ---
-
-
 
 ### Time Optimization
 
-
-
 ---
-
-
 
 ### Material Optimization
 
-
-
 ---
-
-
 
 ### Support Optimization
 
-
-
 ---
 
-
-
 ### Validation
-
-
 
 ```text
 
 Printability Improves
 
-
-
 Reliability Maintained
 
 ```
+---
 
+# PROJECT PERSISTENCE PHASE
 
+## Objectives
+
+Implement the native WYPROJ project lifecycle.
+
+## Required Modules
+
+```text
+src/project/
+
+ProjectManager.ts
+
+ProjectSerializer.ts
+
+ProjectDeserializer.ts
+
+ProjectValidator.ts
+
+WYPROJImporter.ts
+
+WYPROJExporter.ts
+```
+
+Project can be created.
+
+Project can be serialized.
+
+Project can be deserialized.
+
+Invalid projects are rejected.
+
+Unsupported project versions are detected.
+
+Project data remains language-neutral.
+
+Existing project data remains backward compatible.
 
 ---
 
 
-
 # PHASE 12
-
-
 
 # COST ESTIMATION
 
@@ -1615,67 +1542,35 @@ Values Consistent
 
 # PHASE 13
 
-
-
 # PROJECT PERSISTENCE
 
-
-
 ---
-
-
 
 ## Objectives
 
-
-
 Save and restore projects.
 
-
-
 ---
-
-
 
 ## Create
 
-
-
 ### Save Project
 
-
-
 ---
-
-
 
 ### Load Project
 
-
-
 ---
-
-
 
 ### Autosave
 
-
-
 ---
-
-
 
 ### Recovery Mode
 
-
-
 ---
 
-
-
 ### Validation
-
-
 
 ```text
 
@@ -1683,22 +1578,13 @@ Projects Restored Correctly
 
 ```
 
-
-
 ---
-
-
 
 # PHASE 14
 
-
-
 # ADVANCED FEATURES
 
-
-
 ---
-
 
 ## Future
 
@@ -1777,33 +1663,19 @@ Previous Phase Must Be Stable
 
 ```
 
-
-
 ---
-
-
 
 # FORBIDDEN
 
-
-
 Do NOT:
-
-
 
 ```text
 
 Jump Directly To AI
 
-
-
 Jump Directly To G-Code
 
-
-
 Skip Validation
-
-
 
 Skip Testing
 
