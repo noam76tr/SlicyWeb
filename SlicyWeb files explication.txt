@@ -1,0 +1,1173 @@
+SLICYWEB DOCUMENTATION ORGANIZATION
+
+--------------------------------------------------------------------------------
+00-INDEX
+--------------------------------------------------------------------------------
+
+PROJECT_DOCUMENTATION_INDEX.md
+Purpose:
+Master index of the entire documentation.
+
+Contains:
+- All documents
+- Their purpose
+- Reading order
+- Documentation overview
+
+Used For:
+- Navigation
+- Project onboarding
+- Documentation discovery
+
+--------------------------------------------------------------------------------
+
+AI_DEVELOPMENT_PROTOCOL.md
+
+Purpose:
+AI development workflow and review protocol.
+
+Contains:
+- Documentation reading order
+- Modification workflow
+- Review process
+- Patch-first policy
+- Type safety rules
+- Validation process
+
+Used For:
+- AI onboarding
+- AI development sessions
+- Regression prevention
+
+--------------------------------------------------------------------------------
+
+AI_START_HERE.md
+Purpose:
+Entry point for AI systems and contributors.
+
+Contains:
+- Reading order
+- Project priorities
+- Development rules
+- File modification policy
+
+Used For:
+- AI onboarding
+- Contributor onboarding
+- Preventing regressions
+
+--------------------------------------------------------------------------------
+
+API_START_HERE.md
+
+Purpose:
+Entry point for API and integration development.
+
+Contains:
+- API reading order
+- API architecture overview
+- IPC communication references
+- Repository integration references
+- Service communication flow
+
+Used For:
+- API onboarding
+- Service integration
+- IPC development
+- External integrations
+
+--------------------------------------------------------------------------------
+
+CLAUDE_GOVERNANCE_PROTOCOL.md
+
+Purpose:
+Global AI governance framework.
+
+Contains:
+- Governance rules
+- Documentation governance
+- Architecture protection
+- Modification governance
+
+Used For:
+- AI governance
+- Safe development
+
+--------------------------------------------------------------------------------
+
+CLAUDE_READING_PRIORITY.md
+
+Purpose:
+Documentation priority matrix.
+
+Contains:
+- Critical documents
+- High-priority documents
+- Conditional reading rules
+
+Used For:
+- Efficient onboarding
+- Token optimization
+
+--------------------------------------------------------------------------------
+01-PROJECT
+--------------------------------------------------------------------------------
+
+PROJECT_SPEC.md
+Purpose:
+Main project specification.
+
+Contains:
+- Project vision
+- Objectives
+- Features
+- Requirements
+- Scope
+
+Used For:
+- High-level project reference
+
+--------------------------------------------------------------------------------
+
+PROJECT_DESCRIPTION.md
+Purpose:
+Detailed project presentation.
+
+Contains:
+- Project overview
+- Main features
+- Vision
+- Goals
+
+Used For:
+- GitHub
+- External presentation
+- Documentation reference
+
+--------------------------------------------------------------------------------
+
+ROADMAP.md
+Purpose:
+Defines development phases.
+
+Contains:
+- Milestones
+- Planned features
+- Delivery sequence
+
+Used For:
+- Planning
+- Progress tracking
+
+--------------------------------------------------------------------------------
+
+PHASES_IMPLEMENTATION_PLAN.md
+Purpose:
+Technical implementation order.
+
+Contains:
+- Development phases
+- Technical priorities
+- Validation checkpoints
+
+Used For:
+- Development execution
+
+--------------------------------------------------------------------------------
+
+CHANGELOG.md
+Purpose:
+Tracks project evolution.
+
+Contains:
+- Features
+- Fixes
+- Breaking changes
+
+Used For:
+- Version tracking
+
+--------------------------------------------------------------------------------
+
+DECISIONS.md
+Purpose:
+Architecture decision record.
+
+Contains:
+- ADRs
+- Technology choices
+- Technical rationale
+
+Used For:
+- Long-term maintainability
+
+--------------------------------------------------------------------------------
+02-ARCHITECTURE
+--------------------------------------------------------------------------------
+
+ARCHITECTURE.md
+Purpose:
+Defines system architecture.
+
+Contains:
+
+- Layers
+- Modules
+- Dependencies
+- Communication Flow
+- Schema Layer
+- Repository Layer
+- Notification System
+- Object Classification
+- Recommendation Pipeline
+- Confidence Scoring
+- Filament Integration
+- Print Preset Integration
+
+Used For:
+- Technical design
+
+--------------------------------------------------------------------------------
+
+DATA_SCHEMA.md
+Purpose:
+Defines data models.
+
+Contains:
+- Schemas
+- Relationships
+- Validation rules
+- Printer Profiles
+- Material Profiles
+- Filament Profiles
+- Object Classification
+- Print Presets
+- Recommendation Models
+- Notifications
+- Warnings
+- Optimization Results
+- Repository Models
+- Cache Models
+
+
+Used For:
+- Data consistency
+
+--------------------------------------------------------------------------------
+
+FILE_STRUCTURE.md
+Purpose:
+Defines project structure.
+
+Contains:
+- Folder organization
+- Module locations
+- Naming strategy
+- Project System Structure
+- Internationalization Structure
+
+Used For:
+- Project organization
+
+--------------------------------------------------------------------------------
+
+API_SPEC.md
+Purpose:
+Defines internal and external APIs.
+
+Contains:
+- Endpoints
+- Payloads
+- Response formats
+- Communication rules
+- Printer APIs
+- Material APIs
+- Filament APIs
+- Print Preset APIs
+- Repository APIs
+
+Used For:
+- Service communication
+- Future integrations
+
+--------------------------------------------------------------------------------
+
+IMPORT_EXPORT_SPEC.md
+
+Purpose:
+Import and export system specification.
+
+Contains:
+- STL import
+- 3MF import
+- WYPROJ import
+- WYPROJ export
+- Validation process
+- Export workflow
+- Supported formats
+
+Used For:
+- Import implementation
+- Export implementation
+
+--------------------------------------------------------------------------------
+
+TECHNICAL_OVERVIEW.md
+
+Purpose:
+High-level technical overview.
+
+Contains:
+- Core systems
+- Engines overview
+- Data flow
+- Application workflow
+- Technical relationships
+- Project Management
+- Internationalization
+
+Used For:
+- Project understanding
+- Technical onboarding
+
+--------------------------------------------------------------------------------
+
+TECH_STACK.md
+Purpose:
+Defines technologies.
+
+Contains:
+- React
+- Electron
+- Three.js
+- TypeScript
+- Zustand
+- Tailwind CSS
+- shadcn/ui
+- Zod
+- Vitest
+- Playwright
+- Octokit
+- three-mesh-bvh
+
+Used For:
+- Technical choices
+
+--------------------------------------------------------------------------------
+03-DEVELOPMENT
+--------------------------------------------------------------------------------
+
+SYSTEM_RULES.md
+
+Purpose:
+Global project rules.
+
+Contains:
+- AI rules
+- Development constraints
+- Documentation policies
+- Architecture constraints
+
+Used For:
+- Consistency
+- Project governance
+
+--------------------------------------------------------------------------------
+
+CHANGE_IMPACT_RULES.md
+
+Purpose:
+Defines impact analysis rules before modifications.
+
+Contains:
+- Dependency analysis
+- Impact evaluation
+- Risk assessment
+- Compatibility checks
+
+Used For:
+- Safe modifications
+- Regression prevention
+
+--------------------------------------------------------------------------------
+
+DEVELOPMENT_WORKFLOW.md
+
+Purpose:
+Development process.
+
+Contains:
+- Development lifecycle
+- Validation process
+- Testing workflow
+- Release workflow
+
+Used For:
+- Daily development
+
+--------------------------------------------------------------------------------
+
+DEVELOPMENT_RULES.md
+
+Purpose:
+Coding methodology.
+
+Contains:
+- Refactoring rules
+- Patch-first policy
+- Architecture enforcement
+- Maintenance guidelines
+
+Used For:
+- Code quality
+- Development consistency
+
+--------------------------------------------------------------------------------
+
+DOMAIN_BOUNDARIES.md
+
+Purpose:
+Defines domain ownership and responsibilities.
+
+Contains:
+- Domain definitions
+- Domain responsibilities
+- Ownership boundaries
+- Domain protection rules
+
+Used For:
+- Architecture governance
+- Responsibility management
+
+--------------------------------------------------------------------------------
+
+DOMAINS_DEPENDENCY_MATRIX.md
+
+Purpose:
+Defines allowed domain dependencies.
+
+Contains:
+- Dependency rules
+- Allowed interactions
+- Forbidden interactions
+- Layer relationships
+
+Used For:
+- Architecture validation
+- Dependency control
+
+--------------------------------------------------------------------------------
+
+FILE_OWNERSHIP_MATRIX.md
+
+Purpose:
+Defines ownership and responsibility of project files.
+
+Contains:
+- File ownership
+- Domain ownership
+- Responsibility mapping
+- Review requirements
+
+Used For:
+- Change management
+- Impact analysis
+
+--------------------------------------------------------------------------------
+
+PROJECT_IMPACT_MATRIX.md
+
+Purpose:
+Defines project-wide impact analysis requirements.
+
+Contains:
+- Impact classifications
+- Review requirements
+- Dependency impacts
+- Validation requirements
+
+Used For:
+- Change assessment
+- Risk management
+
+--------------------------------------------------------------------------------
+
+CROSS_DOCUMENT_DEPENDENCIES.md
+
+Purpose:
+Defines relationships between project documents.
+
+Contains:
+- Documentation dependencies
+- Update requirements
+- Related documents
+- Documentation impact mapping
+
+Used For:
+- Documentation maintenance
+- Change analysis
+
+--------------------------------------------------------------------------------
+
+DOCUMENT_UPDATE_MATRIX.md
+
+Purpose:
+Defines documentation update requirements.
+
+Contains:
+- Update rules
+- Review requirements
+- Changelog requirements
+- Documentation governance
+
+Used For:
+- Documentation maintenance
+- Consistency management
+
+--------------------------------------------------------------------------------
+
+CHANGE_CLASSIFICATION_RULES.md
+
+Purpose:
+Defines official change categories.
+
+Contains:
+- Change types
+- Risk levels
+- Validation levels
+- Review requirements
+
+Used For:
+- Change analysis
+- Governance workflows
+
+--------------------------------------------------------------------------------
+
+CHANGE_VERIFICATION_CHECKLIST.md
+
+Purpose:
+Mandatory checklist before applying changes.
+
+Contains:
+- Compatibility checks
+- Dependency checks
+- Documentation checks
+- Validation checks
+
+Used For:
+- Quality assurance
+- Safe modifications
+
+--------------------------------------------------------------------------------
+
+BUG_ANALYSIS_PROTOCOL.md
+
+Purpose:
+Defines the official bug investigation workflow.
+
+Contains:
+- Root cause analysis
+- Dependency review
+- Risk evaluation
+- Fix validation process
+
+Used For:
+- Bug resolution
+- Regression prevention
+
+--------------------------------------------------------------------------------
+
+UPDATE_GOVERNANCE_PROTOCOL.md
+
+Purpose:
+Defines governance rules for external updates.
+
+Contains:
+- Approval process
+- Update validation
+- Risk assessment
+- Governance controls
+
+Used For:
+- External updates
+- Dependency updates
+
+--------------------------------------------------------------------------------
+
+UPDATE_IMPACT_RULES.md
+
+Purpose:
+Defines impact analysis requirements for updates.
+
+Contains:
+- Compatibility evaluation
+- Dependency analysis
+- Risk assessment
+- Validation requirements
+
+Used For:
+- Update planning
+- Risk reduction
+
+--------------------------------------------------------------------------------
+
+UPDATE_REPORT_TEMPLATE.md
+
+Purpose:
+Standardized update analysis report.
+
+Contains:
+- Risk reporting
+- Impact reporting
+- Approval reporting
+- Validation reporting
+
+Used For:
+- Update reviews
+- Governance documentation
+
+--------------------------------------------------------------------------------
+
+USER_SETTINGS_SPEC.md
+
+Purpose:
+User settings definition.
+
+Contains:
+- Preferences
+- Themes
+- Language
+- Localization
+- Viewport settings
+
+Used For:
+- Configuration management
+
+--------------------------------------------------------------------------------
+
+UNDO_REDO_SPEC.md
+
+Purpose:
+Undo and redo system specification.
+
+Contains:
+- History management
+- Action tracking
+- Restore rules
+- State recovery
+
+Used For:
+- Transform system
+- User actions
+
+--------------------------------------------------------------------------------
+
+ERROR_CODES_SPEC.md
+
+Purpose:
+Defines application errors.
+
+Contains:
+- Error codes
+- Error categories
+- Severity levels
+
+Used For:
+- Diagnostics
+- Logging
+
+--------------------------------------------------------------------------------
+04-AI
+--------------------------------------------------------------------------------
+
+AI_ENGINE_SPEC.md
+Purpose:
+Main AI engine behavior.
+
+Contains:
+
+- Analysis Pipeline
+- Classification Engine
+- Recommendation Engine
+- Validation Engine
+- Optimization Engine
+- Support Optimization
+- Notification Generation
+- Warning Generation
+- Confidence Scoring
+- Recommendation Workflow
+
+Used For:
+
+- AI implementation
+- Recommendation Engine
+- Classification Engine
+- Optimization Engine
+
+--------------------------------------------------------------------------------
+
+RECOMMENDATION_RULES.md
+Purpose:
+Decision rules for recommendations.
+
+Contains:
+- Material rules
+- Printer rules
+- Geometry rules
+- Filament rules
+- Preset selection rules
+
+Used For:
+- Recommendation generation
+
+--------------------------------------------------------------------------------
+
+OBJECT_CLASSIFICATION_SPEC.md
+Purpose:
+Model classification system.
+
+Contains:
+- Categories
+- Detection rules
+- Confidence scoring
+- Classification outputs
+- Preset influence
+
+Used For:
+- Automatic object understanding
+
+--------------------------------------------------------------------------------
+
+SUPPORT_GENERATION_SPEC.md
+Purpose:
+Support generation logic.
+
+Contains:
+- Support decision rules
+- Overhang thresholds
+- Support types
+
+Used For:
+- Support recommendations
+
+--------------------------------------------------------------------------------
+
+PRINT_PRESETS_SPEC.md
+Purpose:
+Print presets library.
+
+Contains:
+- Quality presets
+- Engineering presets
+- Prototype presets
+- Support-free presets
+- Low-cost presets
+
+Used For:
+- Quick profile selection
+
+--------------------------------------------------------------------------------
+
+PRINT_SETTINGS_SPEC.md
+Purpose:
+Complete print settings specification.
+
+Contains:
+- Layer settings
+- Speed settings
+- Cooling settings
+- Support settings
+- Filament influence
+- Preset influence
+- Confidence scoring
+
+Used For:
+- Print configuration
+
+--------------------------------------------------------------------------------
+05-PROFILES
+--------------------------------------------------------------------------------
+
+PRINTER_PROFILE_SPEC.md
+Purpose:
+Printer profile schema.
+
+Contains:
+- Hardware specs
+- Motion limits
+- Thermal limits
+
+Used For:
+- Printer management
+
+--------------------------------------------------------------------------------
+
+MATERIAL_PROFILE_SPEC.md
+Purpose:
+Material profile schema.
+
+Contains:
+- Temperatures
+- Strength
+- Cooling
+- Risks
+
+Used For:
+- Material management
+
+--------------------------------------------------------------------------------
+
+FILAMENT_SETTINGS_SPEC.md
+Purpose:
+Filament profile and manufacturer-specific configuration system.
+
+Contains:
+- Filament settings
+- Manufacturer profiles
+- Retraction values
+- Cooling profiles
+- Thermal recommendations
+- Cost information
+
+Used For:
+- Material tuning
+
+--------------------------------------------------------------------------------
+06-QUALITY
+--------------------------------------------------------------------------------
+
+TEST_PLAN.md
+Purpose:
+Testing strategy.
+
+Contains:
+- Unit tests
+- Integration tests
+- E2E tests
+
+Used For:
+- Validation
+
+--------------------------------------------------------------------------------
+
+PERFORMANCE_SPEC.md
+
+Purpose:
+Performance goals and requirements.
+
+Contains:
+- FPS targets
+- Memory limits
+- Optimization goals
+- Performance benchmarks
+
+Used For:
+- Performance validation
+- Optimization planning
+
+--------------------------------------------------------------------------------
+
+SECURITY_SPEC.md
+Purpose:
+Security requirements.
+
+Contains:
+- File validation
+- Data validation
+- Repository safety
+
+Used For:
+- Application protection
+
+--------------------------------------------------------------------------------
+07-FUTURE
+--------------------------------------------------------------------------------
+
+GCODE_ENGINE_SPEC.md
+Purpose:
+Future slicing engine.
+
+Contains:
+- Layer generation
+- Toolpaths
+- G-Code generation
+
+Used For:
+- Future slicer implementation
+
+--------------------------------------------------------------------------------
+
+PLUGIN_SYSTEM_SPEC.md
+Purpose:
+Plugin architecture.
+
+Contains:
+- Plugin lifecycle
+- APIs
+- Permissions
+- Marketplace Integration
+
+Used For:
+- Future extensibility
+
+--------------------------------------------------------------------------------
+08-USER-INTERFACE
+--------------------------------------------------------------------------------
+
+GUI_SPEC.md
+Purpose:
+Complete UI specification.
+
+Contains:
+- Layout
+- Panels
+- Menus
+- Navigation
+
+Used For:
+- Frontend development
+
+--------------------------------------------------------------------------------
+09-REFERENCE
+--------------------------------------------------------------------------------
+
+ARCHITECTURE_DECISION_MATRIX.md
+
+Purpose:
+Architecture comparison and decision history.
+
+Contains:
+- Architecture evaluations
+- Design alternatives
+- Tradeoff analysis
+- Technology comparisons
+- Architecture scoring
+- Technical decision records
+- Decision rationale
+- Rejected solutions
+- Approved solutions
+
+Used For:
+- Architecture reviews
+- Future architecture decisions
+- Technical governance
+- Decision traceability
+- Long-term maintainability
+
+--------------------------------------------------------------------------------
+
+GLOSSARY.md
+Purpose:
+Project terminology dictionary.
+
+Used For:
+- Common vocabulary
+
+--------------------------------------------------------------------------------
+
+TERMINOLOGY.md
+Purpose:
+Defines official project terms.
+
+Used For:
+- Consistency
+
+--------------------------------------------------------------------------------
+
+NAMING_CONVENTIONS.md
+Purpose:
+Naming standards.
+
+Used For:
+- Code consistency
+
+--------------------------------------------------------------------------------
+
+PROJECT_ACRONYMS.md
+Purpose:
+Official project acronyms.
+
+Contains:
+- Technical acronyms
+- Printing acronyms
+- SlicyWeb acronyms
+
+Used For:
+- Consistent terminology
+
+--------------------------------------------------------------------------------
+
+DIRECTORY_PURPOSES.md
+Purpose:
+Defines the responsibility of every project directory.
+
+Used For:
+- Project organization
+- File placement
+- Architecture navigation
+- AI file discovery
+
+--------------------------------------------------------------------------------
+
+VERSIONING_POLICY.md
+Purpose:
+Official versioning rules.
+
+Contains:
+- Semantic Versioning
+- Release strategy
+- Compatibility rules
+- Version increment process
+
+Used For:
+- Release management
+- Version control
+
+--------------------------------------------------------------------------------
+ROOT DOCUMENTS
+--------------------------------------------------------------------------------
+
+README.md
+Purpose:
+GitHub landing page.
+
+Contains:
+- Project overview
+- Architecture summary
+- Technology stack
+- Documentation entry points
+- AI governance overview
+
+Used For:
+- First impression
+- Project overview
+
+--------------------------------------------------------------------------------
+
+ROOT GOVERNANCE DOCUMENTS
+--------------------------------------------------------------------------------
+
+CLAUDE.md
+
+Purpose:
+Primary AI governance document.
+
+Contains:
+- AI behavior
+- Architecture protection
+- Documentation policies
+- Modification restrictions
+
+Used For:
+- AI governance
+- Safe modifications
+
+--------------------------------------------------------------------------------
+
+CLAUDE_PROJECT_CONTEXT.md
+
+Purpose:
+Complete AI project context.
+
+Contains:
+- Project overview
+- Domain overview
+- Architecture context
+
+Used For:
+- AI onboarding
+- Project understanding
+
+--------------------------------------------------------------------------------
+
+CLAUDE_DOCUMENT_READING_ORDER.md
+
+Purpose:
+Official reading sequence.
+
+Contains:
+- Mandatory reading workflow
+- Reading priorities
+- Reading dependencies
+
+Used For:
+- AI onboarding
+- Documentation navigation
+
+--------------------------------------------------------------------------------
+
+CLAUDE_CHANGE_IMPACT_RULES.md
+
+Purpose:
+AI-specific impact analysis process.
+
+Contains:
+- Impact analysis
+- Dependency analysis
+- Risk evaluation
+
+Used For:
+- Safe modifications
+- Regression prevention
+
+--------------------------------------------------------------------------------
+
+CLAUDE_FILE_UPDATE_RULES.md
+
+Purpose:
+AI-specific file update governance.
+
+Contains:
+- Patch-first policy
+- Update procedures
+- Compatibility requirements
+
+Used For:
+- Safe file modifications
+
+--------------------------------------------------------------------------------
+
+CONTRIBUTING.md
+Purpose:
+Contributor guidelines.
+
+Used For:
+- Open source workflow
+
+--------------------------------------------------------------------------------
+
+CODE_OF_CONDUCT.md
+Purpose:
+Community rules.
+
+Used For:
+- Contributor behavior
+
+--------------------------------------------------------------------------------
+
+LICENSE.md
+Purpose:
+Project legal usage rights.
+
+Used For:
+- Legal protection
+
+--------------------------------------------------------------------------------
+
+PROJECT TOTAL
+
+Documentation Assets:
+
+55+ Documentation Assets
+
+Includes:
+
+- Specifications
+- Architecture Documents
+- Governance Documents
+- Development Documents
+- AI Documents
+- Reference Documents
+
+Purpose:
+Create a complete AI-assisted 3D printing platform with professional-level architecture, documentation, maintainability, and scalability.
