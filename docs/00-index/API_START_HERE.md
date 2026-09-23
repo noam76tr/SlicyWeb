@@ -1,4 +1,5 @@
 # SlicyWeb SMART SLICER
+
 # API START HERE
 
 Version: 2.0.0
@@ -127,7 +128,6 @@ Understand mandatory modification policies.
 
 # API Architecture
 
-```text
 All system communications follow:
 
 ```text
@@ -248,6 +248,18 @@ RepositorySync
 ↓
 Remote Sources
 ```
+
+RepositorySync APIs must:
+
+- Validate remote data before use.
+- Respect the Local First policy.
+- Use cached data when available.
+- Report remote source failures.
+- Prevent direct access from GUI components.
+- Prevent direct access from unrelated business domains.
+- Pass validated data back through the Repository layer.
+
+Direct access to Remote Sources from GUI, State, Analysis, Recommendation, or Optimization modules is forbidden.
 
 ---
 
