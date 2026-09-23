@@ -22,7 +22,41 @@ Its purpose is to:
 
 Documentation is considered part of the project source code.
 
-Documentation updates are mandatory whenever project changes occur.
+Every significant project change requires a documentation review.
+
+Documentation updates are mandatory only when the affected documentation is inconsistent with the project change.
+
+
+Documentation review must follow:
+
+```text
+Modification
+↓
+Impact Analysis
+↓
+Documentation Review
+↓
+Determine Required Updates
+↓
+Update Only What Is Necessary
+```
+
+Not every project change requires a documentation update.
+
+The classification of the documentation action must follow:
+
+```text
+Mandatory Update
+Conditional Update
+Review Only
+No Action Required
+```
+
+The authoritative rules are defined in:
+
+```text
+DOCUMENT_UPDATE_MATRIX.md
+```
 
 ---
 
@@ -133,8 +167,15 @@ The following documents must always be reviewed when modifying the project:
 - FILE_STRUCTURE.md
 - ARCHITECTURE.md
 - DATA_SCHEMA.md
+- API_SPEC.md
 - SYSTEM_RULES.md
 - AI_DEVELOPMENT_PROTOCOL.md
+- CHANGE_IMPACT_RULES.md
+- DOCUMENT_UPDATE_RULES.md
+- DOCUMENT_UPDATE_MATRIX.md
+- CROSS_DOCUMENT_DEPENDENCIES.md
+- FILE_OWNERSHIP_MATRIX.md
+- PROJECT_IMPACT_MATRIX.md 
 
 ---
 
@@ -235,6 +276,79 @@ Mandatory review:
 - CHANGELOG.md
 
 All public interfaces must remain documented.
+
+---
+
+# RepositorySync and Remote Source Documentation Rules
+
+Whenever a change affects:
+
+```text
+Repository Access
+Repository Synchronization
+Remote Sources
+External Profile Retrieval
+Cache Refresh
+Local-First Data Flow
+Remote Data Validation
+```
+
+The following documents must be reviewed:
+
+```text
+API_SPEC.md
+ARCHITECTURE.md
+TECHNICAL_OVERVIEW.md
+DATA_SCHEMA.md
+DOMAIN_BOUNDARIES.md
+DOMAINS_DEPENDENCY_MATRIX.md
+UPDATE_GOVERNANCE_PROTOCOL.md
+UPDATE_IMPACT_RULES.md
+DOCUMENT_UPDATE_MATRIX.md
+```
+
+The following documents must be evaluated for updates:
+
+```text
+FILE_STRUCTURE.md
+PROJECT_DOCUMENTATION_INDEX.md
+CHANGELOG.md
+README.md
+```
+
+The implementation and documentation must preserve this flow:
+
+```text
+GUI
+↓
+Application / IPC
+↓
+Services
+↓
+Repositories
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+```
+
+The following rules must remain true:
+
+```text
+GUI must not access Remote Sources directly.
+
+GUI must not access RepositorySync directly.
+
+Services must not bypass the Repository layer.
+
+Repositories must not bypass RepositorySync when accessing Remote Sources.
+
+Remote data must be validated before being consumed.
+
+Local data and cache must be preferred before remote access.
+
+Remote synchronization failures must be handled and documented when behavior changes.
+```
 
 ---
 
