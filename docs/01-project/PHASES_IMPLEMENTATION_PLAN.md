@@ -344,6 +344,60 @@ src/
 
 ---
 
+### Electron Directory Strategy
+
+The project currently contains two Electron-related directories with different purposes.
+
+The active Electron implementation is located in:
+
+```text
+src/electron/
+├── main.ts
+├── preload.ts
+└── ipc/
+```
+
+This directory is currently used for:
+
+- Electron main-process logic
+- Preload bridge configuration
+- IPC communication
+- Renderer-to-main process coordination
+
+The root-level directory:
+
+```text
+src-electron/
+```
+
+is currently reserved for a future Electron-specific structure.
+
+It is intentionally kept separate from the active implementation and is not the current working code path.
+
+This means:
+
+```text
+src/electron/
+```
+
+is the active Electron implementation directory.
+
+```text
+src-electron/
+```
+
+is a reserved directory for future use.
+
+It must not be used for active Electron implementation unless a future architecture decision explicitly requires it.
+
+Until that decision is made, all active Electron code must be added to:
+
+```text
+src/electron/
+```
+
+---
+
 ### Create Documentation Structure
 
 Verify all documentation exists.
