@@ -298,6 +298,52 @@ public/
 
 ---
 
+### Create Source Subdirectory Structure
+
+The main source directory contains the following implementation areas:
+
+```text
+src/
+├── app/
+├── classification_engine/
+├── config/
+├── constants/
+├── cost_engine/
+├── electron/
+│   └── ipc/
+├── events/
+├── filament_database/
+├── gui/
+│   ├── panels/
+│   ├── sidebar/
+│   ├── statusbar/
+│   └── viewport/
+├── i18n/
+├── importer/
+├── material_database/
+├── model_analysis/
+├── notifications/
+├── object_manager/
+├── optimization_engine/
+├── preset_engine/
+├── printer_database/
+├── project/
+├── recommendation_engine/
+├── recovery/
+├── renderer/
+├── repositories/
+├── scene/
+├── schemas/
+├── services/
+├── state/
+├── storage/
+├── transform/
+├── types/
+└── utils/
+```
+
+---
+
 ### Create Documentation Structure
 
 Verify all documentation exists.
@@ -496,10 +542,10 @@ IPC Layer
 Services
 ↓
 Repositories
-↓
-RepositorySync
-↓
-Storage or Remote Sources
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
 ```
 
 ---
