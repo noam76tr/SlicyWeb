@@ -75,6 +75,53 @@ Functional Roadmap Phases
 
 ---
 
+## Phase Mapping
+
+The roadmap defines functional project milestones.
+
+This document defines the technical implementation sequence required to reach those milestones.
+
+The technical phases are organized to provide the capabilities required by the functional roadmap phases.
+
+┌─────────────────┬──────────────────────────────────────────┬────────────────────────────────────────────────────────────┐
+| Technical Phase | Technical Area                           | Functional Roadmap Phase                                   │
+├─────────────────┼──────────────────────────────────────────┼────────────────────────────────────────────────────────────┤
+| Phase 0         | Foundation                               | Phase 0 - Foundation                                       |
+| Phase 1         | Project Bootstrap                        | Phase 1 - GUI Foundation                                   |
+| Phase 2         | Core Dependencies                        | Phase 1 - GUI Foundation and Phase 2 - 3D Rendering Engine |
+| Phase 3         | GUI Foundation                           | Phase 1 - GUI Foundation                                   |
+| Phase 4         | 3D Viewport                              | Phase 2 - 3D Rendering Engine                              |
+| Phase 5         | Model Import                             | Phase 3 - Model Import System                              |
+| Phase 6         | Transform System                         | Phase 4 - Object Manipulation                              |
+| Phase 7         | Printer Database                         | Phase 5 - Printer Management                               |
+| Phase 8         | Material Database and Filament Profiles  | Phase 6 - Material Management                              |
+| Phase 9         | Model Analysis                           | Phase 7 - Model Analysis                                   | 
+| Phase 10        | Classification and Recommendation Engine | Phase 8 - Recommendation Engine                            |
+| Phase 11        | Optimization Engine                      | Phase 9 - Optimization Engine                              |
+| Phase 12        | Cost Estimation                          | Phase 10 - Cost Estimation                                 |
+| Phase 13        | Project Persistence                      | Phase 11 - Project Persistence                             |
+| Phase 14        | Advanced Features                        | Phase 12 - Advanced Features                               |
+| Phase 15        | Production Validation and Release        | Phase 13 - Production Release                              |
+└─────────────────┴──────────────────────────────────────────┴────────────────────────────────────────────────────────────┘
+
+### Mapping Rules
+
+```text
+Technical phases define implementation order.
+
+Functional roadmap phases define project capabilities and milestones.
+
+A functional phase may require several technical phases.
+
+A technical phase may support more than one functional roadmap phase.
+
+Technical dependencies must be completed before the related functional milestone is considered complete.
+
+No functional milestone may be marked as completed until its required technical phases have been validated.
+```
+
+---
+
 # Implementation Governance
 
 Implementation planning must comply with:
@@ -451,6 +498,7 @@ Services
 Repositories
 ↓
 Storage or Remote Sources
+```
 
 ---
 
