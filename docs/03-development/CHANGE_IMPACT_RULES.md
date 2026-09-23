@@ -294,6 +294,61 @@ No forbidden dependency is introduced
 
 ---
 
+# Step 5A - Analyze RepositorySync and Remote Source Impact
+
+Reference:
+
+```text
+DOMAIN_BOUNDARIES.md
+DOMAINS_DEPENDENCY_MATRIX.md
+API_SPEC.md
+FILE_STRUCTURE.md
+```
+
+Determine:
+
+```text
+Whether the change affects repository synchronization
+Whether the change affects remote data retrieval
+Whether the change affects external profile sources
+Whether the change affects cache behavior
+Whether the change affects local-first data integrity
+Whether the change affects downstream services
+```
+
+Verify:
+
+```text
+No direct GUI access to remote sources
+No direct access from unrelated modules
+No bypass of RepositorySync
+No bypass of validation before remote consumption
+No silent failure in remote data synchronization
+```
+
+Required checks:
+
+```text
+Repository layer reviewed
+RepositorySync layer reviewed
+Remote source contract reviewed
+Cache behavior reviewed
+Fallback strategy reviewed
+Failure handling reviewed
+```
+
+A change is high risk when it modifies:
+
+```text
+RepositorySync logic
+Remote source access
+External profile retrieval
+Synchronization timing
+Cache invalidation rules
+```
+
+---
+
 # Step 6 - Analyze Project Impact
 
 Reference:
@@ -528,6 +583,16 @@ Domain Changes
 Core System Changes
 
 Dependency Model Changes
+
+RepositorySync Changes
+
+Remote Source Access Changes
+
+External Data Contract Changes
+
+Cache Invalidation Changes
+
+Synchronization Flow Changes
 ```
 
 Required:
@@ -550,19 +615,18 @@ Extended Validation
 
 ```text
 What is changing?
-
 Why is it changing?
-
 Who owns it?
-
 What depends on it?
-
 What documents reference it?
-
 What tests are required?
-
 What risks exist?
-
+Does the change affect RepositorySync?
+Does the change affect Remote Sources?
+Does the change affect Local Storage or Cache?
+Does the change introduce a new external dependency?
+Does the change bypass the Repository layer?
+Does the change require a rollback or fallback strategy?
 How will success be validated?
 ```
 
