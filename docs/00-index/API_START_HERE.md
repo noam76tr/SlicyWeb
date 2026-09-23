@@ -1,7 +1,7 @@
 # SlicyWeb SMART SLICER
 # API START HERE
 
-Version: 1.0.0
+Version: 2.0.0
 
 Status: Approved
 
@@ -32,17 +32,16 @@ This document applies to:
 
 ```text
 Internal APIs
-
+Application APIs
 Service APIs
-
 Repository APIs
-
-Electron IPC
-
-State Updates
-
-Event Communication
-
+RepositorySync APIs
+Storage APIs
+Cache APIs
+IPC APIs
+State Update APIs
+Event APIs
+Profile APIs
 Future Cloud APIs
 ```
 
@@ -128,26 +127,23 @@ Understand mandatory modification policies.
 
 # API Architecture
 
+```text
 All system communications follow:
 
 ```text
 GUI
-
 ↓
-
 Application Layer
-
 ↓
-
+IPC Layer
+↓
 Services
-
 ↓
-
 Repositories
-
-↓
-
-Storage
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
 ```
 
 ---
@@ -189,21 +185,68 @@ RecommendationService
 Used for:
 
 ```text
-Data Access
-
-Data Storage
-
-External Repositories
+Local Data Access
+Profile Data Access
+Data Storage Coordination
+Cache Coordination
+RepositorySync Coordination
+Validated External Data Access
 ```
 
 Examples:
 
 ```text
-PrinterRepository
+src/printer_database/PrinterRepository.ts
+src/material_database/MaterialRepository.ts
+src/filament_database/FilamentRepository.ts
+src/preset_engine/PresetRepository.ts
+src/repositories/GitHubRepository.ts
+```
 
-MaterialRepository
+External synchronization must pass through:
 
-FilamentRepository
+```text
+Repository
+↓
+RepositorySync
+↓
+Remote Sources
+```
+
+---
+
+## RepositorySync APIs
+
+Used for:
+
+```text
+External Synchronization
+Remote Data Retrieval
+Remote Profile Updates
+Repository Refresh
+Remote Source Validation
+```
+
+RepositorySync APIs are responsible for communication with:
+
+```text
+GitHub Repositories
+Official Manufacturer Sources
+Verified Community Repositories
+Future REST APIs
+Future Cloud Sources
+```
+
+Required flow:
+
+```text
+Services
+↓
+Repositories
+↓
+RepositorySync
+↓
+Remote Sources
 ```
 
 ---
