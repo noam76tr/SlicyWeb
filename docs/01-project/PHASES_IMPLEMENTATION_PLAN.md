@@ -83,9 +83,9 @@ This document defines the technical implementation sequence required to reach th
 
 The technical phases are organized to provide the capabilities required by the functional roadmap phases.
 
-┌─────────────────┬──────────────────────────────────────────┬────────────────────────────────────────────────────────────┐
+|-----------------|------------------------------------------|------------------------------------------------------------|
 | Technical Phase | Technical Area                           | Functional Roadmap Phase                                   │
-├─────────────────┼──────────────────────────────────────────┼────────────────────────────────────────────────────────────┤
+|-----------------|------------------------------------------|------------------------------------------------------------|
 | Phase 0         | Foundation                               | Phase 0 - Foundation                                       |
 | Phase 1         | Project Bootstrap                        | Phase 1 - GUI Foundation                                   |
 | Phase 2         | Core Dependencies                        | Phase 1 - GUI Foundation and Phase 2 - 3D Rendering Engine |
@@ -102,7 +102,7 @@ The technical phases are organized to provide the capabilities required by the f
 | Phase 13        | Project Persistence                      | Phase 11 - Project Persistence                             |
 | Phase 14        | Advanced Features                        | Phase 12 - Advanced Features                               |
 | Phase 15        | Production Validation and Release        | Phase 13 - Production Release                              |
-└─────────────────┴──────────────────────────────────────────┴────────────────────────────────────────────────────────────┘
+|-----------------|------------------------------------------|------------------------------------------------------------|
 
 ### Mapping Rules
 
@@ -497,6 +497,8 @@ Services
 ↓
 Repositories
 ↓
+RepositorySync
+↓
 Storage or Remote Sources
 ```
 
@@ -710,137 +712,78 @@ Hebrew
 
 ### Validation
 
-
-
 ```text
 
 Responsive Layout
 
-
-
 Panels Resize
-
-
 
 Menus Functional
 
 ```
 
-
-
 ---
-
-
 
 # PHASE 4
 
-
-
 # 3D VIEWPORT
 
-
-
 ---
-
-
 
 ## Objectives
 
-
-
 Create slicer-like workspace.
 
-
-
 ---
-
-
 
 ## Create
 
-
-
 ### Build Plate
 
-
-
 ---
-
-
 
 ### Grid
 
-
-
 ---
 
-
-
 ### Axis Display
-
-
 
 ```text
 
 X
 
-
-
 Y
-
-
 
 Z
 
 ```
 
-
-
 ---
 
-
-
 ### Camera Controls
-
 
 
 ```text
 
 Zoom
 
-
-
 Pan
-
-
 
 Rotate
 
 ```
 
-
-
 ---
 
-
-
 ### View Presets
-
-
 
 ```text
 
 Top
 
-
-
 Front
 
-
-
 Right
-
-
 
 Isometric
 
@@ -859,8 +802,6 @@ Isometric
 ```text
 
 Viewport Functional
-
-
 
 Smooth Navigation
 
@@ -1190,10 +1131,7 @@ Manage materials.
 ---
 
 
-
 ### Validation
-
-
 
 ```text
 
@@ -1465,7 +1403,9 @@ Reliability Maintained
 ```
 ---
 
-# PROJECT PERSISTENCE PHASE
+# PHASE 13
+
+# PROJECT PERSISTENCE
 
 ## Objectives
 
@@ -1582,50 +1522,6 @@ Values Consistent
 
 ```
 
-
-
----
-
-
-
-# PHASE 13
-
-# PROJECT PERSISTENCE
-
----
-
-## Objectives
-
-Save and restore projects.
-
----
-
-## Create
-
-### Save Project
-
----
-
-### Load Project
-
----
-
-### Autosave
-
----
-
-### Recovery Mode
-
----
-
-### Validation
-
-```text
-
-Projects Restored Correctly
-
-```
-
 ---
 
 # PHASE 14
@@ -1659,6 +1555,12 @@ Projects Restored Correctly
 ### Vision Classification
 
 ### Preset Marketplace
+
+---
+
+# PHASE 15
+
+# PRODUCTION VALIDATION AND RELEASE
 
 ---
 
