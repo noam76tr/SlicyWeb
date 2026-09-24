@@ -377,8 +377,6 @@ Review the documentation impact of the change.
 
 Determine whether each affected document requires:
 
-Verify whether these documents require updates:
-
 ```text
 Mandatory Update
 Conditional Update
