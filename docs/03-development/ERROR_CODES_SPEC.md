@@ -302,16 +302,24 @@ Schema Validation Failed
 ```
 
 ## SCH_002
+```toml
 Required Field Missing
+```
 
 ## SCH_003
+```toml
 Invalid Data Type
+```
 
 ## SCH_004
+```toml
 Unsupported Schema Version
+```
 
 ## SCH_005
+```toml
 Invalid Project Data
+```
 
 ---
 
@@ -732,19 +740,28 @@ Unsafe File Detected
 # Internationalization Errors
 
 ## I18N_001
+```toml
 Language Not Supported
+```
 
 ## I18N_002
+```toml
 Translation File Not Found
+```
 
-## I18N_003
+```toml ## I18N_003
 Translation File Invalid
+```
 
 ## I18N_004
+```toml
 Translation Key Not Found
+```
 
 ## I18N_005
+```toml
 Language Loading Failed
+```
 
 ---
 
