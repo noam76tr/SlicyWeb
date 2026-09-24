@@ -296,7 +296,10 @@ Unsupported Material
 # Schema and Validation Errors
 
 ## SCH_001
+
+```toml
 Schema Validation Failed
+```
 
 ## SCH_002
 Required Field Missing
