@@ -3,7 +3,7 @@
 # SECURITY SPECIFICATION
 
 
-Version: 1.0.0
+Version: 2.0.0
 
 Status: Approved
 
@@ -129,6 +129,42 @@ AI Validation Layer
 ```
 
 Every layer must validate incoming data.
+
+---
+
+# RepositorySync and Remote Source Security
+
+All repository synchronization and remote data access must follow:
+
+```text
+GUI
+↓
+Application Layer
+↓
+IPC Layer
+↓
+Services
+↓
+Repositories
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+```
+
+The following rules are mandatory:
+
+```text
+GUI must never access Remote Sources directly.
+GUI must never access RepositorySync directly.
+Services must never bypass the Repository layer.
+Repositories must not bypass RepositorySync when retrieving remote data.
+Remote data must be validated before use.
+Cached data must also be validated before consumption.
+Remote synchronization failures must be handled safely.
+```
+
+A repository or remote source is untrusted until validation succeeds.
 
 ---
 
@@ -518,6 +554,35 @@ Integrity Check Failure
 
 ---
 
+# RepositorySync Security Rules
+
+RepositorySync operations must be validated before any external data is consumed.
+
+Required validation:
+
+```text
+Schema Validation
+Integrity Validation
+Version Validation
+Source Verification
+Failure Handling
+Fallback Strategy
+```
+
+Reject when:
+
+```text
+Remote Source Is Unavailable
+Remote Data Is Invalid
+RepositorySync Is Misconfigured
+Remote Data Fails Validation
+Remote Data Causes Incompatibility
+```
+
+Remote synchronization failures must never leave the application in an inconsistent state.
+
+---
+
 # Cache Security
 
 Cached files must never bypass validation.
@@ -549,6 +614,37 @@ Rebuild Cache
 
 Restore Safe State
 ```
+
+---
+
+# IPC Security Rules
+
+IPC payloads must be treated as untrusted input.
+
+Before processing an IPC response or request:
+
+```text
+Validate payload schema
+Validate required fields
+Validate data types
+Validate version compatibility
+Reject invalid payloads
+Log security events
+```
+
+Reject when:
+
+```text
+Payload Format Is Invalid
+Required Fields Are Missing
+Type Validation Fails
+Version Is Unsupported
+Payload Origin Is Untrusted
+```
+
+IPC error handling must never expose internal paths, raw stack traces, or sensitive data. 
+
+
 
 ---
 
@@ -802,6 +898,46 @@ No Incomplete Recovery Files
 
 ---
 
+# Local Project Security Rules
+
+Local project files must remain secure even when the application is offline.
+
+Rules:
+
+```text
+Project files must be validated before load.
+Auto-save files must be versioned.
+Recovery files must be validated before restore.
+Corrupted local states must be quarantined.
+Cache files must be rebuilt when invalid.
+```
+
+Do not trust stored project data without validation. </format/main text>
+
+Conclusion :
+
+Le fichier est presque correct, mais il n’est pas encore aligné totalement avec l’architecture actuelle.
+
+Les éléments à corriger sont :
+
+```text
+1. Version 1.0.0 → 2.0.0
+2. Ajouter RepositorySync / Remote Sources
+3. Ajouter les règles IPC
+4. Ajouter les événements de sécurité associés
+5. Ajouter les règles de sécurité locale / projet
+```
+
+Le fichier est donc :
+
+```text
+Statut : mise à jour nécessaire
+Priorité : haute
+Type : sécurité / architecture / dépendances
+```
+
+---
+
 # Logging Security
 
 Every security event must be logged.
@@ -826,18 +962,16 @@ Result
 
 ```text
 Validation Failure
-
 Import Rejection
-
 Profile Rejection
-
 Repository Rejection
-
+RepositorySync Failure
+Remote Source Failure
 Cache Corruption
-
 Recovery Event
-
 Version Error
+IPC Validation Failure
+Security Policy Violation
 ```
 
 ---
