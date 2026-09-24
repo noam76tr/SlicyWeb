@@ -912,29 +912,7 @@ Corrupted local states must be quarantined.
 Cache files must be rebuilt when invalid.
 ```
 
-Do not trust stored project data without validation. </format/main text>
-
-Conclusion :
-
-Le fichier est presque correct, mais il n’est pas encore aligné totalement avec l’architecture actuelle.
-
-Les éléments à corriger sont :
-
-```text
-1. Version 1.0.0 → 2.0.0
-2. Ajouter RepositorySync / Remote Sources
-3. Ajouter les règles IPC
-4. Ajouter les événements de sécurité associés
-5. Ajouter les règles de sécurité locale / projet
-```
-
-Le fichier est donc :
-
-```text
-Statut : mise à jour nécessaire
-Priorité : haute
-Type : sécurité / architecture / dépendances
-```
+Do not trust stored project data without validation.
 
 ---
 
