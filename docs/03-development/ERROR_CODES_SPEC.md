@@ -548,19 +548,29 @@ Project Version Mismatch
 # IPC Errors
 
 ## IPC_001
+```text
 IPC Channel Unavailable
+```
 
 ## IPC_002
+```text
 Invalid IPC Request
+```
 
 ## IPC_003
+```text
 IPC Payload Validation Failed
+```
 
 ## IPC_004
+```text
 IPC Response Failed
+```
 
 ## IPC_005
+```text
 IPC Handler Not Registered
+```
 
 ---
 
