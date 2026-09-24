@@ -1,22 +1,18 @@
-\# AI SMART SLICER
+# AI SMART SLICER
 
-\# TEST PLAN
+# TEST PLAN
 
-
-
-Version: 1.0.0
-
-
+Version: 2.0.0
 
 Status: Approved
 
 Priority: High
 
-\---
+---
 
 
 
-\# Purpose
+# Purpose
 
 
 
@@ -28,19 +24,19 @@ The objectives are:
 
 
 
-\- Detect bugs early
+- Detect bugs early
 
-\- Prevent regressions
+- Prevent regressions
 
-\- Ensure reliability
+- Ensure reliability
 
-\- Validate AI recommendations
+- Validate AI recommendations
 
-\- Validate calculations
+- Validate calculations
 
-\- Validate GUI behavior
+- Validate GUI behavior
 
-\- Maintain stability across releases
+- Maintain stability across releases
 
 
 
@@ -52,11 +48,11 @@ No feature is considered complete until it is tested.
 
 
 
-\---
+---
 
 
 
-\# Testing Philosophy
+# Testing Philosophy
 
 
 
@@ -104,11 +100,11 @@ Testing is not optional.
 
 
 
-\---
+---
 
 
 
-\# Testing Levels
+# Testing Levels
 
 
 
@@ -152,11 +148,11 @@ User Acceptance Testing
 
 
 
-\---
+---
 
 
 
-\# Test Environment
+# Test Environment
 
 
 
@@ -184,11 +180,11 @@ macOS
 
 
 
-\---
+---
 
 
 
-\# Display Testing
+# Display Testing
 
 
 
@@ -216,11 +212,11 @@ Resolutions
 
 
 
-\---
+---
 
 
 
-\# Phase Testing Strategy
+# Phase Testing Strategy
 
 
 
@@ -248,11 +244,51 @@ before completion.
 
 
 
-\---
+---
 
+# Domain Testing Requirements
 
+Every implemented domain must include appropriate tests.
 
-\# UNIT TESTS
+Required domains:
+
+```text
+GUI
+Electron IPC
+Services
+Repositories
+RepositorySync
+Remote Sources
+Storage
+Cache
+Project Management
+Internationalization
+Import
+Scene Management
+Analysis
+Classification
+Recommendation
+Optimization
+Cost Estimation
+Notifications
+Recovery
+```
+
+Each domain must define:
+
+```text
+Unit Tests
+Integration Tests
+Failure Tests
+Validation Tests
+Regression Tests
+```
+
+A domain must not be considered complete until its required tests pass.
+
+---
+
+# UNIT TESTS
 
 
 
@@ -264,11 +300,11 @@ Test individual components.
 
 
 
-\---
+---
 
 
 
-\# GUI Unit Tests
+# GUI Unit Tests
 
 
 
@@ -300,11 +336,11 @@ Layout Components
 
 
 
-\---
+---
 
 
 
-\# Validation
+# Validation
 
 
 
@@ -332,11 +368,11 @@ State Updates
 
 
 
-\---
+---
 
 
 
-\# Renderer Unit Tests
+# Renderer Unit Tests
 
 
 
@@ -364,11 +400,11 @@ Axis Renderer
 
 
 
-\---
+---
 
 
 
-\# Import Module Unit Tests
+# Import Module Unit Tests
 
 
 
@@ -396,11 +432,11 @@ Import Errors
 
 
 
-\---
+---
 
 
 
-\# Printer Database Unit Tests
+# Printer Database Unit Tests
 
 
 
@@ -428,11 +464,11 @@ Printer Caching
 
 
 
-\---
+---
 
 
 
-\# Material Database Unit Tests
+# Material Database Unit Tests
 
 
 
@@ -459,7 +495,7 @@ Material Caching
 ```
 
 
-\---
+---
 
 # Filament Database Unit Tests
 
@@ -475,9 +511,9 @@ Filament Search
 Filament Caching
 ```
 
-\---
+---
 
-\# Analysis Engine Unit Tests
+# Analysis Engine Unit Tests
 
 
 
@@ -509,11 +545,11 @@ Confidence Scoring
 
 
 
-\---
+---
 
 
 
-\# Recommendation Engine Unit Tests
+# Recommendation Engine Unit Tests
 
 
 
@@ -545,31 +581,23 @@ Warning Generation
 
 
 
-\---
+---
 
 
 
-\# Cost Engine Unit Tests
+# Cost Engine Unit Tests
 
 
 
 Test:
 
-
-
 ```text
 
 Time Estimation
 
-
-
 Material Estimation
 
-
-
 Weight Estimation
-
-
 
 Cost Calculation
 
@@ -577,11 +605,171 @@ Cost Calculation
 
 
 
-\---
+---
+
+# Project Management Unit Tests
+
+Test:
+
+```text
+Project Creation
+Project Validation
+Project Serialization
+Project Deserialization
+WYPROJ Import
+WYPROJ Export
+Project Version Validation
+Invalid Project Rejection
+```
+
+---
+
+# Storage Unit Tests
+
+Test:
+```text
+Project Save
+Project Load
+Project Cache Save
+Project Cache Load
+Invalid Data Rejection
+Corrupted Data Handling
+Storage Error Handling
+```
+
+---
+
+# Recovery Unit Tests
+
+Test:
+
+```text
+Auto Save Creation
+Auto Save Validation
+Recovery File Validation
+Session Restoration
+Corrupted Recovery Rejection
+Safe State Restoration
+```
+
+---
+
+# Internationalization Unit Tests
+
+Test:
+
+```text
+Language Selection
+Translation Loading
+Translation Key Resolution
+Missing Translation Handling
+Invalid Translation File Rejection
+Language Persistence
+English Translation Loading
+French Translation Loading
+Hebrew Translation Loading
+```
+
+---
+
+# Notification Unit Tests
+
+Test:
+
+```text
+Notification Creation
+Notification Severity
+Warning Generation
+Error Notification
+Success Notification
+Notification Validation
+```
 
 
+---
 
-\# INTEGRATION TESTS
+# Project Management Unit Tests
+
+Test:
+
+```text
+Project Creation
+Project Validation
+Project Serialization
+Project Deserialization
+WYPROJ Import
+WYPROJ Export
+Project Version Validation
+Invalid Project Rejection
+```
+
+---
+
+# Storage Unit Tests
+
+Test:
+
+```text
+Project Save
+Project Load
+Project Cache Save
+Project Cache Load
+Invalid Data Rejection
+Corrupted Data Handling
+Storage Error Handling
+```
+
+---
+
+# Recovery Unit Tests
+
+Test:
+
+```text
+Auto Save Creation
+Auto Save Validation
+Recovery File Validation
+Session Restoration
+Corrupted Recovery Rejection
+Safe State Restoration
+```
+
+---
+
+# Internationalization Unit Tests
+
+Test:
+
+```text
+Language Selection
+Translation Loading
+Translation Key Resolution
+Missing Translation Handling
+Invalid Translation File Rejection
+Language Persistence
+English Translation Loading
+French Translation Loading
+Hebrew Translation Loading
+```
+
+---
+
+# Notification Unit Tests
+
+Test:
+
+```text
+Notification Creation
+Notification Severity
+Warning Generation
+Error Notification
+Success Notification
+Notification Validation
+```
+
+---
+
+# INTEGRATION TESTS
 
 
 
@@ -593,11 +781,11 @@ Verify communication between modules.
 
 
 
-\---
+---
 
 
 
-\# Import To Scene
+# Import To Scene
 
 
 
@@ -641,11 +829,11 @@ Must succeed.
 
 
 
-\---
+---
 
 
 
-\# Scene To Analysis
+# Scene To Analysis
 
 
 
@@ -681,11 +869,11 @@ Must succeed.
 
 
 
-\---
+---
 
 
 
-\# Analysis To Recommendation
+# Analysis To Recommendation
 
 
 
@@ -721,11 +909,11 @@ Must succeed.
 
 
 
-\---
+---
 
 
 
-\# Printer To Recommendation
+# Printer To Recommendation
 
 
 
@@ -761,11 +949,11 @@ Must succeed.
 
 
 
-\---
+---
 
 
 
-\# Material To Recommendation
+# Material To Recommendation
 
 
 
@@ -793,7 +981,7 @@ Must succeed.
 
 
 
-\---
+---
 
 # Filament To Recommendation
 
@@ -813,9 +1001,9 @@ Recommendations Updated
 
 Must succeed.
 
-\---
+---
 
-\# Database To Cache
+# Database To Cache
 
 
 
@@ -837,13 +1025,90 @@ Reloaded Successfully
 
 ```
 
+---
 
+# Electron IPC Integration Tests
 
-\---
+Verify:
 
+```text
+Renderer Request Reaches IPC
+IPC Request Is Validated
+IPC Handler Is Registered
+IPC Handler Calls Correct Service
+Service Response Returns Through IPC
+Invalid IPC Payload Is Rejected
+IPC Errors Are Handled Safely
+```
 
+---
 
-\# SYSTEM TESTS
+# Service To Repository Integration Tests
+
+Verify:
+
+```text
+Service Calls Correct Repository
+Repository Returns Validated Data
+Invalid Repository Data Is Rejected
+Repository Errors Reach The Service
+Business Logic Does Not Move Into The Repository
+```
+
+---
+
+# RepositorySync Integration Tests
+
+Verify:
+
+```text
+Repository Requests Synchronization
+RepositorySync Selects The Correct Remote Source
+Remote Data Is Downloaded
+Remote Data Is Validated
+Validated Data Returns To The Repository
+Synchronization Failure Is Reported
+Cache Is Used When Available
+Local Data Is Preferred Before Remote Data
+```
+
+---
+
+# Remote Source Integration Tests
+
+Verify:
+
+```text
+Remote Source Is Reachable
+Remote Source Is Unavailable
+Remote Source Times Out
+Remote Response Is Invalid
+Remote Response Is Incomplete
+Remote Response Has An Unsupported Version
+Remote Data Is Rejected Safely
+```
+
+Required flow:
+
+```text
+GUI
+↓
+IPC
+↓
+Services
+↓
+Repositories
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+```
+
+Direct GUI access to RepositorySync or Remote Sources must fail validation.
+
+---
+
+# SYSTEM TESTS
 
 
 
@@ -854,17 +1119,17 @@ Purpose:
 Test complete workflows.
 
 
-\---
+---
 
 
-\# Workflow 1
+# Workflow 1
 
 
 
 Import STL
 
 
-\---
+---
 
 
 Expected
@@ -884,14 +1149,14 @@ Transformable
 
 
 
-\---
+---
 
 
-\# Workflow 2
+# Workflow 2
 
 Import Multiple Files
 
-\---
+---
 
 
 
@@ -915,11 +1180,11 @@ Object List Updated
 
 
 
-\---
+---
 
 
 
-\# Workflow 3
+# Workflow 3
 
 
 
@@ -927,7 +1192,7 @@ Select Printer
 
 
 
-\---
+---
 
 
 
@@ -947,7 +1212,7 @@ Printer Information Updated
 
 
 
-\---
+---
 
 
 
@@ -986,17 +1251,17 @@ Confidence Updated
 ---
 
 
-\---
+---
 
 
 
-\# Workflow 6
+# Workflow 6
 
 
 Run Full Analysis
 
 
-\---
+---
 
 
 Expected
@@ -1013,16 +1278,16 @@ Scores Produced
 ```
 
 
-\---
+---
 
 
-\# Workflow 7
+# Workflow 7
 
 
 Generate Recommendations
 
 
-\---
+---
 
 
 Expected
@@ -1039,10 +1304,10 @@ Geometry Safe
 ```
 
 
-\---
+---
 
 
-\# END TO END TESTS
+# END TO END TESTS
 
 
 
@@ -1054,11 +1319,11 @@ Validate complete user behavior.
 
 
 
-\---
+---
 
 
 
-\# E2E Scenario 1
+# E2E Scenario 1
 
 
 New Project
@@ -1093,11 +1358,11 @@ Must succeed.
 
 
 
-\---
+---
 
 
 
-\# E2E Scenario 2
+# E2E Scenario 2
 
 
 Import Multiple Models
@@ -1123,11 +1388,11 @@ Must succeed.
 
 
 
-\---
+---
 
 
 
-\# E2E Scenario 3
+# E2E Scenario 3
 
 
 Load Existing Project
@@ -1150,13 +1415,99 @@ Restore Filament Selection
 
 Must succeed.
 
+---
 
+# E2E Scenario 4
 
-\---
+Create New Project
 
+↓
+Add Multiple Objects
 
+↓
+Select Printer
 
-\# PERFORMANCE TESTS
+↓
+Select Material
+
+↓
+Select Filament
+
+↓
+Select Print Preset
+
+↓
+Run Analysis
+
+↓
+Generate Recommendation
+
+↓
+Save WYPROJ Project
+
+↓
+Close Project
+
+↓
+Reload WYPROJ Project
+
+↓
+Restore Complete Project State
+
+Must succeed.
+
+---
+
+# E2E Scenario 5
+
+Create Project
+
+↓
+Save Project
+
+↓
+Modify Scene
+
+↓
+Trigger Auto Save
+
+↓
+Simulate Application Restart
+
+↓
+Start Recovery
+
+↓
+Validate Recovery File
+
+↓
+Restore Project
+
+Must succeed without data loss.
+
+---
+
+# E2E Scenario 6
+
+Open Invalid WYPROJ File
+
+↓
+Validate Project
+
+↓
+Reject Invalid Data
+
+↓
+Display Localized Error
+
+↓
+Preserve Safe Application State
+
+Must succeed without application crash.
+
+---
+
+# PERFORMANCE TESTS
 
 
 
@@ -1168,11 +1519,11 @@ Ensure smooth operation.
 
 
 
-\---
+---
 
 
 
-\# Startup Time
+# Startup Time
 
 
 
@@ -1188,11 +1539,11 @@ Target
 
 
 
-\---
+---
 
 
 
-\# STL Loading
+# STL Loading
 
 
 
@@ -1212,11 +1563,11 @@ Target
 
 
 
-\---
+---
 
 
 
-\# Large STL
+# Large STL
 
 
 
@@ -1232,11 +1583,11 @@ Target
 
 
 
-\---
+---
 
 
 
-\# Scene FPS
+# Scene FPS
 
 
 
@@ -1264,11 +1615,11 @@ Minimum
 
 
 
-\---
+---
 
 
 
-\# Memory Usage
+# Memory Usage
 
 
 
@@ -1290,13 +1641,55 @@ Large Scene
 
 ```
 
+---
+
+# RepositorySync Performance Tests
+
+Measure:
+
+```text
+Remote Profile Search
+Remote Profile Download
+Repository Synchronization
+Cache Refresh
+Remote Failure Recovery
+```
+
+Targets:
+
+```text
+Profile Search < 500 ms
+Repository Synchronization < 10 seconds
+Cache Refresh < 5 seconds
+```
+
+---
+
+# Project Persistence Performance Tests
+
+Measure:
+
+```text
+Project Save
+Project Load
+Project Serialization
+Project Deserialization
+Recovery Load
+```
+
+Targets:
+
+```text
+Project Save < 1 second
+Project Load < 3 seconds
+Recovery Load < 3 seconds
+```
+
+---
 
 
-\---
 
-
-
-\# Stress Tests
+# Stress Tests
 
 
 
@@ -1308,11 +1701,11 @@ Determine limits.
 
 
 
-\---
+---
 
 
 
-\# High Object Count
+# High Object Count
 
 
 
@@ -1340,11 +1733,11 @@ Test
 
 
 
-\---
+---
 
 
 
-\# Large Mesh Tests
+# Large Mesh Tests
 
 
 
@@ -1372,11 +1765,11 @@ Test
 
 
 
-\---
+---
 
 
 
-\# REGRESSION TESTS
+# REGRESSION TESTS
 
 
 
@@ -1388,11 +1781,11 @@ Ensure new features do not break old features.
 
 
 
-\---
+---
 
 
 
-\# Required After
+# Required After
 
 
 
@@ -1416,11 +1809,11 @@ Version Upgrade
 
 
 
-\---
+---
 
 
 
-\# Regression Areas
+# Regression Areas
 
 
 
@@ -1451,11 +1844,11 @@ Recovery
 
 
 
-\---
+---
 
 
 
-\# SECURITY TESTS
+# SECURITY TESTS
 
 
 
@@ -1467,11 +1860,11 @@ Validate protection against invalid data.
 
 
 
-\---
+---
 
 
 
-\# STL Validation
+# STL Validation
 
 
 
@@ -1493,11 +1886,11 @@ Malformed STL
 
 
 
-\---
+---
 
 
 
-\# 3MF Validation
+# 3MF Validation
 
 
 Test
@@ -1517,11 +1910,11 @@ Invalid Metadata
 
 
 
-\---
+---
 
 
 
-\# Printer Profile Validation
+# Printer Profile Validation
 
 
 
@@ -1543,11 +1936,11 @@ Corrupted JSON
 
 
 
-\---
+---
 
 
 
-\# Material Profile Validation
+# Material Profile Validation
 
 
 Test
@@ -1569,7 +1962,7 @@ Invalid Schema
 
 
 
-\---
+---
 
 # Filament Profile Validation
 
@@ -1587,7 +1980,7 @@ Corrupted JSON
 
 ---
 
-\# Repository Security
+# Repository Security
 
 
 Verify
@@ -1605,13 +1998,73 @@ Corrupted Cache
 
 ```
 
+---
+
+# RepositorySync Security Tests
+
+Test:
+
+```text
+Invalid Remote Response
+Missing Remote Fields
+Unexpected Remote Fields
+Unsupported Remote Version
+Corrupted Remote Data
+Untrusted Remote Source
+Remote Data Integrity Failure
+```
+
+---
+
+# IPC Security Tests
+
+Test:
+
+```text
+Invalid IPC Payload
+Missing IPC Fields
+Invalid IPC Types
+Unauthorized IPC Request
+Unknown IPC Channel
+IPC Handler Failure
+Sensitive IPC Data Exposure
+```
+
+---
+
+# Project Security Tests
+
+Test:
+
+```text
+Corrupted WYPROJ
+Invalid WYPROJ Version
+Missing Project References
+Invalid Scene Data
+Broken Profile Links
+Corrupted Auto Save
+Corrupted Recovery File
+```
+
+---
+
+# Internationalization Security Tests
+
+Test:
+
+```text
+Invalid Translation File
+Missing Translation Key
+Unexpected Translation Data
+Unsupported Language
+Corrupted Language File
+```
+
+---
 
 
-\---
 
-
-
-\# AI VALIDATION TESTS
+# AI VALIDATION TESTS
 
 
 
@@ -1623,11 +2076,11 @@ Ensure recommendations remain valid.
 
 
 
-\---
+---
 
 
 
-\# Printer Limit Test
+# Printer Limit Test
 
 
 
@@ -1655,11 +2108,11 @@ Maximum Acceleration
 
 
 
-\---
+---
 
 
 
-\# Material Limit Test
+# Material Limit Test
 
 
 
@@ -1683,11 +2136,11 @@ Cooling Limits
 
 
 
-\---
+---
 
 
 
-\# Geometry Test
+# Geometry Test
 
 
 
@@ -1711,11 +2164,11 @@ Overhang Handling
 
 
 
-\---
+---
 
 
 
-\# Confidence Score Test
+# Confidence Score Test
 
 
 
@@ -1751,11 +2204,11 @@ Lower Classification Confidence
 
 ---
 
-\---
+---
 
 
 
-\# Optimization Tests
+# Optimization Tests
 
 
 
@@ -1767,11 +2220,11 @@ Verify optimizations improve results.
 
 
 
-\---
+---
 
 
 
-\# Orientation Test
+# Orientation Test
 
 
 
@@ -1795,11 +2248,11 @@ Improved Quality
 
 
 
-\---
+---
 
 
 
-\# Material Usage Test
+# Material Usage Test
 
 
 
@@ -1819,11 +2272,11 @@ No Reliability Loss
 
 
 
-\---
+---
 
 
 
-\# Print Time Optimization Test
+# Print Time Optimization Test
 
 
 
@@ -1843,11 +2296,11 @@ No Safety Violation
 
 
 
-\---
+---
 
 
 
-\# USER ACCEPTANCE TESTING
+# USER ACCEPTANCE TESTING
 
 
 
@@ -1859,11 +2312,11 @@ Validate real-world usability.
 
 
 
-\---
+---
 
 
 
-\# Beginner User Tests
+# Beginner User Tests
 
 
 
@@ -1887,11 +2340,11 @@ Generate Recommendations
 
 
 
-\---
+---
 
 
 
-\# Advanced User Tests
+# Advanced User Tests
 
 
 
@@ -1915,11 +2368,11 @@ Export Profiles
 
 
 
-\---
+---
 
 
 
-\# Professional User Tests
+# Professional User Tests
 
 
 
@@ -1943,11 +2396,11 @@ Stable Performance
 
 
 
-\---
+---
 
 
 
-\# TEST REPORT FORMAT
+# TEST REPORT FORMAT
 
 
 
@@ -1983,11 +2436,11 @@ Notes
 
 
 
-\---
+---
 
 
 
-\# Test Result Types
+# Test Result Types
 
 
 
@@ -2011,11 +2464,11 @@ SKIPPED
 
 
 
-\---
+---
 
 
 
-\# Release Criteria
+# Release Criteria
 
 
 
@@ -2039,11 +2492,11 @@ No Invalid AI Recommendations
 
 
 
-\---
+---
 
 
 
-\# Critical Fail Conditions
+# Critical Fail Conditions
 
 
 
@@ -2075,11 +2528,11 @@ Crash During Normal Operations
 
 
 
-\---
+---
 
 
 
-\# Automated Testing Goals
+# Automated Testing Goals
 
 
 
@@ -2103,11 +2556,11 @@ AI Engine > 90%
 
 
 
-\---
+---
 
 
 
-\# Manual Testing Requirements
+# Manual Testing Requirements
 
 
 
@@ -2139,11 +2592,11 @@ Performance Review
 
 
 
-\---
+---
 
 
 
-\# Golden Rule
+# Golden Rule
 
 
 
@@ -2155,9 +2608,9 @@ No exception.
 
 
 
-\---
+---
 
 
 
-\# End Of Document
+# End Of Document
 
