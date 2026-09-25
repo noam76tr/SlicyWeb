@@ -536,6 +536,7 @@ ARCHITECTURE.md
 DATA_SCHEMA.md
 API_SPEC.md
 FILE_STRUCTURE.md
+TECH_STACK.md
 IMPORT_EXPORT_SPEC.md
 PROJECT_SPEC.md
 SECURITY_SPEC.md
@@ -548,6 +549,7 @@ ARCHITECTURE.md
 DATA_SCHEMA.md
 API_SPEC.md
 FILE_STRUCTURE.md
+TECH_STACK.md
 IMPORT_EXPORT_SPEC.md
 PROJECT_SPEC.md
 SECURITY_SPEC.md
@@ -570,16 +572,27 @@ Owns:
 
 ```text
 Technology Choices
+Runtime Technologies
+Framework Choices
+Core Libraries
+Build Tools
+Testing Tools
 ```
 
 Review Required When Modified:
 
 ```text
 ARCHITECTURE.md
-
+TECHNICAL_OVERVIEW.md
 DECISIONS.md
-
+PROJECT_SPEC.md
 CHANGELOG.md
+```
+
+Mandatory Review:
+
+```text
+PROJECT_IMPACT_MATRIX.md
 ```
 
 ---
