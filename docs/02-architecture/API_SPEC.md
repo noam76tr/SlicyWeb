@@ -634,13 +634,13 @@ Changelog Evaluation
 
 # API Versioning
 
-API versions must follow:
+The current API uses unversioned routes:
 
 ```text
 /api/...
 ```
 
-Example:
+Examples:
 
 ```text
 /api/printers
@@ -669,7 +669,7 @@ A Response Structure Becomes Incompatible
 An Existing Consumer Requires Migration
 ```
 
-Non-breaking additions should remain compatible with the current `/api/...` routes.
+Non-breaking additions must remain compatible with the current `/api/...` routes.
 
 ---
 
