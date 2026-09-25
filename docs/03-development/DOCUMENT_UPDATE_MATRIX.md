@@ -455,12 +455,6 @@ Mandatory Update Evaluation:
 CHANGELOG.md
 ```
 
-Conditional Updates:
-
-```text
-ARCHITECTURE_DECISION_MATRIX.md
-```
-
 ---
 
 # Internationalization Change
