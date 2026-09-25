@@ -14,33 +14,24 @@ Priority: High
 
 # Purpose
 
-
 This document defines all internal and external APIs used by the project.
-
 
 The objectives are:
 
-
 - Standardized communication
-
 - Consistent data exchange
-
 - Reliable integrations
-
 - Future scalability
-
 - Secure external access
-
 
 This document serves as the reference for:
 
-
 - Internal Services
-
-- Local Databases
-
-- GitHub Repositories
-
+- Local Storage
+- Cache
+- Repositories
+- RepositorySync
+- Remote Sources
 - Future Online Services
 
 ---
@@ -95,31 +86,16 @@ Maintain Compatibility
 Control API Evolution
 Protect Domain Boundaries
 Standardize Validation
-Protect RepositorySync access rules
-```
-
-The system uses:
-
-```text
-Internal APIs
-Repository APIs
-RepositorySync APIs
-Profile APIs
-Cache APIs
-Security Validation APIs
-Future Cloud APIs
+Protect RepositorySync Access Rules
 ```
 
 ---
 
 # API Categories
 
-
 The system uses:
 
-
 ```text
-
 Internal APIs
 Repository APIs
 RepositorySync APIs
@@ -134,6 +110,27 @@ Repository APIs are responsible for local data access.
 RepositorySync APIs are responsible for remote synchronization only.
 
 Direct access to Remote Sources outside RepositorySync is forbidden.
+
+---
+
+# API Ownership Rules
+
+Every API belongs to a domain.
+
+Ownership must follow:
+
+```text
+FILE_OWNERSHIP_MATRIX.md
+DOMAIN_BOUNDARIES.md
+```
+
+Cross-domain API modifications require impact analysis.
+
+Ownership must be verified before modifying shared APIs.
+
+RepositorySync APIs are owned by the RepositorySync domain.
+
+Remote Source access is never owned by the GUI, Viewport, Analysis, Recommendation, or Optimization domains.
 
 ---
 
@@ -171,77 +168,7 @@ Repository Layer
     Remote Sources
 ```
 
-Direct access bypassing IPC or RepositorySync is prohibited.
-
----
-
-# API Ownership Rules
-
-Every API belongs to a domain.
-
-Ownership must follow:
-
-FILE_OWNERSHIP_MATRIX.md
-
-DOMAIN_BOUNDARIES.md
-
-Cross-domain API modifications require impact analysis.
-
-Ownership must be verified before modifying shared APIs.
-
-RepositorySync APIs are owned by the RepositorySync domain.
-
-Remote source access is never owned by the GUI, Viewport, or Analysis domains.
-
----
-
-# RepositorySync API
-
-Purpose:
-
-```text
-Fetch remote repository data
-Sync profile data
-Validate external payloads
-Return normalized results
-```
-
-Allowed responsibilities:
-
-```text
-GitHub repository access
-Remote profile synchronization
-Remote validation
-Cache refresh coordination
-Repository data normalization
-```
-
-Forbidden responsibilities:
-
-```text
-Rendering UI
-Business rule generation
-Recommendation generation
-Model analysis
-Direct storage bypass
-Direct GUI access
-```
-
-Required validation flow:
-
-```text
-RepositorySync
-↓
-Remote Source
-↓
-Schema Validation
-↓
-Repository Normalization
-↓
-Storage / Cache Update
-```
-
-Any remote payload must be validated before use.
+Direct access that bypasses IPC, Services, Repositories, or RepositorySync is prohibited.
 
 ---
 
@@ -273,6 +200,12 @@ Services
 Repositories
 ```
 
+The IPC layer must never access Remote Sources directly.
+
+The IPC layer must never contain business logic.
+
+The IPC layer must validate incoming and outgoing payloads.
+
 ---
 
 # Internal API Rules
@@ -297,7 +230,6 @@ FilamentSchema
 AnalysisSchema
 RecommendationSchema
 PrintPresetSchema
-ErrorSchema
 ```
 
 Validation is mandatory for:
@@ -307,14 +239,44 @@ Requests
 Responses
 Imports
 Repository Data
+RepositorySync Results
+Remote Data
 IPC Payloads
 Project Files
-Remote Sync Results
 Cache Entries
 ```
 
 Unvalidated payloads are forbidden.
 
+---
+
+# API Validation Rules
+
+All API payloads must be validated using:
+
+```text
+Zod Schemas
+```
+
+Located in:
+
+```text
+src/schemas/
+```
+
+Validation must occur:
+
+```text
+Before Processing
+Before Storage
+Before Caching
+Before Synchronization
+Before Returning Data
+```
+
+Invalid data must be rejected safely.
+
+Validation failures must return structured errors and never raw exceptions.
 
 ---
 
@@ -351,61 +313,30 @@ Standard error format:
 Error object rules:
 
 ```text
-code: machine-readable identifier
-message: human-readable error
-module: responsible module or domain
-severity: error | warning | critical
-timestamp: ISO timestamp
+code: Machine-readable error identifier
+message: Safe human-readable error message
+module: Responsible module or domain
+severity: Information, Warning, Error, or Critical
+timestamp: ISO 8601 timestamp
 ```
 
-All API errors must use this schema.
-
----
-
-# Error Format
-
-```json
-{
-  "success": false,
-  "data": null,
-  "errors": [
-    {
-      "code": "",
-      "message": "",
-      "module": "",
-      "severity": "error",
-      "timestamp": ""
-    }
-  ]
-}
-```
-Error handling rules:
-
-```text
-Errors must never be silent.
-Errors must always be structured.
-Errors must include the responsible module.
-Errors must be serialized consistently.
-Remote errors must be normalized before returning.
-```
-
-Validation failures must return structured errors and never raw exceptions.
+All API errors must use this structure.
 
 ---
 
 # Error Validation Rules
 
-Every error must:
+Every API error must:
 
 ```text
-Use a unique error code
-Include a severity
-Include a responsible module
-Include a safe message
-Include a timestamp
-Be serializable
-Be loggable
-Be safe for user display
+Use a Unique Error Code
+Include a Severity
+Include the Responsible Module
+Include a Safe Message
+Include a Timestamp
+Be Serializable
+Be Loggable
+Be Safe For User Display
 ```
 
 Errors must use the codes defined in:
@@ -436,18 +367,21 @@ Success responses:
 
 ```text
 success: true
-data: populated response data
-errors: empty array
+data: Populated Response Data
+errors: Empty Array
 ```
 
 Failure responses:
 
+```text
 success: false
-data: null or partial safe data
-errors: structured error array
+data: null or Safe Partial Data
+errors: Structured Error Array
+```
 
 Allowed response states:
 
+```text
 Success
 Validation Failed
 Not Found
@@ -457,260 +391,406 @@ Conflict
 Unavailable
 Timeout
 Internal Error
+```
 
 An API must never return an undefined response state.
 
 ---
 
-# API Validation Rules
-
-All API payloads must be validated using:
-
-Zod Schemas
-
-Located in:
-
-src/schemas/
-
-Validation is mandatory for:
-
-- Requests
-- Responses
-- Imports
-- Repository Data
-- IPC Payloads
-- Project Files
-
-Unvalidated payloads are forbidden.
-
----
-
-# Response Format
-
-Standard success format:
-
-```json
-
-{
-
-&#x20; "success": true,
-
-&#x20; "data": {},
-
-&#x20; "errors": \[]
-
-}
-
-```
-
----
-
-# Error Format
-
-```json
-
-{
-
-&#x20; "success": false,
-
-&#x20; "data": null,
-
-&#x20; "errors": \[
-
-&#x20;   {
-
-&#x20;     "code": "",
-
-&#x20;     "message": ""
-
-&#x20;   }
-
-&#x20; ]
-
-}
-
-```
-
-
-
----
-
-
-
-# Printer API
-
+# Cache API
 
 Purpose:
 
-Manage printer profiles.
+```text
+Read Validated Local Data
+Store Validated Data
+Invalidate Expired Data
+Rebuild Corrupted Data
+Coordinate Local-First Access
+```
 
+Required cache flow:
 
+```text
+Request
+↓
+Local Data
+↓
+Cache Lookup
+↓
+Validate Cached Data
+↓
+Return Valid Data
+```
+
+If valid local data or cache data is unavailable:
+
+```text
+Repository
+↓
+RepositorySync
+↓
+Remote Source
+↓
+Validate Remote Data
+↓
+Update Cache
+↓
+Return Validated Data
+```
+
+Cache rules:
+
+```text
+Cached data must never bypass validation.
+
+Expired data must not be treated as current data.
+
+Corrupted cache data must be rejected.
+
+Invalid cache data must be removed or rebuilt.
+
+Remote data must be validated before entering the cache.
+```
 
 ---
 
+# RepositorySync API
 
+Purpose:
+
+```text
+Synchronize Validated Data From External Sources
+```
+
+RepositorySync must be called only by:
+
+```text
+Repositories
+```
+
+RepositorySync must not be called directly by:
+
+```text
+GUI
+Renderer
+IPC
+State Management
+Analysis
+Recommendation
+Optimization
+```
+
+Required flow:
+
+```text
+Service
+↓
+Repository
+↓
+RepositorySync
+↓
+Remote Source
+↓
+Remote Data Validation
+↓
+Repository
+↓
+Service
+```
+
+RepositorySync must:
+
+```text
+Identify the Remote Source
+Request Remote Data
+Handle Timeout Errors
+Handle Unavailable Sources
+Validate the Response
+Reject Invalid Data
+Normalize Valid Data
+Report Synchronization Errors
+Return Validated Data
+```
+
+RepositorySync must never:
+
+```text
+Return Unvalidated Data
+Write Invalid Data To Storage
+Bypass The Repository Layer
+Expose Raw Remote Errors
+Modify GUI State Directly
+Generate Business Recommendations
+```
+
+---
+
+# Remote Source API
+
+Remote Sources include:
+
+```text
+GitHub Repositories
+Official Manufacturer Sources
+Verified Community Repositories
+Future REST APIs
+Future Cloud Sources
+```
+
+Remote Sources are untrusted by default.
+
+Remote Sources may only be accessed through:
+
+```text
+RepositorySync
+```
+
+Required remote data flow:
+
+```text
+Remote Source
+↓
+RepositorySync
+↓
+Schema Validation
+↓
+Integrity Validation
+↓
+Version Validation
+↓
+Data Normalization
+↓
+Repository
+```
+
+Direct access to Remote Sources is forbidden from:
+
+```text
+GUI
+Renderer
+IPC
+State Management
+Analysis
+Recommendation
+Optimization
+```
+
+A remote response must be rejected when:
+
+```text
+The Response Is Unavailable
+The Response Times Out
+The Schema Is Invalid
+Required Fields Are Missing
+The Version Is Unsupported
+The Integrity Check Fails
+The Source Is Not Authorized
+```
+
+---
+
+# API Compatibility Rules
+
+Existing APIs must remain backward compatible whenever possible.
+
+Before modifying an API, verify:
+
+```text
+Existing Consumers
+Existing Payloads
+Existing Responses
+Existing Error Codes
+Existing Schemas
+Existing IPC Channels
+Existing Repository Contracts
+```
+
+API changes must not silently:
+
+```text
+Remove Existing Fields
+Rename Stable Fields
+Change Field Meaning
+Change Data Types
+Change Error Codes
+Change Event Names
+Break Existing Consumers
+```
+
+Breaking changes require:
+
+```text
+Impact Analysis
+Version Update
+Migration Strategy
+Documentation Update
+Compatibility Validation
+Changelog Evaluation
+```
+
+---
+
+# API Versioning
+
+API versions must follow:
+
+```text
+v1
+v2
+v3
+```
+
+Example:
+
+```text
+/api/v1/printers
+/api/v1/materials
+/api/v1/filaments
+/api/v1/presets
+```
+
+A version change is required when:
+
+```text
+A Stable Contract Is Broken
+A Required Field Is Removed
+A Field Meaning Changes
+A Response Structure Becomes Incompatible
+An Existing Consumer Requires Migration
+```
+
+Non-breaking additions should remain compatible with the current API version.
+
+---
+
+# API Testing Rules
+
+Every API must have:
+
+```text
+Unit Tests
+Validation Tests
+Error Tests
+Integration Tests
+Regression Tests
+```
+
+RepositorySync APIs must additionally test:
+
+```text
+Successful Synchronization
+Unavailable Remote Source
+Remote Timeout
+Invalid Remote Response
+Missing Remote Fields
+Unsupported Remote Version
+Corrupted Remote Data
+Cache Fallback
+Local-First Behavior
+```
+
+IPC APIs must additionally test:
+
+```text
+Valid Request
+Invalid Request
+Invalid Payload
+Missing Handler
+Service Failure
+Structured Error Response
+```
+
+An API is not complete until the required tests pass.
+
+---
+
+# Printer API
+
+Purpose:
+
+```text
+Manage Printer Profiles
+```
+
+---
 
 ## Get All Printers
 
-
-
 ```text
-
 GET
-
-
-
 /api/printers
-
 ```
 
-
-
 ---
-
-
 
 ## Response
 
-
-
 ```json
-
 {
-
-&#x20; "printers": \[]
-
+  "printers": []
 }
-
 ```
 
-
-
 ---
-
-
 
 ## Get Printer
 
-
-
 ```text
-
 GET
-
-
-
 /api/printers/{id}
-
 ```
 
-
-
 ---
-
-
 
 ## Response
 
-
-
 ```json
-
 {
-
-&#x20; "printer": {}
-
+  "printer": {}
 }
-
 ```
 
-
-
 ---
-
-
 
 ## Search Printers
 
-
-
 ```text
-
 GET
-
-
-
 /api/printers/search
-
 ```
 
-
-
 ---
-
-
 
 ## Parameters
 
-
-
 ```json
-
 {
-
-&#x20; "brand": "",
-
-&#x20; "model": ""
-
+  "brand": "",
+  "model": ""
 }
-
 ```
 
-
-
 ---
-
-
 
 ## Import Printer Profile
 
-
-
 ```text
-
 POST
-
-
-
 /api/printers/import
-
 ```
 
-
-
 ---
-
-
 
 ## Input
 
-
-
 ```json
-
 {
-
-&#x20; "profile": {}
-
+  "profile": {}
 }
-
 ```
 
-
-
----
-
-
+--- 
 
 ## Validation
 
@@ -724,11 +804,7 @@ Verify:
 
 Schema
 
-
-
 Required Fields
-
-
 
 Version
 
@@ -742,59 +818,37 @@ Version
 
 # Material API
 
-
-
 Purpose:
-
-
 
 Manage materials.
 
-
-
 ---
 
-
-
 ## Get Materials
-
 
 
 ```text
 
 GET
-
-
 
 /api/materials
 
 ```
 
-
-
 ---
 
-
-
 ## Get Material
-
-
 
 ```text
 
 GET
-
 
 
 /api/materials/{id}
 
 ```
 
-
-
 ---
-
-
 
 ## Search Material
 
