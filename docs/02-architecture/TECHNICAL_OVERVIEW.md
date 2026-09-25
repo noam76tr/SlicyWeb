@@ -114,175 +114,110 @@ The system follows a strict layered architecture with explicit ownership and man
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
-│                           USER INTERFACE                           │
+│                           GUI LAYER                                │
 ├────────────────────────────────────────────────────────────────────┤
 │ React UI                                                           │
 │ Renderer                                                           │
-│ Tailwind CSS                                                       │
-│ shadcn/ui                                                          │
+│ User Interaction                                                   │
 │ UI State                                                           │
 └──────────────────────────────┬─────────────────────────────────────┘
                                │
                                ▼
 ┌────────────────────────────────────────────────────────────────────┐
-│                        APPLICATION LAYER                           │
+│                       APPLICATION LAYER                            │
 ├────────────────────────────────────────────────────────────────────┤
 │ Commands                                                           │
-│ Event Routing                                                      │
 │ Workflow Coordination                                              │
+│ Event Routing                                                      │
+│ Application State Coordination                                     │
 │ Notifications                                                      │
-│ History / Undo / Redo                                              │
-│ Application Services                                               │
 └──────────────────────────────┬─────────────────────────────────────┘
                                │
                                ▼
 ┌────────────────────────────────────────────────────────────────────┐
-│                           WORKSPACE CORE                           │
+│                           IPC LAYER                                │
 ├────────────────────────────────────────────────────────────────────┤
-│ Scene Manager                                                      │
-│ Object Manager                                                     │
-│ Transform Manager                                                  │
-│ Selection Manager                                                  │
-│ Project Manager                                                    │
-│ WYPROJ Save / Load                                                 │
+│ Renderer ↔ Main Communication                                      │
+│ IPC Request Validation                                             │
+│ IPC Response Serialization                                         │
+│ Safe Error Propagation                                             │
 └──────────────────────────────┬─────────────────────────────────────┘
                                │
                                ▼
 ┌────────────────────────────────────────────────────────────────────┐
-│                     Internationalization                           │
+│                         SERVICE LAYER                              │
 ├────────────────────────────────────────────────────────────────────┤
-│ LanguageManager                                                    │
-│ LocalizationService                                                │
-│ TranslationLoader                                                  │
-└──────────────────────────────┬─────────────────────────────────────┘
-          ┌────────────────────┼────────────────────┐
-          │                    │                    │
-          ▼                    ▼                    ▼
-
-┌────────────────────┐ ┌────────────────────┐ ┌────────────────────┐
-│ IMPORT ENGINE      │ │ VISUALIZATION      │ │ PROFILE SYSTEM     │
-├────────────────────┤ ├────────────────────┤ ├────────────────────┤
-│ STL Loader         │ │ Three.js Scene     │ │ Printer Database   │
-│ 3MF Loader         │ │ Build Plate        │ │ Material Database  │
-│ Validation         │ │ Grid System        │ │ Filament Database  │
-│ Geometry Parsing   │ │ Camera Controls    │ │ Preset Database    │
-│ Mesh Generation    │ │ Collision Display  │ │                    │
-└──────────┬─────────┘ └────────────────────┘ └──────────┬─────────┘
-           │                                             │
-           └───────────────────┬─────────────────────────┘
-                               │
-                               ▼
-
-┌────────────────────────────────────────────────────────────────────┐
-│                         ANALYSIS ENGINE                            │
-├────────────────────────────────────────────────────────────────────┤
-│ Dimensions                                                         │
-│ Bounding Box                                                       │
-│ Volume                                                             │
-│ Surface Area                                                       │
-│ Mesh Statistics                                                    │
-│ Overhang Detection                                                 │
-│ Bridge Detection                                                   │
-│ Thin Wall Detection                                                │
-│ Stability Analysis                                                 │
-│ Center Of Gravity                                                  │
+│ Project Service                                                    │
+│ Printer Service                                                    │
+│ Material Service                                                   │
+│ Filament Service                                                   │
+│ Preset Service                                                     │
+│ Analysis Service                                                   │
+│ Recommendation Service                                             │
+│ Storage Service                                                    │
 └──────────────────────────────┬─────────────────────────────────────┘
                                │
-                               ▼
+             ┌─────────────────┼─────────────────┐
+             │                 │                 │
+             ▼                 ▼                 ▼
+┌────────────────────┐ ┌────────────────────┐ ┌──────────────────────┐
+│ WORKSPACE MODULES  │ │ DOMAIN MODULES     │ │ SUPPORT MODULES      │
+├────────────────────┤ ├────────────────────┤ ├───────────────────  ─┤
+│ Project            │ │ Profiles           │ │ Internationalization │
+│ Import             │ │ Presets            │ │ Notifications        │
+│ Scene              │ │ Analysis           │ │ Validation           │
+│ Object Management  │ │ Classification     │ │ Recovery             │
+│ Transform          │ │ Recommendation     │ │ State Management     │
+│ Renderer           │ │ Optimization       │ │ Error Handling       │
+│                    │ │ Cost Estimation    │ │                      │
+└──────────┬─────────┘ └──────────┬─────────┘ └──────────┬───────────┘
+           │                      │                      │
+           └──────────────────────└──────────────────────┘
+                                  │
+                                  ▼
 ┌────────────────────────────────────────────────────────────────────┐
-│                     CLASSIFICATION ENGINE                          │
+│                       REPOSITORY LAYER                             │
 ├────────────────────────────────────────────────────────────────────┤
-│ Object Classification                                              │
-│ Category Detection                                                 │
-│ Feature Detection                                                  │
-│ Confidence Score                                                   │
+│ Local Repository Access                                            │
+│ Data Normalization                                                 │
+│ Validation Coordination                                            │
+│ Repository Contracts                                               │
+│ RepositorySync Coordination                                        │
 └──────────────────────────────┬─────────────────────────────────────┘
                                │
                                ▼
 ┌────────────────────────────────────────────────────────────────────┐
-│                   RECOMMENDATION ENGINE                            │
+│                LOCAL STORAGE / CACHE LAYER                         │
 ├────────────────────────────────────────────────────────────────────┤
-│ Rule-Based Decision System                                         │
-│ Print Profile Generation                                           │
-│ Print Preset Selection                                             │
-│ Support Strategy Selection                                         │
-│ Warning Generation                                                 │
-│ Confidence Score                                                   │
-└──────────────────────────────┬─────────────────────────────────────┘
-                               │
-                 ┌─────────────┼─────────────┐
-                 │             │             │
-                 ▼             ▼             ▼
-
-┌────────────────┐ ┌────────────────┐ ┌────────────────┐
-│ OPTIMIZATION   │ │ COST ENGINE    │ │ WARNING ENGINE │
-├────────────────┤ ├────────────────┤ ├────────────────┤
-│ Orientation    │ │ Material Usage │ │ Risk Analysis  │
-│ Supports       │ │ Weight         │ │ Constraints    │
-│ Time           │ │ Cost           │ │ Notifications  │
-│ Material       │ │ Duration       │ │ Validation     │
-└───────┬────────┘ └───────┬────────┘ └───────┬────────┘
-        │                  │                  │
-        └──────────────────┼──────────────────┘
-                           │
-                           ▼
-
-┌────────────────────────────────────────────────────────────────────┐
-│                           DATA LAYER                               │
-├────────────────────────────────────────────────────────────────────┤
-│ JSON Storage                                                       │
-│ WYPROJ Projects (.wyproj)                                          │
-│ Project Files                                                      │
-│ Local Database                                                     │
-│ Cache                                                              │
-│ Settings                                                           │
-│ Profiles                                                           │
-│ Translation Files (en/fr/he)                                       │
-│ Analysis Results                                                   │
-│ Recommendations                                                    │
+│ Project Persistence                                                │
+│ Local JSON Data                                                    │
+│ Profile Storage                                                    │
+│ Settings Storage                                                   │
+│ Cache Storage                                                      │
+│ Cache Invalidation                                                 │
+│ Recovery Data                                                      │
 └──────────────────────────────┬─────────────────────────────────────┘
                                │
                                ▼
-
 ┌────────────────────────────────────────────────────────────────────┐
-│                        REPOSITORY LAYER                            │
+│                     REPOSITORYSYNC LAYER                           │
 ├────────────────────────────────────────────────────────────────────┤
-│ Repository Access                                                  │
-│ Repository Sync                                                    │
-│ Repository Validation                                              │
-│ GitHub Sources                                                     │
-│ Official Profiles                                                  │
-│ Verified Repositories                                              │
+│ Remote Profile Synchronization                                     │
+│ Remote Data Retrieval                                              │
+│ Remote Data Validation                                             │
+│ Data Normalization                                                 │
+│ Synchronization Error Handling                                     │
 └──────────────────────────────┬─────────────────────────────────────┘
                                │
                                ▼
-
 ┌────────────────────────────────────────────────────────────────────┐
-│                        EXTERNAL SOURCES                            │
+│                         REMOTE SOURCES                             │
 ├────────────────────────────────────────────────────────────────────┤
-│ Official Manufacturer Profiles                                     │
+│ Official Manufacturer Repositories                                 │
 │ Verified GitHub Repositories                                       │
-│ Community Sources                                                  │
-└──────────────────────────────┬─────────────────────────────────────┘
-                               │
-                               ▼
-
-┌────────────────────────────────────────────────────────────────────┐
-│                          FUTURE MODULES                            │
-├────────────────────────────────────────────────────────────────────┤
-│ G-Code Engine                                                      │
-│ Multi Material System                                              │
-│ Plugin System                                                      │
-│ Plugin Marketplace                                                 │
-│ Cloud Synchronization                                              │
-│ Remote Printers                                                    │
-│ Webcam Monitoring                                                  │
-│ Vision Classification                                              │
-│ Machine Learning                                                   │
-│ Community Profiles                                                 │
-│ Filament Tracking                                                  │
+│ Verified Community Repositories                                    │
+│ Future External Services                                           │
 └────────────────────────────────────────────────────────────────────┘
-
 ```
 
 Mandatory flow:
@@ -314,8 +249,6 @@ RepositorySync is the only accepted layer for remote access.
 Remote data must be validated before storage or use.
 Storage and Cache are local-only layers.
 ```
-
----
 
 ### Architecture Ownership
 
@@ -359,10 +292,10 @@ Governance approval
 
 Additional Core Libraries:
 
-- Lucide React (Icons)
-- Octokit (GitHub Integration)
-- three-mesh-bvh (Accelerated Geometry Analysis)
-- Electron Log (Application Logging)
+- Lucide React
+- Octokit
+- three-mesh-bvh
+- Electron Log
 
 ---
 
