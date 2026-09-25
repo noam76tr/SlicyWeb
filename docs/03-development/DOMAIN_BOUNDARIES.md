@@ -111,6 +111,7 @@ IPC
 Repository
 RepositorySync
 Storage
+Local Storage / Cache
 Notification
 Cost Estimation
 Project Management
@@ -678,8 +679,15 @@ Electron Communication
 
 Responsibilities:
 
-- Renderer Communication
-- Main Process Communication
+```text
+Renderer Communication
+Main Process Communication
+IPC Request Validation
+IPC Response Validation
+Payload Serialization
+Safe Error Propagation
+Service Invocation
+```
 
 Owns:
 
@@ -691,8 +699,23 @@ Must Not:
 
 ```text
 Contain Business Logic
-
 Contain Repository Logic
+Access Remote Sources
+Access Storage Directly
+Modify Domain State Directly
+Bypass Services
+```
+
+Required flow:
+
+```text
+Renderer
+↓
+IPC
+↓
+Service
+↓
+Repository
 ```
 
 Boundary:
@@ -707,32 +730,67 @@ Communication Only
 
 Purpose:
 
-Repository Access
+```text
+Local Repository Access and Data Coordination
+```
 
 Responsibilities:
 
-- Local Repository Access
-- Data Retrieval
-- Data Persistence
+```text
+Local Data Retrieval
+Local Data Persistence Coordination
+Repository Contracts
+Data Normalization
+Repository Validation Coordination
+Cache Coordination
+RepositorySync Coordination
+```
 
 Owns:
 
 ```text
+src/repositories/
 Repository Services
+Repository Contracts
+```
+
+May:
+
+```text
+Read Local Data
+Write Validated Local Data
+Use Local Storage / Cache
+Request Remote Synchronization Through RepositorySync
+Coordinate Data Normalization
 ```
 
 Must Not:
 
 ```text
 Render UI
-
 Access Remote Sources Directly
+Bypass RepositorySync
+Generate Recommendations
+Perform Geometry Analysis
+Contain GUI Logic
+```
+
+Required flow:
+
+```text
+Service
+↓
+Repository
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
 ```
 
 Boundary:
 
 ```text
-Repository Access Only
+Local Data Access and Repository Coordination Only
 ```
 
 ---
@@ -741,34 +799,76 @@ Repository Access Only
 
 Purpose:
 
-External Synchronization
+```text
+Validated Synchronization With External Sources
+```
 
 Responsibilities:
 
-- Repository Downloads
-- Repository Updates
-- Remote Synchronization
+```text
+Remote Data Retrieval
+Remote Profile Synchronization
+Source Identification
+Remote Response Validation
+Remote Data Normalization
+Version Validation
+Integrity Validation
+Synchronization Error Handling
+```
 
 Owns:
 
 ```text
+RepositorySync Services
 Remote Synchronization Logic
+Remote Source Adapters
+```
+
+May:
+
+```text
+Access Authorized Remote Sources
+Request Remote Data
+Validate Remote Responses
+Normalize Valid Remote Data
+Return Validated Synchronization Results
 ```
 
 Must Not:
 
 ```text
 Render UI
-
+Access GUI State Directly
 Perform Geometry Analysis
-
 Generate Recommendations
+Write Unvalidated Data
+Bypass the Repository Layer
+Expose Raw Remote Errors
+Write Directly To Cache Without Repository Coordination
+```
+
+Required flow:
+
+```text
+Repository
+↓
+RepositorySync
+↓
+Remote Source
+↓
+Schema Validation
+↓
+Integrity Validation
+↓
+Data Normalization
+↓
+Repository
 ```
 
 Boundary:
 
 ```text
-Synchronization Only
+Remote Synchronization and Validation Only
 ```
 
 ---
@@ -777,36 +877,58 @@ Synchronization Only
 
 Purpose:
 
-Persistence
+```text
+Local Persistence and Cache Management
+```
 
 Responsibilities:
 
-- Local Files
-- Cache
-- Save Operations
-- Load Operations
-- WYPROJ Persistence
+```text
+Local File Access
+JSON Storage
+Cache Storage
+Cache Lookup
+Cache Invalidation
+Validated Data Persistence
+Project File Read and Write Operations
+Recovery Data Storage
+```
 
 Owns:
 
 ```text
+src/storage/
 Storage Services
+Cache Services
+Local Persistence Contracts
+```
+
+May:
+
+```text
+Read Local Data
+Write Validated Data
+Store Cache Entries
+Invalidate Expired Cache Entries
+Reject Corrupted Cache Entries
+Persist WYPROJ Data Through Project Services
 ```
 
 Must Not:
 
 ```text
 Render UI
-
-Perform Analysis
-
+Perform Geometry Analysis
 Generate Recommendations
+Access Remote Sources
+Perform RepositorySync
+Contain Domain Decision Logic
 ```
 
 Boundary:
 
 ```text
-Persistence Only
+Local Persistence and Cache Management Only
 ```
 
 ---
@@ -899,22 +1021,30 @@ Owns:
 
 ```text
 Project Services
-
-src/project/
-ProjectManager
-ProjectSerializer
-ProjectDeserializer
-ProjectValidator
-WYPROJImporter
-WYPROJExporter
+Project Lifecycle
+Project Serialization Contracts
+Project Validation Contracts
+WYPROJ Import and Export Workflows
 ```
 
 Must Not:
 
 ```text
-Perform Analysis
-
+Perform Geometry Analysis
 Generate Recommendations
+Implement Low-Level Storage
+Access Remote Sources Directly
+Bypass Storage Services
+```
+
+Required flow:
+
+```text
+Project Service
+↓
+Storage Service
+↓
+Local Storage / Cache
 ```
 
 Boundary:
@@ -971,32 +1101,60 @@ Localization Only
 
 Purpose:
 
-Security Enforcement
+```text
+Security Enforcement and Trust Validation
+```
 
 Responsibilities:
 
-- Validation Policies
-- Import Security
-- Repository Security
+```text
+Input Validation Policies
+Imported File Security
+Repository Data Security
+Remote Source Trust Validation
+Sensitive Data Protection
+Credential Protection
+Error Exposure Rules
+Integrity Validation Policies
+```
 
 Owns:
 
 ```text
 Security Validation
+Security Policies
+Trust Validation Rules
+Sensitive Data Protection Rules
+```
+
+May:
+
+```text
+Define Security Policies
+Reject Unsafe Inputs
+Reject Unauthorized Sources
+Protect Credentials
+Validate Remote Source Integrity
+Control Safe Error Exposure
 ```
 
 Must Not:
 
 ```text
 Render UI
-
-Perform Recommendations
+Perform Geometry Analysis
+Generate Recommendations
+Modify Business Data Directly
+Bypass Validation
+Expose Credentials
+Expose Raw Stack Traces
+Expose Raw Remote Responses
 ```
 
 Boundary:
 
 ```text
-Security Only
+Security Enforcement and Trust Validation Only
 ```
 
 ---
