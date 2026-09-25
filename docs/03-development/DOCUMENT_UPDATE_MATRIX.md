@@ -892,26 +892,39 @@ Examples:
 
 ```text
 Repository Workflow
-
+Local Repository Access
+Storage Access
+Cache Access
+Cache Invalidation
+RepositorySync Logic
 Synchronization Logic
-
-External Sources
+Remote Source Access
+Remote Data Validation
+External Source Changes
 ```
 
 Mandatory Review:
 
 ```text
-API_SPEC.md
-
 ARCHITECTURE.md
-
+API_SPEC.md
+DATA_SCHEMA.md
+FILE_STRUCTURE.md
+TECHNICAL_OVERVIEW.md
+TEST_PLAN.md
+SECURITY_SPEC.md
 UPDATE_GOVERNANCE_PROTOCOL.md
 ```
 
 Conditional Updates:
 
 ```text
-SECURITY_SPEC.md
+PRINTER_PROFILE_SPEC.md
+MATERIAL_PROFILE_SPEC.md
+FILAMENT_SETTINGS_SPEC.md
+PRINT_PRESETS_SPEC.md
+IMPORT_EXPORT_SPEC.md
+AI_ENGINE_SPEC.md
 ```
 
 Mandatory Update Evaluation:
