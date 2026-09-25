@@ -292,10 +292,7 @@ Remote data must be validated before it is consumed or stored.
 # Layer Architecture
 
 
-## Layer 1
-
-
-GUI Layer
+## Layer 1 - GUI Layer
 
 
 Responsible for:
@@ -322,9 +319,7 @@ No printer logic allowed.
 ---
 
 
-## Layer 2
-
-Application Layer
+## Layer 2 - Application Layer
 
 Coordinates all modules.
 
@@ -368,9 +363,7 @@ Components:
 
 ---
 
-## Layer 3
-
-Core Services
+## Layer 3 - Core Services
 
 Central project services.
 
@@ -389,9 +382,7 @@ Current Services:
 ---
 
 
-## Layer 4
-
-Analysis Services
+## Layer 4 - Analysis Services
 
 Responsible for:
 
@@ -404,9 +395,7 @@ Responsible for:
 ---
 
 
-## Layer 5
-
-Data Services
+## Layer 5 - Data Services
 
 Responsible for:
 
@@ -577,9 +566,7 @@ Remote Source access must have security and validation tests.
 
 ---
 
-## Layer 6
-
-Storage Layer
+## Layer 6 - Storage and Cache Layer
 
 The Storage Layer is responsible for local persistence and cache management.
 
