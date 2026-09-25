@@ -230,6 +230,7 @@ FilamentSchema
 AnalysisSchema
 RecommendationSchema
 PrintPresetSchema
+ErrorSchema
 ```
 
 Validation is mandatory for:
@@ -636,21 +637,29 @@ Changelog Evaluation
 API versions must follow:
 
 ```text
-v1
-v2
-v3
+/api/...
 ```
 
 Example:
 
 ```text
-/api/v1/printers
-/api/v1/materials
-/api/v1/filaments
-/api/v1/presets
+/api/printers
+/api/materials
+/api/filaments
+/api/presets
 ```
 
-A version change is required when:
+A version prefix may be introduced when a breaking API change requires a new contract.
+
+Future versioned routes may use:
+
+```text
+/api/v1/...
+/api/v2/...
+/api/v3/...
+```
+
+A new API version is required only when:
 
 ```text
 A Stable Contract Is Broken
@@ -660,7 +669,7 @@ A Response Structure Becomes Incompatible
 An Existing Consumer Requires Migration
 ```
 
-Non-breaking additions should remain compatible with the current API version.
+Non-breaking additions should remain compatible with the current `/api/...` routes.
 
 ---
 
