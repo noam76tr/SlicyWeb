@@ -1,4 +1,5 @@
 # SlicyWeb SMART SLICER
+
 # FILE STRUCTURE
 
 Version: 2.0.0
@@ -493,6 +494,7 @@ They are external systems accessed only through RepositorySync.
 src/schemas/
 
 ├── AnalysisSchema.ts
+├── ErrorSchema.ts
 ├── FilamentSchema.ts
 ├── MaterialSchema.ts
 ├── PrintPresetSchema.ts
