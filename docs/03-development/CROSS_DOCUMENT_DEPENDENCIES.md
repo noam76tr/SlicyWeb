@@ -243,45 +243,41 @@ Owns:
 
 ```text
 Architecture
-
 Layers
-
 Modules
-
 Dependencies
-
 Communication Flows
+Repository Boundaries
+Storage and Cache Boundaries
+RepositorySync Boundaries
+Remote Source Access Rules
 ```
 
 Direct Dependencies:
 
 ```text
 DATA_SCHEMA.md
-
 API_SPEC.md
-
 FILE_STRUCTURE.md
-
 TECHNICAL_OVERVIEW.md
-
 IMPORT_EXPORT_SPEC.md
-
 AI_ENGINE_SPEC.md
+SECURITY_SPEC.md
+TEST_PLAN.md
 ```
 
 Review Required When Modified:
 
 ```text
 DATA_SCHEMA.md
-
 API_SPEC.md
-
 FILE_STRUCTURE.md
-
+TECHNICAL_OVERVIEW.md
+IMPORT_EXPORT_SPEC.md
 AI_ENGINE_SPEC.md
-
+SECURITY_SPEC.md
+TEST_PLAN.md
 DIRECTORY_PURPOSES.md
-
 CHANGELOG.md
 ```
 
@@ -289,6 +285,7 @@ Mandatory Review:
 
 ```text
 PROJECT_IMPACT_MATRIX.md
+DOCUMENT_UPDATE_MATRIX.md
 ```
 
 ---
@@ -299,19 +296,23 @@ Owns:
 
 ```text
 Data Contracts
-
 Schemas
-
 Relationships
+Runtime Validation Structures
+Error Objects
+IPC Payloads
+Repository Data
+RepositorySync Results
+Cache Entries
+Remote Source Metadata
 ```
 
 Direct Dependencies:
 
 ```text
 ARCHITECTURE.md
-
 API_SPEC.md
-
+SECURITY_SPEC.md
 AI_ENGINE_SPEC.md
 ```
 
@@ -319,21 +320,15 @@ Review Required When Modified:
 
 ```text
 ARCHITECTURE.md
-
 API_SPEC.md
-
+SECURITY_SPEC.md
 AI_ENGINE_SPEC.md
-
 PRINTER_PROFILE_SPEC.md
-
 MATERIAL_PROFILE_SPEC.md
-
 FILAMENT_SETTINGS_SPEC.md
-
 IMPORT_EXPORT_SPEC.md
-
 TECHNICAL_OVERVIEW.md
-
+TEST_PLAN.md
 CHANGELOG.md
 ```
 
@@ -341,7 +336,6 @@ Mandatory Review:
 
 ```text
 DOCUMENT_UPDATE_MATRIX.md
-
 PROJECT_IMPACT_MATRIX.md
 ```
 
@@ -353,31 +347,75 @@ Owns:
 
 ```text
 API Contracts
-
 Endpoints
-
 Payloads
-
 Responses
+IPC Contracts
+Repository Contracts
+RepositorySync Contracts
+Cache Contracts
+Error Responses
+API Validation Rules
+API Compatibility Rules
+API Versioning Rules
 ```
 
 Direct Dependencies:
 
 ```text
 ARCHITECTURE.md
-
 DATA_SCHEMA.md
+SECURITY_SPEC.md
+ERROR_CODES_SPEC.md
 ```
 
 Review Required When Modified:
 
 ```text
 ARCHITECTURE.md
-
 DATA_SCHEMA.md
-
+SECURITY_SPEC.md
+ERROR_CODES_SPEC.md
 AI_ENGINE_SPEC.md
+TEST_PLAN.md
+CHANGELOG.md
+```
 
+Mandatory Review:
+
+```text
+PROJECT_IMPACT_MATRIX.md
+```
+
+---
+
+# ERROR_CODES_SPEC.md
+
+Owns:
+
+```text
+Error Codes
+Warning Codes
+Error Severity
+Error Naming
+Error Classification
+```
+
+Depends On:
+
+```text
+API_SPEC.md
+DATA_SCHEMA.md
+SECURITY_SPEC.md
+```
+
+Review Required When Modified:
+
+```text
+API_SPEC.md
+DATA_SCHEMA.md
+SECURITY_SPEC.md
+TEST_PLAN.md
 CHANGELOG.md
 ```
 
@@ -389,26 +427,39 @@ Owns:
 
 ```text
 Folder Structure
-
 File Organization
+Module Locations
+Repository Locations
+Schema Locations
+Storage Locations
+Electron Locations
+Documentation Locations
 ```
 
 Direct Dependencies:
 
 ```text
+ARCHITECTURE.md
 DIRECTORY_PURPOSES.md
+PROJECT_DOCUMENTATION_INDEX.md
 ```
 
 Review Required When Modified:
 
 ```text
+ARCHITECTURE.md
 DIRECTORY_PURPOSES.md
-
 PROJECT_DOCUMENTATION_INDEX.md
-
 SlicyWeb files explication.txt
-
+TECHNICAL_OVERVIEW.md
+FILE_OWNERSHIP_MATRIX.md
 CHANGELOG.md
+```
+
+Mandatory Review:
+
+```text
+PROJECT_IMPACT_MATRIX.md
 ```
 
 ---
@@ -467,28 +518,48 @@ CHANGELOG.md
 
 # TECHNICAL_OVERVIEW.md
 
+Owns:
+
+```text
+Technical System Overview
+Feature Matrix
+Module Relationships
+Technical Stack Summary
+Architecture Summary
+Development Principles
+```
+
 Depends On:
 
 ```text
 ARCHITECTURE.md
-
 DATA_SCHEMA.md
-
 API_SPEC.md
-
+FILE_STRUCTURE.md
 IMPORT_EXPORT_SPEC.md
-
 PROJECT_SPEC.md
+SECURITY_SPEC.md
 ```
 
 Review Required When Modified:
 
 ```text
 ARCHITECTURE.md
-
 DATA_SCHEMA.md
-
 API_SPEC.md
+FILE_STRUCTURE.md
+IMPORT_EXPORT_SPEC.md
+PROJECT_SPEC.md
+SECURITY_SPEC.md
+TEST_PLAN.md
+CLAUDE_PROJECT_CONTEXT.md
+CHANGELOG.md
+```
+
+Mandatory Review:
+
+```text
+PROJECT_IMPACT_MATRIX.md
 ```
 
 ---
@@ -823,15 +894,19 @@ Depends On:
 
 ```text
 ARCHITECTURE.md
-
+API_SPEC.md
 FILE_STRUCTURE.md
+DATA_SCHEMA.md
 ```
 
 Review Required When Modified:
 
 ```text
 ARCHITECTURE.md
-
+API_SPEC.md
+DATA_SCHEMA.md
+FILE_STRUCTURE.md
+TECHNICAL_OVERVIEW.md
 CHANGELOG.md
 ```
 
@@ -839,42 +914,87 @@ CHANGELOG.md
 
 # TEST_PLAN.md
 
+Owns:
+
+```text
+Testing Strategy
+Unit Testing
+Integration Testing
+End-to-End Testing
+Validation Testing
+Regression Testing
+Security Testing
+RepositorySync Testing
+Cache Testing
+IPC Testing
+```
+
 Depends On:
 
 ```text
 ARCHITECTURE.md
-
 DATA_SCHEMA.md
-
 API_SPEC.md
+SECURITY_SPEC.md
+FILE_STRUCTURE.md
 ```
 
 Review Required When Modified:
 
 ```text
+ARCHITECTURE.md
+DATA_SCHEMA.md
+API_SPEC.md
+SECURITY_SPEC.md
+FILE_STRUCTURE.md
 PROJECT_IMPACT_MATRIX.md
+CHANGELOG.md
+```
+
+Mandatory Review:
+
+```text
+CHANGE_VERIFICATION_CHECKLIST.md
 ```
 
 ---
 
 # SECURITY_SPEC.md
 
+Owns:
+
+```text
+Security Rules
+Input Validation
+External Data Validation
+Remote Source Trust Rules
+Sensitive Data Protection
+Error Exposure Rules
+```
+
 Depends On:
 
 ```text
-API_SPEC.md
-
 ARCHITECTURE.md
+API_SPEC.md
+DATA_SCHEMA.md
 ```
 
 Review Required When Modified:
 
 ```text
-API_SPEC.md
-
 ARCHITECTURE.md
-
+API_SPEC.md
+DATA_SCHEMA.md
+ERROR_CODES_SPEC.md
+TEST_PLAN.md
 CHANGELOG.md
+```
+
+Mandatory Review:
+
+```text
+PROJECT_IMPACT_MATRIX.md
 ```
 
 ---
@@ -909,6 +1029,7 @@ Depends On:
 
 ```text
 FILE_STRUCTURE.md
+ARCHITECTURE.md
 ```
 
 Review Required When Modified:
