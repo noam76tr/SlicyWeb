@@ -110,29 +110,29 @@ The system combines deterministic rule-based AI, geometry analytics, object clas
 
 ## 3. System Architecture & Module Boundaries
 
-The application enforces strict separation of concerns across single-responsibility modules:
+The system follows a strict layered architecture with explicit ownership and mandatory data flow.
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
 │                           USER INTERFACE                           │
 ├────────────────────────────────────────────────────────────────────┤
-│ React                                                              │
+│ React UI                                                           │
+│ Renderer                                                           │
 │ Tailwind CSS                                                       │
 │ shadcn/ui                                                          │
-│ Zustand State Management                                           │
+│ UI State                                                           │
 └──────────────────────────────┬─────────────────────────────────────┘
                                │
                                ▼
 ┌────────────────────────────────────────────────────────────────────┐
 │                        APPLICATION LAYER                           │
 ├────────────────────────────────────────────────────────────────────┤
-│ UI Controllers                                                     │
 │ Commands                                                           │
-│ Event Handling                                                     │
+│ Event Routing                                                      │
+│ Workflow Coordination                                              │
 │ Notifications                                                      │
-│ Undo / Redo System                                                 │
-│ History Stack                                                      │
-│ Services                                                           │
+│ History / Undo / Redo                                              │
+│ Application Services                                               │
 └──────────────────────────────┬─────────────────────────────────────┘
                                │
                                ▼
@@ -285,33 +285,77 @@ The application enforces strict separation of concerns across single-responsibil
 
 ```
 
+Mandatory flow:
+
+```text
+GUI
+↓
+IPC
+↓
+Services
+↓
+Repositories
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+```
+
+Rules:
+
+```text
+GUI must not access repositories directly.
+GUI must not access Remote Sources directly.
+GUI must not access storage directly.
+IPC handlers must validate payloads.
+Services must orchestrate domain workflows.
+Repositories must coordinate local and remote access.
+RepositorySync is the only accepted layer for remote access.
+Remote data must be validated before storage or use.
+Storage and Cache are local-only layers.
+```
+
 ---
 
 ### Architecture Ownership
 
 All architectural components have designated ownership domains.
 
-Ownership definitions are maintained in:
+Ownership is defined in:
 
-FILE_OWNERSHIP_MATRIX.md
-
+```text
 DOMAIN_BOUNDARIES.md
+DOMAINS_DEPENDENCY_MATRIX.md
+FILE_OWNERSHIP_MATRIX.md
+PROJECT_IMPACT_MATRIX.md
+```
 
-Cross-domain architectural modifications require impact analysis.
+Cross-domain changes require:
+
+```text
+Impact analysis
+Ownership verification
+Documentation maintenance
+Dependency validation
+Governance approval
+```
 
 ---
 
 ## 4. Technical Stack
 
-| Layer | Technology |
-|---|---|
-| **Runtime Container** | Electron (Desktop Shell) |
-| **Language & Typing** | TypeScript (Strict Mode) |
-| **UI Framework** | React + shadcn/ui + Tailwind CSS |
-| **State Management** | Zustand |
-| **3D Rendering** | Three.js |
-| **Validation & Parsing** | Zod |
-| **Test Automation** | Vitest (Unit) + Playwright (E2E) |
+| Layer                  | Technology                       |
+|------------------------|----------------------------------|
+| Runtime Container      | Electron                         |
+| Language & Typing      | TypeScript                       |
+| UI Framework           | React + shadcn/ui + Tailwind CSS |
+| State Management       | Zustand                          |
+| 3D Rendering           | Three.js                         |
+| Validation             | Zod                              |
+| Test Automation        | Vitest + Playwright              |
+| GitHub Integration     | Octokit                          |
+| Logging                | Electron Log                     |
+| Geometry Acceleration  | three-mesh-bvh                   |
 
 Additional Core Libraries:
 
