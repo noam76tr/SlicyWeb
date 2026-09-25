@@ -204,113 +204,90 @@ Avoid replacing existing systems.
 
 
 ```text
-
 +----------------------------------------------------+
-
 |                    GUI LAYER                       |
-
 +----------------------------------------------------+
-
-
-
-&#x20;         ↓
-
-
-
+                          ↓
 +----------------------------------------------------+
-
 |                  APPLICATION LAYER                 |
-
 +----------------------------------------------------+
-
-
-
-&#x20;         ↓
-
-
+                          ↓
 +----------------------------------------------------+
-
-|                    IPC                             |
-
+|                    IPC LAYER                       |
 +----------------------------------------------------+
-
-
-
-&#x20;         ↓
-
-
-
+                          ↓
 +----------------------------------------------------+
-
-|                    CORE SERVICES                   |
-
+|                   CORE SERVICES                    |
 +----------------------------------------------------+
-
-
-
-&#x20;         ↓
-
-
-
+                          ↓
 +----------------------------------------------------+
-
-|                 ANALYSIS SERVICES                  |
-
+|                ANALYSIS SERVICES                   |
 +----------------------------------------------------+
-
-
-
-&#x20;         ↓
-
-
-
+                          ↓
 +----------------------------------------------------+
-
-|                  DATA SERVICES                     |
-
+|                    DATA SERVICES                   |
 +----------------------------------------------------+
-
-
-
-&#x20;         ↓
-
-
-
+                          ↓
 +----------------------------------------------------+
-
-|                 Repository Layer                   |
-
+|                 REPOSITORY LAYER                   |
 +----------------------------------------------------+
-
-
-
-&#x20;         ↓
-
-
-
+                          ↓
 +----------------------------------------------------+
-
-|                   Schema Layer                     |
-
+|                 STORAGE / CACHE                    |
 +----------------------------------------------------+
-
-
-
-&#x20;         ↓
-
-
-
+                          ↓
 +----------------------------------------------------+
-
-|            STORAGE / CACHE / REMOTE                |
-
+|                 REPOSITORYSYNC                     |
 +----------------------------------------------------+
-
+                          ↓
++----------------------------------------------------+
+|                  REMOTE SOURCES                    |
++----------------------------------------------------+
 ```
 
+The architecture follows this mandatory communication flow:
+
+```text
+GUI
+↓
+Application Layer
+↓
+IPC Layer
+↓
+Services
+↓
+Repositories
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+```
+
+The following rules are mandatory:
+
+```text
+GUI must not access Repositories directly.
+
+GUI must not access Storage directly.
+
+GUI must not access RepositorySync directly.
+
+GUI must not access Remote Sources directly.
+
+IPC handlers must delegate workflows to Services.
+
+Services must coordinate business workflows.
+
+Repositories must manage local data access.
+
+Repositories must use Local Storage and Cache before remote access.
+
+RepositorySync is the only layer allowed to access Remote Sources.
+
+Remote data must be validated before it is consumed or stored.
+```
 
 ---
-
 
 # Layer Architecture
 
@@ -444,30 +421,76 @@ Responsible for:
 
 ## Repository Layer
 
-Responsible for:
+The Repository Layer is responsible for local data access and coordination with RepositorySync.
 
-- Remote synchronization
-- GitHub access
-- Repository downloads
-- Repository validation
-- Printer repository synchronization
-- Material repository synchronization
-- Filament repository synchronization
-- Preset repository synchronization
+Responsibilities:
+
+```text
+Local Data Access
+Profile Data Access
+Project Data Access
+Cache Coordination
+Validated Data Retrieval
+RepositorySync Coordination
+```
+
+The Repository Layer must follow:
+
+```text
+Local Storage / Cache First
+↓
+RepositorySync When Remote Data Is Required
+↓
+Remote Source Validation
+↓
+Validated Data Returned To The Repository
+```
 
 Folder:
 
 ```text
-/repositories
+src/repositories/
 ```
 
 Components:
 
-- GitHubRepository
-- PrinterRepositorySync
-- MaterialRepositorySync
-- FilamentRepositorySync
-- PresetRepositorySync
+```text
+GitHubRepository.ts
+PrinterRepositorySync.ts
+MaterialRepositorySync.ts
+FilamentRepositorySync.ts
+PresetRepositorySync.ts
+```
+
+Repository rules:
+
+```text
+Repositories must not access the GUI.
+
+Repositories must not contain rendering logic.
+
+Repositories must not contain analysis logic.
+
+Repositories must not generate recommendations.
+
+Repositories must not access Remote Sources outside RepositorySync.
+
+Repositories must validate data received from RepositorySync.
+
+Repositories must return validated data to Services.
+```
+
+Required flow:
+
+```text
+Services
+↓
+Repositories
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+```
 
 ---
 
@@ -498,20 +521,118 @@ Components:
 
 ---
 
+## Cross-Cutting Validation and Quality Rules
+
+Security, validation, error handling, and testing apply across all architecture layers.
+
+Every layer must validate data according to its responsibility.
+
+```text
+GUI
+↓
+IPC Validation
+↓
+Service Validation
+↓
+Repository Validation
+↓
+Schema Validation
+↓
+Storage / Cache Validation
+↓
+RepositorySync Validation
+↓
+Remote Source Validation
+```
+
+Security rules:
+
+```text
+External data must be treated as untrusted.
+
+Remote data must be validated before use.
+
+Cached data must be validated after loading.
+
+Invalid data must be rejected safely.
+
+Security failures must preserve a safe application state.
+```
+
+Testing rules:
+
+```text
+Every domain must have appropriate unit tests.
+
+Cross-layer communication must have integration tests.
+
+Critical workflows must have regression tests.
+
+IPC communication must have validation tests.
+
+RepositorySync must have synchronization and failure tests.
+
+Remote Source access must have security and validation tests.
+```
+
+---
+
 ## Layer 6
 
 Storage Layer
 
+The Storage Layer is responsible for local persistence and cache management.
+
 Components:
-- StorageManager
-- ProjectStorage
-- CacheStorage
+
+```text
+StorageManager
+ProjectStorage
+CacheStorage
+```
 
 Responsible for:
-- Files
-- Databases
-- Cache
-- Online repositories
+
+```text
+Local Files
+Local Databases
+Project Persistence
+Profile Persistence
+Cache Storage
+Cache Loading
+Cache Invalidation
+Recovery Data
+```
+
+The Storage Layer must not:
+
+```text
+Access Remote Sources directly.
+
+Perform RepositorySync operations.
+
+Contain Business Logic.
+
+Perform Geometry Analysis.
+
+Generate Recommendations.
+
+Render User Interface.
+```
+
+Remote synchronization must follow:
+
+```text
+Storage / Cache
+↓
+Repositories
+↓
+RepositorySync
+↓
+Remote Sources
+```
+
+The Storage Layer must store only validated data.
 
 ---
 
