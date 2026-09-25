@@ -110,23 +110,298 @@ Ownership must be verified before modifying shared schemas.
 
 All runtime validation must use:
 
+```text
 Zod Schemas
+```
 
 Located in:
 
+```text
 src/schemas/
+```
 
 Every schema documented in this file must have a corresponding runtime validation schema.
 
 Runtime validation is mandatory for:
 
-- User Input
-- Imported Files
-- Printer Profiles
-- Material Profiles
-- Filament Profiles
-- Repository Data
-- Project Files
+```text
+User Input
+Imported Files
+Printer Profiles
+Material Profiles
+Filament Profiles
+Print Presets
+Repository Data
+RepositorySync Results
+Remote Source Data
+IPC Requests
+IPC Responses
+API Requests
+API Responses
+Project Files
+Cache Entries
+Error Objects
+```
+
+Validation must occur:
+
+```text
+Before Processing
+Before Storage
+Before Caching
+Before Synchronization
+Before Returning Data
+```
+
+Invalid data must be rejected safely.
+
+---
+
+# Error Schema
+
+The Error Schema defines the standard structure used by APIs, services, IPC, logging, and user notifications.
+
+```json
+{
+  "code": "",
+  "severity": "",
+  "message": "",
+  "module": "",
+  "timestamp": ""
+}
+```
+
+Required fields:
+
+```text
+code
+severity
+message
+module
+timestamp
+```
+
+Allowed severity values:
+
+```text
+Info
+Warning
+Error
+Critical
+```
+
+Error codes must be defined in:
+
+```text
+docs/03-development/ERROR_CODES_SPEC.md
+```
+
+Error objects must not contain:
+
+```text
+Raw Stack Traces
+Internal File Paths
+Authentication Tokens
+Credentials
+Sensitive Information
+Raw Remote Responses
+```
+
+---
+
+# IPC Payload Schema
+
+IPC requests and responses must use validated payloads.
+
+Request structure:
+
+```json
+{
+  "channel": "",
+  "requestId": "",
+  "payload": {}
+}
+```
+
+Response structure:
+
+```json
+{
+  "channel": "",
+  "requestId": "",
+  "success": true,
+  "data": {},
+  "errors": []
+}
+```
+
+Required fields:
+
+```text
+channel
+requestId
+payload
+success
+data
+errors
+```
+
+IPC payloads must be validated before processing.
+
+Invalid IPC payloads must be rejected safely.
+
+---
+
+# Repository Data Schema
+
+Repository data must include source and version metadata.
+
+```json
+{
+  "id": "",
+  "type": "",
+  "version": "",
+  "source": "",
+  "data": {},
+  "validated": false
+}
+```
+
+Required fields:
+
+```text
+id
+type
+version
+source
+data
+validated
+```
+
+Repository data must not be consumed when:
+
+```text
+validated is false
+The source is unknown
+The version is unsupported
+The data is incomplete
+The data fails schema validation
+```
+
+---
+
+# RepositorySync Result Schema
+
+RepositorySync results must distinguish successful synchronization from failure.
+
+```json
+{
+  "success": true,
+  "source": "",
+  "repository": "",
+  "version": "",
+  "data": {},
+  "errors": [],
+  "synchronizedAt": ""
+}
+```
+
+Required fields:
+
+```text
+success
+source
+repository
+version
+data
+errors
+synchronizedAt
+```
+
+RepositorySync results must be validated before they are returned to a Repository.
+
+Invalid synchronization results must not be stored in the cache.
+
+---
+
+# Cache Entry Schema
+
+Cached data must include validation and expiration metadata.
+
+```json
+{
+  "key": "",
+  "dataType": "",
+  "data": {},
+  "version": "",
+  "source": "",
+  "validated": true,
+  "createdAt": "",
+  "expiresAt": ""
+}
+```
+
+Required fields:
+
+```text
+key
+dataType
+data
+version
+source
+validated
+createdAt
+expiresAt
+```
+
+Cache entries must be rejected when:
+
+```text
+The entry is corrupted
+The entry is expired
+The entry fails validation
+The schema version is unsupported
+The source is unknown
+```
+
+---
+
+# Remote Source Metadata Schema
+
+Remote data must retain information about its origin.
+
+```json
+{
+  "sourceType": "",
+  "sourceName": "",
+  "sourceUrl": "",
+  "retrievedAt": "",
+  "version": "",
+  "integrityValidated": false
+}
+```
+
+Required fields:
+
+```text
+sourceType
+sourceName
+retrievedAt
+version
+integrityValidated
+```
+
+Allowed source types:
+
+```text
+GitHub Repository
+Official Manufacturer Source
+Verified Community Repository
+REST API
+Cloud Source
+```
+
+Remote source metadata must be validated before remote data is consumed or cached.
 
 ---
 
@@ -134,7 +409,7 @@ Runtime validation is mandatory for:
 
 Printer
 ↓
-Material
+Materia
 ↓
 Filament
 ↓
