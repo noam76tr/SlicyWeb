@@ -34,7 +34,7 @@ SlicyWeb/
 ├── data/
 ├── docs/
 ├── src/
-├── src-electron/
+├── src-electron/              = Reserved Electron source directory
 ├── tests/
 ├── assets/
 ├── cache/
@@ -301,9 +301,27 @@ src/app/
 ├── Main.ts
 └── Startup.ts
 ```
+
 ---
 
-# Electron
+# Electron Layer
+
+The Electron integration is located in:
+
+```text
+src/electron/
+```
+
+Purpose:
+
+```text
+Electron Main Process
+Preload Bridge
+IPC Communication
+Desktop Application Integration
+```
+
+Structure:
 
 ```text
 src/electron/
@@ -319,45 +337,67 @@ src/electron/
     └── StorageIPC.ts
 ```
 
+Rules:
+
+```text
+The Electron layer must not contain business logic.
+
+IPC handlers must validate incoming payloads.
+
+IPC handlers must delegate operations to Services.
+
+IPC handlers must not access Remote Sources directly.
+
+Renderer communication must pass through the IPC layer.
+```
+
+The root-level directory:
+
+```text
+src-electron/
+```
+
+is reserved for future use and must not duplicate the active implementation in:
+
+```text
+src/electron/
+```
+
 ---
 
 # GUI Layer
 
 ```text
 src/gui/
+
 ├── App.tsx
-└── MainLayout.tsx
-
-src/gui/viewport/
-├── Viewport.tsx
-├── ViewportToolbar.tsx
-└── ViewportStatus.tsx
-	
-src/gui/sidebar/
-├── LeftSidebar.tsx
-├── RightSidebar.tsx
-└── SidebarSection.tsx
-
-src/gui/panels/
-├── PrinterPanel.tsx
-├── MaterialPanel.tsx
-├── FilamentPanel.tsx
-├── PresetPanel.tsx
-├── AnalysisPanel.tsx
-└── RecommendationPanel.tsx
-
-src/gui/statusbar/
-└── StatusBar.tsx
-	
-├── src/gui/layouts/
-├── src/gui/windows/
-├── src/gui/dialogs/
-├── src/gui/menus/
-├── src/gui/toolbars/
-├── src/gui/components/
-├── src/gui/themes/
-├── src/gui/hooks/
-└── src/gui/styles/
+├── MainLayout.tsx
+├── viewport/
+│   ├── Viewport.tsx
+│   ├── ViewportToolbar.tsx
+│   └── ViewportStatus.tsx
+├── sidebar/
+│   ├── LeftSidebar.tsx
+│   ├── RightSidebar.tsx
+│   └── SidebarSection.tsx
+├── panels/
+│   ├── PrinterPanel.tsx
+│   ├── MaterialPanel.tsx
+│   ├── FilamentPanel.tsx
+│   ├── PresetPanel.tsx
+│   ├── AnalysisPanel.tsx
+│   └── RecommendationPanel.tsx
+├── statusbar/
+│   └── StatusBar.tsx
+├── layouts/
+├── windows/
+├── dialogs/
+├── menus/
+├── toolbars/
+├── components/
+├── themes/
+├── hooks/
+└── styles/
 ```
 
 ---
@@ -372,13 +412,31 @@ src/renderer/
 ├── CameraManager.ts
 ├── LightingManager.ts
 ├── SceneRenderer.ts
-└── SelectionRenderer.ts
+├── SelectionRenderer.ts
 └── helpers/
 ```
 
 ---
 
-# repositories
+# Repositories
+
+Purpose:
+
+```text
+Local Data Access
+Repository Coordination
+Cache Coordination
+RepositorySync Coordination
+Validated Data Retrieval
+```
+
+Repository files are located in:
+
+```text
+src/repositories/
+```
+
+Structure:
 
 ```text
 src/repositories/
@@ -388,8 +446,44 @@ src/repositories/
 ├── MaterialRepositorySync.ts
 ├── FilamentRepositorySync.ts
 └── PresetRepositorySync.ts
+```
+
+Repository rules:
+
+```text
+Repositories must access local data through the Storage and Cache layers.
+
+Repositories must use RepositorySync when remote data is required.
+
+Repositories must validate data received from RepositorySync.
+
+Repositories must not access the GUI.
+
+Repositories must not contain rendering logic.
+
+Repositories must not perform geometry analysis.
+
+Repositories must not generate recommendations.
+
+Repositories must not access Remote Sources outside RepositorySync.
 
 ```
+
+Required communication flow:
+
+```text
+Services
+↓
+Repositories
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+```
+
+Remote Sources must not be represented as a direct application directory.
+
+They are external systems accessed only through RepositorySync.
 
 ---
 
