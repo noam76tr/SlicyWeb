@@ -49,16 +49,15 @@ This document serves as the reference for:
 
 The project follows:
 
-
 ```text
 Local First
-
 ↓
-
 Cache
-
 ↓
-
+Repositories
+↓
+RepositorySync
+↓
 Remote Sources
 ```
 
@@ -66,12 +65,17 @@ The application must always prioritize local data.
 
 Remote requests should only occur when necessary.
 
+RepositorySync is the only authorized access layer to external sources.
+
+Remote data must be validated before it is stored or consumed.
+
 ---
 
 # API Governance
 
 All API modifications must comply with:
 
+```text
 DOMAIN_BOUNDARIES.md
 DOMAINS_DEPENDENCY_MATRIX.md
 FILE_OWNERSHIP_MATRIX.md
@@ -80,21 +84,31 @@ CHANGE_CLASSIFICATION_RULES.md
 CHANGE_VERIFICATION_CHECKLIST.md
 DOCUMENT_UPDATE_MATRIX.md
 CROSS_DOCUMENT_DEPENDENCIES.md
-
+```
 
 Purpose:
 
+```text
 Protect API Consistency
-
 Prevent Breaking Changes
-
 Maintain Compatibility
-
 Control API Evolution
-
 Protect Domain Boundaries
-
 Standardize Validation
+Protect RepositorySync access rules
+```
+
+The system uses:
+
+```text
+Internal APIs
+Repository APIs
+RepositorySync APIs
+Profile APIs
+Cache APIs
+Security Validation APIs
+Future Cloud APIs
+```
 
 ---
 
@@ -107,16 +121,57 @@ The system uses:
 ```text
 
 Internal APIs
-
 Repository APIs
-
+RepositorySync APIs
 Profile APIs
-
 Cache APIs
-
+Security Validation APIs
 Future Cloud APIs
-
 ```
+
+Repository APIs are responsible for local data access.
+
+RepositorySync APIs are responsible for remote synchronization only.
+
+Direct access to Remote Sources outside RepositorySync is forbidden.
+
+---
+
+# API Architecture
+
+```text
+GUI
+↓
+IPC / Internal API
+↓
+Services
+↓
+Repositories
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+```
+
+The architecture must always respect this order.
+
+Required flow:
+
+```text
+Renderer
+↓
+IPC Layer
+↓
+Service Layer
+↓
+Repository Layer
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+```
+
+Direct access bypassing IPC or RepositorySync is prohibited.
 
 ---
 
@@ -134,37 +189,89 @@ Cross-domain API modifications require impact analysis.
 
 Ownership must be verified before modifying shared APIs.
 
+RepositorySync APIs are owned by the RepositorySync domain.
+
+Remote source access is never owned by the GUI, Viewport, or Analysis domains.
+
 ---
 
-# API Architecture
+# RepositorySync API
+
+Purpose:
 
 ```text
-GUI
-↓
-IPC / Internal API
-↓
-Services
-↓
-Repositories
-↓
-Storage / Cache / Remote
+Fetch remote repository data
+Sync profile data
+Validate external payloads
+Return normalized results
 ```
 
----
+Allowed responsibilities:
 
+```text
+GitHub repository access
+Remote profile synchronization
+Remote validation
+Cache refresh coordination
+Repository data normalization
+```
+
+Forbidden responsibilities:
+
+```text
+Rendering UI
+Business rule generation
+Recommendation generation
+Model analysis
+Direct storage bypass
+Direct GUI access
+```
+
+Required validation flow:
+
+```text
+RepositorySync
+↓
+Remote Source
+↓
+Schema Validation
+↓
+Repository Normalization
+↓
+Storage / Cache Update
+```
+
+Any remote payload must be validated before use.
+
+---
 
 # IPC API
 
 Purpose:
+
 Electron Renderer ↔ Main communication.
 
 Endpoints:
 
+```text
 ProjectIPC
 StorageIPC
 ImportIPC
 SettingsIPC
 PrinterIPC
+```
+
+Communication flow:
+
+```text
+Renderer
+↓
+IPC Layer
+↓
+Services
+↓
+Repositories
+```
 
 ---
 
@@ -173,16 +280,12 @@ PrinterIPC
 All internal APIs must:
 
 ```text
-
 Be Typed
-
 Be Validated
-
 Be Documented
-
 Be Testable
-
 Use Defined Schemas
+Follow Domain Boundaries
 ```
 
 All payloads must be validated against:
@@ -194,7 +297,168 @@ FilamentSchema
 AnalysisSchema
 RecommendationSchema
 PrintPresetSchema
+ErrorSchema
 ```
+
+Validation is mandatory for:
+
+```text
+Requests
+Responses
+Imports
+Repository Data
+IPC Payloads
+Project Files
+Remote Sync Results
+Cache Entries
+```
+
+Unvalidated payloads are forbidden.
+
+
+---
+
+# Response Format
+
+Standard success format:
+
+```json
+{
+  "success": true,
+  "data": {},
+  "errors": []
+}
+```
+
+Standard error format:
+
+```json
+{
+  "success": false,
+  "data": null,
+  "errors": [
+    {
+      "code": "",
+      "message": "",
+      "module": "",
+      "severity": "error",
+      "timestamp": ""
+    }
+  ]
+}
+```
+
+Error object rules:
+
+```text
+code: machine-readable identifier
+message: human-readable error
+module: responsible module or domain
+severity: error | warning | critical
+timestamp: ISO timestamp
+```
+
+All API errors must use this schema.
+
+---
+
+# Error Format
+
+```json
+{
+  "success": false,
+  "data": null,
+  "errors": [
+    {
+      "code": "",
+      "message": "",
+      "module": "",
+      "severity": "error",
+      "timestamp": ""
+    }
+  ]
+}
+```
+Error handling rules:
+
+```text
+Errors must never be silent.
+Errors must always be structured.
+Errors must include the responsible module.
+Errors must be serialized consistently.
+Remote errors must be normalized before returning.
+```
+
+Validation failures must return structured errors and never raw exceptions.
+
+---
+
+# Error Validation Rules
+
+Every error must:
+
+```text
+Use a unique error code
+Include a severity
+Include a responsible module
+Include a safe message
+Include a timestamp
+Be serializable
+Be loggable
+Be safe for user display
+```
+
+Errors must use the codes defined in:
+
+```text
+docs/03-development/ERROR_CODES_SPEC.md
+```
+
+The API must never expose:
+
+```text
+Raw Stack Traces
+Internal File Paths
+Authentication Tokens
+Credentials
+Private Environment Variables
+Raw Remote Responses
+Internal IPC Payloads
+```
+
+---
+
+# API Status Rules
+
+API responses must use consistent status values.
+
+Success responses:
+
+```text
+success: true
+data: populated response data
+errors: empty array
+```
+
+Failure responses:
+
+success: false
+data: null or partial safe data
+errors: structured error array
+
+Allowed response states:
+
+Success
+Validation Failed
+Not Found
+Unauthorized
+Forbidden
+Conflict
+Unavailable
+Timeout
+Internal Error
+
+An API must never return an undefined response state.
 
 ---
 
@@ -1482,19 +1746,61 @@ POST
 
 # Cache API
 
-
-
 Purpose:
 
+```text
+Read validated local data
+Store validated data
+Invalidate expired data
+Rebuild corrupted data
+Coordinate local-first access
+```
 
+Required cache flow:
 
-Manage local cache.
+```text
+Request
+↓
+Local Data
+↓
+Cache Lookup
+↓
+Validate Cached Data
+↓
+Return Valid Data
+```
 
+If valid local data or cache data is unavailable:
 
+```text
+Repository
+↓
+RepositorySync
+↓
+Remote Source
+↓
+Validate Remote Data
+↓
+Update Cache
+↓
+Return Validated Data
+```
+
+Cache rules:
+
+```text
+Cached data must never bypass validation.
+
+Expired data must not be treated as current data.
+
+Corrupted cache data must be rejected.
+
+Invalid cache data must be removed or rebuilt.
+
+Remote data must be validated before entering the cache.
+```
 
 ---
-
-
 
 ## Refresh Cache
 
