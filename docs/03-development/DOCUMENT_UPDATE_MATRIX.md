@@ -264,25 +264,24 @@ Mandatory Reviews:
 
 ```text
 ARCHITECTURE.md
-
 DOMAINS_DEPENDENCY_MATRIX.md
-
 DOMAIN_BOUNDARIES.md
+TECHNICAL_OVERVIEW.md
+IMPORT_EXPORT_SPEC.md
+TEST_PLAN.md
+SECURITY_SPEC.md
 ```
 
 Mandatory Update Evaluation:
 
 ```text
 DATA_SCHEMA.md
-
 API_SPEC.md
-
 FILE_STRUCTURE.md
-
 FILE_OWNERSHIP_MATRIX.md
-
 PROJECT_IMPACT_MATRIX.md
-
+TECHNICAL_OVERVIEW.md
+IMPORT_EXPORT_SPEC.md
 CHANGELOG.md
 ```
 
@@ -290,14 +289,10 @@ Conditional Updates:
 
 ```text
 AI_START_HERE.md
-
 README.md
-
 DIRECTORY_PURPOSES.md
-
-TECHNICAL_OVERVIEW.md
-
 TECH_STACK.md
+CLAUDE_PROJECT_CONTEXT.md
 ```
 
 ---
@@ -404,26 +399,23 @@ Mandatory Review:
 
 ```text
 PROJECT_SPEC.md
-
 API_SPEC.md
-
 AI_ENGINE_SPEC.md
-
 ARCHITECTURE.md
+SECURITY_SPEC.md
+TEST_PLAN.md
+ERROR_CODES_SPEC.md
 ```
 
 Conditional Updates:
 
 ```text
 PRINTER_PROFILE_SPEC.md
-
 MATERIAL_PROFILE_SPEC.md
-
 FILAMENT_SETTINGS_SPEC.md
-
 PRINT_SETTINGS_SPEC.md
-
 PRINT_PRESETS_SPEC.md
+IMPORT_EXPORT_SPEC.md
 ```
 
 Mandatory Update Evaluation:
@@ -534,18 +526,19 @@ Mandatory Review:
 
 ```text
 ARCHITECTURE.md
-
 DATA_SCHEMA.md
+SECURITY_SPEC.md
+ERROR_CODES_SPEC.md
+TEST_PLAN.md
 ```
 
 Conditional Updates:
 
 ```text
 AI_ENGINE_SPEC.md
-
-SECURITY_SPEC.md
-
 IMPORT_EXPORT_SPEC.md
+GUI_SPEC.md
+TECHNICAL_OVERVIEW.md
 ```
 
 Mandatory Update Evaluation:
@@ -572,16 +565,20 @@ Mandatory Review:
 
 ```text
 API_SPEC.md
-
 ARCHITECTURE.md
+DATA_SCHEMA.md
+SECURITY_SPEC.md
+TEST_PLAN.md
+FILE_STRUCTURE.md
 ```
 
 Conditional Updates:
 
 ```text
 AI_START_HERE.md
-
 CLAUDE_DOCUMENT_READING_ORDER.md
+TECHNICAL_OVERVIEW.md
+GUI_SPEC.md
 ```
 
 Mandatory Update Evaluation:
