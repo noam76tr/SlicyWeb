@@ -386,6 +386,7 @@ Required fields:
 ```text
 sourceType
 sourceName
+sourceUrl
 retrievedAt
 version
 integrityValidated
@@ -409,7 +410,7 @@ Remote source metadata must be validated before remote data is consumed or cache
 
 Printer
 ↓
-Materia
+Material
 ↓
 Filament
 ↓
