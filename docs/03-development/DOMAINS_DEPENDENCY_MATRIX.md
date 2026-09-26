@@ -256,12 +256,13 @@ Remote Sources
 
 Purpose:
 
-Business logic.
+Business logic orchestration.
 
 Can Depend On:
 
 ```text
 Repository Domain
+RepositorySync Domain
 Validation Domain
 Profiles Domain
 Analysis Domain
@@ -269,14 +270,30 @@ Classification Domain
 Recommendation Domain
 Optimization Domain
 Notification Domain
+Cost Estimation Domain
+State Management Domain
+IPC Domain
 ```
 
 Cannot Depend On:
 
 ```text
 GUI Domain
-Renderer Domain
 Viewport Domain
+```
+
+Required Flow:
+
+```text
+IPC
+↓
+Service
+↓
+Repository
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
 ```
 
 ---
@@ -546,23 +563,44 @@ Validation must remain independent.
 
 Purpose:
 
-API contracts.
+API contracts and payload specifications.
 
 Can Depend On:
 
 ```text
 Validation Domain
-Service Domain
+Data Schema Contracts
 ```
 
 Cannot Depend On:
 
 ```text
 GUI Domain
+Service Domain (Service implements API, not vice-versa)
 RepositorySync Domain
+Repository Domain
+Storage Domain
 ```
 
-API layer should never contain business logic.
+API must:
+
+```text
+Define Service Contracts
+Define Payload Formats
+Define Response Formats
+Define Error Formats
+Remain Independent from Implementation
+```
+
+API must not:
+
+```text
+Contain Business Logic
+Contain Rendering Logic
+Perform Validation (Validation Domain does)
+Access Storage
+Access Remote Sources
+```
 
 ---
 
@@ -570,30 +608,54 @@ API layer should never contain business logic.
 
 Purpose:
 
-Renderer ↔ Main communication.
+Electron Renderer ↔ Main communication.
 
 Can Depend On:
 
 ```text
 Service Domain
 Validation Domain
+Security Domain
 ```
 
 Cannot Depend On:
 
 ```text
+GUI Domain (directly, GUI uses IPC through Services)
 RepositorySync Domain
 Remote Sources
+Repository Domain (directly, through Services)
+Storage Domain (directly, through Services)
 ```
 
 Required Flow:
 
 ```text
-Renderer
+Renderer (GUI)
 ↓
 IPC
 ↓
-Services
+Service
+↓
+Repository
+```
+
+IPC must:
+
+```text
+Validate All Renderer Requests
+Serialize Responses Safely
+Propagate Errors Safely
+Enforce Request Authentication
+Prevent Direct Access to Storage/Repository/RepositorySync
+```
+
+IPC must not:
+
+```text
+Contain Business Logic
+Access Remote Sources
+Access Storage Directly
 ```
 
 ---
@@ -602,7 +664,7 @@ Services
 
 Purpose:
 
-Repository access.
+Local repository access and data coordination.
 
 Can Depend On:
 
@@ -610,6 +672,7 @@ Can Depend On:
 Storage Domain
 Validation Domain
 RepositorySync Domain
+State Management Domain
 ```
 
 Cannot Depend On:
@@ -619,6 +682,27 @@ GUI Domain
 Analysis Domain
 Recommendation Domain
 Optimization Domain
+Service Domain (directly, only through defined contracts)
+```
+
+Required Flow:
+
+```text
+Service
+↓
+Repository
+├── Storage (for local data)
+└── RepositorySync (for remote data)
+```
+
+Repository must:
+
+```text
+Coordinate Local Storage / Cache
+Coordinate RepositorySync Requests
+Validate Repository Data Before Use
+Normalize External Data
+Reject Invalid Data
 ```
 
 ---
@@ -627,14 +711,14 @@ Optimization Domain
 
 Purpose:
 
-External synchronization.
+Validated external synchronization.
 
 Can Depend On:
 
 ```text
 Remote Sources
 Validation Domain
-Repository Domain
+Security Domain
 ```
 
 Cannot Depend On:
@@ -644,6 +728,42 @@ GUI Domain
 Analysis Domain
 Recommendation Domain
 Optimization Domain
+Repository Domain (Repository calls RepositorySync, not vice-versa)
+Service Domain
+```
+
+Required Flow:
+
+```text
+Repository
+↓
+RepositorySync
+↓
+Remote Sources
+↓
+Validation
+↓
+Repository
+```
+
+RepositorySync must:
+
+```text
+Access Only Remote Sources (never Storage)
+Validate All Remote Responses
+Reject Invalid Remote Data
+Return Normalized Synchronization Results
+Handle Remote Errors Safely
+Return Error Codes (never Expose Raw Errors)
+```
+
+RepositorySync must not:
+
+```text
+Write Directly to Storage
+Bypass Repository
+Expose Raw Remote Data
+Contain Repository Logic
 ```
 
 ---
@@ -652,7 +772,7 @@ Optimization Domain
 
 Purpose:
 
-Local persistence.
+Local persistence and cache management.
 
 Can Depend On:
 
@@ -666,6 +786,27 @@ Cannot Depend On:
 GUI Domain
 Analysis Domain
 Recommendation Domain
+RepositorySync Domain
+Repository Domain (Repository calls Storage, not vice-versa)
+```
+
+Storage must:
+
+```text
+Persist Validated Data Only
+Manage Cache Lifecycle
+Invalidate Expired Cache Entries
+Reject Corrupted Data
+Provide Local File Access
+```
+
+Storage must not:
+
+```text
+Perform Geometry Analysis
+Generate Recommendations
+Access Remote Sources
+Coordinate with RepositorySync Directly
 ```
 
 ---
@@ -803,7 +944,7 @@ Hebrew
 
 Purpose:
 
-Security enforcement.
+Security enforcement and trust validation.
 
 Can Depend On:
 
@@ -811,15 +952,51 @@ Can Depend On:
 Validation Domain
 Repository Domain
 Storage Domain
+API Domain
+Data Schema Contracts
 ```
 
 Cannot Depend On:
 
 ```text
 GUI Domain
+RepositorySync Domain (but receives data from it for validation)
+Analysis Domain
+Recommendation Domain
 ```
 
-Security concerns must remain centralized.
+Security must:
+
+```text
+Define Security Policies
+Validate Input Safety
+Validate Repository Data Integrity
+Validate Remote Source Trust
+Protect Credentials
+Protect Sensitive Data
+Control Error Exposure
+```
+
+Security must not:
+
+```text
+Perform Geometry Analysis
+Generate Recommendations
+Render UI
+Access Remote Sources Directly
+```
+
+Required Flow:
+
+```text
+RepositorySync
+↓
+Security Validation
+↓
+Repository
+↓
+Storage
+```
 
 ---
 
