@@ -2,7 +2,7 @@
 
 # FILE OWNERSHIP MATRIX
 
-Version: 1.0.0
+Version: 2.0.0
 
 Status: Approved
 
@@ -58,19 +58,42 @@ Ownership determines:
 
 # Ownership Categories
 
-Each file contains:
+Each file ownership entry should define:
 
 ```text
 Primary Owner
-
 Secondary Owners
-
 Related Domains
-
+Purpose
 Mandatory Reviews
-
 Update Triggers
 ```
+
+Definitions:
+
+```text
+Primary Owner
+The domain responsible for approving and controlling modifications.
+
+Secondary Owners
+Domains that must participate when the file affects their responsibilities.
+
+Related Domains
+Domains that consume, implement, or are affected by the file.
+
+Purpose
+The responsibility and scope of the file.
+
+Mandatory Reviews
+Documents or domains that must be reviewed before modification.
+
+Update Triggers
+Changes that require ownership review or documentation updates.
+```
+
+Ownership remains unique.
+
+Related domains do not become file owners.
 
 ---
 
@@ -414,6 +437,80 @@ AI_ENGINE_SPEC.md
 FILE_STRUCTURE.md
 
 CHANGELOG.md
+TECHNICAL_OVERVIEW.md
+TECH_STACK.md
+DOMAIN_BOUNDARIES.md
+DOMAINS_DEPENDENCY_MATRIX.md
+FILE_OWNERSHIP_MATRIX.md
+PROJECT_IMPACT_MATRIX.md
+```
+
+---
+
+# TECHNICAL_OVERVIEW.md
+
+Primary Owner:
+
+```text
+Architecture Domain
+```
+
+Secondary Owners:
+
+```text
+Project Governance Domain
+Development Governance Domain
+```
+
+Related Domains:
+
+```text
+Architecture
+Application
+Repository
+RepositorySync
+Storage
+Profiles
+Analysis
+Internationalization
+```
+
+Purpose:
+
+```text
+Technical System Overview
+Feature Matrix
+Module Relationships
+Technical Stack Summary
+Architecture Summary
+Development Principles
+```
+
+Mandatory Review When:
+
+```text
+Architecture Changes
+Module Boundary Changes
+Repository Flow Changes
+Storage or Cache Changes
+RepositorySync Changes
+Technology Stack Changes
+Major Feature Changes
+```
+
+Related Files:
+
+```text
+ARCHITECTURE.md
+DATA_SCHEMA.md
+API_SPEC.md
+FILE_STRUCTURE.md
+TECH_STACK.md
+IMPORT_EXPORT_SPEC.md
+PROJECT_SPEC.md
+SECURITY_SPEC.md
+TEST_PLAN.md
+CHANGELOG.md
 ```
 
 ---
@@ -467,6 +564,220 @@ CHANGELOG.md
 ```
 
 ---
+
+# REPOSITORYSYNC FILES
+
+Primary Owner:
+
+```text
+RepositorySync Domain
+```
+
+Secondary Owners:
+
+```text
+Repository Domain
+Validation Domain
+Security Domain
+```
+
+Related Domains:
+
+```text
+Repository
+RepositorySync
+Validation
+Security
+Storage
+```
+
+Purpose:
+
+```text
+Remote Data Synchronization
+Remote Source Access
+Remote Response Validation
+Data Normalization
+Synchronization Error Handling
+```
+
+Mandatory Review When:
+
+```text
+Remote Source Changes
+Synchronization Workflow Changes
+Remote Payload Changes
+RepositorySync Result Changes
+Remote Validation Changes
+Cache Synchronization Changes
+```
+
+Related Files:
+
+```text
+API_SPEC.md
+DATA_SCHEMA.md
+SECURITY_SPEC.md
+ARCHITECTURE.md
+TECHNICAL_OVERVIEW.md
+UPDATE_GOVERNANCE_PROTOCOL.md
+CHANGELOG.md
+```
+
+Restrictions:
+
+```text
+RepositorySync must be the only domain accessing Remote Sources.
+
+RepositorySync must not render UI.
+
+RepositorySync must not perform geometry analysis.
+
+RepositorySync must not generate recommendations.
+
+RepositorySync must not write unvalidated data.
+```
+
+---
+
+# ERROR_CODES_SPEC.md
+
+Primary Owner:
+
+```text
+Error Governance Domain
+```
+
+Secondary Owners:
+
+```text
+API Domain
+Security Domain
+Validation Domain
+Notification Domain
+```
+
+Related Domains:
+
+```text
+API
+IPC
+Validation
+Security
+Notification
+Repository
+RepositorySync
+```
+
+Purpose:
+
+```text
+Error Codes
+Warning Codes
+Error Severity
+Error Classification
+Error Naming
+```
+
+Mandatory Review When:
+
+```text
+New Error Code
+Error Severity Change
+IPC Error Change
+API Error Change
+Repository Error Change
+Remote Synchronization Error Change
+Security Error Change
+```
+
+Related Files:
+
+```text
+DATA_SCHEMA.md
+API_SPEC.md
+SECURITY_SPEC.md
+NOTIFICATION_DOMAIN
+CHANGELOG.md
+```
+
+---
+
+# LOCAL STORAGE / CACHE FILES
+
+Primary Owner:
+
+```text
+Storage Domain
+```
+
+Secondary Owners:
+
+```text
+Repository Domain
+Project Management Domain
+Recovery Domain
+Validation Domain
+```
+
+Related Domains:
+
+```text
+Storage
+Repository
+Project Management
+Recovery
+Validation
+```
+
+Purpose:
+
+```text
+Local Persistence
+Cache Storage
+Cache Lookup
+Cache Invalidation
+Recovery Data Storage
+Validated Data Persistence
+```
+
+Mandatory Review When:
+
+```text
+Storage Format Changes
+Cache Entry Changes
+Cache Expiration Changes
+Project Persistence Changes
+Recovery Changes
+Validation Changes
+```
+
+Related Files:
+
+```text
+DATA_SCHEMA.md
+API_SPEC.md
+ARCHITECTURE.md
+TECHNICAL_OVERVIEW.md
+FILE_STRUCTURE.md
+SECURITY_SPEC.md
+TEST_PLAN.md
+CHANGELOG.md
+```
+
+Restrictions:
+
+```text
+Local Storage must not access Remote Sources.
+
+Local Storage must not perform RepositorySync.
+
+Only validated data may be persisted.
+
+Expired or corrupted cache entries must be rejected.
+```
+
+
 
 # FILE_STRUCTURE.md
 
