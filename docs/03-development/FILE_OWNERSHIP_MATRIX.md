@@ -415,27 +415,24 @@ Mandatory Review When:
 
 ```text
 New Domain
-
 New Layer
-
 New System
-
 Dependency Changes
-
 Communication Changes
+Repository Boundary Changes
+RepositorySync Changes
+Storage Boundary Changes
+IPC Flow Changes
+Domain Dependency Changes
 ```
 
 Related Files:
 
 ```text
 DATA_SCHEMA.md
-
 API_SPEC.md
-
 AI_ENGINE_SPEC.md
-
 FILE_STRUCTURE.md
-
 CHANGELOG.md
 TECHNICAL_OVERVIEW.md
 TECH_STACK.md
@@ -537,30 +534,32 @@ Mandatory Review When:
 
 ```text
 Schema Changes
-
 New Models
-
 Removed Models
-
 Contract Changes
+IPC Payload Changes
+Repository Data Changes
+RepositorySync Result Changes
+Cache Entry Changes
+Remote Source Metadata Changes
+Error Object Changes
 ```
 
 Related Files:
 
 ```text
 ARCHITECTURE.md
-
 API_SPEC.md
-
 AI_ENGINE_SPEC.md
-
 PRINTER_PROFILE_SPEC.md
-
 MATERIAL_PROFILE_SPEC.md
-
 FILAMENT_SETTINGS_SPEC.md
-
 CHANGELOG.md
+TECHNICAL_OVERVIEW.md
+API_SPEC.md
+SECURITY_SPEC.md
+TEST_PLAN.md
+ERROR_CODES_SPEC.md
 ```
 
 ---
@@ -841,4 +840,18 @@ Mandatory Review When:
 
 ```text
 API Changes
+IPC Contract Changes
+Repository Contract Changes
+RepositorySync Contract Changes
+Cache Contract Changes
+Error Response Changes
+```text
 
+Related Files:
+
+```text
+TECHNICAL_OVERVIEW.md
+ERROR_CODES_SPEC.md
+SECURITY_SPEC.md
+TEST_PLAN.md
+```
