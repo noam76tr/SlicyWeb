@@ -17,7 +17,7 @@ Detailed reading order is defined in:
 CLAUDE_DOCUMENT_READING_ORDER.md
 
 Reading priority is defined in:
-docs/00-index/CLAUDE_READING_PRIORITY.md
+CLAUDE_READING_PRIORITY.md
 
 This is the entry point for any AI system working on the project.
 
@@ -84,9 +84,9 @@ CLAUDE_CHANGE_IMPACT_RULES.md
 
 CLAUDE_FILE_UPDATE_RULES.md
 
-docs/00-index/CLAUDE_GOVERNANCE_PROTOCOL.md
+CLAUDE_GOVERNANCE_PROTOCOL.md
 
-docs/00-index/CLAUDE_READING_PRIORITY.md
+CLAUDE_READING_PRIORITY.md
 
 These documents define:
 
