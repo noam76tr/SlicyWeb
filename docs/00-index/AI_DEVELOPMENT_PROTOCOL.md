@@ -79,6 +79,10 @@ Before analyzing code, the AI must read:
 15. PROJECT_IMPACT_MATRIX.md
 16. DOCUMENT_UPDATE_MATRIX.md
 17. CHANGE_VERIFICATION_CHECKLIST.md
+18. CROSS_DOCUMENT_DEPENDENCIES.md
+19. BUG_ANALYSIS_PROTOCOL.md
+20. UPDATE_GOVERNANCE_PROTOCOL.md
+21. UPDATE_IMPACT_RULES.md
 
 Documentation has priority over assumptions.
 
@@ -100,6 +104,42 @@ Before modifying any file:
 8. Perform impact analysis
 
 The AI must understand the surrounding system before making modifications.
+
+---
+
+# Local-First Architecture Rule
+
+When working with Repository, Storage, or RepositorySync:
+
+Verify:
+
+1. Repository Domain owns local data access
+2. Storage Domain owns persistence
+3. RepositorySync Domain owns remote access
+4. Remote access is ONLY through RepositorySync
+5. Local data flows through Repository before Storage
+6. Cache entries use Storage, not direct files
+
+Required Flow:
+
+GUI
+↓
+IPC
+↓
+Services
+↓
+Repository
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+
+References:
+
+ARCHITECTURE.md
+DOMAIN_BOUNDARIES.md
+DOMAINS_DEPENDENCY_MATRIX.md
+TECHNICAL_OVERVIEW.md
 
 ---
 
@@ -129,6 +169,27 @@ DOCUMENT_UPDATE_MATRIX.md
 CHANGE_CLASSIFICATION_RULES.md
 
 CHANGE_VERIFICATION_CHECKLIST.md
+
+---
+
+# Security Validation
+
+Before modifying API, IPC, or input handling:
+
+1. Read SECURITY_SPEC.md
+2. Verify input validation rules
+3. Verify remote source validation
+4. Verify credential protection
+5. Verify error message safety
+6. Verify that raw errors are never exposed
+
+Required References:
+
+docs/06-quality/SECURITY_SPEC.md
+
+ARCHITECTURE.md
+
+DATA_SCHEMA.md
 
 ---
 
@@ -251,7 +312,7 @@ Prefer explicit types.
 Avoid:
 
 ```text
-any
+anydixs
 ```
 
 Prefer:
@@ -266,5 +327,20 @@ Filament
 ```
 
 Strong typing is mandatory whenever possible.
+
+---
+
+# Testing Requirements
+
+Before approving any modification:
+
+Required Test Coverage:
+
+```text
+Unit Tests
+Integration Tests
+Schema Validation Tests
+API Validation Tests
+Regression Tests
 
 ---
