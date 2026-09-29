@@ -1,6 +1,6 @@
-\# AI SMART SLICER
+# AI SMART SLICER
 
-\# SUPPORT GENERATION SPECIFICATION
+# SUPPORT GENERATION SPECIFICATION
 
 Version: 1.0.0
 
@@ -10,15 +10,15 @@ Priority: High
 
 
 
-\---
+---
 
 
 
-\# Purpose
+# Purpose
 
 
 
-This document defines the complete support generation logic used by Wichy.
+This document defines the complete support generation logic used by SlicyWeb.
 
 
 
@@ -26,17 +26,17 @@ Support generation is responsible for:
 
 
 
-\- Detecting unsupported geometry
+- Detecting unsupported geometry
 
-\- Determining support necessity
+- Determining support necessity
 
-\- Selecting support type
+- Selecting support type
 
-\- Optimizing support placement
+- Optimizing support placement
 
-\- Reducing support material usage
+- Reducing support material usage
 
-\- Preserving surface quality
+- Preserving surface quality
 
 
 
@@ -64,11 +64,11 @@ GCODE\_ENGINE\_SPEC.md
 
 
 
-\---
+---
 
 
 
-\# Objectives
+# Objectives
 
 
 
@@ -76,23 +76,23 @@ The support system must:
 
 
 
-\- Prevent print failures
+- Prevent print failures
 
-\- Minimize support material
+- Minimize support material
 
-\- Reduce support removal effort
+- Reduce support removal effort
 
-\- Preserve surface quality
+- Preserve surface quality
 
-\- Improve print success rate
-
-
-
-\---
+- Improve print success rate
 
 
 
-\# Support Generation Workflow
+---
+
+
+
+# Support Generation Workflow
 
 
 
@@ -132,11 +132,11 @@ Recommendation
 
 
 
-\---
+---
 
 
 
-\# Support Principles
+# Support Principles
 
 
 
@@ -146,25 +146,25 @@ Priority Order:
 
 ```text
 
-1\. Print Success
+1. Print Success
 
-2\. Surface Quality
+2. Surface Quality
 
-3\. Support Reduction
+3. Support Reduction
 
-4\. Material Reduction
+4. Material Reduction
 
-5\. Print Time Reduction
+5. Print Time Reduction
 
 ```
 
 
 
-\---
+---
 
 
 
-\# Support Decision Process
+# Support Decision Process
 
 
 
@@ -198,11 +198,11 @@ before generating supports.
 
 
 
-\---
+---
 
 
 
-\# Support Categories
+# Support Categories
 
 
 
@@ -234,11 +234,11 @@ Custom Supports (Future)
 
 
 
-\---
+---
 
 
 
-\# Standard Supports
+# Standard Supports
 
 
 
@@ -262,11 +262,11 @@ High Stability
 
 
 
-\---
+---
 
 
 
-\# Recommended For
+# Recommended For
 
 
 
@@ -286,11 +286,11 @@ Functional Components
 
 
 
-\---
+---
 
 
 
-\# Advantages
+# Advantages
 
 
 
@@ -310,11 +310,11 @@ Easy To Validate
 
 
 
-\---
+---
 
 
 
-\# Disadvantages
+# Disadvantages
 
 
 
@@ -330,11 +330,11 @@ Longer Removal Time
 
 
 
-\---
+---
 
 
 
-\# Tree Supports
+# Tree Supports
 
 
 
@@ -358,11 +358,11 @@ Adaptive Shape
 
 
 
-\---
+---
 
 
 
-\# Recommended For
+# Recommended For
 
 
 
@@ -382,11 +382,11 @@ Organic Objects
 
 
 
-\---
+---
 
 
 
-\# Advantages
+# Advantages
 
 
 
@@ -406,11 +406,11 @@ Easier Removal
 
 
 
-\---
+---
 
 
 
-\# Disadvantages
+# Disadvantages
 
 
 
@@ -422,11 +422,11 @@ More Complex Generation
 
 
 
-\---
+---
 
 
 
-\# Organic Supports
+# Organic Supports
 
 
 
@@ -450,11 +450,11 @@ Curved Branches
 
 
 
-\---
+---
 
 
 
-\# Recommended For
+# Recommended For
 
 
 
@@ -478,11 +478,11 @@ Characters
 
 
 
-\---
+---
 
 
 
-\# Advantages
+# Advantages
 
 
 
@@ -498,11 +498,11 @@ Low Support Material
 
 
 
-\---
+---
 
 
 
-\# Disadvantages
+# Disadvantages
 
 
 
@@ -514,11 +514,11 @@ Longer Generation Time
 
 
 
-\---
+---
 
 
 
-\# Interface Supports
+# Interface Supports
 
 
 
@@ -546,11 +546,11 @@ Support
 
 
 
-\---
+---
 
 
 
-\# Benefits
+# Benefits
 
 
 
@@ -566,11 +566,11 @@ Easier Removal
 
 
 
-\---
+---
 
 
 
-\# Overhang Analysis
+# Overhang Analysis
 
 
 
@@ -582,11 +582,11 @@ An overhang exists when geometry extends beyond the printable angle limit.
 
 
 
-\---
+---
 
 
 
-\# Overhang Thresholds
+# Overhang Thresholds
 
 
 
@@ -602,7 +602,7 @@ Safe:
 
 
 
-\---
+---
 
 
 
@@ -618,7 +618,7 @@ Moderate:
 
 
 
-\---
+---
 
 
 
@@ -634,7 +634,7 @@ High Risk:
 
 
 
-\---
+---
 
 
 
@@ -650,11 +650,11 @@ Critical:
 
 
 
-\---
+---
 
 
 
-\# Overhang Strategy
+# Overhang Strategy
 
 
 
@@ -670,7 +670,7 @@ No Supports
 
 
 
-\---
+---
 
 
 
@@ -686,7 +686,7 @@ Evaluate Material
 
 
 
-\---
+---
 
 
 
@@ -702,7 +702,7 @@ Supports Recommended
 
 
 
-\---
+---
 
 
 
@@ -718,11 +718,11 @@ Supports Required
 
 
 
-\---
+---
 
 
 
-\# Bridge Analysis
+# Bridge Analysis
 
 
 
@@ -734,11 +734,11 @@ A bridge is geometry printed between two support points.
 
 
 
-\---
+---
 
 
 
-\# Bridge Length Categories
+# Bridge Length Categories
 
 
 
@@ -754,7 +754,7 @@ Short:
 
 
 
-\---
+---
 
 
 
@@ -770,7 +770,7 @@ Medium:
 
 
 
-\---
+---
 
 
 
@@ -786,7 +786,7 @@ Long:
 
 
 
-\---
+---
 
 
 
@@ -802,11 +802,11 @@ Critical:
 
 
 
-\---
+---
 
 
 
-\# Bridge Strategy
+# Bridge Strategy
 
 
 
@@ -822,7 +822,7 @@ No Supports
 
 
 
-\---
+---
 
 
 
@@ -838,7 +838,7 @@ Evaluate Material
 
 
 
-\---
+---
 
 
 
@@ -858,7 +858,7 @@ Increase Cooling
 
 
 
-\---
+---
 
 
 
@@ -874,11 +874,11 @@ Supports Recommended
 
 
 
-\---
+---
 
 
 
-\# Material Influence
+# Material Influence
 
 
 Different materials tolerate overhangs differently.
@@ -891,11 +891,11 @@ Examples:
 - Carbon fiber materials may require reinforced support structures.
 
 
-\---
+---
 
 
 
-\# PLA
+# PLA
 
 
 
@@ -923,11 +923,11 @@ High
 
 
 
-\---
+---
 
 
 
-\# PETG
+# PETG
 
 
 
@@ -955,11 +955,11 @@ Medium
 
 
 
-\---
+---
 
 
 
-\# ABS
+# ABS
 
 
 
@@ -987,11 +987,11 @@ Low
 
 
 
-\---
+---
 
 
 
-\# ASA
+# ASA
 
 
 
@@ -1019,11 +1019,11 @@ High
 
 
 
-\---
+---
 
 
 
-\# TPU
+# TPU
 
 
 
@@ -1051,20 +1051,20 @@ Reduced
 
 
 
-\---
+---
 
 
 
-\# Object Classification Influence
+# Object Classification Influence
 
 
 Supports depend on object category.
 
 
-\---
+---
 
 
-\# Figurine
+# Figurine
 
 
 Preferred:
@@ -1087,10 +1087,10 @@ Surface Preservation
 ```
 
 
-\---
+---
 
 
-\# Miniature
+# Miniature
 
 
 Preferred:
@@ -1116,10 +1116,10 @@ Maximum Detail
 ```
 
 
-\---
+---
 
 
-\# Mechanical Part
+# Mechanical Part
 
 
 
@@ -1147,11 +1147,11 @@ Dimensional Accuracy
 
 
 
-\---
+---
 
 
 
-\# Enclosure
+# Enclosure
 
 
 
@@ -1179,11 +1179,11 @@ Flat Surface Quality
 
 
 
-\---
+---
 
 
 
-\# Tool
+# Tool
 
 
 
@@ -1211,7 +1211,7 @@ Mechanical Reliability
 
 
 
-\---
+---
 
 
 # Prototype
@@ -1227,7 +1227,7 @@ Goal:
 - Fast Printing
 - Material Reduction
 
-\# Support Density
+# Support Density
 
 
 Purpose:
@@ -1236,11 +1236,11 @@ Purpose:
 Control support strength.
 
 
-\---
+---
 
 
 
-\# Light
+# Light
 
 
 
@@ -1268,11 +1268,11 @@ Easy Removal
 
 
 
-\---
+---
 
 
 
-\# Standard
+# Standard
 
 
 
@@ -1296,11 +1296,11 @@ General Purpose
 
 
 
-\---
+---
 
 
 
-\# Dense
+# Dense
 
 
 
@@ -1328,11 +1328,11 @@ Heavy Loads
 
 
 
-\---
+---
 
 
 
-\# Interface Density
+# Interface Density
 
 
 
@@ -1352,19 +1352,19 @@ Used only at support contact surfaces.
 
 
 
-\---
+---
 
 
 
-\# Support Placement Modes
+# Support Placement Modes
 
 
 
-\---
+---
 
 
 
-\## Everywhere
+## Everywhere
 
 
 
@@ -1388,11 +1388,11 @@ Supports
 
 
 
-\---
+---
 
 
 
-\## Build Plate Only
+## Build Plate Only
 
 
 
@@ -1408,11 +1408,11 @@ Build Plate
 
 
 
-\---
+---
 
 
 
-\# Recommendation Rules
+# Recommendation Rules
 
 
 
@@ -1432,11 +1432,11 @@ when possible.
 
 
 
-\---
+---
 
 
 
-\# Support Distance
+# Support Distance
 
 
 
@@ -1448,11 +1448,11 @@ Control separation from model.
 
 
 
-\---
+---
 
 
 
-\# Z Distance
+# Z Distance
 
 
 
@@ -1484,11 +1484,11 @@ Material
 
 
 
-\---
+---
 
 
 
-\# XY Distance
+# XY Distance
 
 
 
@@ -1520,11 +1520,11 @@ Object Detail
 
 
 
-\---
+---
 
 
 
-\# Support Optimization
+# Support Optimization
 
 
 
@@ -1552,11 +1552,11 @@ without reducing reliability.
 
 
 
-\---
+---
 
 
 
-\# Orientation Integration
+# Orientation Integration
 
 
 
@@ -1576,11 +1576,11 @@ Alternative Orientations
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -1612,11 +1612,11 @@ Generate Remaining Supports
 
 
 
-\---
+---
 
 
 
-\# Support Score
+# Support Score
 
 
 
@@ -1644,11 +1644,11 @@ Print Duration
 
 
 
-\---
+---
 
 
 
-\# Evaluation Factors
+# Evaluation Factors
 
 
 
@@ -1676,11 +1676,11 @@ Print Duration
 
 
 
-\---
+---
 
 
 
-\# Removal Difficulty Score
+# Removal Difficulty Score
 
 
 
@@ -1696,7 +1696,7 @@ Scale:
 
 
 
-\---
+---
 
 
 
@@ -1716,11 +1716,11 @@ Meaning:
 
 
 
-\---
+---
 
 
 
-\# AI Warning Rules
+# AI Warning Rules
 
 
 
@@ -1748,11 +1748,11 @@ Unknown Filament Profile
 
 
 
-\---
+---
 
 
 
-\# Examples
+# Examples
 
 
 
@@ -1764,7 +1764,7 @@ Support Volume Exceeds 30% Of Model Volume
 
 
 
-\---
+---
 
 
 
@@ -1776,7 +1776,7 @@ Critical Overhang Detected
 
 
 
-\---
+---
 
 
 
@@ -1788,11 +1788,11 @@ Orientation Could Reduce Supports
 
 
 
-\---
+---
 
 
 
-\# Future Features
+# Future Features
 
 
 
@@ -1822,11 +1822,11 @@ Filament-Specific Support Learning
 
 
 
-\---
+---
 
 
 
-\# Validation Rules
+# Validation Rules
 
 
 
@@ -1852,11 +1852,11 @@ Respect Filament Limits
 
 
 
-\---
+---
 
 
 
-\# Support Generation Golden Rule
+# Support Generation Golden Rule
 
 
 
@@ -1864,9 +1864,9 @@ The best support is the one that prevents failure while using the minimum amount
 
 
 
-\---
+---
 
 
 
-\# End Of Document
+# End Of Document
 
