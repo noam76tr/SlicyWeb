@@ -10,7 +10,7 @@ Status: Approved
 
 # Purpose
 
-This document defines the official terminology used throughout the Wichy project.
+This document defines the official terminology used throughout the SlicyWeb project.
 
 All contributors, developers, documentation authors, and AI systems should use these definitions consistently.
 
@@ -217,7 +217,7 @@ Modern 3D printing format supporting additional metadata.
 
 # WYPROJ
 
-Native Wichy project file format.
+Native SlicyWeb project file format.
 
 Stores:
 
@@ -459,7 +459,7 @@ Reduce Print Time
 
 # AI Engine
 
-Rule-based recommendation system used by Wichy.
+Rule-based recommendation system used by SlicyWeb.
 
 Responsible for:
 
@@ -618,7 +618,7 @@ Scene
 
 # Project
 
-Saved Wichy workspace stored in a WYPROJ file.
+Saved SlicyWeb workspace stored in a WYPROJ file.
 
 Contains:
 
