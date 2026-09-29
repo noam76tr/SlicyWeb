@@ -1,4 +1,5 @@
-# WICHY
+# SlicyWeb SMART SLICER
+
 # NAMING CONVENTIONS
 
 Version: 1.0.0
@@ -9,7 +10,7 @@ Status: Approved
 
 # Purpose
 
-This document defines the official naming conventions used throughout the Wichy project.
+This document defines the official naming conventions used throughout the SlicyWeb project.
 
 The objective is to ensure:
 
