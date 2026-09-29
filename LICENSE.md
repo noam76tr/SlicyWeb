@@ -1,4 +1,4 @@
-Copyright (c) 2026 Wichy Project
+Copyright (c) 2026 SlicyWeb SMART SLICER Project
 
 All Rights Reserved.
 
