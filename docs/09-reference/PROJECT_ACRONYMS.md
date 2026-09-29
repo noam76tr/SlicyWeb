@@ -1,4 +1,5 @@
-# WICHY
+# SlicyWeb SMART SLICER
+
 # PROJECT ACRONYMS
 
 Version: 1.0.0
@@ -9,7 +10,7 @@ Status: Approved
 
 # Purpose
 
-This document defines all official acronyms used throughout the Wichy project.
+This document defines all official acronyms used throughout the SlicyWeb project.
 
 The goal is to ensure:
 
@@ -534,7 +535,7 @@ Domain Resolution
 
 ---
 
-# Wichy Acronyms
+# SlicyWeb Acronyms
 
 ---
 
