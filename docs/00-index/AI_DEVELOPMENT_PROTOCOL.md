@@ -312,7 +312,7 @@ Prefer explicit types.
 Avoid:
 
 ```text
-anydixs
+any
 ```
 
 Prefer:
@@ -361,8 +361,6 @@ New features must not break existing features.
 
 ---
 
----
-
 # IPC Communication Rules
 
 When implementing IPC handlers:
@@ -401,7 +399,7 @@ Reference:
 
 docs/03-development/ERROR_CODES_SPEC.md
 
-SECURITY_SPEC.md
+docs/06-quality/SECURITY_SPEC.md
 
 ---
 
