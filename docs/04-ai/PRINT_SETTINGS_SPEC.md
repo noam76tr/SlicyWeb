@@ -1,6 +1,6 @@
-\# AI SMART SLICER
+# SlicyWeb SMART SLICER
 
-\# PRINT SETTINGS SPECIFICATION
+# PRINT SETTINGS SPECIFICATION
 
 
 
@@ -16,31 +16,29 @@ Priority: Critical
 
 
 
-\---
+---
 
 
 
-\# Purpose
+# Purpose
 
 
-
-This document defines all print settings managed by Wichy.
-
+This document defines all print settings managed by SlicyWeb.
 
 
 The objective is to standardize:
 
 
 
-\- AI recommendations
+- AI recommendations
 
-\- Print profiles
+- Print profiles
 
-\- Material settings
+- Material settings
 
-\- Optimization strategies
+- Optimization strategies
 
-\- Future G-Code generation
+- Future G-Code generation
 
 
 
@@ -48,11 +46,11 @@ This specification serves as the reference for all print configuration generatio
 
 
 
-\---
+---
 
 
 
-\# Objectives
+# Objectives
 
 
 
@@ -60,25 +58,25 @@ The print settings system must:
 
 
 
-\- Produce reliable prints
+- Produce reliable prints
 
-\- Respect printer limits
+- Respect printer limits
 
-\- Respect material limits
+- Respect material limits
 
-\- Adapt to model geometry
+- Adapt to model geometry
 
-\- Support optimization workflows
+- Support optimization workflows
 
-\- Remain reproducible
-
-
-
-\---
+- Remain reproducible
 
 
 
-\# Settings Architecture
+---
+
+
+
+# Settings Architecture
 
 
 
@@ -86,23 +84,23 @@ The print settings system must:
 
 Printer
 
-\+
++
 
 Material
 
-\+
++
 
 Filament
 
-\+
++
 
 Print Preset
 
-\+
++
 
 Model Analysis
 
-\+
++
 
 Object Classification
 
@@ -122,11 +120,11 @@ Final Profile
 
 
 
-\---
+---
 
 
 
-\# Settings Categories
+# Settings Categories
 
 
 
@@ -154,15 +152,15 @@ Advanced
 
 ```
 
-\---
+---
 
-\# Quality Settings
+# Quality Settings
 
 Controls surface quality and detail level.
 
-\---
+---
 
-\## Layer Height
+## Layer Height
 
 Unit:
 
@@ -176,11 +174,11 @@ mm
 
 
 
-\---
+---
 
 
 
-\# Standard Values
+# Standard Values
 
 
 
@@ -216,11 +214,11 @@ mm
 
 
 
-\---
+---
 
 
 
-\# Validation Rule
+# Validation Rule
 
 
 
@@ -260,11 +258,11 @@ Maximum Layer Height
 
 
 
-\---
+---
 
 
 
-\# Initial Layer Height
+# Initial Layer Height
 
 
 
@@ -276,11 +274,11 @@ Improve adhesion.
 
 
 
-\---
+---
 
 
 
-\# Recommended Values
+# Recommended Values
 
 
 
@@ -304,19 +302,19 @@ depending on printer and material.
 
 
 
-\---
+---
 
 
 
-\# Shell Settings
+# Shell Settings
 
 
 
-\---
+---
 
 
 
-\## Wall Count
+## Wall Count
 
 
 
@@ -328,11 +326,11 @@ Control part strength.
 
 
 
-\---
+---
 
 
 
-\# Decorative
+# Decorative
 
 
 
@@ -344,11 +342,11 @@ Control part strength.
 
 
 
-\---
+---
 
 
 
-\# Functional
+# Functional
 
 
 
@@ -360,11 +358,11 @@ Control part strength.
 
 
 
-\---
+---
 
 
 
-\# Structural
+# Structural
 
 
 
@@ -376,11 +374,11 @@ Control part strength.
 
 
 
-\---
+---
 
 
 
-\## Wall Thickness
+## Wall Thickness
 
 
 
@@ -400,11 +398,11 @@ Wall Count
 
 
 
-\---
+---
 
 
 
-\# Top Layers
+# Top Layers
 
 
 
@@ -416,11 +414,11 @@ Close top surfaces.
 
 
 
-\---
+---
 
 
 
-\# Recommended
+# Recommended
 
 
 
@@ -432,11 +430,11 @@ Close top surfaces.
 
 
 
-\---
+---
 
 
 
-\# Bottom Layers
+# Bottom Layers
 
 
 
@@ -448,11 +446,11 @@ Create stable foundations.
 
 
 
-\---
+---
 
 
 
-\# Recommended
+# Recommended
 
 
 
@@ -464,11 +462,11 @@ Create stable foundations.
 
 
 
-\---
+---
 
 
 
-\# Infill Settings
+# Infill Settings
 
 
 
@@ -480,11 +478,11 @@ Control internal structure.
 
 
 
-\---
+---
 
 
 
-\## Density
+## Density
 
 
 
@@ -500,11 +498,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\# Decorative
+# Decorative
 
 
 
@@ -516,11 +514,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\# Standard
+# Standard
 
 
 
@@ -532,11 +530,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\# Functional
+# Functional
 
 
 
@@ -548,11 +546,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\# Structural
+# Structural
 
 
 
@@ -564,11 +562,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\## Infill Patterns
+## Infill Patterns
 
 
 
@@ -608,19 +606,19 @@ Triangles
 
 
 
-\---
+---
 
 
 
-\# Pattern Selection
+# Pattern Selection
 
 
 
-\---
+---
 
 
 
-\## Gyroid
+## Gyroid
 
 
 
@@ -628,11 +626,11 @@ Default recommendation.
 
 
 
-\---
+---
 
 
 
-\## Lightning
+## Lightning
 
 
 
@@ -640,11 +638,11 @@ Material-saving.
 
 
 
-\---
+---
 
 
 
-\## Cubic
+## Cubic
 
 
 
@@ -652,11 +650,11 @@ Mechanical strength.
 
 
 
-\---
+---
 
 
 
-\## Honeycomb
+## Honeycomb
 
 
 
@@ -664,11 +662,11 @@ Maximum rigidity.
 
 
 
-\---
+---
 
 
 
-\# Support Settings
+# Support Settings
 
 
 
@@ -684,11 +682,11 @@ SUPPORT\_GENERATION\_SPEC.md
 
 
 
-\---
+---
 
 
 
-\## Support Enabled
+## Support Enabled
 
 
 
@@ -708,11 +706,11 @@ false
 
 
 
-\---
+---
 
 
 
-\## Support Type
+## Support Type
 
 
 
@@ -732,11 +730,11 @@ Standard
 
 
 
-\---
+---
 
 
 
-\## Support Density
+## Support Density
 
 
 
@@ -748,11 +746,11 @@ Standard
 
 
 
-\---
+---
 
 
 
-\## Support Interface
+## Support Interface
 
 
 
@@ -768,11 +766,11 @@ Disabled
 
 
 
-\---
+---
 
 
 
-\## Support Placement
+## Support Placement
 
 
 
@@ -788,11 +786,11 @@ Everywhere
 
 
 
-\---
+---
 
 
 
-\# Adhesion Settings
+# Adhesion Settings
 
 
 
@@ -804,11 +802,11 @@ Improve first-layer success.
 
 
 
-\---
+---
 
 
 
-\## Skirt
+## Skirt
 
 
 
@@ -816,11 +814,11 @@ Default option.
 
 
 
-\---
+---
 
 
 
-\## Brim
+## Brim
 
 
 
@@ -844,11 +842,11 @@ Warp Risk
 
 
 
-\---
+---
 
 
 
-\## Raft
+## Raft
 
 
 
@@ -868,11 +866,11 @@ Difficult Materials
 
 
 
-\---
+---
 
 
 
-\# Speed Settings
+# Speed Settings
 
 
 
@@ -888,11 +886,11 @@ mm/s
 
 
 
-\---
+---
 
 
 
-\## Print Speed
+## Print Speed
 
 
 
@@ -908,11 +906,11 @@ Typical Range:
 
 
 
-\---
+---
 
 
 
-\## Outer Wall Speed
+## Outer Wall Speed
 
 
 
@@ -924,7 +922,7 @@ Improve visual quality.
 
 
 
-\---
+---
 
 
 
@@ -940,11 +938,11 @@ Recommended:
 
 
 
-\---
+---
 
 
 
-\## Inner Wall Speed
+## Inner Wall Speed
 
 
 
@@ -960,11 +958,11 @@ Recommended:
 
 
 
-\---
+---
 
 
 
-\## Infill Speed
+## Infill Speed
 
 
 
@@ -972,11 +970,11 @@ May exceed wall speed.
 
 
 
-\---
+---
 
 
 
-\## Travel Speed
+## Travel Speed
 
 
 
@@ -988,7 +986,7 @@ Reduce print duration.
 
 
 
-\---
+---
 
 
 
@@ -1008,11 +1006,11 @@ depending on printer capability.
 
 
 
-\---
+---
 
 
 
-\# Cooling Settings
+# Cooling Settings
 
 
 
@@ -1024,11 +1022,11 @@ Control layer solidification.
 
 
 
-\---
+---
 
 
 
-\## Fan Speed
+## Fan Speed
 
 
 
@@ -1044,11 +1042,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\# PLA
+# PLA
 
 
 
@@ -1060,11 +1058,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\# PETG
+# PETG
 
 
 
@@ -1076,27 +1074,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\# ABS
-
-
-
-```text
-
-0 - 30%
-
-```
-
-
-
-\---
-
-
-
-\# ASA
+# ABS
 
 
 
@@ -1108,11 +1090,27 @@ Range:
 
 
 
-\---
+---
 
 
 
-\# TPU
+# ASA
+
+
+
+```text
+
+0 - 30%
+
+```
+
+
+
+---
+
+
+
+# TPU
 
 
 
@@ -1124,11 +1122,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\# Retraction Settings
+# Retraction Settings
 
 
 
@@ -1140,11 +1138,11 @@ Reduce stringing.
 
 
 
-\---
+---
 
 
 
-\## Retraction Distance
+## Retraction Distance
 
 
 
@@ -1160,7 +1158,7 @@ Direct Drive:
 
 
 
-\---
+---
 
 
 
@@ -1176,11 +1174,11 @@ Bowden:
 
 
 
-\---
+---
 
 
 
-\## Retraction Speed
+## Retraction Speed
 
 
 
@@ -1196,11 +1194,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\## Z-Hop
+## Z-Hop
 
 
 
@@ -1220,7 +1218,7 @@ Enabled
 
 
 
-\---
+---
 
 
 
@@ -1236,17 +1234,17 @@ Travel Collisions Possible
 
 
 
-\---
+---
 
 
 
-\# Temperature Settings
+# Temperature Settings
 
 
-\---
+---
 
 
-\## Nozzle Temperature
+## Nozzle Temperature
 
 
 Derived from:
@@ -1264,9 +1262,9 @@ Also influenced by:
 Filament Profile
 ```
 
-\---
+---
 
-\## Bed Temperature
+## Bed Temperature
 
 Derived from:
 
@@ -1284,10 +1282,10 @@ Filament Profile
 ```
 
 
-\---
+---
 
 
-\## Chamber Temperature
+## Chamber Temperature
 
 
 Derived from:
@@ -1311,19 +1309,19 @@ Material Requirements
 
 
 
-\---
+---
 
 
 
-\# Advanced Settings
+# Advanced Settings
 
 
 
-\---
+---
 
 
 
-\## Adaptive Layers
+## Adaptive Layers
 
 
 
@@ -1331,11 +1329,11 @@ Future Feature.
 
 
 
-\---
+---
 
 
 
-\## Ironing
+## Ironing
 
 
 
@@ -1347,23 +1345,11 @@ Improve top surface finish.
 
 
 
-\---
+---
 
 
 
-\## Variable Infill
-
-
-
-Future Feature.
-
-
-
-\---
-
-
-
-\## Pressure Advance
+## Variable Infill
 
 
 
@@ -1371,11 +1357,11 @@ Future Feature.
 
 
 
-\---
+---
 
 
 
-\## Input Shaping
+## Pressure Advance
 
 
 
@@ -1383,11 +1369,23 @@ Future Feature.
 
 
 
-\---
+---
 
 
 
-\# AI Modification Rules
+## Input Shaping
+
+
+
+Future Feature.
+
+
+
+---
+
+
+
+# AI Modification Rules
 
 
 
@@ -1418,7 +1416,7 @@ Orientation Recommendation
 
 
 
-\---
+---
 
 
 
@@ -1438,11 +1436,11 @@ Filament Limits
 
 
 
-\---
+---
 
 
 
-\# Profile Types
+# Profile Types
 
 
 
@@ -1467,11 +1465,11 @@ Low Cost
 
 
 
-\---
+---
 
 
 
-\# Settings Confidence
+# Settings Confidence
 
 
 Every generated profile receives:
@@ -1504,10 +1502,10 @@ Complete Model Analysis
 ```
 
 
-\---
+---
 
 
-\# Validation Engine
+# Validation Engine
 
 
 Before applying settings:
@@ -1530,11 +1528,11 @@ Geometry Compatibility
 
 
 
-\---
+---
 
 
 
-\# Invalid Settings
+# Invalid Settings
 
 
 
@@ -1562,11 +1560,11 @@ Invalid Retraction Values
 
 
 
-\---
+---
 
 
 
-\# Future Features
+# Future Features
 
 
 
@@ -1596,11 +1594,11 @@ Community Recommendation Learning
 
 
 
-\---
+---
 
 
 
-\# Integration Points
+# Integration Points
 
 
 
@@ -1632,11 +1630,11 @@ GCODE\_ENGINE\_SPEC.md
 
 
 
-\---
+---
 
 
 
-\# Golden Rule
+# Golden Rule
 
 
 
@@ -1644,9 +1642,9 @@ Every print setting must improve the probability of a successful print without v
 
 
 
-\---
+---
 
 
 
-\# End Of Document
+# End Of Document
 
