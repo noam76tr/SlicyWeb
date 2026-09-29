@@ -1,4 +1,5 @@
-# WICHY
+# SlicyWeb SMART SLICER
+
 # VERSIONING POLICY
 
 Version: 1.0.0
@@ -9,7 +10,7 @@ Status: Approved
 
 # Purpose
 
-This document defines the official versioning policy used throughout the Wichy project.
+This document defines the official versioning policy used throughout the SlicyWeb project.
 
 The objective is to ensure:
 
@@ -25,7 +26,7 @@ All software releases, documentation updates, schemas, profiles, and future APIs
 
 # Versioning Method
 
-Wichy follows:
+SlicyWeb follows:
 
 ```text
 Semantic Versioning
