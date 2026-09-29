@@ -1,6 +1,6 @@
-\# AI SMART SLICER
+# AI SMART SLICER
 
-\# FILAMENT SETTINGS SPECIFICATION
+# FILAMENT SETTINGS SPECIFICATION
 
 
 Version: 1.0.0
@@ -12,13 +12,13 @@ Status: Approved
 Priority: High
 
 
-\---
+---
 
 
-\# Purpose
+# Purpose
 
 
-This document defines the filament profile system used by Wichy.
+This document defines the filament profile system used by SlicyWeb.
 
 A filament profile represents a specific commercial filament.
 
@@ -42,69 +42,52 @@ Overture TPU
 
 
 
-\---
+---
 
 
 
-\# Objectives
+# Objectives
 
 
 
 The filament profile system must:
 
 
-\- Store manufacturer settings
+- Store manufacturer settings
 
-\- Improve print reliability
+- Improve print reliability
 
-\- Improve AI recommendations
+- Improve AI recommendations
 
-\- Override generic material values when necessary
+- Override generic material values when necessary
 
-\- Provide accurate cost calculations
-
-
-\---
+- Provide accurate cost calculations
 
 
+---
 
-\# Filament Hierarchy
 
+
+# Filament Hierarchy
 
 
 ```text
 
 Printer
 
-
-
-\+
-
-
++
 
 Material
 
-
-
-\+
-
-
++
 
 Filament Profile
 
-
-
-\+
-
-
++
 
 Model Analysis
 
-
-
 ↓
-
-
 
 AI Recommendation
 
@@ -112,68 +95,48 @@ AI Recommendation
 
 
 
-\---
+---
 
 
 
-\# Relationship With Materials
+# Relationship With Materials
 
 
 
 Example:
 
 
-
 ```text
 
 Material
 
-
-
 ↓
-
-
 
 PLA
 
 ```
 
-
-
-\---
-
-
+---
 
 Filament:
 
-
-
 ```text
-
 Bambu PLA Basic
-
-
 
 Bambu PLA Matte
 
-
-
 eSUN PLA+
 
-
-
 Prusament PLA
-
 ```
 
 
 
-\---
+---
 
 
 
-\# Profile Structure
-
+# Profile Structure
 
 
 ```json
@@ -206,11 +169,11 @@ Prusament PLA
 
 
 
-\---
+---
 
 
 
-\# Metadata
+# Metadata
 
 
 Purpose:
@@ -219,10 +182,10 @@ Purpose:
 Identify filament.
 
 
-\---
+---
 
 
-\## Schema
+## Schema
 
 
 ```json
@@ -241,11 +204,11 @@ Identify filament.
 
 
 
-\---
+---
 
 
 
-\# Example
+# Example
 
 
 
@@ -269,19 +232,19 @@ Identify filament.
 
 
 
-\---
+---
 
 
 
-\# Manufacturer Information
+# Manufacturer Information
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -305,11 +268,11 @@ Identify filament.
 
 
 
-\---
+---
 
 
 
-\# Thermal Settings
+# Thermal Settings
 
 
 
@@ -321,11 +284,11 @@ Override generic material values.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -357,11 +320,11 @@ Override generic material values.
 
 
 
-\---
+---
 
 
 
-\# Cooling Settings
+# Cooling Settings
 
 
 
@@ -373,11 +336,11 @@ Define fan usage.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -401,11 +364,11 @@ Define fan usage.
 
 
 
-\---
+---
 
 
 
-\# Printing Settings
+# Printing Settings
 
 
 
@@ -417,11 +380,11 @@ Store tested settings.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -449,11 +412,11 @@ Store tested settings.
 
 
 
-\---
+---
 
 
 
-\# Physical Properties
+# Physical Properties
 
 
 Purpose:
@@ -462,10 +425,10 @@ Purpose:
 Improve calculations.
 
 
-\---
+---
 
 
-\## Schema
+## Schema
 
 
 ```json
@@ -490,11 +453,11 @@ Improve calculations.
 
 
 
-\---
+---
 
 
 
-\# Units
+# Units
 
 
 
@@ -510,7 +473,7 @@ mm
 
 
 
-\---
+---
 
 
 
@@ -526,7 +489,7 @@ g/cm³
 
 
 
-\---
+---
 
 
 
@@ -542,11 +505,11 @@ grams
 
 
 
-\---
+---
 
 
 
-\# Moisture Sensitivity
+# Moisture Sensitivity
 
 
 
@@ -558,11 +521,11 @@ Estimate storage requirements.
 
 
 
-\---
+---
 
 
 
-\## Scale
+## Scale
 
 
 
@@ -574,11 +537,11 @@ Estimate storage requirements.
 
 
 
-\---
+---
 
 
 
-\# Example
+# Example
 
 
 
@@ -598,19 +561,19 @@ Estimate storage requirements.
 
 
 
-\---
+---
 
 
 
-\# Stringing Risk
+# Stringing Risk
 
 
 
-\---
+---
 
 
 
-\## Scale
+## Scale
 
 
 
@@ -622,7 +585,7 @@ Estimate storage requirements.
 
 
 
-\---
+---
 
 
 
@@ -646,19 +609,19 @@ Example:
 
 
 
-\---
+---
 
 
 
-\# Warp Risk
+# Warp Risk
 
 
 
-\---
+---
 
 
 
-\## Scale
+## Scale
 
 
 
@@ -670,11 +633,11 @@ Example:
 
 
 
-\---
+---
 
 
 
-\# Example
+# Example
 
 
 
@@ -694,19 +657,19 @@ Example:
 
 
 
-\---
+---
 
 
 
-\# Layer Adhesion
+# Layer Adhesion
 
 
 
-\---
+---
 
 
 
-\## Scale
+## Scale
 
 
 
@@ -718,11 +681,11 @@ Example:
 
 
 
-\---
+---
 
 
 
-\# Example
+# Example
 
 
 
@@ -742,19 +705,19 @@ Example:
 
 
 
-\---
+---
 
 
 
-\# Surface Finish
+# Surface Finish
 
 
 
-\---
+---
 
 
 
-\## Scale
+## Scale
 
 
 
@@ -766,11 +729,11 @@ Example:
 
 
 
-\---
+---
 
 
 
-\# Example
+# Example
 
 
 
@@ -790,11 +753,11 @@ Example:
 
 
 
-\---
+---
 
 
 
-\# Color Properties
+# Color Properties
 
 
 
@@ -806,11 +769,11 @@ Store visual properties.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -836,11 +799,11 @@ Store visual properties.
 
 
 
-\---
+---
 
 
 
-\# Special Filaments
+# Special Filaments
 
 
 
@@ -880,11 +843,11 @@ Glow In The Dark
 
 
 
-\---
+---
 
 
 
-\# Special Requirements
+# Special Requirements
 
 
 
@@ -908,11 +871,11 @@ Example:
 
 
 
-\---
+---
 
 
 
-\# Cost Settings
+# Cost Settings
 
 
 
@@ -924,11 +887,11 @@ Cost calculation.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -948,11 +911,11 @@ Cost calculation.
 
 
 
-\---
+---
 
 
 
-\# Currency
+# Currency
 
 
 
@@ -960,11 +923,11 @@ Determined by user preferences.
 
 
 
-\---
+---
 
 
 
-\# AI Confidence Impact
+# AI Confidence Impact
 
 
 
@@ -982,11 +945,11 @@ Classification Confidence
 
 
 
-\---
+---
 
 
 
-\# Filament Source Priority
+# Filament Source Priority
 
 
 
@@ -1018,11 +981,11 @@ User Profile
 
 
 
-\---
+---
 
 
 
-\# Validation Rules
+# Validation Rules
 
 
 
@@ -1046,11 +1009,11 @@ Physical Properties
 
 
 
-\---
+---
 
 
 
-\# Invalid Profile Conditions
+# Invalid Profile Conditions
 
 
 
@@ -1078,11 +1041,11 @@ Profile becomes invalid.
 
 
 
-\---
+---
 
 
 
-\# AI Usage
+# AI Usage
 
 
 
@@ -1116,11 +1079,11 @@ Special Requirements
 to fine-tune recommendations.
 
 
-\---
+---
 
 
 
-\# Integration Points
+# Integration Points
 
 
 
@@ -1152,11 +1115,11 @@ COST\_ENGINE
 
 
 
-\---
+---
 
 
 
-\# Future Extensions
+# Future Extensions
 
 
 
@@ -1185,11 +1148,11 @@ Filament Performance Learning
 
 
 
-\---
+---
 
 
 
-\# Golden Rule
+# Golden Rule
 
 
 
@@ -1197,9 +1160,9 @@ A filament profile always takes precedence over generic material recommendations
 
 
 
-\---
+---
 
 
 
-\# End Of Document
+# End Of Document
 
