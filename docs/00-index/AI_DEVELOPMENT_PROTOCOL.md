@@ -342,5 +342,238 @@ Integration Tests
 Schema Validation Tests
 API Validation Tests
 Regression Tests
+```
+
+# Testing Reference
+
+docs/06-quality/TEST_PLAN.md
+
+ARCHITECTURE.md
+
+
+Backward Compatibility:
+
+All tests must pass.
+
+Existing functionality must continue to work.
+
+New features must not break existing features.
 
 ---
+
+---
+
+# IPC Communication Rules
+
+When implementing IPC handlers:
+
+Verify:
+
+1. Handler is needed (not already existing)
+2. Payload follows API_SPEC.md
+3. Validation is enforced
+4. Errors are handled safely
+5. Response format is documented
+
+Required References:
+
+docs/02-architecture/API_SPEC.md
+
+src/electron/ipc/
+
+ARCHITECTURE.md
+
+DOMAINS_DEPENDENCY_MATRIX.md
+
+---
+
+# Error Handling Rules
+
+All modifications must:
+
+1. Define error cases
+2. Provide meaningful error codes
+3. Never expose stack traces to users
+4. Never expose internal implementation details
+5. Log errors securely
+
+Reference:
+
+docs/03-development/ERROR_CODES_SPEC.md
+
+SECURITY_SPEC.md
+
+---
+
+# Documentation Update Rules
+
+When modifying code:
+
+Update documentation if:
+
+Schema changes
+
+API changes
+
+Behavior changes
+
+Architecture changes
+
+Domain changes
+
+Dependency changes
+
+Do NOT update documentation if:
+
+Internal implementation changes
+
+Refactoring without behavior change
+
+Performance optimization without API change
+
+References:
+
+DOCUMENT_UPDATE_MATRIX.md
+
+CROSS_DOCUMENT_DEPENDENCIES.md
+
+CHANGE_CLASSIFICATION_RULES.md
+
+---
+
+# Bug Fix Protocol
+
+For bug fixes:
+
+Step 1
+
+Read BUG_ANALYSIS_PROTOCOL.md
+
+Step 2
+
+Identify root cause
+
+Step 3
+
+Analyze impact
+
+Step 4
+
+Review dependencies
+
+Step 5
+
+Implement minimal fix
+
+Step 6
+
+Verify regression risk
+
+Step 7
+
+Update documentation if affected
+
+Step 8
+
+Update CHANGELOG.md
+
+Reference:
+
+BUG_ANALYSIS_PROTOCOL.md
+
+PROJECT_IMPACT_MATRIX.md
+
+CHANGE_VERIFICATION_CHECKLIST.md
+
+---
+
+# External Update Protocol
+
+For external updates (printer profiles, materials, presets):
+
+Follow:
+
+UPDATE_GOVERNANCE_PROTOCOL.md
+
+UPDATE_IMPACT_RULES.md
+
+UPDATE_REPORT_TEMPLATE.md
+
+Human approval is mandatory.
+
+---
+
+# Forbidden Actions
+
+The AI must NEVER:
+
+- Rewrite entire modules without justification
+- Regenerate complete files unless explicitly requested
+- Bypass the IPC architecture
+- Bypass the Repository architecture
+- Bypass RepositorySync for remote access
+- Create duplicate functionality
+- Ignore documentation
+- Break backward compatibility
+- Expose credentials or sensitive data
+- Expose raw errors to users
+
+---
+
+# Preferred Workflow
+
+Before implementing any change:
+
+1. Read relevant documentation
+2. Understand architecture
+3. Identify ownership
+4. Analyze dependencies
+5. Assess impact
+6. Plan minimal changes
+7. Implement patches
+8. Validate compatibility
+9. Update documentation
+10. Update CHANGELOG
+11. Verify tests pass
+
+---
+
+# Success Criteria
+
+A modification is successful when:
+
+All tests pass
+
+Backward compatibility maintained
+
+Documentation updated
+
+CHANGELOG updated
+
+Architecture respected
+
+Dependencies verified
+
+Security validated
+
+No regressions introduced
+
+Code is maintainable
+
+Governance rules respected
+
+---
+
+# Golden Protocol Rule
+
+Understand before modifying.
+
+Document before implementing.
+
+Test before approving.
+
+Follow protocol at all times.
+
+---
+
+# End Of Document
