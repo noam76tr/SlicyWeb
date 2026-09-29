@@ -1,15 +1,10 @@
 # Code of Conduct
 
-
-
 ## Our Commitment
 
-
-We are committed to making participation in the Wichy project a respectful, professional, and collaborative experience for everyone.
-
+We are committed to making participation in the SlicyWeb project a respectful, professional, and collaborative experience for everyone.
 
 We aim to create an environment where contributors can:
-
 
 
 - Learn
