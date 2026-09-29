@@ -471,7 +471,7 @@ Complete structure:
 
 ```text
 
-docs/02-architecture/FILE\_STRUCTURE.md
+docs/02-architecture/FILE_STRUCTURE.md
 
 ```
 
@@ -488,8 +488,8 @@ Main governance documents:
 - CLAUDE_DOCUMENT_READING_ORDER.md
 - CLAUDE_CHANGE_IMPACT_RULES.md
 - CLAUDE_FILE_UPDATE_RULES.md
-- docs/00-index/CLAUDE_GOVERNANCE_PROTOCOL.md
-- docs/00-index/CLAUDE_READING_PRIORITY.md
+- CLAUDE_GOVERNANCE_PROTOCOL.md
+- CLAUDE_READING_PRIORITY.md
 
 These documents define:
 
@@ -525,7 +525,7 @@ Detailed rules:
 
 ```text
 
-docs/03-development/DEVELOPMENT\_RULES.md
+docs/03-development/DEVELOPMENT_RULES.md
 
 ```
 
@@ -546,9 +546,8 @@ Before contributing:
 5. CLAUDE_CHANGE_IMPACT_RULES.md
 6. CLAUDE_FILE_UPDATE_RULES.md
 7. docs/00-index/CLAUDE_READING_PRIORITY.md
-8. PROJECT_DOCUMENTATION_INDEX.md
-9. AI_START_HERE.md
-
+8. docs/00-index/PROJECT_DOCUMENTATION_INDEX.md
+9. docs/00-index/AI_START_HERE.md
 ```
 
 
@@ -567,8 +566,8 @@ Planning / Foundation Phase
 
 ```
 
-
-The documentation, architecture, schemas, and specifications have been established before implementation begins.
+The project has established its documentation and initial source structure; controlled implementation is underway.
+Functional workflows are not yet complete.
 
 ---
 
