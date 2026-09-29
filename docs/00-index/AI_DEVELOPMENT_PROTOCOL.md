@@ -62,29 +62,29 @@ A working feature must never be broken to add a new feature.
 
 Before analyzing code, the AI must read:
 
-1. PROJECT_DOCUMENTATION_INDEX.md
+1. docs/00-index/PROJECT_DOCUMENTATION_INDEX.md
 2. CLAUDE_DOCUMENT_READING_ORDER.md
-3. AI_START_HERE.md
-4. PROJECT_SPEC.md
+3. docs/00-index/AI_START_HERE.md
+4. docs/01-project/PROJECT_SPEC.md
 5. SYSTEM_RULES.md
 6. AI_DEVELOPMENT_PROTOCOL.md
-7. ARCHITECTURE.md
-8. DATA_SCHEMA.md
-9. FILE_STRUCTURE.md
-10. ROADMAP.md
-11. CHANGELOG.md
-12. DOMAIN_BOUNDARIES.md
-13. DOMAINS_DEPENDENCY_MATRIX.md
-14. FILE_OWNERSHIP_MATRIX.md
-15. PROJECT_IMPACT_MATRIX.md
-16. DOCUMENT_UPDATE_MATRIX.md
-17. CHANGE_VERIFICATION_CHECKLIST.md
-18. CROSS_DOCUMENT_DEPENDENCIES.md
-19. BUG_ANALYSIS_PROTOCOL.md
-20. UPDATE_GOVERNANCE_PROTOCOL.md
-21. UPDATE_IMPACT_RULES.md
-22. CHANGE_CLASSIFICATION_RULES.md
-23. UPDATE_REPORT_TEMPLATE.md
+7. docs/02-architecture/ARCHITECTURE.md
+8. docs/02-architecture/DATA_SCHEMA.md
+9. docs/02-architecture/FILE_STRUCTURE.md
+10. docs/01-project/ROADMAP.md
+11. docs/01-project/CHANGELOG.md
+12. docs/03-development/DOMAIN_BOUNDARIES.md
+13. docs/03-development/DOMAINS_DEPENDENCY_MATRIX.md
+14. docs/03-development/FILE_OWNERSHIP_MATRIX.md
+15. docs/03-development/PROJECT_IMPACT_MATRIX.md
+16. docs/03-development/DOCUMENT_UPDATE_MATRIX.md
+17. docs/03-development/CHANGE_VERIFICATION_CHECKLIST.md
+18. docs/03-development/CROSS_DOCUMENT_DEPENDENCIES.md
+19. docs/03-development/BUG_ANALYSIS_PROTOCOL.md
+20. docs/03-development/UPDATE_GOVERNANCE_PROTOCOL.md
+21. docs/03-development/UPDATE_IMPACT_RULES.md
+22. docs/03-development/CHANGE_CLASSIFICATION_RULES.md
+23. docs/03-development/UPDATE_REPORT_TEMPLATE.md
 
 Documentation has priority over assumptions.
 
@@ -138,10 +138,10 @@ Repository
 
 References:
 
-ARCHITECTURE.md
-DOMAIN_BOUNDARIES.md
-DOMAINS_DEPENDENCY_MATRIX.md
-TECHNICAL_OVERVIEW.md
+docs/02-architecture/ARCHITECTURE.md
+docs/03-development/DOMAIN_BOUNDARIES.md
+docs/03-development/DOMAINS_DEPENDENCY_MATRIX.md
+docs/02-architecture/TECHNICAL_OVERVIEW.md
 
 ---
 
@@ -158,19 +158,19 @@ Before modifying any file:
 
 Required References:
 
-DOMAIN_BOUNDARIES.md
+docs/03-development/DOMAIN_BOUNDARIES.md
 
-DOMAINS_DEPENDENCY_MATRIX.md
+docs/03-development/DOMAINS_DEPENDENCY_MATRIX.md
 
-FILE_OWNERSHIP_MATRIX.md
+docs/03-development/FILE_OWNERSHIP_MATRIX.md
 
-PROJECT_IMPACT_MATRIX.md
+docs/03-development/PROJECT_IMPACT_MATRIX.md
 
-DOCUMENT_UPDATE_MATRIX.md
+docs/03-development/DOCUMENT_UPDATE_MATRIX.md
 
-CHANGE_CLASSIFICATION_RULES.md
+docs/03-development/CHANGE_CLASSIFICATION_RULES.md
 
-CHANGE_VERIFICATION_CHECKLIST.md
+docs/03-development/CHANGE_VERIFICATION_CHECKLIST.md
 
 ---
 
@@ -189,9 +189,9 @@ Required References:
 
 docs/06-quality/SECURITY_SPEC.md
 
-ARCHITECTURE.md
+docs/02-architecture/ARCHITECTURE.md
 
-DATA_SCHEMA.md
+docs/02-architecture/DATA_SCHEMA.md
 
 ---
 
@@ -203,9 +203,9 @@ Read:
 
 IMPORT_EXPORT_SPEC.md
 
-DATA_SCHEMA.md
+docs/02-architecture/DATA_SCHEMA.md
 
-PROJECT_SPEC.md
+docs/01-project/PROJECT_SPEC.md
 
 Required Validation:
 
@@ -223,11 +223,11 @@ When localization is involved:
 
 Read:
 
-PROJECT_SPEC.md
+docs/01-project/PROJECT_SPEC.md
 
-TECHNICAL_OVERVIEW.md
+docs/02-architecture/TECHNICAL_OVERVIEW.md
 
-DOMAIN_BOUNDARIES.md
+docs/03-development/DOMAIN_BOUNDARIES.md
 
 Requirements:
 
@@ -350,7 +350,7 @@ Regression Tests
 
 docs/06-quality/TEST_PLAN.md
 
-ARCHITECTURE.md
+docs/02-architecture/ARCHITECTURE.md
 
 
 Backward Compatibility:
@@ -381,9 +381,9 @@ docs/02-architecture/API_SPEC.md
 
 src/electron/ipc/
 
-ARCHITECTURE.md
+docs/02-architecture/ARCHITECTURE.md
 
-DOMAINS_DEPENDENCY_MATRIX.md
+docs/03-development/DOMAINS_DEPENDENCY_MATRIX.md
 
 ---
 
@@ -433,11 +433,11 @@ Performance optimization without API change
 
 References:
 
-DOCUMENT_UPDATE_MATRIX.md
+docs/03-development/DOCUMENT_UPDATE_MATRIX.md
 
-CROSS_DOCUMENT_DEPENDENCIES.md
+docs/03-development/CROSS_DOCUMENT_DEPENDENCIES.md
 
-CHANGE_CLASSIFICATION_RULES.md
+docs/03-development/CHANGE_CLASSIFICATION_RULES.md
 
 ---
 
@@ -447,7 +447,7 @@ For bug fixes:
 
 Step 1
 
-Read BUG_ANALYSIS_PROTOCOL.md
+Read docs/03-development/BUG_ANALYSIS_PROTOCOL.md
 
 Step 2
 
@@ -475,15 +475,15 @@ Update documentation if affected
 
 Step 8
 
-Update CHANGELOG.md
+Update docs/01-project/CHANGELOG.md
 
 Reference:
 
-BUG_ANALYSIS_PROTOCOL.md
+docs/03-development/BUG_ANALYSIS_PROTOCOL.md
 
-PROJECT_IMPACT_MATRIX.md
+docs/03-development/PROJECT_IMPACT_MATRIX.md
 
-CHANGE_VERIFICATION_CHECKLIST.md
+docs/03-development/CHANGE_VERIFICATION_CHECKLIST.md
 
 ---
 
@@ -493,11 +493,11 @@ For external updates (printer profiles, materials, presets):
 
 Follow:
 
-UPDATE_GOVERNANCE_PROTOCOL.md
+docs/03-development/UPDATE_GOVERNANCE_PROTOCOL.md
 
-UPDATE_IMPACT_RULES.md
+docs/03-development/UPDATE_IMPACT_RULES.md
 
-UPDATE_REPORT_TEMPLATE.md
+docs/03-development/UPDATE_REPORT_TEMPLATE.md
 
 Human approval is mandatory.
 
