@@ -1,4 +1,5 @@
-# WICHY
+# SlicyWeb SMART SLICER
+
 # GLOSSARY
 
 Version: 1.0.0
