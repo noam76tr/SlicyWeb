@@ -1,4 +1,5 @@
-# WICHY
+# SlicyWeb SMART SLICER
+
 # DIRECTORY PURPOSES
 
 Version: 1.0.0
