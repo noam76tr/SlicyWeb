@@ -1,4 +1,5 @@
-# SLICYWEB
+# SlicyWeb SMART SLICER
+
 # DIRECTORY PURPOSES
 
 Version: 2.0.0
