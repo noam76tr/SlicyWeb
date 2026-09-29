@@ -1,10 +1,11 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Type Definition
  *
  * Based on:
  * - DATA_SCHEMA.md
  * - MATERIAL_PROFILE_SPEC.md
+ * - MaterialSchema.ts
  */
 
 export interface MaterialTemperature {
@@ -50,7 +51,9 @@ export interface Material {
 
   category: string;
 
-  description: string;
+  brand?: string;
+
+  description?: string;
 
   temperature: MaterialTemperature;
 
