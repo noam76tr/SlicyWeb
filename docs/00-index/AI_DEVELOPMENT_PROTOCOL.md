@@ -83,6 +83,8 @@ Before analyzing code, the AI must read:
 19. BUG_ANALYSIS_PROTOCOL.md
 20. UPDATE_GOVERNANCE_PROTOCOL.md
 21. UPDATE_IMPACT_RULES.md
+22. CHANGE_CLASSIFICATION_RULES.md
+23. UPDATE_REPORT_TEMPLATE.md
 
 Documentation has priority over assumptions.
 
