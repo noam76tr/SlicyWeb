@@ -1,4 +1,5 @@
-# WICHY
+# SlicyWeb SMART SLICER
+
 # TERMINOLOGY
 
 Version: 1.0.0
@@ -9,7 +10,7 @@ Status: Approved
 
 # Purpose
 
-This document defines the official terminology used throughout the Wichy project.
+This document defines the official terminology used throughout the SlicyWeb project.
 
 The objective is to ensure consistency across:
 
@@ -54,7 +55,7 @@ unless a different meaning is intended.
 
 ---
 
-## Wichy
+## SlicyWeb
 
 Definition:
 
@@ -69,7 +70,7 @@ AI-Assisted 3D Printing Preparation Platform
 Definition:
 
 ```text
-Entire Wichy Software Ecosystem
+Entire SlicyWeb Software Ecosystem
 ```
 
 ---
@@ -103,7 +104,7 @@ User-facing capability of the application.
 Definition:
 
 ```text
-3D object imported into Wichy.
+3D object imported into SlicyWeb.
 ```
 
 ---
