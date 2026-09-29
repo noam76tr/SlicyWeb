@@ -1,6 +1,6 @@
-\# AI SMART SLICER
+# SlicyWeb SMART SLICER
 
-\# PRINT PRESETS SPECIFICATION
+# PRINT PRESETS SPECIFICATION
 
 
 
@@ -13,15 +13,15 @@ Status: Approved
 Priority: High
 
 
-\---
+---
 
 
 
-\# Purpose
+# Purpose
 
 
 
-This document defines all print preset profiles available in Wichy.
+This document defines all print preset profiles available in SlicyWeb.
 
 
 
@@ -29,13 +29,13 @@ Print presets provide predefined configurations based on:
 
 
 
-\- Object Type
+- Object Type
 
-\- Print Goal
+- Print Goal
 
-\- Material
+- Material
 
-\- Printer Capabilities
+- Printer Capabilities
 
 
 
@@ -47,11 +47,11 @@ Users may also select presets manually.
 
 
 
-\---
+---
 
 
 
-\# Preset Philosophy
+# Preset Philosophy
 
 
 
@@ -83,11 +83,11 @@ Material Saving
 
 
 
-\---
+---
 
 
 
-\# Preset Categories
+# Preset Categories
 
 
 
@@ -143,11 +143,11 @@ Custom
 
 
 
-\---
+---
 
 
 
-\# Preset Structure
+# Preset Structure
 
 
 
@@ -183,11 +183,11 @@ Custom
 
 
 
-\---
+---
 
 
 
-\# ULTRA QUALITY
+# ULTRA QUALITY
 
 
 
@@ -199,11 +199,11 @@ Highest visual quality.
 
 
 
-\---
+---
 
 
 
-\# Intended Objects
+# Intended Objects
 
 
 
@@ -227,11 +227,11 @@ Decorative Parts
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -269,11 +269,11 @@ Organic
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -285,11 +285,11 @@ Visual Quality
 
 
 
-\---
+---
 
 
 
-\# HIGH QUALITY
+# HIGH QUALITY
 
 
 
@@ -301,11 +301,11 @@ High quality while reducing print duration.
 
 
 
-\---
+---
 
 
 
-\# Intended Objects
+# Intended Objects
 
 
 
@@ -325,11 +325,11 @@ Detailed Components
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -361,11 +361,11 @@ Moderate
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -377,11 +377,11 @@ Quality
 
 
 
-\---
+---
 
 
 
-\# BALANCED
+# BALANCED
 
 
 
@@ -393,11 +393,11 @@ General purpose printing.
 
 
 
-\---
+---
 
 
 
-\# Intended Objects
+# Intended Objects
 
 
 
@@ -417,11 +417,11 @@ Utility Parts
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -453,11 +453,11 @@ Standard
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -469,11 +469,11 @@ Balanced Result
 
 
 
-\---
+---
 
 
 
-\# DRAFT
+# DRAFT
 
 
 
@@ -485,11 +485,11 @@ Quick visual validation.
 
 
 
-\---
+---
 
 
 
-\# Intended Objects
+# Intended Objects
 
 
 
@@ -509,11 +509,11 @@ Dimension Checks
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -539,11 +539,11 @@ Infill:
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -555,11 +555,11 @@ Speed
 
 
 
-\---
+---
 
 
 
-\# FAST PROTOTYPE
+# FAST PROTOTYPE
 
 
 
@@ -571,11 +571,11 @@ Rapid iteration.
 
 
 
-\---
+---
 
 
 
-\# Intended Objects
+# Intended Objects
 
 
 
@@ -595,11 +595,11 @@ Mockups
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -629,11 +629,11 @@ Maximum Speed
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -645,11 +645,11 @@ Minimum Print Time
 
 
 
-\---
+---
 
 
 
-\# FUNCTIONAL
+# FUNCTIONAL
 
 
 
@@ -661,11 +661,11 @@ General purpose functional parts.
 
 
 
-\---
+---
 
 
 
-\# Intended Objects
+# Intended Objects
 
 
 
@@ -689,11 +689,11 @@ Tools
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -723,11 +723,11 @@ Strength Oriented
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -739,11 +739,11 @@ Reliability
 
 
 
-\---
+---
 
 
 
-\# STRUCTURAL
+# STRUCTURAL
 
 
 
@@ -755,11 +755,11 @@ Load-bearing components.
 
 
 
-\---
+---
 
 
 
-\# Intended Objects
+# Intended Objects
 
 
 
@@ -779,11 +779,11 @@ Heavy Use Components
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -813,11 +813,11 @@ Reduced Speed
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -829,11 +829,11 @@ Maximum Strength
 
 
 
-\---
+---
 
 
 
-\# ENGINEERING
+# ENGINEERING
 
 
 
@@ -845,11 +845,11 @@ Precision engineering parts.
 
 
 
-\---
+---
 
 
 
-\# Intended Objects
+# Intended Objects
 
 
 
@@ -869,11 +869,11 @@ Assemblies
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -903,11 +903,11 @@ Controlled Speed
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -919,11 +919,11 @@ Dimensional Accuracy
 
 
 
-\---
+---
 
 
 
-\# FLEXIBLE
+# FLEXIBLE
 
 
 
@@ -935,11 +935,11 @@ Flexible filament printing.
 
 
 
-\---
+---
 
 
 
-\# Intended Materials
+# Intended Materials
 
 
 
@@ -955,11 +955,11 @@ TPE
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -979,11 +979,11 @@ Controlled Cooling
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -995,11 +995,11 @@ Reliable Extrusion
 
 
 
-\---
+---
 
 
 
-\# MINIATURE
+# MINIATURE
 
 
 
@@ -1011,11 +1011,11 @@ Very small highly detailed models.
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -1037,11 +1037,11 @@ Very Slow Speed
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -1053,11 +1053,11 @@ Maximum Detail
 
 
 
-\---
+---
 
 
 
-\# VASE
+# VASE
 
 
 
@@ -1069,11 +1069,11 @@ Single-wall decorative objects.
 
 
 
-\---
+---
 
 
 
-\# Typical Settings
+# Typical Settings
 
 
 
@@ -1093,11 +1093,11 @@ Continuous Wall
 
 
 
-\---
+---
 
 
 
-\# Priority
+# Priority
 
 
 
@@ -1109,11 +1109,11 @@ Surface Finish
 
 
 
-\---
+---
 
 
 
-\# CUSTOM
+# CUSTOM
 
 
 
@@ -1125,11 +1125,11 @@ User-defined profile.
 
 
 
-\---
+---
 
 
 
-\# User Control
+# User Control
 
 
 
@@ -1137,11 +1137,11 @@ User controls all values.
 
 
 
-\---
+---
 
 
 
-\# AI Behavior
+# AI Behavior
 
 
 
@@ -1165,11 +1165,11 @@ Generate Warnings
 
 
 
-\---
+---
 
 
 
-\# Material Overrides
+# Material Overrides
 
 
 
@@ -1193,7 +1193,7 @@ Higher Cooling
 
 
 
-\---
+---
 
 
 
@@ -1217,11 +1217,11 @@ Enclosure Warning
 
 
 
-\---
+---
 
 
 
-\# Printer Overrides
+# Printer Overrides
 
 
 
@@ -1257,11 +1257,11 @@ Clamp To Valid Value
 
 
 
-\---
+---
 
 
 
-\# AI Preset Selection
+# AI Preset Selection
 
 
 
@@ -1281,11 +1281,11 @@ User Goal
 
 
 
-\---
+---
 
 
 
-\# Example Mapping
+# Example Mapping
 
 
 
@@ -1305,7 +1305,7 @@ Ultra Quality
 
 
 
-\---
+---
 
 
 
@@ -1325,7 +1325,7 @@ Engineering
 
 
 
-\---
+---
 
 
 
@@ -1345,7 +1345,7 @@ Structural
 
 
 
-\---
+---
 
 
 
@@ -1365,11 +1365,11 @@ Fast Prototype
 
 
 
-\---
+---
 
 
 
-\# User Objectives
+# User Objectives
 
 
 
@@ -1405,11 +1405,11 @@ Lowest Cost
 
 
 
-\---
+---
 
 
 
-\# Validation
+# Validation
 
 
 
@@ -1437,11 +1437,11 @@ before becoming active.
 
 
 
-\---
+---
 
 
 
-\# Future Presets
+# Future Presets
 
 
 
@@ -1471,11 +1471,11 @@ Support Free
 
 
 
-\---
+---
 
 
 
-\# Golden Rule
+# Golden Rule
 
 
 
@@ -1487,9 +1487,9 @@ Safety, printer limits, material limits, and geometry constraints always take pr
 
 
 
-\---
+---
 
 
 
-\# End Of Document
+# End Of Document
 
