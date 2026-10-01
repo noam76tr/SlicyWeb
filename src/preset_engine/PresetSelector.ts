@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Preset Selector Definition
  *
  * Based on:
