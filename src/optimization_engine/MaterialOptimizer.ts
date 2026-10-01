@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Optimizer
  *
  * Responsible for:
