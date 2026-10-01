@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Analysis Panel
  *
  * Responsible for:
