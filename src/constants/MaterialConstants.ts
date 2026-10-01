@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Constants Definition
  *
  * Based on:
