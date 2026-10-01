@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Printer Constants
  *
  * Shared printer-related constants.
