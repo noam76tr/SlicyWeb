@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Support Optimizer
  *
  * Responsible for:
