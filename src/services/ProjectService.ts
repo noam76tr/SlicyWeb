@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Project Service
  *
  * Responsible for:
