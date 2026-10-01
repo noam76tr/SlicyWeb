@@ -1,3 +1,18 @@
+/**
+ * SlicyWeb
+ * WYPROJ Exporter
+ *
+ * Responsible for:
+ * - WYPROJ file creation
+ * - Project serialization to WYPROJ format
+ * - Blob generation for download
+ * - Safe filename generation
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - IMPORT_EXPORT_SPEC.md
+ */
+
 import { ProjectState } from "./ProjectManager";
 
 export interface WYPROJFile {
