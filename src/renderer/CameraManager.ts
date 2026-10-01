@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Camera Manager
  *
  * Responsible for:
