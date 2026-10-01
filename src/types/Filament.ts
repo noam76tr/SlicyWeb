@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Filament Type Definition
  *
  * Based on:
