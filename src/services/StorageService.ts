@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Storage Service Definition
  *
  * Based on:
