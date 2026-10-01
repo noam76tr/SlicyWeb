@@ -1,3 +1,23 @@
+/**
+ * SlicyWeb
+ * Project Validator
+ *
+ * Responsible for:
+ * - Project structure validation
+ * - Metadata validation
+ * - Collection validation
+ * - Date format validation
+ *
+ * No business logic.
+ * No AI logic.
+ * No rendering logic.
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - PROJECT_SPEC.md
+ * - DATA_SCHEMA.md
+ */
+
 import { ProjectState } from "./ProjectManager";
 
 export class ProjectValidator {
