@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Panel Component
  *
  * Based on:
