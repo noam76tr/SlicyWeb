@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Stability Analyzer Definition
  *
  * Based on:
