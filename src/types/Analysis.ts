@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Analysis Type Definition
  *
  * Based on:
