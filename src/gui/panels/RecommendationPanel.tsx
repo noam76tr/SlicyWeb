@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Recommendation Panel
  *
  * Responsible for:
