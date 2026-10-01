@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Viewport Status Component
  *
  * Based on:
