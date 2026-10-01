@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Selection Renderer Definition
  *
  * Based on:
