@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Renderer
  *
  * Responsible for:
