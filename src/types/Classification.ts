@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Classification Type Definition
  *
  * Based on:
