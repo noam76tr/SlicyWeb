@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Optimization Type Definition
  *
  * Based on:
