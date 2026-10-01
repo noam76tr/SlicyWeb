@@ -1,3 +1,22 @@
+/**
+ * SlicyWeb
+ * Project Deserializer
+ *
+ * Responsible for:
+ * - Project deserialization
+ * - Project normalization
+ * - Data validation and defaults
+ *
+ * No business logic.
+ * No AI logic.
+ * No rendering logic.
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - PROJECT_SPEC.md
+ * - IMPORT_EXPORT_SPEC.md
+ */
+
 import { ProjectState } from "./ProjectManager";
 
 export class ProjectDeserializer {
