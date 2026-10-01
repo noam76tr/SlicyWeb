@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Viewport Toolbar Component
  *
  * Based on:
