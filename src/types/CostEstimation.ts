@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Cost Estimation Type Definition
  *
  * Based on:
