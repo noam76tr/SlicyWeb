@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Classification Engine Definition
  *
  * Based on:
