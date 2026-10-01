@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Preset Store Definition
  *
  * Based on:
