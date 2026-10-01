@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Speed Optimizer
  *
  * Responsible for:
