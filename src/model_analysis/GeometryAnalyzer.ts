@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Geometry Analyzer
  *
  * Responsible for:
