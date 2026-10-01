@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Filament Panel Component
  *
  * Based on:
