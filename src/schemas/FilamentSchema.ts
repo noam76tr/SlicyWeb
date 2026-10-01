@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Filament Schema
  *
  * Runtime validation schema.
