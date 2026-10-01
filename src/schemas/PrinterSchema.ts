@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Printer Schema
  *
  * Runtime validation schema.
