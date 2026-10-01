@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Preset Manager
  *
  * Responsible for:
