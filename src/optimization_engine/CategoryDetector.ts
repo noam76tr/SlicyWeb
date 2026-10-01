@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Category Detector
  *
  * Responsible for:
