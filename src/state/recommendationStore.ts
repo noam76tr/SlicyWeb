@@ -1,3 +1,12 @@
+/**
+ * SlicyWeb
+ * Recommendation Store Definition
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - DATA_SCHEMA.md
+ */
+
 import { create } from "zustand";
 
 import type { Recommendation } from "../types/Recommendation";
