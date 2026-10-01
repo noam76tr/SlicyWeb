@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Orientation Optimizer
  *
  * Responsible for:
