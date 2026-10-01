@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * 3MF Importer
  *
  * Responsible for:
