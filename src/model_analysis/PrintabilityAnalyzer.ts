@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Printability Analyzer
  *
  * Responsible for:
