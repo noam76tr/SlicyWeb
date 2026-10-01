@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Scene Renderer Definition
  *
  * Based on:
