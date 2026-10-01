@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Analysis Store Definition
  *
  * Based on:
