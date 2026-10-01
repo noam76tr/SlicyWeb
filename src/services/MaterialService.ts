@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Service Definition
  *
  * Based on:
