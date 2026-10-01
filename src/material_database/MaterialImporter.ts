@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Importer
  *
  * Responsible for:
