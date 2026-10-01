@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Schema
  *
  * Runtime validation schema.
