@@ -45,13 +45,13 @@ export class FilamentRepository {
     );
   }
 
-  public remove(
-    filamentId: string
-  ): void {
-    this.filaments.delete(
-      filamentId
-    );
-  }
+ public remove(
+   filamentId: string
+ ): boolean {
+   return this.filaments.delete(
+     filamentId
+   );
+ }
 
   public clear(): void {
     this.filaments.clear();
