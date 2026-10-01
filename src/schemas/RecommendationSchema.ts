@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Recommendation Schema Definition
  *
  * Based on:
