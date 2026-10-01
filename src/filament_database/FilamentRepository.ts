@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Filament Repository Definition
  *
  * Based on:
