@@ -1,3 +1,12 @@
+/**
+ * SlicyWeb
+ * Object Store Definition
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - DATA_SCHEMA.md
+ */
+
 import { create } from "zustand";
 
 import type { Object3D } from "../types/Object3D";
