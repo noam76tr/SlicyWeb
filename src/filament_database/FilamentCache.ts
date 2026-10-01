@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Filament Cache
  *
  * Responsible for:
