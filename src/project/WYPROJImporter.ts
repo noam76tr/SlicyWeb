@@ -1,3 +1,17 @@
+/**
+ * SlicyWeb
+ * WYPROJ Importer
+ *
+ * Responsible for:
+ * - WYPROJ file validation
+ * - WYPROJ file parsing
+ * - Project data extraction
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - IMPORT_EXPORT_SPEC.md
+ */
+
 import { promises as fs } from "fs";
 import path from "path";
 
