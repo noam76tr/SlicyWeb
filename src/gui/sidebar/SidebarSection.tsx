@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Sidebar Section Component
  *
  * Based on:
