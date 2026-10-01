@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Classification Engine
  *
  * Responsible for:
