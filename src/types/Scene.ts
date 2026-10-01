@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Scene Type Definition
  *
  * Based on:
