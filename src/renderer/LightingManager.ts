@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Lighting Manager Definition
  *
  * Based on:
