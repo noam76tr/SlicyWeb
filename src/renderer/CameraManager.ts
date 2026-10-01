@@ -11,6 +11,11 @@
  * No business logic.
  * No AI logic.
  * No scene management.
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - TECH_STACK.md
+ * - GUI_SPEC.md
  */
 
 import * as THREE from "three";
