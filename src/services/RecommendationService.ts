@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Recommendation Service Definition
  *
  * Based on:
