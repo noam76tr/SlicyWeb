@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * App
  *
  * Main application component.
@@ -14,14 +14,14 @@ import { useEffect } from "react";
 
 export default function App(): JSX.Element {
   useEffect(() => {
-    document.title = "Wichy";
+    document.title = "SlicyWeb";
   }, []);
 
   return (
     <div className="w-full h-screen flex flex-col bg-neutral-900 text-white">
       <header className="h-14 flex items-center px-4 border-b border-neutral-800">
         <h1 className="text-lg font-semibold">
-          Wichy
+          SlicyWeb
         </h1>
       </header>
 
@@ -81,7 +81,7 @@ export default function App(): JSX.Element {
       </main>
 
       <footer className="h-8 flex items-center px-4 border-t border-neutral-800 text-xs text-neutral-500">
-        Wichy v1.0.0
+        SlicyWeb v1.0.0
       </footer>
     </div>
   );
