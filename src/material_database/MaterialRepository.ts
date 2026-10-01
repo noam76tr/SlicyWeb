@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Repository
  *
  * Responsible for:
