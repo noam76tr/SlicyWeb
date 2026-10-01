@@ -1,3 +1,21 @@
+/**
+ * SlicyWeb
+ * Project Manager
+ *
+ * Responsible for:
+ * - Project lifecycle management
+ * - Project creation
+ * - Project loading
+ * - Project saving
+ * - Project state management
+ * - Project events emission
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - PROJECT_SPEC.md
+ * - IMPORT_EXPORT_SPEC.md
+ */
+
 import { EventEmitter } from "events";
 import { ProjectSerializer } from "./ProjectSerializer";
 import { ProjectDeserializer } from "./ProjectDeserializer";
