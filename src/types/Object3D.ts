@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Object3D Type Definition
  *
  * Based on:
