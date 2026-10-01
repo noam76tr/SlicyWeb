@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Preset Schema Definition
  *
  * Based on:
