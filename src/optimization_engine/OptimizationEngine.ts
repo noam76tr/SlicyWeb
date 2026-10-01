@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Optimization Engine
  *
  * Responsible for:
