@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Store Definition
  *
  * Based on:
