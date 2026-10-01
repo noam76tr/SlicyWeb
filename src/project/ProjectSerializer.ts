@@ -1,3 +1,22 @@
+/**
+ * SlicyWeb
+ * Project Serializer
+ *
+ * Responsible for:
+ * - Project serialization
+ * - Project normalization
+ * - JSON conversion
+ *
+ * No business logic.
+ * No AI logic.
+ * No rendering logic.
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - PROJECT_SPEC.md
+ * - IMPORT_EXPORT_SPEC.md
+ */
+
 import { ProjectState } from "./ProjectManager";
 
 export class ProjectSerializer {
