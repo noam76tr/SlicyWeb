@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Preset Panel Component
  *
  * Based on:
