@@ -1,11 +1,11 @@
 /**
- * Wichy
+ * SlicyWeb
  * Application Constants
  *
  * Central application constants.
  */
 
-export const APPLICATION_NAME = "Wichy";
+export const APPLICATION_NAME = "SlicyWeb";
 
 export const APPLICATION_TAGLINE =
   "AI Smart 3D Printing Platform";
