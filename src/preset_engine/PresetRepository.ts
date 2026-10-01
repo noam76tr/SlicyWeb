@@ -45,13 +45,13 @@ export class PresetRepository {
     );
   }
 
-  public remove(
-    presetName: string
-  ): void {
-    this.presets.delete(
-      presetName
-    );
-  }
+ public remove(
+   presetName: string
+ ): boolean {
+   return this.presets.delete(
+     presetName
+   );
+ }
 
   public clear(): void {
     this.presets.clear();
