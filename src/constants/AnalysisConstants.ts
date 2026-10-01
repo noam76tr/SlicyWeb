@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Analysis Constants Definition
  *
  * Based on:
