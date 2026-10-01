@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * User Preferences Type Definition
  *
  * Based on:
