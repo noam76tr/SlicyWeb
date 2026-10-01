@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Warning Type Definition
  *
  * Based on:
