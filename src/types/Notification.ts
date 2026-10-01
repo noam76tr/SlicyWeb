@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Notification Type Definition
  *
  * Based on:
