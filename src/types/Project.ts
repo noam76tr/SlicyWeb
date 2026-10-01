@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Project Type Definition
  *
  * Based on:
@@ -14,27 +14,32 @@ export interface ProjectSettings {
   [key: string]: unknown;
 }
 
-export interface ProjectRecommendations {
-  [key: string]: unknown;
-}
-
-export interface Project {
-  projectId: string;
-
-  projectName: string;
-
+export interface ProjectMetadata {
   createdAt: string;
 
   updatedAt: string;
 
   version: string;
 
-  scene: Scene;
+  author?: string;
 
-  settings: ProjectSettings;
+  description?: string;
+}
 
-  recommendations: ProjectRecommendations;
+export interface Project {
+  id: string;
 
-  preset: PrintPreset | null;
+  name: string;
 
+  format: string;
+
+  version: string;
+
+  metadata: ProjectMetadata;
+
+  scene?: Record<string, unknown>;
+
+  objects?: Record<string, unknown>[];
+
+  settings?: Record<string, unknown>;
 }
