@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Mesh Validator Definition
  *
  * Based on:
