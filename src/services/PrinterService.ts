@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Printer Service Definition
  *
  * Based on:
