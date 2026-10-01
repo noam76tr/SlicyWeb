@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Application Store Definition
  *
  * Based on:
