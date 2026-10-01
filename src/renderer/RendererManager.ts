@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Renderer Manager Definition
  *
  * Based on:
