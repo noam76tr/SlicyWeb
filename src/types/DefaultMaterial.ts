@@ -1,4 +1,13 @@
-// src/types/DefaultMaterial.ts
+/**
+ * SlicyWeb
+ * Default Material Configuration
+ *
+ * Provides default material profile for PLA.
+ *
+ * Based on:
+ * - MATERIAL_PROFILE_SPEC.md
+ * - DATA_SCHEMA.md
+ */
 
 import { Material } from "./Material";
 
