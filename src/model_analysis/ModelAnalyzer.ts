@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Model Analyzer Definition
  *
  * Based on:
