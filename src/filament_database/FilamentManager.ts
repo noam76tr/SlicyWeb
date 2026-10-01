@@ -16,13 +16,13 @@ export class FilamentManager {
   private readonly repository =
     new FilamentRepository();
 
-  public addFilament(
-    filament: Filament
-  ): void {
-    this.repository.save(
-      filament
-    );
-  }
+ public removeFilament(
+   filamentId: string
+ ): boolean {
+   return this.repository.remove(
+     filamentId
+   );
+}
 
   public removeFilament(
     filamentId: string
