@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Print Preset Type Definition
  *
  * Based on:
