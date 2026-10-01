@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Scene Store Definition
  *
  * Based on:
