@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Mesh Analyzer Definition
  *
  * Based on:
