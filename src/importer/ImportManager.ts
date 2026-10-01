@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Import Manager
  *
  * Responsible for:
