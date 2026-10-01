@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Printer Store Definition
  *
  * Based on:
