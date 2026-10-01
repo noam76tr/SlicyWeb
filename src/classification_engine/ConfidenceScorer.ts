@@ -39,7 +39,6 @@ export class ConfidenceScorer {
   /**
    * Calculates a confidence score.
    */
-  
   public static calculate(
     features: string[],
     category: string,
