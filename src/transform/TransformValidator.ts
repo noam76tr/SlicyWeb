@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Transform Validator
  *
  * Responsible for:
