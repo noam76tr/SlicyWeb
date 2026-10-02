@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Scene Validator
  *
  * Responsible for:
@@ -10,6 +10,11 @@
  * No business logic.
  * No rendering logic.
  * No AI logic.
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - DATA_SCHEMA.md
+ * - SCENE_SPEC.md
  */
 
 import type { Scene } from "../types/Scene";
