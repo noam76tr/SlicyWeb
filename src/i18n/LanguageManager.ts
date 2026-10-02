@@ -1,3 +1,23 @@
+/**
+ * SlicyWeb
+ * Language Manager
+ *
+ * Responsible for:
+ * - Language selection
+ * - Language state management
+ * - Supported language validation
+ * - RTL language detection
+ *
+ * No business logic.
+ * No rendering logic.
+ * No repository logic.
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - I18N_SPEC.md
+ * - DATA_SCHEMA.md
+ */
+
 export type SupportedLanguage =
   | "en"
   | "fr"
