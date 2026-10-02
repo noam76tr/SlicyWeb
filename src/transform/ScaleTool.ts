@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Scale Tool
  *
  * Responsible for:
