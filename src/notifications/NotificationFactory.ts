@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Notification Factory
  *
  * Responsible for:
