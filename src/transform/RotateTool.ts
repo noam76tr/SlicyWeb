@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Rotate Tool
  *
  * Responsible for:
