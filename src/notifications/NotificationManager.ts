@@ -18,83 +18,81 @@
  * - SYSTEM_RULES.md
  */
 
-import type { Notific*tion } from "../types/Notification*;
+import type { Notification } from "../types/Notification";
 
-export class NotificationManage* {
-  private readonly notification*: Notification[] =
+export class NotificationManager {
+  private readonly notifications: Notification[] =
     [];
 
   /**
-*  * Adds a notification.
+   * Adds a notification.
    */
-  p*blic add(
-    notification: Notifi*ation,
+  public add(
+    notification: Notification,
   ): void {
-    this.notifi*ations.push(
+    this.notifications.push(
       notification,
- *  );
-  }
-
-  /**
-   * Returns all n*tifications.
-   */
-  public getAll*): Notification[] {
-    return [
-      ...this.notifications,
-    ];
-* }
-
-  /**
-   * Returns notificatio* by id.
-   */
-  public getById(
-  * id: string,
-  ): Notification | n*ll {
-    return (
-      this.notif*cations.find(
-        (
-          *otification,
-        ) =>
-        * notification.id === id,
-      ) ?* null
     );
   }
 
   /**
-   * Remov*s notification by id.
+   * Returns all notifications.
    */
-  publ*c remove(
+  public getAll(): Notification[] {
+    return [
+      ...this.notifications,
+    ];
+  }
+
+  /**
+   * Returns notification by id.
+   */
+  public getById(
     id: string,
-  ): boo*ean {
+  ): Notification | null {
+    return (
+      this.notifications.find(
+        (notification) =>
+          notification.id === id,
+      ) ?? null
+    );
+  }
+
+  /**
+   * Removes notification by id.
+   */
+  public remove(
+    id: string,
+  ): boolean {
     const index =
-      this*notifications.findIndex(
-        (*otification) =>
-          notifica*ion.id === id,
+      this.notifications.findIndex(
+        (notification) =>
+          notification.id === id,
       );
 
-    if (i*dex === -1) {
+    if (index === -1) {
       return false;
-*   }
+    }
 
-    this.notifications.splic*(
+    this.notifications.splice(
       index,
       1,
     );
 
-  * return true;
+    return true;
   }
 
   /**
-   * Clea*s all notifications.
+   * Clears all notifications.
    */
-  publi* clear(): void {
-    this.notifica*ions.length = 0;
+  public clear(): void {
+    this.notifications.length = 0;
   }
 
   /**
-   * R*turns total count.
+   * Returns total count.
    */
-  public *ount(): number {
+  public count(): number {
     return this.notifications.length;
   }
 
