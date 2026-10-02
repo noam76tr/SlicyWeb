@@ -1,8 +1,18 @@
 /**
- * Wichy
+ * SlicyWeb
  * JSON Utilities
  *
- * Shared JSON helper functions.
+ * Responsible for:
+ * - JSON helper functions
+ * - JSON utility operations
+ *
+ * No business logic.
+ * No rendering logic.
+ * No repository logic.
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - UTILS_SPEC.md
  */
 
 export class JsonUtils {}
