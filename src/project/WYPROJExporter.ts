@@ -8,6 +8,10 @@
  * - Blob generation for download
  * - Safe filename generation
  *
+ * No business logic.
+ * No AI logic.
+ * No rendering logic.
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - IMPORT_EXPORT_SPEC.md
