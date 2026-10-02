@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Time Estimator Definition
  *
  * Based on:
