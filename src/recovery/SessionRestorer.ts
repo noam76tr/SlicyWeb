@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Session Restorer Definition
  *
  * Based on:
