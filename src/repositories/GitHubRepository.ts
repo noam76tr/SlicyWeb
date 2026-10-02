@@ -18,65 +18,70 @@
  * - TECH_STACK.md
  */
 
-export class GitHubRepository {*  private baseUrl = "";
+export class GitHubRepository {
+  private baseUrl = "";
 
   /**
    * Sets repository base URL.
    */
- *public setBaseUrl(
-    url: string*
+  public setBaseUrl(
+    url: string,
   ): void {
-    this.baseUrl = ur*;
+    this.baseUrl = url;
   }
 
   /**
-   * Returns reposito*y base URL.
+   * Returns repository base URL.
    */
-  public getBase*rl(): string {
-    return this.bas*Url;
+  public getBaseUrl(): string {
+    return this.baseUrl;
   }
 
   /**
-   * Fetches JSON *ata from repository.
+   * Fetches JSON data from repository.
    */
-  publi* async fetch<T>(
-    path: string,*  ): Promise<T> {
-    const respon*e =
+  public async fetch<T>(
+    path: string,
+  ): Promise<T> {
+    const response =
       await fetch(
-        `${*his.baseUrl}/${path}`,
+        `${this.baseUrl}/${path}`,
       );
 
- *  if (!response.ok) {
-      throw *ew Error(
-        `Repository requ*st failed: ${response.status}`,
-  *   );
+    if (!response.ok) {
+      throw new Error(
+        `Repository request failed: ${response.status}`,
+      );
     }
 
-    return response.j*on() as Promise<T>;
+    return response.json() as Promise<T>;
   }
 
   /**
-   * Returns whether repository is rea*hable.
+   * Returns whether repository is reachable.
    */
-  public async isAvai*able(): Promise<boolean> {
-    try*{
+  public async isAvailable(): Promise<boolean> {
+    try {
       const response =
-        a*ait fetch(
-          this.baseUrl,*          {
-            method: "H*AD",
+        await fetch(
+          this.baseUrl,
+          {
+            method: "HEAD",
           },
         );
 
-    * return response.ok;
-    } catch {*      return false;
+      return response.ok;
+    } catch {
+      return false;
     }
   }
 
   /**
-   * Downloads raw text content.*   */
+   * Downloads raw text content.
+   */
   public async fetchText(
-  * path: string,
-  ): Promise<string* {
+    path: string,
+  ): Promise<string> {
     const response =
       await fetch(
         `${this.baseUrl}/${path}`,
@@ -89,5 +94,26 @@ export class GitHubRepository {*  private baseUrl = "";
     }
 
     return response.text();
+  }
+
+  /**
+   * Checks whether a resource exists.
+   */
+  public async exists(
+    path: string,
+  ): Promise<boolean> {
+    try {
+      const response =
+        await fetch(
+          `${this.baseUrl}/${path}`,
+          {
+            method: "HEAD",
+          },
+        );
+
+      return response.ok;
+    } catch {
+      return false;
+    }
   }
 }
