@@ -14,15 +14,15 @@ import type { Filament } from "../types/Filament";
 import { FilamentValidator } from "./FilamentValidator";
 
 export class FilamentImporter {
-  private readonly validator =
-    new FilamentValidator();
-
+  /**
+   * Imports a filament profile from data.
+   */
   public import(
-    data: unknown
+    data: unknown,
   ): Filament {
     if (
-      !this.validator.validate(
-        data
+      !FilamentValidator.validate(
+        data as Filament,
       )
     ) {
       throw new Error(
@@ -33,8 +33,11 @@ export class FilamentImporter {
     return data as Filament;
   }
 
+  /**
+   * Imports multiple filament profiles.
+   */
   public importMany(
-    data: unknown[]
+    data: unknown[],
   ): Filament[] {
     return data.map((item) =>
       this.import(item)
