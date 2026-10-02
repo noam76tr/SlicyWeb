@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Recommendation Builder Definition
  *
  * Based on:
