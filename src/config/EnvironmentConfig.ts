@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Environment Configuration Definition
  *
  * Based on:
