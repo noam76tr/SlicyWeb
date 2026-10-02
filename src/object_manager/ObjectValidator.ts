@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Object Validator
  *
  * Responsible for:
