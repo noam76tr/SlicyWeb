@@ -34,7 +34,7 @@ export class ProjectDeserializer {
     }
   }
 
-   private normalize(data: unknown): ProjectState {
+  private normalize(data: unknown): ProjectState {
      if (typeof data !== "object" || data === null) {
        throw new Error("Invalid project structure.");
     }
