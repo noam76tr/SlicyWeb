@@ -1,4 +1,22 @@
-// src/i18n/TranslationLoader.ts
+/**
+ * SlicyWeb
+ * Translation Loader
+ *
+ * Responsible for:
+ * - Translation dictionary loading
+ * - Translation caching
+ * - Language fallback handling
+ * - Translation file management
+ *
+ * No business logic.
+ * No rendering logic.
+ * No repository logic.
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - I18N_SPEC.md
+ * - DATA_SCHEMA.md
+ */
 
 export type SupportedLanguage =
   | "en"
