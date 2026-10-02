@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Project Storage Definition
  *
  * Based on:
