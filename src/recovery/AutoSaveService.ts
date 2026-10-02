@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Auto Save Service Definition
  *
  * Based on:
