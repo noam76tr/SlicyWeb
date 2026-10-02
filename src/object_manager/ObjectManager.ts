@@ -5,6 +5,7 @@
  * Based on:
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
+ * - OBJECT_MANAGEMENT_SPEC.md
  */
 
 import type { Object3D } from "../types/Object3D";
