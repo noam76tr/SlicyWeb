@@ -1,10 +1,21 @@
 /**
- * Wichy
+ * SlicyWeb
  * Event Bus Definition
+ *
+ * Responsible for:
+ * - Event publishing
+ * - Event subscription management
+ * - Event distribution
+ * - Event listener lifecycle
+ *
+ * No business logic.
+ * No rendering logic.
+ * No repository logic.
  *
  * Based on:
  * - ARCHITECTURE.md
  * - API_SPEC.md
+ * - EVENT_SPEC.md
  */
 
 import type { EventType } from "./EventTypes";
