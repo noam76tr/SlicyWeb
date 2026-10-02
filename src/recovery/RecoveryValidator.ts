@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Recovery Validator Definition
  *
  * Based on:
