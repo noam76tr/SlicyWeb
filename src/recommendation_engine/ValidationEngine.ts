@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Validation Engine Definition
  *
  * Based on:
