@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Recommendation Engine Definition
  *
  * Based on:
