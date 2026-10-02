@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Object Manager Definition
  *
  * Based on:
