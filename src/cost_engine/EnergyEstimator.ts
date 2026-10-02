@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Energy Estimator Definition
  *
  * Based on:
