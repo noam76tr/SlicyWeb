@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Printer Repository
  *
  * Responsible for:
