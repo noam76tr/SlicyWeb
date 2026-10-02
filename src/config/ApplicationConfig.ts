@@ -2,9 +2,19 @@
  * SlicyWeb
  * Application Configuration Definition
  *
+ * Responsible for:
+ * - Application configuration interface
+ * - Application settings definition
+ * - Configuration property specification
+ *
+ * No business logic.
+ * No rendering logic.
+ * No repository logic.
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - TECH_STACK.md
+ * - CONFIG_SPEC.md
  */
 
 export interface ApplicationConfig {
