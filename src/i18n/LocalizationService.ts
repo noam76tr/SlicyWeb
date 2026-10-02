@@ -1,3 +1,23 @@
+/**
+ * SlicyWeb
+ * Localization Service
+ *
+ * Responsible for:
+ * - Translation management
+ * - Language loading
+ * - Translation retrieval
+ * - Parameterized translation
+ *
+ * No business logic.
+ * No rendering logic.
+ * No repository logic.
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - I18N_SPEC.md
+ * - DATA_SCHEMA.md
+ */
+
 import { SupportedLanguage } from "./LanguageManager";
 import { TranslationLoader } from "./TranslationLoader";
 
