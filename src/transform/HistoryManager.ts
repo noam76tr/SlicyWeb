@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * History Manager Definition
  *
  * Based on:
