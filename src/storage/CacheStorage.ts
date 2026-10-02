@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Cache Storage Definition
  *
  * Based on:
