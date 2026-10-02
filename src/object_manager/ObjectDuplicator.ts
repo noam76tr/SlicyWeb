@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Object Duplicator Definition
  *
  * Based on:
