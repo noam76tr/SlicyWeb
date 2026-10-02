@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Storage Manager Definition
  *
  * Based on:
