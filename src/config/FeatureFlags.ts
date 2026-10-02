@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Feature Flags Definition
  *
  * Based on:
