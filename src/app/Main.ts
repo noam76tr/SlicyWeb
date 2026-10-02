@@ -1,8 +1,20 @@
 /**
- * Wichy
+ * SlicyWeb
  * Main Entry Point
  *
- * Application bootstrap.
+ * Responsible for:
+ * - Application bootstrap
+ * - Startup sequence execution
+ * - Error handling
+ * - Process management
+ *
+ * No business logic.
+ * No rendering logic.
+ * No repository logic.
+ *
+ * Based on:
+ * - ARCHITECTURE.md
+ * - STARTUP_SPEC.md
  */
 
 import { Startup } from "./Startup";
@@ -13,9 +25,9 @@ async function main(): Promise<void> {
 
     await startup.execute();
 
-    console.info("[Wichy] Startup completed.");
+    console.info("[SlicyWeb] Startup completed.");
   } catch (error) {
-    console.error("[Wichy] Startup failed.", error);
+    console.error("[SlicyWeb] Startup failed.", error);
 
     process.exit(1);
   }
