@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Decision Engine
  *
  * Responsible for:
@@ -28,7 +28,7 @@ export class DecisionEngine {
    * Selects the most appropriate preset
    * for a classification result.
    */
-  public generate(
+public generate(
   analysis: Analysis,
 ): RecommendedProfile {
   return {
