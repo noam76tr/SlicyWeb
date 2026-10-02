@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Application Configuration Definition
  *
  * Based on:
