@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Repository Sync Definition
  *
  * Based on:
