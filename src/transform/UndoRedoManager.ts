@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Undo Redo Manager Definition
  *
  * Based on:
