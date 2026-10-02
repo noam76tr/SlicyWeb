@@ -6,6 +6,11 @@
  * - WYPROJ file validation
  * - WYPROJ file parsing
  * - Project data extraction
+ * - Project format verification
+ *
+ * No business logic.
+ * No AI logic.
+ * No rendering logic.
  *
  * Based on:
  * - ARCHITECTURE.md
