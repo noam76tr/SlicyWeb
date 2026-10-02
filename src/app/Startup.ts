@@ -1,15 +1,21 @@
 /**
- * Wichy
+ * SlicyWeb
  * Startup Module
  *
- * Responsible for application startup initialization.
+ * Responsible for:
+ * - Application startup initialization
+ * - Core systems initialization
+ * - Environment validation
+ * - Application readiness preparation
  *
- * Responsibilities:
- * - Initialize core systems
- * - Validate startup requirements
- * - Prepare application environment
+ * No business logic.
+ * No rendering logic.
+ * No repository logic.
  *
- * No business logic should be placed here.
+ * Based on:
+ * - ARCHITECTURE.md
+ * - STARTUP_SPEC.md
+ * - TECH_STACK.md
  */
 
 export class Startup {
@@ -41,6 +47,10 @@ export class Startup {
    */
   private async initializeEnvironment(): Promise<void> {
     console.info("[Startup] Initializing environment...");
+    // TODO: Implement environment initialization
+    // - Load environment variables
+    // - Configure paths
+    // - Setup logging
   }
 
   /**
@@ -48,5 +58,10 @@ export class Startup {
    */
   private async initializeApplication(): Promise<void> {
     console.info("[Startup] Initializing application...");
+    // TODO: Implement application initialization
+    // - Load configuration
+    // - Initialize databases
+    // - Setup event bus
+    // - Initialize services
   }
 }
