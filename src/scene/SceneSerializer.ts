@@ -1,6 +1,15 @@
 /**
- * Wichy
+ * SlicyWeb
  * Scene Serializer Definition
+ *
+ * Responsible for:
+ * - Scene serialization to JSON
+ * - Scene deserialization from JSON
+ * - Data transformation
+ *
+ * No business logic.
+ * No rendering logic.
+ * No AI logic.
  *
  * Based on:
  * - DATA_SCHEMA.md
