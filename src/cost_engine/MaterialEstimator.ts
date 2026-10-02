@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Material Estimator Definition
  *
  * Based on:
