@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Recovery Manager Definition
  *
  * Based on:
