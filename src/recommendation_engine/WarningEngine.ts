@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Warning Engine
  *
  * Responsible for:
