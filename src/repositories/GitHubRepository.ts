@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * GitHub Repository
  *
  * Responsible for:
