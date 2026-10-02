@@ -1,6 +1,16 @@
 /**
- * Wichy
+ * SlicyWeb
  * Scene Manager Definition
+ *
+ * Responsible for:
+ * - Scene management
+ * - Object addition/removal
+ * - Object retrieval
+ * - Scene cleanup
+ *
+ * No business logic.
+ * No AI logic.
+ * No serialization logic.
  *
  * Based on:
  * - ARCHITECTURE.md
