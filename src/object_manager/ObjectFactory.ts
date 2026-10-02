@@ -1,5 +1,5 @@
 /**
- * Wichy
+ * SlicyWeb
  * Object Factory
  *
  * Responsible for:
