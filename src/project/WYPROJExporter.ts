@@ -23,6 +23,7 @@ export interface WYPROJFile {
   format: "WYPROJ";
   version: string;
   project: ProjectState;
+  metadata: ProjectMetadata;
 }
 
 export class WYPROJExporter {
