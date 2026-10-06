@@ -2,9 +2,9 @@
 
 # DIRECTORY PURPOSES
 
-Version: 2.0.0
+Version: 2.1.0
 
-Status: Approved
+Status: Approved  
 
 ---
 
@@ -12,7 +12,7 @@ Status: Approved
 
 This document defines the purpose and responsibility of every directory used within the SlicyWeb project.
 
-The objective is to ensure:
+**The objective is to ensure:**
 
 - Consistent project organization
 - Clear responsibilities
@@ -24,187 +24,128 @@ Every file should be placed in the directory that matches its responsibility.
 
 ---
 
-# Project Root
+## Project Root
 
-```text
-SlicyWeb/
-```
+**Path:** `SlicyWeb/`
 
-Purpose:
+**Purpose:** Project Root Directory
 
-```text
-Project Root Directory
-```
+**Contains:**
 
-Contains:
-
-```text
-Project Configuration
-Documentation
-Source Code
-Assets
-Tests
-Runtime Resources
-```
+- Project Configuration
+- Documentation
+- Source Code
+- Assets
+- Tests
+- Runtime Resources
 
 ---
 
-# Root Governance Files
+## Root Governance Files
 
-Purpose:
+**Purpose:** AI Governance Layer
 
-```text
-AI Governance Layer
-```
+**Contains:**
 
-Contains:
-
-```text
-CLAUDE.md
-
-CLAUDE_PROJECT_CONTEXT.md
-
-CLAUDE_DOCUMENT_READING_ORDER.md
-
-CLAUDE_CHANGE_IMPACT_RULES.md
-
-CLAUDE_FILE_UPDATE_RULES.md
-```
+- CLAUDE.md
+- CLAUDE_PROJECT_CONTEXT.md
+- CLAUDE_DOCUMENT_READING_ORDER.md
+- CLAUDE_CHANGE_IMPACT_RULES.md
+- CLAUDE_FILE_UPDATE_RULES.md
 
 ---
 
-# .github/
+## .github/
 
-Purpose:
+**Purpose:** GitHub Configuration and Workflows
 
-```text
-GitHub Configuration and Workflows
-```
+**Contains:**
 
-Contains:
-
-```text
-GitHub Actions Workflows
-CI/CD Configuration
-GitHub Templates
-Repository Settings
-```
+- GitHub Actions Workflows
+- CI/CD Configuration
+- GitHub Templates
+- Repository Settings
 
 ---
 
-# .github/workflows/
+## .github/workflows/
 
-Purpose:
+**Purpose:** Automation Pipeline
 
-```text
-Automation Pipeline
-```
+**Contains:**
 
-Contains:
-
-```text
-Build Validation
-Testing
-Linting
-Release Automation
-```
+- Build Validation
+- Testing
+- Linting
+- Release Automation
 
 ---
 
-# docs/
+## docs/
 
-Purpose:
+**Purpose:** Project Documentation
 
-```text
-Project Documentation
-```
+**Contains:**
 
-Contains:
-
-```text
-Specifications
-Architecture
-Rules
-Roadmaps
-Guides
-```
+- Specifications
+- Architecture
+- Rules
+- Roadmaps
+- Guides
 
 ---
 
-# docs/00-index/
+## docs/00-index/
 
-Purpose:
+**Purpose:** Documentation Entry Point
 
-```text
-Documentation Entry Point
-```
+**Contains:**
 
-Contains:
-
-```text
-Documentation Index
-AI Reading Guide
-API Reading Guide
-AI Development Protocol
-Claude Governance
-Reading Priorities
-Documentation Navigation
-Governance Navigation
-```
+- Documentation Index
+- AI Reading Guide
+- API Reading Guide
+- AI Development Protocol
+- Claude Governance
+- Reading Priorities
+- Documentation Navigation
+- Governance Navigation
 
 ---
 
-# docs/01-project/
+## docs/01-project/
 
-Purpose:
+**Purpose:** Project Definition
 
-```text
-Project Definition
-```
+**Contains:**
 
-Contains:
-
-```text
-Vision
-Scope
-Roadmap
-Planning
-Change History
-```
+- Vision
+- Scope
+- Roadmap
+- Planning
+- Change History
 
 ---
 
-# docs/02-architecture/
+## docs/02-architecture/
 
-Purpose:
+**Purpose:** System Design
 
-```text
-System Design
-```
+**Contains:**
 
-Contains:
-
-```text
-Architecture
-Schemas
-Tech Stack
-File Structure
-API Definitions
-```
+- Architecture
+- Schemas
+- Tech Stack
+- File Structure
+- API Definitions
 
 ---
 
-# docs/03-development/
+## docs/03-development/
 
-Purpose:
+**Purpose:** Development Standards
 
-```text
-Development Standards
-```
+**Contains:**
 
-Contains:
-
-```text
 - Development Rules
 - Development Workflows
 - Impact Analysis
@@ -217,1555 +158,1493 @@ Contains:
 - Verification Processes
 - Settings Specifications
 - Error Definitions
-```
 
-Documents:
+**Documents:**
 
 - SYSTEM_RULES.md
 - DEVELOPMENT_RULES.md
 - DEVELOPMENT_WORKFLOW.md
 - CHANGE_IMPACT_RULES.md
-
 - DOMAIN_BOUNDARIES.md
 - DOMAINS_DEPENDENCY_MATRIX.md
 - FILE_OWNERSHIP_MATRIX.md
-
 - PROJECT_IMPACT_MATRIX.md
 - CROSS_DOCUMENT_DEPENDENCIES.md
 - DOCUMENT_UPDATE_MATRIX.md
-
 - CHANGE_CLASSIFICATION_RULES.md
 - CHANGE_VERIFICATION_CHECKLIST.md
-
 - BUG_ANALYSIS_PROTOCOL.md
-
 - UPDATE_GOVERNANCE_PROTOCOL.md
 - UPDATE_IMPACT_RULES.md
 - UPDATE_REPORT_TEMPLATE.md
-
 - ERROR_CODES_SPEC.md
 - UNDO_REDO_SPEC.md
 - USER_SETTINGS_SPEC.md
 
 ---
 
-# docs/04-ai/
+## docs/04-ai/
 
-Purpose:
+**Purpose:** Artificial Intelligence Specifications
 
-```text
-Artificial Intelligence Specifications
-```
+**Contains:**
 
-Contains:
+- Analysis Logic
+- Recommendations
+- Classification
+- Presets
+- Support Generation
 
-```text
-Analysis Logic
-Recommendations
-Classification
-Presets
-Support Generation
-```
-
 ---
 
-# docs/05-profiles/
+## docs/05-profiles/
 
-Purpose:
+**Purpose:** Profile Definitions
 
-```text
-Profile Definitions
-```
+**Contains:**
 
-Contains:
+- Printer Profiles
+- Material Profiles
+- Filament Profiles
 
-```text
-Printer Profiles
-Material Profiles
-Filament Profiles
-```
-
 ---
-
-# docs/06-quality/
 
-Purpose:
+## docs/06-quality/
 
-```text
-Quality Assurance
-```
+**Purpose:** Quality Assurance
 
-Contains:
+**Contains:**
 
-```text
-Testing
-Security
-Performance
-```
+- Testing
+- Security
+- Performance
 
 ---
 
-# docs/07-future/
+## docs/07-future/
 
-Purpose:
+**Purpose:** Future Systems
 
-```text
-Future Systems
-```
+**Contains:**
 
-Contains:
+- G-Code Specifications
+- Plugin System
+- Future Extensions
 
-```text
-G-Code Specifications
-Plugin System
-Future Extensions
-```
-
 ---
 
-# docs/08-user-interface/
+## docs/08-user-interface/
 
-Purpose:
+**Purpose:** User Interface Specifications
 
-```text
-User Interface Specifications
-```
+**Contains:**
 
-Contains:
+- Layouts
+- Panels
+- Menus
+- User Experience Definitions
 
-```text
-Layouts
-Panels
-Menus
-User Experience Definitions
-```
-
 ---
-
-# docs/09-reference/
 
-Purpose:
+## docs/09-reference/
 
-```text
-Project Reference Material
-```
+**Purpose:** Project Reference Material
 
-Contains:
+**Contains:**
 
-```text
-Glossary
-Terminology
-Naming Rules
-Acronyms
-Versioning Policies
-Architecture Decisions
-Directory Definitions
-Governance References
-```
+- Glossary
+- Terminology
+- Naming Rules
+- Acronyms
+- Versioning Policies
+- Architecture Decisions
+- Directory Definitions
+- Governance References
 
 ---
 
-# src/
+## src/
 
-Purpose:
+**Purpose:** Application Source Code
 
-```text
-Application Source Code
-```
+**Contains:**
 
-Contains:
+- Business Logic
+- User Interface
+- Data Processing
+- Application Systems
 
-```text
-Business Logic
-User Interface
-Data Processing
-Application Systems
-```
-
 ---
 
-# src/app/
+## src/app/
 
-Purpose:
+**Purpose:** Application Bootstrap Layer
 
-```text
-Application Bootstrap Layer
-```
+**Role:** Application entry point and startup orchestration.
 
-Contains:
+**Contains:**
 
-```text
-Startup Logic
-Shutdown Logic
-Application Initialization
-Dependency Management
-```
-
----
+- Startup Logic
+- Shutdown Logic
+- Application Initialization
+- Dependency Management
 
-# src/gui/
+**Files:**
 
-Purpose:
+| File | Role |
+|------|------|
+| `Main.ts` | Main application entry point |
+| `Startup.ts` | Manages the startup initialization sequence |
 
-```text
-User Interface Layer
-```
+---
 
-Contains:
+## src/gui/
 
-```text
-Layouts
-Panels
-Dialogs
-Menus
-Components
-Themes
-```
+**Purpose:** User Interface Layer
 
----
+**Role:** Main React components (App, MainLayout) and UI panel structure.
 
-# src/gui/viewport/
+**Contains:**
 
-Purpose:
-```text
-3D Workspace User Interface
-```
+- Layouts
+- Panels
+- Dialogs
+- Menus
+- Components
+- Themes
 
-Contains:
+**Files:**
 
-```text
-Viewport Rendering Components
-Viewport Controls
-Viewport Status Display
-Workspace Interaction Tools
-```
+| File | Role |
+|------|------|
+| `App.tsx` | Main application component with the global structure |
+| `MainLayout.tsx` | Reusable component organizing the main page layout |
 
 ---
 
-# src/gui/panels/
+## src/gui/viewport/
 
-Purpose:
+**Purpose:** 3D Workspace User Interface
 
-```text
-Application Functional Panels
-```
+**Contains:**
 
-Contains:
+- Viewport Rendering Components
+- Viewport Controls
+- Viewport Status Display
+- Workspace Interaction Tools
 
-```text
-Printer Configuration Panels
-Material Panels
-Filament Panels
-Preset Panels
-Analysis Panels
-Recommendation Panels
-```
+**Files:**
 
+| File | Role |
+|------|------|
+| `Viewport.tsx` | 3D viewport container with renderer management and resizing |
+| `ViewportStatus.tsx` | Viewport status bar displaying objects, camera and FPS |
+| `ViewportToolbar.tsx` | Viewport toolbar for transformation operations |
+
 ---
+
+## src/gui/panels/
 
-# src/gui/statusbar/
+**Purpose:** Application Functional Panels
 
-Purpose:
+**Contains:**
 
-```text
-Application Status Display
-```
+- Printer Configuration Panels
+- Material Panels
+- Filament Panels
+- Preset Panels
+- Analysis Panels
+- Recommendation Panels
 
-Contains:
+**Files:**
 
-```text
-Status Messages
-Progress Indicators
-Notifications
-System Information
-```
+| File | Role |
+|------|------|
+| `AnalysisPanel.tsx` | Displays the 3D model analysis results |
+| `FilamentPanel.tsx` | Displays the properties of the selected filament |
+| `MaterialPanel.tsx` | Displays the properties of the selected material |
+| `PresetPanel.tsx` | Displays the properties of the selected print preset |
+| `PrinterPanel.tsx` | Printer selection and printer details display |
+| `RecommendationPanel.tsx` | Complete display of the print recommendations |
 
 ---
 
-# src/renderer/
+## src/gui/statusbar/
 
-Purpose:
+**Purpose:** Application Status Display
 
-```text
-3D Rendering System
-```
+**Contains:**
 
-Contains:
+- Status Messages
+- Progress Indicators
+- Notifications
+- System Information
 
-```text
-Scene Rendering
-Viewport Rendering
-Camera Management
-Lighting Management
-```
+**Files:**
 
----
+| File | Role |
+|------|------|
+| `StatusBar.tsx` | Status bar displaying project information |
 
-# src/scene/
+---
 
-Purpose:
+## src/gui/sidebar/
 
-```text
-Scene Management
-```
+**Purpose:** Sidebar Components
 
-Contains:
+**Files:**
 
-```text
-Workspace Data
-Scene Validation
-Scene Serialization
-```
+| File | Role |
+|------|------|
+| `LeftSidebar.tsx` | Left sidebar with project, import and object sections |
+| `RightSidebar.tsx` | Right sidebar with printer, material, filament and preset sections |
+| `SidebarSection.tsx` | Reusable component for sidebar sections |
 
 ---
+
+## src/renderer/
 
-# src/object_manager/
+**Purpose:** 3D Rendering System
 
-Purpose:
+**Role:** 3D rendering engine built on Three.js: camera, lighting, render loop and selection display.
 
-```text
-Model Management
-```
+**Contains:**
 
-Contains:
+- Scene Rendering
+- Viewport Rendering
+- Camera Management
+- Lighting Management
 
-```text
-Object Creation
-Object Storage
-Duplication
-Validation
-```
+**Files:**
 
+| File | Role |
+|------|------|
+| `CameraManager.ts` | Manages the 3D camera (creation, positioning, orientation) |
+| `LightingManager.ts` | Manages lighting (ambient and directional light) |
+| `Renderer.ts` | Creates and manages the WebGL renderer |
+| `RendererManager.ts` | Orchestrates the rendering system (scene, camera, renderer) |
+| `SceneRenderer.ts` | Manages the render loop and the scene objects |
+| `SelectionRenderer.ts` | Visual rendering of object selection (BoxHelper) |
+
 ---
+
+## src/scene/
 
-# src/optimization_engine/
+**Purpose:** Scene Management
 
-Purpose:
+**Role:** 3D scene management: factory, manager, serialization, validation.
 
-```text
-Print Optimization Engine
-```
+**Contains:**
 
-Contains:
+- Workspace Data
+- Scene Validation
+- Scene Serialization
 
-```text
-OptimizationEngine
-OrientationOptimizer
-MaterialOptimizer
-SpeedOptimizer
-SupportOptimizer
-```
+**Files:**
 
-Components:
+| File | Role |
+|------|------|
+| `SceneFactory.ts` | Creates scenes with a default configuration |
+| `SceneManager.ts` | Manages the Three.js scene and its 3D objects |
+| `SceneSerializer.ts` | Serializes and deserializes scenes to and from JSON |
+| `SceneValidator.ts` | Validates scenes and allowed operations |
 
-- OptimizationEngine.ts
-- OrientationOptimizer.ts
-- MaterialOptimizer.ts
-- SpeedOptimizer.ts
-- SupportOptimizer.ts
-  
 ---
 
-# src/transform/
+## src/object_manager/
 
-Purpose:
+**Purpose:** Model Management
 
-```text
-Transformation Tools
-```
+**Role:** 3D object management: creation, duplication, validation, storage.
 
-Contains:
+**Contains:**
 
-```text
-Move
+- Object Creation
+- Object Storage
+- Duplication
+- Validation
 
-Rotate
-Scale
-Transform Validation
-Undo/Redo History
-```
+**Files:**
 
+| File | Role |
+|------|------|
+| `ObjectDuplicator.ts` | Duplicates 3D objects with a new ID and transformations |
+| `ObjectFactory.ts` | Creates 3D objects with default values |
+| `ObjectManager.ts` | Stores and retrieves 3D objects |
+| `ObjectRepository.ts` | In-memory storage repository for 3D objects |
+| `ObjectValidator.ts` | Complete validation of objects and allowed operations |
+
 ---
 
-# src/importer/
+## src/optimization_engine/
 
-Purpose:
+**Purpose:** Print Optimization Engine
 
-```text
-Model Import System
-```
+**Role:** Multi-criteria optimization engine (orientation, material, speed, supports). Searches for the best print configuration according to several criteria at the same time. It does not decide what the object is: object classification belongs to src/classification_engine/.
 
-Contains:
+**Contains:**
 
-```text
-STL Import
-3MF Import
-Import Validation
-File Processing
-```
+- OptimizationEngine
+- OrientationOptimizer
+- MaterialOptimizer
+- SpeedOptimizer
+- SupportOptimizer
 
----
+**Files:**
 
-# src/printer_database/
+| File | Role |
+|------|------|
+| `CategoryDetector.ts` | Detects the object category from the extracted features |
+| `ClassificationEngine.ts` | Orchestrates the complete classification process |
+| `ClassificationValidator.ts` | Validates Classification objects and data consistency |
+| `ConfidenceScorer.ts` | Calculates and normalizes confidence scores and levels |
+| `MaterialOptimizer.ts` | Optimizes profiles to reduce material consumption |
+| `OptimizationEngine.ts` | Orchestrates all optimizers to produce a complete result |
+| `OrientationOptimizer.ts` | Evaluates and optimizes the print orientation |
+| `SpeedOptimizer.ts` | Estimates the print time reduction |
+| `SupportOptimizer.ts` | Estimates the support reduction based on geometry |
 
-Purpose:
+**Note:**
 
-```text
-Printer Management System
-```
+CategoryDetector.ts, ClassificationEngine.ts, ClassificationValidator.ts and ConfidenceScorer.ts have the same class names and roles as the files in src/classification_engine/, with different implementations. They are not used by OptimizationEngine.ts.
 
-Contains:
+Until the project owner decides otherwise:
 
-```text
-Printer Loading
-Printer Validation
-Printer Storage
-Printer Repositories
-```
+- Do not delete, move or merge them
+- Do not import them from other domains
+- Object classification uses src/classification_engine/ (AI_ENGINE_SPEC.md)
 
 ---
 
-# src/material_database/
+## src/transform/
 
-Purpose:
+**Purpose:** Transformation Tools
 
-```text
-Material Management System
-```
+**Role:** 3D object transformations: move, rotate, scale, history and undo/redo.
 
-Contains:
+**Contains:**
 
-```text
-Material Profiles
-Material Validation
-Material Repositories
-Material Caching
-```
+- Move
+- Rotate
+- Scale
+- Transform Validation
+- Undo/Redo History
 
+**Files:**
+
+| File | Role |
+|------|------|
+| `HistoryManager.ts` | Manages the operation history with timestamps |
+| `MoveTool.ts` | Move transformation for 3D objects |
+| `RotateTool.ts` | Rotation transformation for 3D objects |
+| `ScaleTool.ts` | Scale transformation for 3D objects |
+| `TransformManager.ts` | Orchestrates all transformation operations |
+| `TransformValidator.ts` | Validates transformations (position, rotation, scale) |
+| `UndoRedoManager.ts` | Manages undo/redo with two state stacks |
+
 ---
+
+## src/importer/
 
-# src/filament_database/
+**Purpose:** Model Import System
 
-Purpose:
+**Role:** 3D file import with validation (STL, 3MF).
 
-```text
-Filament Management System
-```
+**Contains:**
 
-Contains:
+- STL Import
+- 3MF Import
+- Import Validation
+- File Processing
 
-```text
-Filament Profiles
-Manufacturer Data
-Filament Validation
-Filament Repositories
-Filament Caching
-```
+**Files:**
 
+| File | Role |
+|------|------|
+| `FileValidator.ts` | Validates files before import (name, size, extension) |
+| `ImportManager.ts` | Orchestrates the import workflow and routes by format |
+| `STLImporter.ts` | Loads and parses STL files with geometry extraction |
+| `ThreeMFImporter.ts` | Loads and parses 3MF files (placeholder implementation, Phase 2) |
+
 ---
 
-# src/model_analysis/
+## src/i18n/
 
-Purpose:
+**Purpose:** Internationalization
 
-```text
-Geometry Analysis Engine
-```
+**Role:** Internationalization: language and translation management (en, fr, he).
 
-Contains:
+**Files:**
 
-```text
-Mesh Analysis
-Printability Analysis
-Stability Analysis
-Geometry Evaluation
-```
+| File | Role |
+|------|------|
+| `LanguageManager.ts` | Manages the current language and validates supported languages |
+| `LocalizationService.ts` | Translation service with parameter support and fallback |
+| `TranslationLoader.ts` | Loads translation dictionaries with caching and fallback |
 
 ---
+
+## src/printer_database/
 
-# src/notifications/
+**Purpose:** Printer Management System
 
-Purpose:
+**Role:** Printer profile database management.
 
-```text
-Application Notification System
-```
+**Contains:**
 
-Contains:
+- Printer Loading
+- Printer Validation
+- Printer Storage
+- Printer Repositories
 
-```text
-NotificationFactory
-NotificationManager
-NotificationService
-NotificationValidator
-```
+**Files:**
 
-Components:
- 
-- NotificationFactory.ts
-- NotificationManager.ts
-- NotificationService.ts
-- NotificationValidator.ts
-  
+| File | Role |
+|------|------|
+| `PrinterCache.ts` | Cache storage for printer profiles |
+| `PrinterImporter.ts` | Imports printer profiles from JSON with validation |
+| `PrinterManager.ts` | Printer profile management (add, remove, retrieve) |
+| `PrinterRepository.ts` | In-memory storage and retrieval of printer profiles |
+| `PrinterValidator.ts` | Complete validation of printer profiles and their parameters |
+
 ---
+
+## src/material_database/
 
-# src/classification_engine/
+**Purpose:** Material Management System
 
-Purpose:
+**Role:** Material profile database management.
 
-```text
-Object Classification System
-```
+**Contains:**
 
-Contains:
+- Material Profiles
+- Material Validation
+- Material Repositories
+- Material Caching
 
-```text
-Object Categories
-Classification Rules
-Confidence Scoring
-Classification Validation
-```
+**Files:**
 
-Components:
- 
-- ClassificationEngine.ts
-- CategoryDetector.ts
-- ConfidenceScorer.ts
-- ClassificationValidator.ts
-  
+| File | Role |
+|------|------|
+| `MaterialCache.ts` | Cache storage for material profiles |
+| `MaterialImporter.ts` | Imports material profiles from JSON with validation |
+| `MaterialManager.ts` | Material profile management (add, remove, retrieve) |
+| `MaterialRepository.ts` | In-memory storage and retrieval of material profiles |
+| `MaterialValidator.ts` | Complete validation of material profiles and their parameters |
+
 ---
 
-# src/recommendation_engine/
+## src/filament_database/
 
-Purpose:
+**Purpose:** Filament Management System
 
-```text
-Recommendation Generation
-```
+**Role:** Filament profile database management.
 
-Contains:
+**Contains:**
 
-```text
-Decision Rules
-Validation Engine
-Warning Generation
-Recommendation Building
-```
+- Filament Profiles
+- Manufacturer Data
+- Filament Validation
+- Filament Repositories
+- Filament Caching
 
-Components:
+**Files:**
 
-- RecommendationEngine.ts
-- DecisionEngine.ts
-- ValidationEngine.ts
-- WarningEngine.ts
-- RecommendationBuilder.ts
+| File | Role |
+|------|------|
+| `FilamentCache.ts` | Cache storage for filament profiles |
+| `FilamentImporter.ts` | Imports filament profiles with validation |
+| `FilamentManager.ts` | Filament profile management (add, remove, retrieve) |
+| `FilamentRepository.ts` | In-memory storage and retrieval of filament profiles |
+| `FilamentValidator.ts` | Complete validation of filament profiles and their parameters |
 
 ---
+
+## src/model_analysis/
+
+**Purpose:** Geometry Analysis Engine
 
-# src/preset_engine/
+**Role:** Complete 3D model analysis (geometry, stability, overhangs).
 
-Purpose:
+**Contains:**
 
-```text
-Print Preset Management
-```
+- Mesh Analysis
+- Printability Analysis
+- Stability Analysis
+- Geometry Evaluation
 
-Contains:
+**Files:**
 
-```text
-Preset Selection
-Preset Validation
-Preset Recommendations
-Preset Storage
-```
+| File | Role |
+|------|------|
+| `GeometryAnalyzer.ts` | Analyzes geometric dimensions (bounding box, volume, surface area) |
+| `MeshAnalyzer.ts` | Analyzes mesh properties (vertices, triangles, volume, surface area) |
+| `MeshValidator.ts` | Validates mesh integrity (vertices, triangles, geometry) |
+| `ModelAnalyzer.ts` | Orchestrates the complete 3D model analysis |
+| `PrintabilityAnalyzer.ts` | Analyzes printability (overhangs, bridges, thin walls, score) |
+| `StabilityAnalyzer.ts` | Analyzes stability (base area, height ratio, scores) |
 
 ---
 
-# src/cost_engine/
+## src/notifications/
 
-Purpose:
+**Purpose:** Application Notification System
 
-```text
-Cost Computation
-```
+**Role:** Notification system with validation and lifecycle management.
 
-Contains:
+**Contains:**
 
-```text
-Material Cost Calculation
-Energy Cost Estimation
-Time Estimation
-Total Cost Computation
-```
+- NotificationFactory
+- NotificationManager
+- NotificationService
+- NotificationValidator
 
+**Files:**
+
+| File | Role |
+|------|------|
+| `NotificationFactory.ts` | Creates notifications with specific types and ID generation |
+| `NotificationManager.ts` | Stores and retrieves notifications |
+| `NotificationService.ts` | Orchestrates notification creation and management |
+| `NotificationValidator.ts` | Complete validation of notifications (id, timestamp, type, message) |
+
 ---
+
+## src/classification_engine/
 
-# src/repositories/
+**Purpose:** Object Classification System
 
-Purpose:
+**Role:** 3D object classification engine with category detection. Determines what an imported object is (for example: miniature, figurine, vase, mechanical part, structural component) and assigns a confidence level. Its result is used by the recommendation engine. It does not optimize orientation, material, speed or supports.
 
-```text
-Data Access Layer
-```
+**Contains:**
 
-Contains:
+- Object Categories
+- Classification Rules
+- Confidence Scoring
+- Classification Validation
 
-```text
-GitHub Repository
-Printer Repository Synchronization
-Material Repository Synchronization
-Filament Repository Synchronization
-Preset Repository Synchronization
-Remote Data Access
-Sync Operations
-```
+**Files:**
 
-Components:
+| File | Role |
+|------|------|
+| `CategoryDetector.ts` | Detects the category from the extracted features |
+| `ClassificationEngine.ts` | Orchestrates the complete classification process |
+| `ClassificationValidator.ts` | Validates Classification objects and data consistency |
+| `ConfidenceScorer.ts` | Calculates and normalizes confidence scores and levels |
 
-- GitHubRepository.ts
-- PrinterRepositorySync.ts
-- MaterialRepositorySync.ts
-- FilamentRepositorySync.ts
-- PresetRepositorySync.ts
-  
 ---
 
-# src/storage/
+## src/recommendation_engine/
 
-Purpose:
+**Purpose:** Recommendation Generation
 
-```text
-Persistence Layer
-```
+**Role:** Recommendation engine: generation, validation and warnings.
 
-Contains:
+**Contains:**
 
-```text
-StorageManager
-ProjectStorage
-CacheStorage
-Project Persistence
-Local Storage
-Cache Management
-```
+- Decision Rules
+- Validation Engine
+- Warning Generation
+- Recommendation Building
 
-Components:
+**Files:**
 
-- StorageManager.ts
-- ProjectStorage.ts
-- CacheStorage.ts
+| File | Role |
+|------|------|
+| `DecisionEngine.ts` | Generates recommendation decisions and selects the preset |
+| `RecommendationBuilder.ts` | Builds the final Recommendation object |
+| `RecommendationEngine.ts` | Orchestrates the complete recommendation process |
+| `ValidationEngine.ts` | Validates and normalizes the profile parameters |
+| `WarningEngine.ts` | Generates warnings based on the analysis |
 
 ---
 
-# src/recovery/
+## src/preset_engine/
 
-Purpose:
+**Purpose:** Print Preset Management
 
-```text
-Project Recovery System
-```
+**Role:** Print preset management.
 
-Contains:
+**Contains:**
 
-```text
-Auto Save Service
-Recovery Files
-Session Restoration
-Recovery Validation
-```
+- Preset Selection
+- Preset Validation
+- Preset Recommendations
+- Preset Storage
 
+**Files:**
+
+| File | Role |
+|------|------|
+| `PresetManager.ts` | Manages print presets and coordinates the repository |
+| `PresetRepository.ts` | Storage and retrieval of presets (in-memory Map) |
+| `PresetSelector.ts` | Selects presets by criteria (name, category, classification) |
+| `PresetValidator.ts` | Validates preset integrity |
+
 ---
+
+## src/cost_engine/
 
-# src/services/
+**Purpose:** Cost Computation
 
-Purpose:
+**Role:** Print cost calculation engine (material, energy, time).
 
-```text
-Shared Application Services
-```
+**Contains:**
 
-Contains:
+- Material Cost Calculation
+- Energy Cost Estimation
+- Time Estimation
+- Total Cost Computation
 
-```text
-Analysis Service
-Filament Service
-Material Service
-Preset Service
-Printer Service
-Project Service
-Recommendation Service
-Storage Service
-```
+**Files:**
 
-Components:
+| File | Role |
+|------|------|
+| `CostCalculator.ts` | Calculates the total print cost and cost ratios |
+| `EnergyEstimator.ts` | Estimates energy consumption and electricity cost |
+| `MaterialEstimator.ts` | Estimates material cost from the filament quantity |
+| `TimeEstimator.ts` | Estimates print time (hours to minutes conversion) |
 
-- AnalysisService.ts
-- FilamentService.ts
-- MaterialService.ts
-- PresetService.ts
-- PrinterService.ts
-- ProjectService.ts
-- RecommendationService.ts
-- StorageService.ts
-  
 ---
 
-# src/events/
+## src/repositories/
 
-Purpose:
+**Purpose:** Data Access Layer
 
-```text
-Application Event System
-```
+**Role:** Remote data access: repository synchronization for external profile data.
 
-Contains:
+**Contains:**
 
-```text
-Event Bus
-Event Dispatching
-Event Types
-Subscriptions
-```
+- GitHub Repository
+- Printer Repository Synchronization
+- Material Repository Synchronization
+- Filament Repository Synchronization
+- Preset Repository Synchronization
+- Remote Data Access
+- Sync Operations
 
+**Files:**
+
+| File | Role |
+|------|------|
+| `FilamentRepositorySync.ts` | Synchronizes filament profiles with a remote repository |
+| `GitHubRepository.ts` | Access to remote repositories (GitHub) |
+| `MaterialRepositorySync.ts` | Synchronizes material profiles with a remote repository |
+| `PresetRepositorySync.ts` | Synchronizes preset profiles with a remote repository |
+| `PrinterRepositorySync.ts` | Synchronizes printer profiles with the local printer repository |
+
 ---
 
-# src/state/
+## src/storage/
 
-Purpose:
+**Purpose:** Persistence Layer
 
-```text
-Application State Management
-```
+**Role:** Storage layer: generic cache and project storage.
 
-Contains:
+**Contains:**
 
-```text
-Analysis Store
+- StorageManager
+- ProjectStorage
+- CacheStorage
+- Project Persistence
+- Local Storage
+- Cache Management
 
-Application Store
-Filament Store
-Material Store
-Object Store
-Preset Store
-Printer Store
-Recommendation Store
-Scene Store
-```
+**Files:**
 
+| File | Role |
+|------|------|
+| `CacheStorage.ts` | Generic cache storage using a Map |
+| `ProjectStorage.ts` | Project-specific storage |
+| `StorageManager.ts` | Orchestrates storage (projects and cache) |
+
 ---
+
+## src/recovery/
 
-# src/config/
+**Purpose:** Project Recovery System
 
-Purpose:
+**Role:** Project recovery: autosave, recovery management, session validation.
 
-```text
-Configuration Management
-```
+**Contains:**
 
-Contains:
+- Auto Save Service
+- Recovery Files
+- Session Restoration
+- Recovery Validation
 
-```text
-Application Configuration
-Feature Flags
-Environment Settings
-```
+**Files:**
 
+| File | Role |
+|------|------|
+| `AutoSaveService.ts` | Manages automatic project autosave |
+| `RecoveryManager.ts` | Manages project recovery and restoration |
+| `RecoveryValidator.ts` | Validates project integrity for recovery |
+| `SessionRestorer.ts` | Restores sessions and validates them |
+
 ---
 
-# src/constants/
+## src/project/
 
-Purpose:
+**Purpose:** Project Lifecycle Management
 
-```text
-Global Constants
-```
+**Role:** Business core: complete project lifecycle (creation, serialization, validation, WYPROJ import and export).
 
-Contains:
+**Files:**
 
-```text
-Analysis Constants
-Application Constants
-Material Constants
-Preset Constants
-Printer Constants
-```
+| File | Role |
+|------|------|
+| `ProjectDeserializer.ts` | Deserializes projects from JSON with normalization |
+| `ProjectManager.ts` | Manages the complete project lifecycle |
+| `ProjectSerializer.ts` | Serializes projects to JSON |
+| `ProjectValidator.ts` | Complete validation of projects and metadata |
+| `WYPROJExporter.ts` | Exports projects to the WYPROJ format |
+| `WYPROJImporter.ts` | Imports WYPROJ files with validation |
 
 ---
 
-# src/utils/
+## src/services/
 
-Purpose:
+**Purpose:** Shared Application Services
 
-```text
-Shared Utility Functions
-```
+**Role:** Business services layer for analysis, filaments, materials, presets, printers, projects, recommendations and storage.
 
-Contains:
+**Contains:**
 
-```text
-File Utilities
-JSON Utilities
-Validation Helpers
-Mathematical Helpers
-```
+- Analysis Service
+- Filament Service
+- Material Service
+- Preset Service
+- Printer Service
+- Project Service
+- Recommendation Service
+- Storage Service
 
-Must Not Contain:
+**Files:**
 
-```text
-Business Logic
-AI Logic
-Application State
-```
+| File | Role |
+|------|------|
+| `AnalysisService.ts` | Analysis service: creation, validation, serialization and management of analysis results |
+| `FilamentService.ts` | Filament service: add, remove, retrieve filaments |
+| `MaterialService.ts` | Material service: add, remove, retrieve materials |
+| `PresetService.ts` | Preset service: creation, validation, serialization and duplication of presets |
+| `PrinterService.ts` | Printer service: add, remove, retrieve printers |
+| `ProjectService.ts` | Project service: complete lifecycle (creation, validation, serialization) |
+| `RecommendationService.ts` | Recommendation service that delegates generation to the RecommendationEngine |
+| `StorageService.ts` | Storage service for projects and cache |
 
 ---
+
+## src/events/
+
+**Purpose:** Application Event System
 
-# src/schemas/
+**Role:** Centralized publish-subscribe event system.
 
-Purpose:
+**Contains:**
 
-```text
-Runtime Validation Layer
-```
-Contains:
+- Event Bus
+- Event Dispatching
+- Event Types
+- Subscriptions
 
-```text
-PrinterSchema
-MaterialSchema
-FilamentSchema
-PrintPresetSchema
-AnalysisSchema
-RecommendationSchema
-Zod Validation Rules
-Runtime Type Validation
-```
+**Files:**
 
-Components:
- 
-- PrinterSchema.ts
-- MaterialSchema.ts
-- FilamentSchema.ts
-- PrintPresetSchema.ts
-- AnalysisSchema.ts
-- RecommendationSchema.ts
-  
+| File | Role |
+|------|------|
+| `EventBus.ts` | Implementation of the centralized event system (publish-subscribe) |
+| `EventTypes.ts` | Definition of the event types supported by the application |
+
 ---
 
-# src/types/
+## src/state/
 
-Purpose:
+**Purpose:** Application State Management
 
-```text
-Shared Type Definitions
-```
+**Role:** Global application state: Zustand stores.
 
-Contains:
+**Contains:**
 
-```text
-TypeScript Types
-Interfaces
-Enums
-Domain Models
-```
+- Analysis Store
+- Application Store
+- Filament Store
+- Material Store
+- Object Store
+- Preset Store
+- Printer Store
+- Recommendation Store
+- Scene Store
 
----
+**Files:**
 
-# src-electron/
+| File | Role |
+|------|------|
+| `analysisStore.ts` | Zustand store for analysis state |
+| `appStore.ts` | Zustand store for global state (printer, material, filament, preset) |
+| `filamentStore.ts` | Zustand store for filaments (list and selection) |
+| `materialStore.ts` | Zustand store for materials (list and selection) |
+| `objectStore.ts` | Zustand store for 3D objects (list, selection, add, remove) |
+| `presetStore.ts` | Zustand store for print presets (list and selection) |
+| `printerStore.ts` | Zustand store for printers (list and selection) |
+| `recommendationStore.ts` | Zustand store for print recommendations |
+| `sceneStore.ts` | Zustand store for the 3D scene (scene and selected object) |
+
+---
 
-Purpose:
+## src/config/
 
-```text
-Reserved Electron Workspace
-```
+**Purpose:** Configuration Management
 
-Contains:
+**Role:** Configuration interfaces (application, environment, feature flags).
 
-```text
-Future Electron Entry Point/Modules
-Future Main Process Organization
-Electron Architecture Extensions
-```
+**Contains:**
 
-Status:
-```text
-Placeholder Directory
-```
+- Application Configuration
+- Feature Flags
+- Environment Settings
 
-Used For:
+**Files:**
 
-```text
-Future Electron Refactoring
-Desktop Architecture Separation
-```
+| File | Role |
+|------|------|
+| `ApplicationConfig.ts` | General application configuration interface |
+| `EnvironmentConfig.ts` | Environment and path configuration interface |
+| `FeatureFlags.ts` | Feature flags interface for enabling and disabling features |
 
 ---
 
-# src/electron/
+## src/constants/
 
-Purpose:
+**Purpose:** Global Constants
 
-```text
-Electron Framework Integration
-```
+**Role:** Centralized constants (application, analysis, materials, presets, printers).
 
-Contains:
+**Contains:**
 
-```text
-Main Process Logic
-Preload Scripts
-IPC Communication
-Desktop Application Integration
-Runtime Services
-```
+- Analysis Constants
+- Application Constants
+- Material Constants
+- Preset Constants
+- Printer Constants
 
----
+**Files:**
 
-# src/electron/ipc/
+| File | Role |
+|------|------|
+| `AnalysisConstants.ts` | Analysis constants (score ranges, risk and confidence levels, object categories) |
+| `ApplicationConstants.ts` | Global application constants (name, version, language, theme, autosave) |
+| `MaterialConstants.ts` | Material constants (categories, warping risks, cooling ranges) |
+| `PresetConstants.ts` | Preset constants (categories, infill patterns, support, adhesion, layer heights) |
+| `PrinterConstants.ts` | Printer constants (nozzles, build volume, temperatures, extruder types) |
 
-Purpose:
+---
 
-```text
-Inter-Process Communication Handlers
-```
+## src/utils/
 
-Contains:
+**Purpose:** Shared Utility Functions
 
-```text
-ImportIPC
-PrinterIPC
-ProjectIPC
-SettingsIPC
-StorageIPC
-Electron Communication Handlers
-Renderer ↔ Main Process Communication
-```
+**Role:** Generic utilities: helper functions for files, JSON, math and validation.
 
----
+**Contains:**
 
-# data/
+- File Utilities
+- JSON Utilities
+- Validation Helpers
+- Mathematical Helpers
 
-Purpose:
+**Must Not Contain:**
 
-```text
-Project Data Repository
-```
+- Business Logic
+- AI Logic
+- Application State
 
-Contains:
+**Files:**
 
-```text
-Printer Profiles
-Material Profiles
-Filament Profiles
-Print Presets
-Configuration Files
-```
+| File | Role |
+|------|------|
+| `FileUtils.ts` | File helpers: get extension, get name without extension, validate extension, detect 3D model and JSON files, sanitize file names |
+| `JsonUtils.ts` | JSON helpers: parse, stringify, validate, deep clone, merge objects |
+| `MathUtils.ts` | Math helpers: clamp, round, degree/radian conversion, distance, range check, linear interpolation |
+| `ValidationUtils.ts` | Validation helpers: empty check, number, string, email, URL, enum value, required keys |
 
 ---
 
-# data/printers/
+## src/schemas/
 
-Purpose:
+**Purpose:** Runtime Validation Layer
 
-```text
-Printer Profile Storage
-```
+**Role:** Core validation schemas: Zod schemas for runtime validation.
 
-Contains:
+**Contains:**
 
-```text
-Printer Definitions
-Manufacturer Profiles
-Printer Configurations
-```
+- PrinterSchema
+- MaterialSchema
+- FilamentSchema
+- PrintPresetSchema
+- AnalysisSchema
+- RecommendationSchema
+- Zod Validation Rules
+- Runtime Type Validation
 
+**Files:**
+
+| File | Role |
+|------|------|
+| `AnalysisSchema.ts` | Zod schema for runtime validation of 3D model analysis data |
+| `FilamentSchema.ts` | Zod schema for runtime validation of filament data |
+| `MaterialSchema.ts` | Zod schema for runtime validation of material data |
+| `PrintPresetSchema.ts` | Zod schema for runtime validation of print preset data |
+| `PrinterSchema.ts` | Zod schema for runtime validation of printer data |
+| `RecommendationSchema.ts` | Zod schema for runtime validation of recommendation data |
+
 ---
 
-# data/materials/
+## src/types/
 
-Purpose:
+**Purpose:** Shared Type Definitions
 
-```text
-Material Profile Storage
-```
+**Role:** Core TypeScript type definitions for all entities.
 
-Contains:
+**Contains:**
 
-```text
-PLA Materials
+- TypeScript Types
+- Interfaces
+- Enums
+- Domain Models
 
-PETG Materials
-ABS Materials
-ASA Materials
-TPU Materials
-Other Material Types
-```
+**Files:**
 
+| File | Role |
+|------|------|
+| `Analysis.ts` | Types for 3D model analysis (geometry, mesh, stability, overhangs, bridges, thin walls) |
+| `Classification.ts` | Types for object classification (categories, confidence levels) |
+| `CostEstimation.ts` | Types for print cost estimation (filament, energy, time) |
+| `DefaultMaterial.ts` | Default material constant (PLA) with a complete profile |
+| `Filament.ts` | Types for filaments (brand, material, properties, price) |
+| `Material.ts` | Types for materials (temperature, cooling, parameters) |
+| `Notification.ts` | Types for user notifications (type, message, timestamp) |
+| `Object3D.ts` | Types for 3D objects (position, rotation, scale, geometry, mesh) |
+| `Optimization.ts` | Types for optimization results (scores, reductions) |
+| `PrintPreset.ts` | Types for print presets (quality, speed and support parameters) |
+| `Printer.ts` | Types for printers (brand, model, systems) |
+| `Project.ts` | Types for projects (metadata, scene, objects, WYPROJ format) |
+| `Recommendation.ts` | Types for print recommendations (profile, optimization, warnings) |
+| `Scene.ts` | Types for the 3D scene (objects, printer, material, filament, preset) |
+| `UserPreferences.ts` | Types for user preferences (theme, language, units) |
+| `Warning.ts` | Types for warnings (code, severity, message) |
+
 ---
+
+## src-electron/
 
-# data/filaments/
+**Purpose:** Reserved Electron Workspace
 
-Purpose:
+**Contains:**
 
-```text
-Filament Profile Storage
-```
+- Future Electron Entry Point/Modules
+- Future Main Process Organization
+- Electron Architecture Extensions
 
-Contains:
+**Used For:**
 
-```text
-Manufacturer-Specific Filaments
-Filament Definitions
-Brand Profiles
-```
+- Future Electron Refactoring
+- Desktop Architecture Separation
 
+**Status:**
+
+- Placeholder Directory
+
 ---
+
+## src/electron/
 
-# data/presets/
+**Purpose:** Electron Framework Integration
 
-Purpose:
+**Role:** Electron integration: main process, IPC and preload. Critical for the desktop application.
 
-```text
-Print Preset Storage
-```
+**Contains:**
 
-Contains:
+- Main Process Logic
+- Preload Scripts
+- IPC Communication
+- Desktop Application Integration
+- Runtime Services
 
-```text
-Draft Presets
+**Files:**
 
-Balanced Presets
-Quality Presets
-Mechanical Presets
-Miniature Presets
-Custom Presets
-```
+| File | Role |
+|------|------|
+| `main.ts` | Electron entry point: window creation and IPC handler registration |
+| `preload.ts` | Exposes the IPC API to the renderer with context isolation and requestId generation |
 
 ---
 
-# assets/
+## src/electron/ipc/
 
-Purpose:
+**Purpose:** Inter-Process Communication Handlers
 
-```text
-Static Project Assets
-```
+**Contains:**
 
-Contains:
+- ImportIPC
+- PrinterIPC
+- ProjectIPC
+- SettingsIPC
+- StorageIPC
+- Electron Communication Handlers
+- Renderer ↔ Main Process Communication
 
-```text
-Icons
-Images
-Logos
-Themes
-Visual Resources
-```
+**Files:**
 
----
+| File | Role |
+|------|------|
+| `ImportIPC.ts` | IPC communication for file import (STL, 3MF) and validation |
+| `PrinterIPC.ts` | IPC communication for printer operations (add, remove, retrieve, count) |
+| `ProjectIPC.ts` | IPC communication for project operations (create, load, save, delete) |
+| `SettingsIPC.ts` | IPC communication for user settings (get, update, reset, theme, language) |
+| `StorageIPC.ts` | IPC communication for storage operations (save, load, delete, clear) |
 
-# assets/icons/
+---
 
-Purpose:
+## data/
 
-```text
-Application Icon Resources
-```
+**Purpose:** Project Data Repository
 
-Contains:
+**Contains:**
 
-```text
-UI Icons
-Toolbar Icons
-Navigation Icons
-Symbol Assets
-```
+- Printer Profiles
+- Material Profiles
+- Filament Profiles
+- Print Presets
+- Configuration Files
 
 ---
-
-# assets/images/
 
-Purpose:
+## data/printers/
 
-```text
-Image Assets
-```
+**Purpose:** Printer Profile Storage
 
-Contains:
+**Contains:**
 
-```text
-Screenshots
-Promotional Images
-Documentation Images
-Visual Graphics
-```
+- Printer Definitions
+- Manufacturer Profiles
+- Printer Configurations
 
 ---
 
-# assets/logos/
+## data/materials/
 
-Purpose:
+**Purpose:** Material Profile Storage
 
-```text
-Project Logo Resources
-```
+**Contains:**
 
-Contains:
+- PLA Materials
+- PETG Materials
+- ABS Materials
+- ASA Materials
+- TPU Materials
+- Other Material Types
 
-```text
-Brand Logos
-Logo Variants
-Application Branding
-```
-
 ---
 
-# assets/themes/
+## data/filaments/
 
-Purpose:
+**Purpose:** Filament Profile Storage
 
-```text
-UI Theme Resources
-```
+**Contains:**
 
-Contains:
+- Manufacturer-Specific Filaments
+- Filament Definitions
+- Brand Profiles
 
-```text
-Color Schemes
-Theme Definitions
-Dark Mode Assets
-Light Mode Assets
-```
-
 ---
-
-# public/
 
-Purpose:
+## data/presets/
 
-```text
-Public Static Resources
-```
+**Purpose:** Print Preset Storage
 
-Contains:
+**Contains:**
 
-```text
-Distributable Assets
-Public Files
-Static Content
-Build Output
-```
+- Draft Presets
+- Balanced Presets
+- Quality Presets
+- Mechanical Presets
+- Miniature Presets
+- Custom Presets
 
 ---
 
-# releases/
+## assets/
 
-Purpose:
+**Purpose:** Static Project Assets
 
-```text
-Application Release Distribution
-```
+**Contains:**
 
-Contains:
+- Icons
+- Images
+- Logos
+- Themes
+- Visual Resources
 
-```text
-Alpha Releases
-Beta Releases
-Release Candidates
-Stable Releases
-Version Archives
-```
-
 ---
-
-# releases/alpha/
 
-Purpose:
+## assets/icons/
 
-```text
-Alpha Release Storage
-```
+**Purpose:** Application Icon Resources
 
-Contains:
+**Contains:**
 
-```text
-Experimental Features
-Early Development Builds
-Unstable Versions
-```
+- UI Icons
+- Toolbar Icons
+- Navigation Icons
+- Symbol Assets
 
 ---
 
-# releases/beta/
+## assets/images/
 
-Purpose:
+**Purpose:** Image Assets
 
-```text
-Beta Release Storage
-```
+**Contains:**
 
-Contains:
+- Screenshots
+- Promotional Images
+- Documentation Images
+- Visual Graphics
 
-```text
-Feature Complete Builds
-Pre-Release Testing
-Beta Versions
-```
-
 ---
-
-# releases/rc/
 
-Purpose:
+## assets/logos/
 
-```text
-Release Candidate Storage
-```
+**Purpose:** Project Logo Resources
 
-Contains:
+**Contains:**
 
-```text
-Candidate Builds
-Final Testing
-RC Versions
-```
+- Brand Logos
+- Logo Variants
+- Application Branding
 
 ---
 
-# releases/stable/
+## assets/themes/
 
-Purpose:
+**Purpose:** UI Theme Resources
 
-```text
-Stable Release Storage
-```
+**Contains:**
 
-Contains:
+- Color Schemes
+- Theme Definitions
+- Dark Mode Assets
+- Light Mode Assets
 
-```text
-Production Builds
-Official Releases
-Stable Versions
-```
-
 ---
 
-# scripts/
+## public/
 
-Purpose:
+**Purpose:** Public Static Resources
 
-```text
-Automation Scripts and Build Tools
-```
+**Contains:**
 
-Contains:
+- Distributable Assets
+- Public Files
+- Static Content
+- Build Output
 
-```text
-Build Scripts
+---
 
-Migration Scripts
-Release Scripts
-Setup Scripts
-Utility Scripts
-```
+## releases/
 
----
+**Purpose:** Application Release Distribution
 
-# scripts/build/
+**Contains:**
 
-Purpose:
+- Alpha Releases
+- Beta Releases
+- Release Candidates
+- Stable Releases
+- Version Archives
 
-```text
-Build Automation Scripts
-```
+---
 
-Contains:
+## releases/alpha/
 
-```text
-Compilation Scripts
-Build Configuration
-Package Scripts
-Bundling Tools
-```
+**Purpose:** Alpha Release Storage
 
----
+**Contains:**
 
-# scripts/migration/
+- Experimental Features
+- Early Development Builds
+- Unstable Versions
 
-Purpose:
+---
 
-```text
-Data Migration Scripts
-```
+## releases/beta/
 
-Contains:
+**Purpose:** Beta Release Storage
 
-```text
-Schema Migrations
-Data Transformations
-Upgrade Scripts
-Version Transitions
-```
+**Contains:**
 
----
+- Feature Complete Builds
+- Pre-Release Testing
+- Beta Versions
 
-# scripts/release/
+---
 
-Purpose:
+## releases/rc/
 
-```text
-Release Management Scripts
-```
+**Purpose:** Release Candidate Storage
 
-Contains:
+**Contains:**
 
-```text
-Release Automation
-Version Tagging
-Distribution Packaging
-Changelog Generation
-```
+- Candidate Builds
+- Final Testing
+- RC Versions
 
 ---
 
-# scripts/release/alpha/
+## releases/stable/
 
-Purpose:
+**Purpose:** Stable Release Storage
 
-```text
-Alpha Release Automation
-```
+**Contains:**
 
-Contains:
+- Production Builds
+- Official Releases
+- Stable Versions
 
-```text
-Alpha Build Scripts
-Alpha Distribution
-Experimental Release Tools
-```
-
 ---
-
-# scripts/release/beta/
 
-Purpose:
+## scripts/
 
-```text
-Beta Release Automation
-```
+**Purpose:** Automation Scripts and Build Tools
 
-Contains:
+**Contains:**
 
-```text
-Beta Build Scripts
-Beta Distribution
-Pre-Release Tools
-```
+- Build Scripts
+- Migration Scripts
+- Release Scripts
+- Setup Scripts
+- Utility Scripts
 
 ---
 
-# scripts/release/rc/
+## scripts/build/
 
-Purpose:
+**Purpose:** Build Automation Scripts
 
-```text
-Release Candidate Automation
-```
+**Contains:**
 
-Contains:
+- Compilation Scripts
+- Build Configuration
+- Package Scripts
+- Bundling Tools
 
-```text
-RC Build Scripts
-RC Distribution
-Final Release Preparation
-```
-
 ---
+
+## scripts/migration/
+
+**Purpose:** Data Migration Scripts
+
+**Contains:**
 
-# scripts/release/stable/
+- Schema Migrations
+- Data Transformations
+- Upgrade Scripts
+- Version Transitions
 
-Purpose:
+---
 
-```text
-Stable Release Automation
-```
+## scripts/release/
 
-Contains:
+**Purpose:** Release Management Scripts
 
-```text
-Stable Build Scripts
-Stable Distribution
-Production Release Tools
-```
+**Contains:**
 
+- Release Automation
+- Version Tagging
+- Distribution Packaging
+- Changelog Generation
+
 ---
+
+## scripts/release/alpha/
+
+**Purpose:** Alpha Release Automation
+
+**Contains:**
+
+- Alpha Build Scripts
+- Alpha Distribution
+- Experimental Release Tools
 
-# scripts/setup/
+---
 
-Purpose:
+## scripts/release/beta/
 
-```text
-Development Environment Setup
-```
+**Purpose:** Beta Release Automation
 
-Contains:
+**Contains:**
 
-```text
-Installation Scripts
-Dependency Setup
-Configuration Initialization
-Development Environment Tools
-```
+- Beta Build Scripts
+- Beta Distribution
+- Pre-Release Tools
 
 ---
+
+## scripts/release/rc/
+
+**Purpose:** Release Candidate Automation
 
-# tests/
+**Contains:**
 
-Purpose:
+- RC Build Scripts
+- RC Distribution
+- Final Release Preparation
 
-```text
-Automated Testing Suite
-```
+---
+
+## scripts/release/stable/
 
-Contains:
+**Purpose:** Stable Release Automation
 
-```text
-Unit Tests
-Integration Tests
-End-to-End Tests
-Test Configuration
-Test Utilities
-```
+**Contains:**
 
+- Stable Build Scripts
+- Stable Distribution
+- Production Release Tools
+
 ---
+
+## scripts/setup/
 
-# tests/unit/
+**Purpose:** Development Environment Setup
 
-Purpose:
+**Contains:**
 
-```text
-Unit Testing
-```
+- Installation Scripts
+- Dependency Setup
+- Configuration Initialization
+- Development Environment Tools
 
-Contains:
+---
 
-```text
-Component Tests
-Function Tests
-Module Tests
-Isolated Logic Tests
-```
+## tests/
 
-Used For:
+**Purpose:** Automated Testing Suite
 
-```text
-Quality Assurance
-Regression Prevention
-Feature Validation
-System Reliability
-Release Verification
-```
+**Contains:**
 
+- Unit Tests
+- Integration Tests
+- End-to-End Tests
+- Test Configuration
+- Test Utilities
+
 ---
 
-# tests/integration/
+## tests/unit/
 
-Purpose:
+**Purpose:** Unit Testing
 
-```text
-Integration Testing
-```
+**Contains:**
 
-Contains:
+- Component Tests
+- Function Tests
+- Module Tests
+- Isolated Logic Tests
 
-```text
-Multi-Module Tests
-System Integration Tests
-API Tests
-Cross-Component Tests
-```
+**Used For:**
 
----
+- Quality Assurance
+- Regression Prevention
+- Feature Validation
+- System Reliability
+- Release Verification
 
-# tests/e2e/
+---
 
-Purpose:
+## tests/integration/
 
-```text
-End-to-End Testing
-```
+**Purpose:** Integration Testing
 
-Contains:
+**Contains:**
 
-```text
-User Workflow Tests
-Application Flow Tests
-Complete Scenario Tests
-UI Interaction Tests
-```
+- Multi-Module Tests
+- System Integration Tests
+- API Tests
+- Cross-Component Tests
 
 ---
+
+## tests/e2e/
+
+**Purpose:** End-to-End Testing
+
+**Contains:**
 
-# cache/
+- User Workflow Tests
+- Application Flow Tests
+- Complete Scenario Tests
+- UI Interaction Tests
 
-Purpose:
+---
 
-```text
-Application Cache Storage
-```
+## cache/
 
-Contains:
+**Purpose:** Application Cache Storage
 
-```text
-Temporary Cache Files
-Performance Cache
-Session Cache
-Compiled Cache
-```
+**Contains:**
 
+- Temporary Cache Files
+- Performance Cache
+- Session Cache
+- Compiled Cache
+
 ---
+
+## logs/
 
-# logs/
+**Purpose:** Application Logging
+
+**Contains:**
+
+- Runtime Logs
+- Error Logs
+- Debug Logs
+- Session Logs
+- Diagnostic Information
+
+---
 
-Purpose:
+## plugins/
 
-```text
-Application Logging
-```
+**Purpose:** Plugin System and Extensions
 
-Contains:
+**Contains:**
 
-```text
-Runtime Logs
-Error Logs
-Debug Logs
-Session Logs
-Diagnostic Information
-```
+- Third-Party Plugins
+- Custom Extensions
+- Plugin Configuration
+- Plugin Resources
 
 ---
 
-# plugins/
+# Maintenance Rule
 
-Purpose:
+Every source directory section lists all of its files in a **Files** table.
 
-```text
-Plugin System and Extensions
-```
+When a file is created, renamed, moved or deleted:
 
-Contains:
+- Update the **Files** table of the affected directory in the same change
+- Describe the role of the file, not its current status (no bug notes, no temporary remarks)
 
-```text
-Third-Party Plugins
-Custom Extensions
-Plugin Configuration
-Plugin Resources
-```
+When a new directory is created, add a section for it using the same format.
 
 ---
 
 # Governance Documents
 
-The project governance framework includes:
+**The project governance framework includes:**
 
-```text
 - CLAUDE_GOVERNANCE_PROTOCOL.md
 - CLAUDE_READING_PRIORITY.md
 - DOMAIN_BOUNDARIES.md
@@ -1780,11 +1659,9 @@ The project governance framework includes:
 - UPDATE_GOVERNANCE_PROTOCOL.md
 - UPDATE_IMPACT_RULES.md
 - UPDATE_REPORT_TEMPLATE.md
-```
 
-These documents define:
+**These documents define:**
 
-```text
 - Ownership
 - Dependencies
 - Impact Analysis
@@ -1793,7 +1670,6 @@ These documents define:
 - Update Validation
 - Change Verification
 - Architecture Governance
-```
 
 ---
 
