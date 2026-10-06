@@ -24,7 +24,7 @@ export class ThreeMFImporter {
   /**
    * Imports a 3MF file.
    *
-   * Placeholder implementation for Phase 2.
+   * Placeholder implementation until Phase 3 (Model Import System, ROADMAP.md).
    * Full 3MF parsing will be added later.
    */
   public async import(
