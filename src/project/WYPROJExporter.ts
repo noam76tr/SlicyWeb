@@ -17,7 +17,7 @@
  * - IMPORT_EXPORT_SPEC.md
  */
 
-import { ProjectState } from "./ProjectManager";
+import type { ProjectMetadata, ProjectState } from "./ProjectManager";
 
 export interface WYPROJFile {
   format: "WYPROJ";
@@ -37,6 +37,7 @@ export class WYPROJExporter {
       format: "WYPROJ",
       version: project.metadata.version,
       project,
+      metadata: project.metadata,
     };
   }
 
