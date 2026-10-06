@@ -564,7 +564,7 @@ Until the project owner decides otherwise:
 | `FileValidator.ts` | Validates files before import (name, size, extension) |
 | `ImportManager.ts` | Orchestrates the import workflow and routes by format |
 | `STLImporter.ts` | Loads and parses STL files with geometry extraction |
-| `ThreeMFImporter.ts` | Loads and parses 3MF files (placeholder implementation, Phase 2) |
+| `ThreeMFImporter.ts` | Loads and parses 3MF files (placeholder implementation until Phase 3, ROADMAP.md) |
 
 ---
 
