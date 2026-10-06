@@ -24,13 +24,6 @@ export class FilamentManager {
    );
 }
 
- public removeFilament(
-   filamentId: string
- ): boolean {
-   return this.repository.remove(
-     filamentId
-   );
- }
   public getFilament(
     filamentId: string
   ): Filament | undefined {
