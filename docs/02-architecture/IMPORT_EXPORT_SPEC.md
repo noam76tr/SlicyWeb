@@ -1,7 +1,7 @@
 # SlicyWeb SMART SLICER
 # IMPORT EXPORT SPECIFICATION
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -418,9 +418,34 @@ WYPROJ
 STL
 
 3MF
-
-GCODE
 ```
+
+---
+
+# Target Slicer Export
+
+Purpose:
+
+Export the model and its generated print settings to the target slicer selected by the user.
+
+The target slicer generates the G-Code.
+
+| Target Slicer | Export Format |
+|---------------|---------------|
+| OrcaSlicer | 3MF project with embedded print, filament and printer settings |
+| Bambu Studio | 3MF project with embedded print, filament and printer settings |
+| PrusaSlicer | 3MF project with embedded configuration, or INI profile |
+| Cura | Cura profile and model file |
+
+Rules:
+
+- Only validated settings are exported
+- A setting the target slicer does not support produces a warning, never a guessed value
+- The user's slicer installation and existing profiles are never modified
+
+Reference: PROJECT_SPEC.md, section 4.7
+
+A native G-Code engine is not part of the current scope (DECISIONS.md, ADR-006 and ADR-024).
 
 ---
 
@@ -706,6 +731,8 @@ ARCHITECTURE.md
 DATA_SCHEMA.md
 
 PROJECT_SPEC.md
+
+DECISIONS.md
 
 GCODE_ENGINE_SPEC.md
 ```
