@@ -14,7 +14,6 @@
  *
  * Based on:
  * - ARCHITECTURE.md
- * - REPOSITORY_SPEC.md
  * - PRINTER_PROFILE_SPEC.md
  */
 
