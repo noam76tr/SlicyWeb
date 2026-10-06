@@ -2,7 +2,7 @@
 
 # Project Specification
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -38,6 +38,10 @@ print settings based on:
 - Object application
 
 - User constraints
+
+- Selected target slicer
+
+The generated settings are exported to the target slicer chosen by the user, so the model can be printed without manual configuration in that slicer.
 
 The software must assist users in obtaining reliable and efficient print results with minimal manual configuration.
 
@@ -95,6 +99,8 @@ The application must:
 
 - Save WYPROJ project files
 
+- Export the model and its generated print settings to the selected target slicer
+
 - Display objects in a 3D environment
 
 - Manage multiple objects simultaneously
@@ -140,19 +146,45 @@ Examples:
 
 # 3. Project Scope
 
-The project will initially focus on:
+SlicyWeb is a print preparation and print settings generation platform.
 
+SlicyWeb does not slice models itself.
 
-- Visualization
+SlicyWeb shall:
 
-- Analysis
+- Visualize and analyze imported models
 
-- Recommendations
+- Generate complete print settings automatically, based on the selected printer, material, filament, model analysis and object classification
 
+- Export the model and its generated settings to the target slicer selected by the user, in that slicer's native format
 
-The first versions will not generate G-Code.
+The target slicer generates the G-Code.
 
-G-Code generation may be added in future phases.
+Supported Target Slicers:
+
+- OrcaSlicer
+
+- Bambu Studio
+
+- PrusaSlicer
+
+- Cura
+
+The user selects the target slicer they use.
+
+Rules:
+
+- Settings must be mapped to the target slicer's own parameter names, units and value ranges
+
+- A setting the target slicer does not support must produce a warning, never a guessed value
+
+- Mapping rules are defined in SLICER_EXPORT_SPEC.md
+
+A native SlicyWeb G-Code engine is not part of the current scope.
+
+It remains a long-term idea, documented in:
+
+GCODE_ENGINE_SPEC.md (docs/07-future)
 
 ---
 
@@ -232,6 +264,7 @@ Project files may contain:
 - Printer Selection
 - Material Selection
 - Filament Selection
+- Target Slicer Selection
 - Print Presets
 - Analysis Results
 - Recommendations
@@ -382,6 +415,57 @@ Supported Actions:
 -  Print Settings Changes
 
 The history system must preserve project integrity.
+
+---
+
+## 4.7 Target Slicer Export
+
+The user must be able to:
+
+- Select the target slicer they use
+- Review the generated print settings before export
+- Export the model and its settings to the target slicer
+
+Supported Target Slicers:
+
+- OrcaSlicer
+- Bambu Studio
+- PrusaSlicer
+- Cura
+
+Export Formats:
+
+| Target Slicer | Export Format |
+|---------------|---------------|
+| OrcaSlicer | 3MF project with embedded print, filament and printer settings |
+| Bambu Studio | 3MF project with embedded print, filament and printer settings |
+| PrusaSlicer | 3MF project with embedded configuration, or INI profile |
+| Cura | Cura profile and model file |
+
+Output Mode:
+
+The user chooses the output mode through a selection list and confirms it before export:
+
+- Export For Slicer: SlicyWeb writes the export file; the user opens it in the target slicer
+- Export And Generate G-Code: SlicyWeb calls the target slicer's command line to produce the G-Code (optional, requires the slicer to be installed)
+
+Status: The availability of Export And Generate G-Code is pending decision (see DECISIONS.md).
+
+Rules:
+
+- Export must never modify the user's slicer installation or existing profiles
+- Unsupported or unmapped settings must be listed in an export warning report
+- Export must be undoable at the project level (WYPROJ keeps the source settings)
+- Export must use only validated settings
+
+Managed By:
+
+- SlicerExportService
+- Slicer-specific exporters
+
+Detailed mapping and file format rules:
+
+SLICER_EXPORT_SPEC.md
 
 ---
 
@@ -1039,7 +1123,7 @@ Architecture Protection
 
 Create a professional AI-assisted slicer capable of:
 
-- Competing with existing slicers
+- Working with existing slicers by configuring them automatically
 
 - Reducing configuration complexity
 
