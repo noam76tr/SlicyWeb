@@ -272,7 +272,6 @@ Architecture Governance Framework
 - PROJECT_DESCRIPTION.md
 - CHANGELOG.md
 - FILE_OWNERSHIP_MATRIX.md
-- CHANGELOG.md
 
 - SlicyWeb files explication.txt
 
@@ -375,6 +374,36 @@ Internationalization Layer Defined
 WYPROJ Format Standardized
 
 Documentation Synchronized
+
+---
+
+# VERSION 0.1.3
+
+Release Type:
+Scope And Documentation Update
+
+Status:
+Completed
+
+Date:
+2026-10-06
+
+## Changed
+
+- PROJECT_SPEC.md 2.1.0: target slicer export added to the project scope
+- DIRECTORY_PURPOSES.md 2.1.0: uniform format and role of every source file
+- DECISIONS.md: ADR-024 Target Slicer Export
+- IMPORT_EXPORT_SPEC.md 2.1.0: target slicer export formats
+
+## Removed
+
+- DIRECTORY_PRUPOSES-old.md
+
+## Fixed
+
+- FilamentManager.ts: duplicate removeFilament replaced by addFilament
+- PrinterRepositorySync.ts: reference to missing REPOSITORY_SPEC.md removed
+- WYPROJExporter.ts: missing ProjectMetadata import and metadata field
 
 ---
 
