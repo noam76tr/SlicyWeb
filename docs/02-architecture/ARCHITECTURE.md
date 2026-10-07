@@ -10,7 +10,7 @@ Priority: Mandatory
 
 # Purpose
 
-This document defines the software architecture of the AI Smart Slicer project.
+This document defines the software architecture of the SlicyWeb Smart Slicer project.
 
 It describes:
 
