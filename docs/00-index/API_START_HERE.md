@@ -302,13 +302,13 @@ System Integration
 Examples:
 
 ```text
-loadProject
+project:load
 
-saveProject
+project:save
 
-openFile
+import:stl
 
-exportProject
+printer:getAll
 ```
 
 ---
