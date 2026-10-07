@@ -10,7 +10,7 @@ Priority: Mandatory
 
 # Purpose
 
-This document defines the governance model Claude must follow while working on the AI Smart Slicer project.
+This document defines the governance model Claude must follow while working on the SlicyWeb Smart Slicer project.
 
 The objective is to:
 
