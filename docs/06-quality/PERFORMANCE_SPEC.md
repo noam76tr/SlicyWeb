@@ -1,6 +1,6 @@
-\# AI SMART SLICER
+# SlicyWeb Smart Slicer
 
-\# PERFORMANCE SPECIFICATION
+# PERFORMANCE SPECIFICATION
 
 
 
@@ -14,11 +14,11 @@ Priority: High
 
 
 
-\---
+---
 
 
 
-\# Purpose
+# Purpose
 
 
 
@@ -26,11 +26,11 @@ Defines performance requirements.
 
 
 
-\---
+---
 
 
 
-\# Startup Targets
+# Startup Targets
 
 
 
@@ -46,11 +46,11 @@ Warm Start < 1 second
 
 
 
-\---
+---
 
 
 
-\# Viewport Performance
+# Viewport Performance
 
 
 
@@ -78,11 +78,11 @@ Minimum:
 
 
 
-\---
+---
 
 
 
-\# STL Loading Targets
+# STL Loading Targets
 
 
 
@@ -98,11 +98,11 @@ Minimum:
 
 
 
-\---
+---
 
 
 
-\# Supported Geometry
+# Supported Geometry
 
 
 
@@ -130,11 +130,11 @@ Minimum:
 
 
 
-\---
+---
 
 
 
-\# Memory Targets
+# Memory Targets
 
 
 
@@ -162,11 +162,11 @@ Heavy Session:
 
 
 
-\---
+---
 
 
 
-\# Optimization Methods
+# Optimization Methods
 
 
 
@@ -190,11 +190,11 @@ LOD
 
 
 
-\---
+---
 
 
 
-\# Analysis Performance
+# Analysis Performance
 
 
 
@@ -206,7 +206,7 @@ GUI must remain responsive.
 
 
 
-\---
+---
 
 # Classification Performance
 
@@ -228,9 +228,9 @@ Target:
 < 100 ms
 ```
 
-\---
+---
 
-\# Scene Management
+# Scene Management
 
 
 Only re-render modified objects.
@@ -238,10 +238,10 @@ Only re-render modified objects.
 Avoid full scene refresh.
 
 
-\---
+---
 
 
-\# Caching Rules
+# Caching Rules
 
 
 
@@ -269,7 +269,7 @@ Recommendations
 
 
 
-\---
+---
 
 
 
@@ -286,10 +286,10 @@ Confidence Calculation < 100 ms
 for standard models.
 
 
-\---
+---
 
 
-\# Large Model Handling
+# Large Model Handling
 
 
 When geometry exceeds threshold:
@@ -307,7 +307,7 @@ Enable Optimized Mode
 ```
 
 
-\---
+---
 
 # Large Scene Handling
 
@@ -325,7 +325,7 @@ Enable Performance Mode
 
 ---
 
-\# Performance Monitoring
+# Performance Monitoring
 
 
 
@@ -353,11 +353,11 @@ Cache Hit Rate
 
 
 
-\---
+---
 
 
 
-\# Performance Alerts
+# Performance Alerts
 
 
 
@@ -383,7 +383,7 @@ Cache Miss Rate High
 
 
 
-\---
+---
 
 # Repository Performance
 
@@ -445,7 +445,7 @@ GPU Accelerated Classification
 
 ---
 
-\# Golden Rule
+# Golden Rule
 
 
 
@@ -453,9 +453,9 @@ Performance improvements must never compromise correctness.
 
 
 
-\---
+---
 
 
 
-\# End Of Document
+# End Of Document
 
