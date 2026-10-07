@@ -1,4 +1,4 @@
-# AI SMART SLICER
+# SlicyWeb Smart Slicer
 
 # AI ENGINE SPECIFICATION
 
