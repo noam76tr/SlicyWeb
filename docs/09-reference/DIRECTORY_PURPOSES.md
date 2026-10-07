@@ -49,7 +49,9 @@ Every file should be placed in the directory that matches its responsibility.
 
 - CLAUDE.md
 - CLAUDE_PROJECT_CONTEXT.md
+- CLAUDE_READING_PRIORITY.md
 - CLAUDE_DOCUMENT_READING_ORDER.md
+- CLAUDE_GOVERNANCE_PROTOCOL.md
 - CLAUDE_CHANGE_IMPACT_RULES.md
 - CLAUDE_FILE_UPDATE_RULES.md
 
@@ -1348,6 +1350,22 @@ Until the project owner decides otherwise:
 - Public Files
 - Static Content
 - Build Output
+
+---
+
+## public/locales/
+
+**Purpose:** Translation Dictionaries
+
+**Role:** Language dictionaries loaded by the internationalization system (src/i18n/). One file per supported language.
+
+**Files:**
+
+| File | Role |
+|------|------|
+| `en.json` | English translation dictionary |
+| `fr.json` | French translation dictionary |
+| `he.json` | Hebrew translation dictionary (right-to-left language) |
 
 ---
 
