@@ -404,6 +404,8 @@ Date:
 - FilamentManager.ts: duplicate removeFilament replaced by addFilament
 - PrinterRepositorySync.ts: reference to missing REPOSITORY_SPEC.md removed
 - WYPROJExporter.ts: missing ProjectMetadata import and metadata field
+- .gitignore: folder replaced by a root file (node_modules/, dist/, .env, *.log)
+- DIRECTORY_PURPOSES.md: missing governance files and public/locales/ section added
 
 ---
 
