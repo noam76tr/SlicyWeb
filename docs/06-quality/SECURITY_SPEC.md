@@ -1,4 +1,4 @@
-# AI SMART SLICER
+# SlicyWeb Smart Slicer
 
 # SECURITY SPECIFICATION
 
@@ -14,7 +14,7 @@ Priority: Critical
 
 # Purpose
 
-This document defines all security requirements for AI Smart Slicer.
+This document defines all security requirements for SlicyWeb Smart Slicer.
 
 The objectives are:
 
