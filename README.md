@@ -607,7 +607,7 @@ See the LICENSE file for details.
 
 SlicyWeb
 
-AI Smart Slicer Platform
+SlicyWeb Smart Slicer Platform
 
 ---
 
