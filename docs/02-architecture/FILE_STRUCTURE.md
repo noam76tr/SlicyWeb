@@ -796,6 +796,41 @@ src/i18n/
 
 ---
 
+# Configuration
+
+```text
+src/config/
+
+├── ApplicationConfig.ts
+├── EnvironmentConfig.ts
+└── FeatureFlags.ts
+```
+
+---
+
+# Events
+
+```text
+src/events/
+
+├── EventBus.ts
+└── EventTypes.ts
+```
+
+---
+
+# Storage
+
+```text
+src/storage/
+
+├── CacheStorage.ts
+├── ProjectStorage.ts
+└── StorageManager.ts
+```
+
+---
+
 # constants
 
 ```text
