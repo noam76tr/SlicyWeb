@@ -1,4 +1,4 @@
-# AI SMART SLICER
+# SlicyWeb Smart Slicer
 
 # PRINTER PROFILE SPECIFICATION
 
@@ -16,7 +16,7 @@ Priority: High
 
 
 
-This document defines the complete structure of printer profiles used by the AI Smart Slicer.
+This document defines the complete structure of printer profiles used by the SlicyWeb Smart Slicer.
 
 
 
