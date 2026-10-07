@@ -36,7 +36,7 @@ This document exists to:
 
 # Project Name
 
-AI Smart Slicer
+SlicyWeb Smart Slicer
 
 ---
 
@@ -56,8 +56,9 @@ Create an AI-assisted 3D printing preparation software capable of:
 - Recommending print settings
 - Optimizing model orientation
 - Estimating print duration and costs
+- Exporting the model and its generated settings to the selected target slicer
 
-The project is initially focused on:
+The project is focused on:
 
 ```text
 Visualization
@@ -65,9 +66,13 @@ Visualization
 Analysis
 
 Recommendations
+
+Target Slicer Export
 ```
 
-G-Code generation is planned for a future phase.
+SlicyWeb does not generate G-Code itself. The target slicer generates it (DECISIONS.md, ADR-024).
+
+A native G-Code engine remains a long-term idea (docs/07-future/GCODE_ENGINE_SPEC.md).
 
 ---
 
@@ -462,6 +467,19 @@ Read:
 
 ```text
 docs/06-quality/PERFORMANCE_SPEC.md
+```
+
+---
+
+# SLICER EXPORT TASKS
+
+Read:
+
+```text
+docs/01-project/PROJECT_SPEC.md (sections 3 and 4.7)
+docs/02-architecture/IMPORT_EXPORT_SPEC.md
+docs/01-project/DECISIONS.md (ADR-024)
+docs/04-ai/PRINT_SETTINGS_SPEC.md
 ```
 
 ---
