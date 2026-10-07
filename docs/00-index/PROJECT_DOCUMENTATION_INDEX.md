@@ -1328,9 +1328,11 @@ Importance:
 
 # Core System Documents
 
-The highest authority documents are:
+The document authority hierarchy is defined in:
 
 ```text
+CLAUDE_READING_PRIORITY.md
+
 PROJECT_SPEC.md
 
 ARCHITECTURE.md
@@ -1346,7 +1348,7 @@ DECISIONS.md
 DOMAIN_BOUNDARIES.md
 ```
 
-These files define the foundation of the project.
+These documents define the foundation of the project.
 
 ---
 
