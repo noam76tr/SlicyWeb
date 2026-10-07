@@ -1,4 +1,4 @@
-# AI SMART SLICER
+# SlicyWeb Smart Slicer
 
 # GUI SPECIFICATION
 
@@ -16,7 +16,7 @@ Priority: Critical
 
 
 
-This document defines the complete graphical user interface of the AI Smart Slicer.
+This document defines the complete graphical user interface of the SlicyWeb Smart Slicer.
 
 
 
