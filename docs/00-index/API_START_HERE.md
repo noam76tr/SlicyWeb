@@ -389,15 +389,11 @@ Example:
 
 # Source Of Truth
 
-If conflicts exist, prioritize:
+If conflicts exist, follow the authority hierarchy defined in:
 
-```text
-API_SPEC.md
+CLAUDE_READING_PRIORITY.md
 
-DATA_SCHEMA.md
-
-ARCHITECTURE.md
-```
+For API questions, API_SPEC.md is the detailed reference, within the limits set by ARCHITECTURE.md and DATA_SCHEMA.md.
 
 ---
 
