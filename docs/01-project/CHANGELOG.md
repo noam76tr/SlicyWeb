@@ -908,6 +908,7 @@ Date: TBD
 - Notification System
 - IPC Layer
 - Recovery System
+- Target Slicer Export (OrcaSlicer, Bambu Studio, PrusaSlicer, Cura)
 
 ---
 
