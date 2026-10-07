@@ -1,6 +1,6 @@
-\# AI SMART SLICER
+# SlicyWeb Smart Slicer
 
-\# GCODE ENGINE SPECIFICATION
+# GCODE ENGINE SPECIFICATION
 
 Version: 1.0.0
 
@@ -8,11 +8,11 @@ Status: Approved
 
 
 
-\---
+---
 
 
 
-\# Purpose
+# Purpose
 
 
 
@@ -64,11 +64,11 @@ ready for printing.
 
 
 
-\---
+---
 
 
 
-\# Objectives
+# Objectives
 
 
 
@@ -76,43 +76,35 @@ The G-Code engine must:
 
 
 
-\- Generate valid G-Code
+- Generate valid G-Code
 
-\- Respect printer limits
+- Respect printer limits
 
-\- Respect material limits
+- Respect material limits
 
-\- Generate optimized paths
+- Generate optimized paths
 
-\- Minimize print failures
+- Minimize print failures
 
-\- Minimize print duration
+- Minimize print duration
 
-\- Minimize unnecessary travel
-
-
-
-\---
+- Minimize unnecessary travel
 
 
 
-\# Engine Architecture
+---
 
 
+
+# Engine Architecture
 
 ```text
 
 Model
 
-
-
 ↓
 
-
-
 Slicing Engine
-
-
 
 ↓
 
@@ -164,11 +156,11 @@ Export
 
 
 
-\---
+---
 
 
 
-\# Main Components
+# Main Components
 
 
 
@@ -195,11 +187,11 @@ Validation Engine
 ```
 
 
-\---
+---
 
 
 
-\# G-Code Workflow
+# G-Code Workflow
 
 
 ```text
@@ -245,10 +237,10 @@ Export
 ```
 
 
-\---
+---
 
 
-\# Layer Generator
+# Layer Generator
 
 
 Purpose:
@@ -257,11 +249,11 @@ Purpose:
 Convert model into layers.
 
 
-\---
+---
 
 
 
-\# Inputs
+# Inputs
 
 
 ```text
@@ -275,11 +267,11 @@ Model Geometry
 ```
 
 
-\---
+---
 
 
 
-\# Outputs
+# Outputs
 
 
 ```text
@@ -289,10 +281,10 @@ Layer Stack
 ```
 
 
-\---
+---
 
 
-\# Layer Height Rules
+# Layer Height Rules
 
 
 Use:
@@ -309,11 +301,11 @@ User Override
 ```
 
 
-\---
+---
 
 
 
-\# Adaptive Layers
+# Adaptive Layers
 
 
 Future Feature
@@ -336,11 +328,11 @@ on simple areas
 
 
 
-\---
+---
 
 
 
-\# Wall Generator
+# Wall Generator
 
 
 
@@ -352,11 +344,11 @@ Generate external and internal walls.
 
 
 
-\---
+---
 
 
 
-\# Wall Types
+# Wall Types
 
 
 
@@ -376,11 +368,11 @@ Thin Wall
 
 
 
-\---
+---
 
 
 
-\# Rules
+# Rules
 
 
 
@@ -404,11 +396,11 @@ Higher Precision
 
 
 
-\---
+---
 
 
 
-\# Top Surface Generator
+# Top Surface Generator
 
 
 
@@ -420,11 +412,11 @@ Generate top layers.
 
 
 
-\---
+---
 
 
 
-\# Requirements
+# Requirements
 
 
 
@@ -444,11 +436,11 @@ Good Finish
 
 
 
-\---
+---
 
 
 
-\# Bottom Surface Generator
+# Bottom Surface Generator
 
 
 
@@ -460,11 +452,11 @@ Generate bottom layers.
 
 
 
-\---
+---
 
 
 
-\# Requirements
+# Requirements
 
 
 
@@ -480,11 +472,11 @@ Strong Foundation
 
 
 
-\---
+---
 
 
 
-\# Infill Generator
+# Infill Generator
 
 
 
@@ -496,11 +488,11 @@ Generate internal structures.
 
 
 
-\---
+---
 
 
 
-\# Supported Patterns
+# Supported Patterns
 
 
 
@@ -536,11 +528,11 @@ Lines
 
 
 
-\---
+---
 
 
 
-\# Pattern Selection
+# Pattern Selection
 
 
 
@@ -568,11 +560,11 @@ User Selection
 
 
 
-\---
+---
 
 
 
-\# Support Generator
+# Support Generator
 
 
 
@@ -584,11 +576,11 @@ Generate support structures.
 
 
 
-\---
+---
 
 
 
-\# Support Types
+# Support Types
 
 
 
@@ -608,11 +600,11 @@ Standard
 
 
 
-\---
+---
 
 
 
-\# Support Placement
+# Support Placement
 
 
 
@@ -636,11 +628,11 @@ Material Constraints
 
 
 
-\---
+---
 
 
 
-\# Support Removal Priority
+# Support Removal Priority
 
 
 
@@ -664,11 +656,11 @@ Remain Removable
 
 
 
-\---
+---
 
 
 
-\# Travel Generator
+# Travel Generator
 
 
 
@@ -680,11 +672,11 @@ Generate movement paths.
 
 
 
-\---
+---
 
 
 
-\# Travel Goals
+# Travel Goals
 
 
 
@@ -704,11 +696,11 @@ Reduce Crossings
 
 
 
-\---
+---
 
 
 
-\# Travel Types
+# Travel Types
 
 
 
@@ -732,11 +724,11 @@ Layer Change Travel
 
 
 
-\---
+---
 
 
 
-\# Retraction System
+# Retraction System
 
 
 
@@ -748,11 +740,11 @@ Reduce stringing.
 
 
 
-\---
+---
 
 
 
-\# Rules
+# Rules
 
 
 
@@ -776,11 +768,11 @@ Configured Threshold
 
 
 
-\---
+---
 
 
 
-\# Retraction Sources
+# Retraction Sources
 
 
 
@@ -798,11 +790,11 @@ AI Recommendation
 
 
 
-\---
+---
 
 
 
-\# Z-Hop System
+# Z-Hop System
 
 
 
@@ -810,11 +802,11 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\# Purpose
+# Purpose
 
 
 
@@ -822,11 +814,11 @@ Lift nozzle during travel.
 
 
 
-\---
+---
 
 
 
-\# Activation
+# Activation
 
 
 
@@ -834,11 +826,11 @@ Only when beneficial.
 
 
 
-\---
+---
 
 
 
-\# Bridge Engine
+# Bridge Engine
 
 
 
@@ -850,11 +842,11 @@ Generate bridge-specific paths.
 
 
 
-\---
+---
 
 
 
-\# Bridge Rules
+# Bridge Rules
 
 
 
@@ -878,11 +870,11 @@ Optimized Line Direction
 
 
 
-\---
+---
 
 
 
-\# Orientation Optimization Integration
+# Orientation Optimization Integration
 
 
 
@@ -902,11 +894,11 @@ from Optimization Engine.
 
 
 
-\---
+---
 
 
 
-\# Support Reduction Goal
+# Support Reduction Goal
 
 
 
@@ -926,11 +918,11 @@ Without Sacrificing Reliability
 
 
 
-\---
+---
 
 
 
-\# Build Plate Validation
+# Build Plate Validation
 
 
 
@@ -958,11 +950,11 @@ No Out-Of-Bounds Geometry
 
 
 
-\---
+---
 
 
 
-\# Collision Detection
+# Collision Detection
 
 
 
@@ -990,11 +982,11 @@ Extruder Clearance Risks
 
 
 
-\---
+---
 
 
 
-\# Multi Object Printing
+# Multi Object Printing
 
 
 
@@ -1002,11 +994,11 @@ Supported.
 
 
 
-\---
+---
 
 
 
-\# Print Modes
+# Print Modes
 
 
 
@@ -1026,11 +1018,11 @@ Sequential
 
 
 
-\---
+---
 
 
 
-\# Sequential Printing Validation
+# Sequential Printing Validation
 
 
 
@@ -1054,11 +1046,11 @@ Collision Risk
 
 
 
-\---
+---
 
 
 
-\# Cooling Planner Inputs
+# Cooling Planner Inputs
 
 
 
@@ -1070,11 +1062,11 @@ Plan cooling strategies.
 
 
 
-\---
+---
 
 
 
-\# Inputs
+# Inputs
 
 
 ```text
@@ -1093,11 +1085,11 @@ Small Features
 
 
 
-\---
+---
 
 
 
-\# Output
+# Output
 
 
 
@@ -1113,11 +1105,11 @@ Cooling Events
 
 
 
-\---
+---
 
 
 
-\# Speed Planner
+# Speed Planner
 
 
 
@@ -1129,11 +1121,11 @@ Apply speed profile.
 
 
 
-\---
+---
 
 
 
-\# Speed Categories
+# Speed Categories
 
 
 
@@ -1169,11 +1161,11 @@ Travel
 
 
 
-\---
+---
 
 
 
-\# Quality Planner
+# Quality Planner
 
 
 
@@ -1185,11 +1177,11 @@ Apply quality improvements.
 
 
 
-\---
+---
 
 
 
-\# Examples
+# Examples
 
 
 
@@ -1213,11 +1205,11 @@ Slow Outer Walls
 
 
 
-\---
+---
 
 
 
-\# Material Consumption Engine
+# Material Consumption Engine
 
 
 
@@ -1245,11 +1237,11 @@ Material Cost
 
 
 
-\---
+---
 
 
 
-\# Time Estimation Engine
+# Time Estimation Engine
 
 
 
@@ -1269,11 +1261,11 @@ Print Duration
 
 
 
-\---
+---
 
 
 
-\# Accuracy Goal
+# Accuracy Goal
 
 
 
@@ -1289,11 +1281,11 @@ Initial Target:
 
 
 
-\---
+---
 
 
 
-\# Preview Engine
+# Preview Engine
 
 
 
@@ -1305,11 +1297,11 @@ Render toolpaths.
 
 
 
-\---
+---
 
 
 
-\# Preview Modes
+# Preview Modes
 
 
 
@@ -1337,11 +1329,11 @@ Support Visualization
 
 
 
-\---
+---
 
 
 
-\# User Controls
+# User Controls
 
 
 
@@ -1369,11 +1361,11 @@ Jump To Layer
 
 
 
-\---
+---
 
 
 
-\# G-Code Validation
+# G-Code Validation
 
 
 
@@ -1405,11 +1397,11 @@ Temperature Safety
 
 
 
-\---
+---
 
 
 
-\# Safety Validation
+# Safety Validation
 
 
 
@@ -1437,11 +1429,11 @@ Corrupted Geometry
 
 
 
-\---
+---
 
 
 
-\# Export Engine
+# Export Engine
 
 
 
@@ -1473,11 +1465,11 @@ manufacturer-specific formats
 
 
 
-\---
+---
 
 
 
-\# Metadata Header
+# Metadata Header
 
 
 
@@ -1505,11 +1497,11 @@ Filament
 
 
 
-\---
+---
 
 
 
-\# Firmware Support
+# Firmware Support
 
 
 
@@ -1541,11 +1533,11 @@ Prusa Compatible
 
 
 
-\---
+---
 
 
 
-\# Future Advanced Features
+# Future Advanced Features
 
 
 
@@ -1581,11 +1573,11 @@ Tool Changer Support
 
 
 
-\---
+---
 
 
 
-\# AI Interaction
+# AI Interaction
 
 
 
@@ -1601,11 +1593,11 @@ The G-Code engine executes them.
 
 
 
-\---
+---
 
 
 
-\# Validation Priority
+# Validation Priority
 
 
 
@@ -1633,11 +1625,11 @@ The G-Code engine executes them.
 
 
 
-\---
+---
 
 
 
-\# Performance Goals
+# Performance Goals
 
 
 
@@ -1661,11 +1653,11 @@ Efficient Memory Usage
 
 
 
-\---
+---
 
 
 
-\# Backward Compatibility
+# Backward Compatibility
 
 
 
@@ -1693,11 +1685,11 @@ Generated Workflows
 
 
 
-\---
+---
 
 
 
-\# Golden Rule
+# Golden Rule
 
 
 
@@ -1705,9 +1697,9 @@ The generated G-Code must always be printable, safe, and compatible before being
 
 
 
-\---
+---
 
 
 
-\# End Of Document
+# End Of Document
 
