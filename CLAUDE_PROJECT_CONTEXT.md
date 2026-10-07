@@ -32,7 +32,11 @@ The application focuses on:
 - Optimization
 - Print Preparation
 
-Initial versions do not generate G-Code.
+SlicyWeb does not generate G-Code itself.
+
+Generated print settings are exported to the target slicer selected by the user (OrcaSlicer, Bambu Studio, PrusaSlicer, Cura). The target slicer generates the G-Code.
+
+Reference: PROJECT_SPEC.md (sections 3 and 4.7), DECISIONS.md (ADR-024).Initial versions do not generate G-Code.
 
 ---
 
@@ -53,6 +57,7 @@ The system must:
 - Manage printer profiles
 - Manage material profiles
 - Assist users in obtaining reliable print results
+- Export the model and its generated settings to the selected target slicer
 
 ---
 
