@@ -1199,10 +1199,10 @@ Until the project owner decides otherwise:
 
 | File | Role |
 |------|------|
-| `ImportIPC.ts` | IPC communication for file import (STL, 3MF) and validation |
-| `PrinterIPC.ts` | IPC communication for printer operations (add, remove, retrieve, count) |
+| `ImportIPC.ts`  | IPC communication for file import (STL, 3MF) and validation |
+| `PrinterIPC.ts` | IPC communication for printer operations (get, get all, add, update, remove, count) |
 | `ProjectIPC.ts` | IPC communication for project operations (create, load, save, delete) |
-| `SettingsIPC.ts` | IPC communication for user settings (get, update, reset, theme, language) |
+| `SettingsIPC.ts`| IPC communication for user settings (get, update, reset, theme, language) |
 | `StorageIPC.ts` | IPC communication for storage operations (save, load, delete, clear) |
 
 ---
