@@ -482,6 +482,7 @@ Contains:
 - STL Import
 - 3MF Import
 - Project Export
+- Target Slicer Export
 - Data Exchange Rules
 
 Importance:
