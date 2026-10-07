@@ -1,4 +1,4 @@
-# AI SMART SLICER
+# SlicyWeb Smart Slicer
 
 # TEST PLAN
 
@@ -16,7 +16,7 @@ Priority: High
 
 
 
-This document defines the testing strategy for the AI Smart Slicer project.
+This document defines the testing strategy for the SlicyWeb Smart Slicer project.
 
 
 
