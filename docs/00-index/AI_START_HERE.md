@@ -653,9 +653,11 @@ Never implement future phase features unless explicitly requested.
 
 # SOURCE OF TRUTH
 
-The following documents have the highest authority:
+The document authority hierarchy is defined in:
 
 ```text
+CLAUDE_READING_PRIORITY.md
+
 PROJECT_SPEC.md
 
 ARCHITECTURE.md
@@ -675,7 +677,7 @@ DOMAIN_BOUNDARIES.md
 
 If conflict exists:
 
-Follow these documents.
+Follow the highest priority document as defined there.
 
 ---
 
