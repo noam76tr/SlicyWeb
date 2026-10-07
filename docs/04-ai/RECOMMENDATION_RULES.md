@@ -1,6 +1,6 @@
-\# AI SMART SLICER
+# AI SMART SLICER
 
-\# RECOMMENDATION RULES
+# RECOMMENDATION RULES
 
 Version: 1.0.0
 
@@ -10,11 +10,11 @@ Priority: High
 
 
 
-\---
+---
 
 
 
-\# Purpose
+# Purpose
 
 
 
@@ -70,11 +70,11 @@ Given the same inputs, the same recommendations must always be generated.
 
 
 
-\---
+---
 
 
 
-\# Recommendation Philosophy
+# Recommendation Philosophy
 
 
 
@@ -114,11 +114,11 @@ The engine must never sacrifice reliability for speed.
 
 
 
-\---
+---
 
 
 
-\# Recommendation Pipeline
+# Recommendation Pipeline
 
 
 
@@ -186,15 +186,15 @@ Generate Output
 
 
 
-\---
+---
 
 
 
-\# Required Inputs
+# Required Inputs
 
 
 
-\## Printer
+## Printer
 
 
 
@@ -206,7 +206,7 @@ Printer Profile
 
 
 
-\---
+---
 
 
 
@@ -229,7 +229,7 @@ Print Preset
 ---
 
 
-\## Model Analysis
+## Model Analysis
 
 
 
@@ -265,11 +265,11 @@ Classification
 
 
 
-\---
+---
 
 
 
-\# Object Classification Rules
+# Object Classification Rules
 
 
 
@@ -277,11 +277,11 @@ The engine attempts to classify the object.
 
 
 
-\---
+---
 
 
 
-\## Figurine
+## Figurine
 
 
 
@@ -321,11 +321,11 @@ Surface Quality
 
 
 
-\---
+---
 
 
 
-\## Mechanical Part
+## Mechanical Part
 
 
 
@@ -369,11 +369,11 @@ Accuracy
 
 
 
-\---
+---
 
 
 
-\## Gear
+## Gear
 
 
 
@@ -413,11 +413,11 @@ Strength
 
 
 
-\---
+---
 
 
 
-\## Vase
+## Vase
 
 
 
@@ -453,11 +453,11 @@ Surface Finish
 
 
 
-\---
+---
 
 
 
-\## Structural Part
+## Structural Part
 
 
 
@@ -489,7 +489,7 @@ Strength
 
 
 
-\---
+---
 
 ---
 
@@ -542,15 +542,15 @@ Structural Components
 Load Bearing Objects
 ```
 
-\# Layer Height Rules
+# Layer Height Rules
 
 
 
-\---
+---
 
 
 
-\## High Detail Objects
+## High Detail Objects
 
 
 
@@ -590,11 +590,11 @@ Recommended:
 
 
 
-\---
+---
 
 
 
-\## Standard Objects
+## Standard Objects
 
 
 
@@ -612,11 +612,11 @@ Recommended:
 
 
 
-\---
+---
 
 
 
-\## Large Objects
+## Large Objects
 
 
 
@@ -634,11 +634,11 @@ Recommended:
 
 
 
-\---
+---
 
 
 
-\# Nozzle Compatibility Rule
+# Nozzle Compatibility Rule
 
 
 
@@ -674,19 +674,19 @@ Maximum 0.30 layer
 
 
 
-\---
+---
 
 
 
-\# Wall Count Rules
+# Wall Count Rules
 
 
 
-\---
+---
 
 
 
-\## Decorative Models
+## Decorative Models
 
 
 
@@ -698,11 +698,11 @@ Maximum 0.30 layer
 
 
 
-\---
+---
 
 
 
-\## Functional Parts
+## Functional Parts
 
 
 
@@ -714,11 +714,11 @@ Maximum 0.30 layer
 
 
 
-\---
+---
 
 
 
-\## Structural Parts
+## Structural Parts
 
 
 
@@ -730,11 +730,11 @@ Maximum 0.30 layer
 
 
 
-\---
+---
 
 
 
-\## Thin Wall Warning
+## Thin Wall Warning
 
 
 
@@ -754,19 +754,19 @@ Generate Warning.
 
 
 
-\---
+---
 
 
 
-\# Top And Bottom Layers Rules
+# Top And Bottom Layers Rules
 
 
 
-\---
+---
 
 
 
-\## Decorative
+## Decorative
 
 
 
@@ -778,11 +778,11 @@ Generate Warning.
 
 
 
-\---
+---
 
 
 
-\## Functional
+## Functional
 
 
 
@@ -794,11 +794,11 @@ Generate Warning.
 
 
 
-\---
+---
 
 
 
-\## Structural
+## Structural
 
 
 
@@ -810,19 +810,19 @@ Generate Warning.
 
 
 
-\---
+---
 
 
 
-\# Infill Rules
+# Infill Rules
 
 
 
-\---
+---
 
 
 
-\## Decorative
+## Decorative
 
 
 
@@ -850,11 +850,11 @@ Gyroid
 
 
 
-\---
+---
 
 
 
-\## Standard
+## Standard
 
 
 
@@ -878,11 +878,11 @@ Gyroid
 
 
 
-\---
+---
 
 
 
-\## Mechanical
+## Mechanical
 
 
 
@@ -906,11 +906,11 @@ Cubic
 
 
 
-\---
+---
 
 
 
-\## Structural
+## Structural
 
 
 
@@ -938,19 +938,19 @@ Honeycomb
 
 
 
-\---
+---
 
 
 
-\# Material-Specific Rules
+# Material-Specific Rules
 
 
 
-\---
+---
 
 
 
-\# PLA
+# PLA
 
 
 
@@ -1014,11 +1014,11 @@ Default Speed:
 
 
 
-\---
+---
 
 
 
-\# PLA+
+# PLA+
 
 
 
@@ -1058,11 +1058,11 @@ Normal Rules
 
 
 
-\---
+---
 
 
 
-\# PETG
+# PETG
 
 
 
@@ -1106,11 +1106,11 @@ Increase Retraction Validation
 
 
 
-\---
+---
 
 
 
-\# ABS
+# ABS
 
 
 
@@ -1154,11 +1154,11 @@ Recommend Enclosure
 
 
 
-\---
+---
 
 
 
-\# ASA
+# ASA
 
 
 
@@ -1182,11 +1182,11 @@ Increase Warp Monitoring
 
 
 
-\---
+---
 
 
 
-\# TPU
+# TPU
 
 
 
@@ -1222,11 +1222,11 @@ Speed:
 
 
 
-\---
+---
 
 
 
-\# Nylon
+# Nylon
 
 
 
@@ -1250,11 +1250,11 @@ Warp Monitoring Enabled
 
 
 
-\---
+---
 
 
 
-\# Carbon Fiber Materials
+# Carbon Fiber Materials
 
 
 
@@ -1282,19 +1282,19 @@ Brass Nozzle Detected
 
 
 
-\---
+---
 
 
 
-\# Support Generation Rules
+# Support Generation Rules
 
 
 
-\---
+---
 
 
 
-\## Support Not Required
+## Support Not Required
 
 
 
@@ -1318,11 +1318,11 @@ Stable Geometry
 
 
 
-\---
+---
 
 
 
-\## Support Required
+## Support Required
 
 
 
@@ -1346,19 +1346,19 @@ Bridge Failure Risk
 
 
 
-\---
+---
 
 
 
-\# Overhang Rules
+# Overhang Rules
 
 
 
-\---
+---
 
 
 
-\## Safe
+## Safe
 
 
 
@@ -1370,11 +1370,11 @@ Bridge Failure Risk
 
 
 
-\---
+---
 
 
 
-\## Moderate
+## Moderate
 
 
 
@@ -1386,11 +1386,11 @@ Bridge Failure Risk
 
 
 
-\---
+---
 
 
 
-\## High Risk
+## High Risk
 
 
 
@@ -1406,19 +1406,19 @@ Support evaluation required.
 
 
 
-\---
+---
 
 
 
-\# Support Type Selection
+# Support Type Selection
 
 
 
-\---
+---
 
 
 
-\## Organic
+## Organic
 
 
 
@@ -1442,11 +1442,11 @@ Organic Assets
 
 
 
-\---
+---
 
 
 
-\## Tree
+## Tree
 
 
 
@@ -1466,11 +1466,11 @@ Decorative Models
 
 
 
-\---
+---
 
 
 
-\## Standard
+## Standard
 
 
 
@@ -1490,19 +1490,19 @@ Functional Geometry
 
 
 
-\---
+---
 
 
 
-\# Adhesion Rules
+# Adhesion Rules
 
 
 
-\---
+---
 
 
 
-\## Skirt
+## Skirt
 
 
 
@@ -1510,11 +1510,11 @@ Default.
 
 
 
-\---
+---
 
 
 
-\## Brim
+## Brim
 
 
 
@@ -1538,11 +1538,11 @@ Warp Risk
 
 
 
-\---
+---
 
 
 
-\## Raft
+## Raft
 
 
 
@@ -1562,11 +1562,11 @@ Very Difficult Materials
 
 
 
-\---
+---
 
 
 
-\# Stability Rules
+# Stability Rules
 
 
 
@@ -1590,11 +1590,11 @@ Center Of Gravity
 
 
 
-\---
+---
 
 
 
-\## Stable
+## Stable
 
 
 
@@ -1610,11 +1610,11 @@ Low Height
 
 
 
-\---
+---
 
 
 
-\## Medium Risk
+## Medium Risk
 
 
 
@@ -1622,11 +1622,11 @@ Generate Advisory.
 
 
 
-\---
+---
 
 
 
-\## High Risk
+## High Risk
 
 
 
@@ -1646,31 +1646,19 @@ Orientation Change
 
 
 
-\---
+---
 
 
 
-\# Speed Rules
+# Speed Rules
 
 
 
-\---
+---
 
 
 
-\## High Detail
-
-
-
-Reduce Speed.
-
-
-
-\---
-
-
-
-\## Thin Walls
+## High Detail
 
 
 
@@ -1678,11 +1666,11 @@ Reduce Speed.
 
 
 
-\---
+---
 
 
 
-\## Tall Objects
+## Thin Walls
 
 
 
@@ -1690,11 +1678,23 @@ Reduce Speed.
 
 
 
-\---
+---
 
 
 
-\## Large Flat Parts
+## Tall Objects
+
+
+
+Reduce Speed.
+
+
+
+---
+
+
+
+## Large Flat Parts
 
 
 
@@ -1702,19 +1702,19 @@ Reduce Acceleration.
 
 
 
-\---
+---
 
 
 
-\# Cooling Rules
+# Cooling Rules
 
 
 
-\---
+---
 
 
 
-\# PLA
+# PLA
 
 
 
@@ -1726,11 +1726,11 @@ Reduce Acceleration.
 
 
 
-\---
+---
 
 
 
-\# PETG
+# PETG
 
 
 
@@ -1742,27 +1742,11 @@ Reduce Acceleration.
 
 
 
-\---
+---
 
 
 
-\# ABS
-
-
-
-```text
-
-0 - 30%
-
-```
-
-
-
-\---
-
-
-
-\# ASA
+# ABS
 
 
 
@@ -1774,11 +1758,27 @@ Reduce Acceleration.
 
 
 
-\---
+---
 
 
 
-\# TPU
+# ASA
+
+
+
+```text
+
+0 - 30%
+
+```
+
+
+
+---
+
+
+
+# TPU
 
 
 
@@ -1790,19 +1790,19 @@ Reduce Acceleration.
 
 
 
-\---
+---
 
 
 
-\# Retraction Rules
+# Retraction Rules
 
 
 
-\---
+---
 
 
 
-\# Direct Drive
+# Direct Drive
 
 
 
@@ -1818,11 +1818,11 @@ Preferred:
 
 
 
-\---
+---
 
 
 
-\# Bowden
+# Bowden
 
 
 
@@ -1838,11 +1838,11 @@ Preferred:
 
 
 
-\---
+---
 
 
 
-\# Bridge Rules
+# Bridge Rules
 
 
 
@@ -1862,11 +1862,11 @@ Reduce Bridge Speed
 
 
 
-\---
+---
 
 
 
-\# Warp Risk Rules
+# Warp Risk Rules
 
 
 
@@ -1898,11 +1898,11 @@ Small Contact Area
 
 
 
-\---
+---
 
 
 
-\## High Warp Risk
+## High Warp Risk
 
 
 
@@ -1926,11 +1926,11 @@ Higher Bed Temperature
 
 
 
-\---
+---
 
 
 
-\# Confidence Rules
+# Confidence Rules
 
 
 
@@ -1951,10 +1951,10 @@ Complete Analysis
 ```
 
 
-\---
+---
 
 
-\# Confidence Reduction
+# Confidence Reduction
 
 
 Unknown Printer
@@ -1966,7 +1966,7 @@ Unknown Printer
 \-30
 
 
-\---
+---
 
 
 Unknown Material
@@ -1977,7 +1977,7 @@ Unknown Material
 
 \-30
 
-\---
+---
 
 Unknown Filament
 
@@ -1986,7 +1986,7 @@ Unknown Filament
 -15
 
 
-\---
+---
 
 
 Incomplete Analysis
@@ -1998,10 +1998,10 @@ Incomplete Analysis
 \-20
 
 
-\---
+---
 
 
-\# Confidence Scale
+# Confidence Scale
 
 
 ```text
@@ -2038,11 +2038,11 @@ Very Low
 
 
 
-\---
+---
 
 
 
-\# Recommendation Validation
+# Recommendation Validation
 
 
 
@@ -2070,11 +2070,11 @@ Geometry Limits
 
 
 
-\---
+---
 
 
 
-\# Auto Correction Rules
+# Auto Correction Rules
 
 
 
@@ -2090,7 +2090,7 @@ Correct Automatically
 
 
 
-\---
+---
 
 
 
@@ -2122,11 +2122,11 @@ Clamp To Printer Maximum
 
 
 
-\---
+---
 
 
 
-\# Warning Rules
+# Warning Rules
 
 
 
@@ -2162,11 +2162,11 @@ Material Not Supported
 
 
 
-\---
+---
 
 
 
-\# Warning
+# Warning
 
 
 
@@ -2190,11 +2190,11 @@ Tall Object
 
 
 
-\---
+---
 
 
 
-\# Information
+# Information
 
 
 
@@ -2218,11 +2218,11 @@ Alternative Orientation
 
 
 
-\---
+---
 
 
 
-\# Optimization Rules
+# Optimization Rules
 
 
 
@@ -2238,7 +2238,7 @@ Reliability Not Reduced
 
 
 
-\---
+---
 
 
 
@@ -2262,11 +2262,11 @@ Material Reduction
 
 
 
-\---
+---
 
 
 
-\# Learning Rules
+# Learning Rules
 
 
 
@@ -2286,11 +2286,11 @@ Only deterministic rules.
 
 
 
-\---
+---
 
 
 
-\# Future Rules
+# Future Rules
 
 
 
@@ -2318,11 +2318,11 @@ Community Recommendation Learning
 
 
 
-\---
+---
 
 
 
-\# Golden Rule
+# Golden Rule
 
 
 
@@ -2330,9 +2330,9 @@ A successful print is always more important than an aggressive recommendation.
 
 
 
-\---
+---
 
 
 
-\# End Of Document
+# End Of Document
 
