@@ -1,6 +1,6 @@
-\# AI SMART SLICER
+# SlicyWeb Smart Slicer
 
-\# MATERIAL PROFILE SPECIFICATION
+# MATERIAL PROFILE SPECIFICATION
 
 
 
@@ -17,11 +17,11 @@ Priority: High
 
 
 
-\# Purpose
+# Purpose
 
 
 
-This document defines the complete structure of material profiles used by the AI Smart Slicer.
+This document defines the complete structure of material profiles used by the SlicyWeb Smart Slicer.
 
 
 
@@ -33,27 +33,27 @@ The profile must provide sufficient information for:
 
 
 
-\- AI Recommendations
+- AI Recommendations
 
-\- Risk Analysis
+- Risk Analysis
 
-\- Cost Calculations
+- Cost Calculations
 
-\- Thermal Validation
+- Thermal Validation
 
-\- Speed Validation
+- Speed Validation
 
-\- Cooling Validation
+- Cooling Validation
 
-\- Printability Analysis
-
-
-
-\---
+- Printability Analysis
 
 
 
-\# Objectives
+---
+
+
+
+# Objectives
 
 
 
@@ -61,19 +61,19 @@ A material profile must describe:
 
 
 
-\- Thermal behavior
+- Thermal behavior
 
-\- Mechanical characteristics
+- Mechanical characteristics
 
-\- Printing requirements
+- Printing requirements
 
-\- Cooling requirements
+- Cooling requirements
 
-\- Drying requirements
+- Drying requirements
 
-\- Warping characteristics
+- Warping characteristics
 
-\- Compatibility constraints
+- Compatibility constraints
 
 
 
@@ -81,11 +81,11 @@ The AI engine must use this data to generate safe and reliable recommendations.
 
 
 
-\---
+---
 
 
 
-\# Material Categories
+# Material Categories
 
 
 
@@ -169,11 +169,11 @@ Custom
 
 
 
-\---
+---
 
 
 
-\# Profile Structure
+# Profile Structure
 
 
 
@@ -198,19 +198,19 @@ Custom
 
 
 
-\---
+---
 
 
 
-\# Metadata Section
+# Metadata Section
 
 Purpose:
 
 Identify material.
 
-\---
+---
 
-\## Schema
+## Schema
 
 ```json
 
@@ -237,10 +237,10 @@ Identify material.
 ```
 
 
-\---
+---
 
 
-\# Example
+# Example
 
 
 ```json
@@ -261,11 +261,11 @@ Identify material.
 
 
 
-\---
+---
 
 
 
-\# Thermal Properties
+# Thermal Properties
 
 
 
@@ -273,11 +273,11 @@ Defines heating requirements.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -309,11 +309,11 @@ Defines heating requirements.
 
 
 
-\---
+---
 
 
 
-\# Validation
+# Validation
 
 
 
@@ -333,11 +333,11 @@ Bed Temperature
 
 
 
-\---
+---
 
 
 
-\# Cooling Profile
+# Cooling Profile
 
 
 
@@ -345,11 +345,11 @@ Determines cooling behavior.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -373,11 +373,11 @@ Determines cooling behavior.
 
 
 
-\---
+---
 
 
 
-\# Example
+# Example
 
 
 
@@ -393,7 +393,7 @@ PLA
 
 
 
-\---
+---
 
 
 
@@ -409,7 +409,7 @@ PETG
 
 
 
-\---
+---
 
 
 
@@ -425,11 +425,11 @@ ABS
 
 
 
-\---
+---
 
 
 
-\# Mechanical Properties
+# Mechanical Properties
 
 
 
@@ -437,11 +437,11 @@ Used by AI for strength recommendations.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -469,11 +469,11 @@ Used by AI for strength recommendations.
 
 
 
-\---
+---
 
 
 
-\# Property Scale
+# Property Scale
 
 
 
@@ -489,11 +489,11 @@ All properties:
 
 
 
-\---
+---
 
 
 
-\# Meaning
+# Meaning
 
 
 
@@ -509,11 +509,11 @@ All properties:
 
 
 
-\---
+---
 
 
 
-\# Physical Properties
+# Physical Properties
 
 
 Purpose:
@@ -522,10 +522,10 @@ Purpose:
 Cost and material estimation.
 
 
-\---
+---
 
 
-\## Schema
+## Schema
 
 
 
@@ -549,11 +549,11 @@ Cost and material estimation.
 
 
 
-\---
+---
 
 
 
-\# Density Units
+# Density Units
 
 
 
@@ -565,11 +565,11 @@ g/cm³
 
 
 
-\---
+---
 
 
 
-\# Abrasive Materials
+# Abrasive Materials
 
 
 
@@ -593,11 +593,11 @@ Metal Filled
 
 
 
-\---
+---
 
 
 
-\# Abrasive Material Impact
+# Abrasive Material Impact
 
 
 
@@ -613,11 +613,11 @@ Hardened Nozzle
 
 
 
-\---
+---
 
 
 
-\# Printing Settings
+# Printing Settings
 
 
 
@@ -625,11 +625,11 @@ Recommended values.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -659,11 +659,11 @@ Recommended values.
 
 
 
-\---
+---
 
 
 
-\# Speed Units
+# Speed Units
 
 
 
@@ -675,11 +675,11 @@ mm/s
 
 
 
-\---
+---
 
 
 
-\# Retraction Units
+# Retraction Units
 
 
 
@@ -707,11 +707,11 @@ mm/s
 
 
 
-\---
+---
 
 
 
-\# Drying Requirements
+# Drying Requirements
 
 
 
@@ -723,11 +723,11 @@ Material preparation.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -751,11 +751,11 @@ Material preparation.
 
 
 
-\---
+---
 
 
 
-\# Examples
+# Examples
 
 
 
@@ -771,7 +771,7 @@ Optional
 
 
 
-\---
+---
 
 
 
@@ -787,7 +787,7 @@ Recommended
 
 
 
-\---
+---
 
 
 
@@ -803,11 +803,11 @@ Required
 
 
 
-\---
+---
 
 
 
-\# Environmental Behavior
+# Environmental Behavior
 
 
 
@@ -815,11 +815,11 @@ Describes sensitivity.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -845,11 +845,11 @@ Describes sensitivity.
 
 
 
-\---
+---
 
 
 
-\# Scale
+# Scale
 
 
 
@@ -861,11 +861,11 @@ Describes sensitivity.
 
 
 
-\---
+---
 
 
 
-\# Examples
+# Examples
 
 
 
@@ -881,7 +881,7 @@ Warping Risk: Low
 
 
 
-\---
+---
 
 
 
@@ -897,7 +897,7 @@ Warping Risk: High
 
 
 
-\---
+---
 
 
 
@@ -913,11 +913,11 @@ UV Resistance: High
 
 
 
-\---
+---
 
 
 
-\# Compatibility Section
+# Compatibility Section
 
 
 
@@ -925,11 +925,11 @@ Used by validation engine.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -957,11 +957,11 @@ Used by validation engine.
 
 
 
-\---
+---
 
 
 
-\# Example
+# Example
 
 
 
@@ -983,11 +983,11 @@ PLA
 
 
 
-\---
+---
 
 
 
-\# Example
+# Example
 
 
 
@@ -1009,11 +1009,11 @@ ABS
 
 
 
-\---
+---
 
 
 
-\# Cost Data
+# Cost Data
 
 
 
@@ -1021,11 +1021,11 @@ Used by cost engine.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1045,11 +1045,11 @@ Used by cost engine.
 
 
 
-\---
+---
 
 
 
-\# Currency
+# Currency
 
 
 
@@ -1057,11 +1057,11 @@ Determined by user preferences.
 
 
 
-\---
+---
 
 
 
-\# Color Information
+# Color Information
 
 
 
@@ -1069,11 +1069,11 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1097,11 +1097,11 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\# Food Safety
+# Food Safety
 
 
 
@@ -1109,11 +1109,11 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1133,11 +1133,11 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\# Outdoor Usage
+# Outdoor Usage
 
 
 
@@ -1145,11 +1145,11 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1169,11 +1169,11 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\# Chemical Resistance
+# Chemical Resistance
 
 
 
@@ -1181,11 +1181,11 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1205,11 +1205,11 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\# Fire Resistance
+# Fire Resistance
 
 
 
@@ -1217,11 +1217,11 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1241,20 +1241,20 @@ Optional.
 
 
 
-\---
+---
 
 
 
-\# Material Risk Factors
+# Material Risk Factors
 
 
 Used by AI.
 
 
-\---
+---
 
 
-\## Schema
+## Schema
 
 
 ```json
@@ -1279,11 +1279,11 @@ Used by AI.
 
 
 
-\---
+---
 
 
 
-\# AI Usage Rules
+# AI Usage Rules
 
 
 
@@ -1323,11 +1323,11 @@ to generate recommendations.
 
 
 
-\---
+---
 
 
 
-\# AI Material Scoring
+# AI Material Scoring
 
 
 
@@ -1361,11 +1361,11 @@ Range:
 
 
 
-\---
+---
 
 
 
-\# Example Difficulty
+# Example Difficulty
 
 
 
@@ -1385,7 +1385,7 @@ Easy
 
 
 
-\---
+---
 
 
 
@@ -1405,7 +1405,7 @@ Moderate
 
 
 
-\---
+---
 
 
 
@@ -1425,7 +1425,7 @@ Difficult
 
 
 
-\---
+---
 
 
 
@@ -1445,11 +1445,11 @@ Very Difficult
 
 
 
-\---
+---
 
 
 
-\# Validation Rules
+# Validation Rules
 
 
 
@@ -1477,11 +1477,11 @@ Risk Factors
 
 
 
-\---
+---
 
 
 
-\# Invalid Profile Conditions
+# Invalid Profile Conditions
 
 
 
@@ -1509,11 +1509,11 @@ Profile becomes invalid.
 
 
 
-\---
+---
 
 
 
-\# Confidence Impact
+# Confidence Impact
 
 
 
@@ -1529,7 +1529,7 @@ Higher AI Confidence
 
 
 
-\---
+---
 
 
 
@@ -1545,11 +1545,11 @@ Lower AI Confidence
 
 
 
-\---
+---
 
 
 
-\# Material Source Types
+# Material Source Types
 
 
 
@@ -1569,11 +1569,11 @@ Custom User Profile
 
 
 
-\---
+---
 
 
 
-\# Schema
+# Schema
 
 
 
@@ -1595,11 +1595,11 @@ Custom User Profile
 
 
 
-\---
+---
 
 
 
-\# Source Priority
+# Source Priority
 
 
 
@@ -1635,11 +1635,11 @@ Custom
 
 
 
-\---
+---
 
 
 
-\# Profile Version
+# Profile Version
 
 
 
@@ -1655,11 +1655,11 @@ Custom
 
 
 
-\---
+---
 
 
 
-\# Future Extensions
+# Future Extensions
 
 
 
@@ -1691,11 +1691,11 @@ Reserved
 
 
 
-\---
+---
 
 
 
-\# Backward Compatibility
+# Backward Compatibility
 
 
 
@@ -1731,11 +1731,11 @@ Migration Guide
 
 
 
-\---
+---
 
 
 
-\# Example Minimal Profile
+# Example Minimal Profile
 
 
 
@@ -1773,11 +1773,11 @@ Migration Guide
 
 
 
-\---
+---
 
 
 
-\# Golden Rule
+# Golden Rule
 
 
 
@@ -1793,9 +1793,9 @@ The material must never be modified to fit an AI recommendation.
 
 
 
-\---
+---
 
 
 
-\# End Of Document
+# End Of Document
 
