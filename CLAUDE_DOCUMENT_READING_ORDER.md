@@ -768,6 +768,21 @@ docs/09-reference/VERSIONING_POLICY.md
 
 ---
 
+# Small Change Reading Path
+
+For small, isolated changes (typo, comment, documentation wording, or a bug fix that does not change an API, a schema, the architecture or file ownership):
+
+1. Read CLAUDE.md and CLAUDE_READING_PRIORITY.md
+2. Read the file to be changed
+3. Read the documents listed in its "Based on" section
+4. Check the file's role in DIRECTORY_PURPOSES.md
+
+All other changes require the full reading sequence.
+
+When in doubt, use the full reading sequence.
+
+---
+
 # Reading Completion Rule
 
 Claude must not start implementation until:
