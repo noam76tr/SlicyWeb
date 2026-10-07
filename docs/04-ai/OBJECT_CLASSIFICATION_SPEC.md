@@ -1,4 +1,5 @@
-# AI SMART SLICER
+# SlicyWeb Smart Slicer
+
 # OBJECT CLASSIFICATION SPECIFICATION
 
 Version: 1.0.0
