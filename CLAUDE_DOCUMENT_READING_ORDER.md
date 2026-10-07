@@ -87,11 +87,13 @@ Read:
 
 ```text
 CLAUDE_DOCUMENT_READING_ORDER.md
+CLAUDE_READING_PRIORITY.md
+CLAUDE_GOVERNANCE_PROTOCOL.md
 ```
 
 Purpose:
 
-Determine the required reading workflow.
+Determine the required reading workflow, the document authority hierarchy and the governance rules.
 
 ---
 
@@ -694,6 +696,23 @@ docs/06-quality/TEST_PLAN.md
 Purpose:
 
 Testing requirements.
+
+---
+
+# Slicer Export Tasks
+
+Read:
+
+```text
+docs/01-project/PROJECT_SPEC.md
+docs/02-architecture/IMPORT_EXPORT_SPEC.md
+docs/01-project/DECISIONS.md
+docs/04-ai/PRINT_SETTINGS_SPEC.md
+```
+
+Purpose:
+
+Target slicer export (ADR-024).
 
 ---
 
