@@ -84,11 +84,11 @@ Advanced
 
 {
 
-&#x20; "language": "en",
+  "language": "en",
 
-&#x20; "theme": "dark",
+  "theme": "dark",
 
-&#x20; "units": "metric"
+  "units": "metric"
 
 }
 
@@ -188,15 +188,15 @@ System
 
 {
 
-&#x20; "gui": {
+  "gui": {
 
-&#x20;   "rememberLayout": true,
+    "rememberLayout": true,
 
-&#x20;   "showTooltips": true,
+    "showTooltips": true,
 
-&#x20;   "showStatusBar": true
+    "showStatusBar": true
 
-&#x20; }
+  }
 
 }
 
@@ -216,17 +216,17 @@ System
 
 {
 
-&#x20; "viewport": {
+  "viewport": {
 
-&#x20;   "showGrid": true,
+    "showGrid": true,
 
-&#x20;   "showAxes": true,
+    "showAxes": true,
 
-&#x20;   "showBuildVolume": true,
+    "showBuildVolume": true,
 
-&#x20;   "showBoundingBoxes": true
+    "showBoundingBoxes": true
 
-&#x20; }
+  }
 
 }
 
@@ -246,15 +246,15 @@ System
 
 {
 
-&#x20; "camera": {
+  "camera": {
 
-&#x20;   "invertZoom": false,
+    "invertZoom": false,
 
-&#x20;   "invertRotation": false,
+    "invertRotation": false,
 
-&#x20;   "defaultView": "isometric"
+    "defaultView": "isometric"
 
-&#x20; }
+  }
 
 }
 
@@ -274,13 +274,13 @@ System
 
 {
 
-&#x20; "printer": {
+  "printer": {
 
-&#x20;   "defaultPrinter": "",
+    "defaultPrinter": "",
 
-&#x20;   "autoloadLastPrinter": true
+    "autoloadLastPrinter": true
 
-&#x20; }
+  }
 
 }
 
@@ -300,13 +300,13 @@ System
 
 {
 
-&#x20; "material": {
+  "material": {
 
-&#x20;   "defaultMaterial": "PLA",
+    "defaultMaterial": "PLA",
 
-&#x20;   "autoloadLastMaterial": true
+    "autoloadLastMaterial": true
 
-&#x20; }
+  }
 
 }
 
@@ -326,15 +326,15 @@ System
 
 {
 
-&#x20; "ai": {
+  "ai": {
 
-&#x20;   "autoAnalyze": true,
+    "autoAnalyze": true,
 
-&#x20;   "autoRecommend": true,
+    "autoRecommend": true,
 
-&#x20;   "showWarnings": true
+    "showWarnings": true
 
-&#x20; }
+  }
 
 }
 
@@ -354,15 +354,15 @@ System
 
 {
 
-&#x20; "performance": {
+  "performance": {
 
-&#x20;   "enableCaching": true,
+    "enableCaching": true,
 
-&#x20;   "maxMemoryMB": 4096,
+    "maxMemoryMB": 4096,
 
-&#x20;   "enableBVH": true
+    "enableBVH": true
 
-&#x20; }
+  }
 
 }
 
@@ -382,11 +382,11 @@ System
 
 {
 
-&#x20; "files": {
+  "files": {
 
-&#x20;   "recentProjects": 20
+    "recentProjects": 20
 
-&#x20; }
+  }
 
 }
 
