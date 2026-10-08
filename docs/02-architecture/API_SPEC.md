@@ -887,9 +887,9 @@ GET
 
 {
 
-&#x20; "category": "",
+  "category": "",
 
-&#x20; "brand": ""
+  "brand": ""
 
 }
 
@@ -1078,9 +1078,9 @@ STL
 
 {
 
-&#x20; "objectId": "",
+  "objectId": "",
 
-&#x20; "status": "imported"
+  "status": "imported"
 
 }
 
@@ -1232,11 +1232,11 @@ POST
 
 {
 
-&#x20; "x": 0,
+  "x": 0,
 
-&#x20; "y": 0,
+  "y": 0,
 
-&#x20; "z": 0
+  "z": 0
 
 }
 
@@ -1276,11 +1276,11 @@ POST
 
 {
 
-&#x20; "x": 0,
+  "x": 0,
 
-&#x20; "y": 0,
+  "y": 0,
 
-&#x20; "z": 0
+  "z": 0
 
 }
 
@@ -1320,11 +1320,11 @@ POST
 
 {
 
-&#x20; "x": 1,
+  "x": 1,
 
-&#x20; "y": 1,
+  "y": 1,
 
-&#x20; "z": 1
+  "z": 1
 
 }
 
@@ -1400,21 +1400,21 @@ POST
 
 {
 
-&#x20; "dimensions": {},
+  "dimensions": {},
 
-&#x20; "geometry": {},
+  "geometry": {},
 
-&#x20; "mesh": {},
+  "mesh": {},
 
-&#x20; "stability": {},
+  "stability": {},
 
-&#x20; "overhangs": {},
+  "overhangs": {},
 
-&#x20; "bridges": {},
+  "bridges": {},
 
-&#x20; "thinWalls": {},
+  "thinWalls": {},
 
-&#x20; "classification": {}
+  "classification": {}
 
 }
 
@@ -1490,13 +1490,13 @@ POST
 
 {
 
-&#x20; "printerId": "",
+  "printerId": "",
 
-&#x20; "materialId": "",
+  "materialId": "",
 
-&#x20; "filamentId": "",
+  "filamentId": "",
 
-&#x20; "objectIds": \[]
+  "objectIds": \[]
 
 }
 
@@ -1567,9 +1567,9 @@ POST
 
 {
 
-&#x20; "orientationScore": 92,
+  "orientationScore": 92,
 
-&#x20; "rotation": {}
+  "rotation": {}
 
 }
 
@@ -1670,13 +1670,13 @@ POST
 
 {
 
-&#x20; "materialCost": 0,
+  "materialCost": 0,
 
-&#x20; "energyCost": 0,
+  "energyCost": 0,
 
-&#x20; "totalCost": 0,
+  "totalCost": 0,
 
-&#x20; "printTime": 0
+  "printTime": 0
 
 }
 
