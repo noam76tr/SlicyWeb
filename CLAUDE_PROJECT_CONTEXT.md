@@ -1,4 +1,4 @@
-# SLICYWEB SMART SLICER
+# SlicyWeb SMART SLICER
 
 # CLAUDE PROJECT CONTEXT
 
@@ -36,7 +36,7 @@ SlicyWeb does not generate G-Code itself.
 
 Generated print settings are exported to the target slicer selected by the user (OrcaSlicer, Bambu Studio, PrusaSlicer, Cura). The target slicer generates the G-Code.
 
-Reference: PROJECT_SPEC.md (sections 3 and 4.7), DECISIONS.md (ADR-024).Initial versions do not generate G-Code.
+Reference: PROJECT_SPEC.md (sections 3 and 4.7), DECISIONS.md (ADR-024).
 
 ---
 
