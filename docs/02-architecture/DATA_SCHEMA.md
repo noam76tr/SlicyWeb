@@ -439,21 +439,21 @@ Warnings
 
 {
 
-&#x20; "id": "",
+ "id": "",
 
-&#x20; "brand": "",
+ "brand": "",
 
-&#x20; "model": "",
+ "model": "",
 
-&#x20; "series": "",
+ "series": "",
 
-&#x20; "manufacturer": "",
+ "manufacturer": "",
 
-&#x20; "firmware": "",
+ "firmware": "",
 
-&#x20; "releaseDate": "",
+ "releaseDate": "",
 
-&#x20; "supported": true
+ "supported": true
 
 }
 
@@ -470,15 +470,15 @@ Warnings
 
 {
 
-&#x20; "buildVolume": {
+ "buildVolume": {
 
-&#x20;   "x": 256,
+   "x": 256,
 
-&#x20;   "y": 256,
+   "y": 256,
 
-&#x20;   "z": 256
+   "z": 256
 
-&#x20; }
+ }
 
 }
 
@@ -495,19 +495,19 @@ Warnings
 
 {
 
-&#x20; "defaultNozzle": 0.4,
+ "defaultNozzle": 0.4,
 
-&#x20; "supportedNozzles": \[
+ "supportedNozzles": \[
 
-&#x20;   0.2,
+   0.2,
 
-&#x20;   0.4,
+   0.4,
 
-&#x20;   0.6,
+   0.6,
 
-&#x20;   0.8
+   0.8
 
-&#x20; ]
+ ]
 
 }
 
@@ -524,13 +524,13 @@ Warnings
 
 {
 
-&#x20; "extruder": {
+ "extruder": {
 
-&#x20;   "type": "direct\_drive",
+   "type": "direct\_drive",
 
-&#x20;   "count": 1
+   "count": 1
 
-&#x20; }
+ }
 
 }
 
@@ -562,17 +562,17 @@ unknown
 
 {
 
-&#x20; "motion": {
+ "motion": {
 
-&#x20;   "maxPrintSpeed": 500,
+   "maxPrintSpeed": 500,
 
-&#x20;   "maxTravelSpeed": 500,
+   "maxTravelSpeed": 500,
 
-&#x20;   "maxAcceleration": 20000,
+   "maxAcceleration": 20000,
 
-&#x20;   "maxJerk": 20
+   "maxJerk": 20
 
-&#x20; }
+ }
 
 }
 
@@ -590,15 +590,15 @@ unknown
 
 {
 
-&#x20; "thermal": {
+ "thermal": {
 
-&#x20;   "maxNozzleTemp": 300,
+   "maxNozzleTemp": 300,
 
-&#x20;   "maxBedTemp": 110,
+   "maxBedTemp": 110,
 
-&#x20;   "maxChamberTemp": 60
+   "maxChamberTemp": 60
 
-&#x20; }
+ }
 
 }
 
@@ -615,15 +615,15 @@ unknown
 
 {
 
-&#x20; "cooling": {
+ "cooling": {
 
-&#x20;   "partFan": true,
+   "partFan": true,
 
-&#x20;   "auxFan": false,
+   "auxFan": false,
 
-&#x20;   "chamberFan": false
+   "chamberFan": false
 
-&#x20; }
+ }
 
 }
 
@@ -640,31 +640,31 @@ unknown
 
 {
 
-&#x20; "id": "",
+ "id": "",
 
-&#x20; "brand": "",
+ "brand": "",
 
-&#x20; "model": "",
+ "model": "",
 
-&#x20; "series": "",
+ "series": "",
 
-&#x20; "buildVolume": {},
+ "buildVolume": {},
 
-&#x20; "defaultNozzle": 0.4,
+ "defaultNozzle": 0.4,
 
-&#x20; "supportedNozzles": \[],
+ "supportedNozzles": \[],
 
-&#x20; "motion": {},
+ "motion": {},
 
-&#x20; "thermal": {},
+ "thermal": {},
 
-&#x20; "cooling": {},
+ "cooling": {},
 
-&#x20; "extruder": {},
+ "extruder": {},
 
-&#x20; "supportedMaterials": \[],
+ "supportedMaterials": \[],
 
-&#x20; "supportedFilaments": \[]
+ "supportedFilaments": \[]
 
 }
 
@@ -682,15 +682,15 @@ unknown
 
 {
 
-&#x20; "id": "",
+ "id": "",
 
-&#x20; "name": "",
+ "name": "",
 
-&#x20; "category": "",
+ "category": "",
 
-&#x20; "brand": "",
+ "brand": "",
 
-&#x20; "description": ""
+ "description": ""
 
 }
 
@@ -707,17 +707,17 @@ unknown
 
 {
 
-&#x20; "temperature": {
+ "temperature": {
 
-&#x20;   "minNozzle": 190,
+   "minNozzle": 190,
 
-&#x20;   "maxNozzle": 220,
+   "maxNozzle": 220,
 
-&#x20;   "minBed": 50,
+   "minBed": 50,
 
-&#x20;   "maxBed": 60
+   "maxBed": 60
 
-&#x20; }
+ }
 
 }
 
@@ -735,13 +735,13 @@ unknown
 
 {
 
-&#x20; "cooling": {
+ "cooling": {
 
-&#x20;   "fanMin": 80,
+   "fanMin": 80,
 
-&#x20;   "fanMax": 100
+   "fanMax": 100
 
-&#x20; }
+ }
 
 }
 
@@ -761,15 +761,15 @@ unknown
 
 {
 
-&#x20; "physical": {
+ "physical": {
 
-&#x20;   "density": 1.24,
+   "density": 1.24,
 
-&#x20;   "shrinkage": 0.2,
+   "shrinkage": 0.2,
 
-&#x20;   "warpingRisk": "low"
+   "warpingRisk": "low"
 
-&#x20; }
+ }
 
 }
 
@@ -789,17 +789,17 @@ unknown
 
 {
 
-&#x20; "recommended": {
+ "recommended": {
 
-&#x20;   "printSpeed": 80,
+   "printSpeed": 80,
 
-&#x20;   "travelSpeed": 200,
+   "travelSpeed": 200,
 
-&#x20;   "retractionDistance": 0.8,
+   "retractionDistance": 0.8,
 
-&#x20;   "retractionSpeed": 35
+   "retractionSpeed": 35
 
-&#x20; }
+ }
 
 }
 
@@ -819,19 +819,19 @@ unknown
 
 {
 
-&#x20; "id": "",
+ "id": "",
 
-&#x20; "name": "",
+ "name": "",
 
-&#x20; "category": "",
+ "category": "",
 
-&#x20; "temperature": {},
+ "temperature": {},
 
-&#x20; "cooling": {},
+ "cooling": {},
 
-&#x20; "physical": {},
+ "physical": {},
 
-&#x20; "recommended": {}
+ "recommended": {}
 
 }
 
@@ -932,19 +932,19 @@ Represents an entire workspace.
 
 {
 
-&#x20; "scene": {
+ "scene": {
 
-&#x20;   "objects": \[],
+   "objects": \[],
 
-&#x20;   "printer": {},
+   "printer": {},
 
-&#x20;   "material": {},
+   "material": {},
 
-&#x20;   "filament": {},
+   "filament": {},
 
-&#x20;   "preset": {}
+   "preset": {}
 
-&#x20; }
+ }
 
 }
 
@@ -964,15 +964,15 @@ Represents an entire workspace.
 
 {
 
-&#x20; "objectId": "",
+ "objectId": "",
 
-&#x20; "fileName": "",
+ "fileName": "",
 
-&#x20; "fileType": "",
+ "fileType": "",
 
-&#x20; "visible": true,
+ "visible": true,
 
-&#x20; "locked": false
+ "locked": false
 
 }
 
@@ -992,43 +992,43 @@ Represents an entire workspace.
 
 {
 
-&#x20; "transform": {
+ "transform": {
 
-&#x20;   "position": {
+   "position": {
 
-&#x20;     "x": 0,
+     "x": 0,
 
-&#x20;     "y": 0,
+     "y": 0,
 
-&#x20;     "z": 0
+     "z": 0
 
-&#x20;   },
-
-
-
-&#x20;   "rotation": {
-
-&#x20;     "x": 0,
-
-&#x20;     "y": 0,
-
-&#x20;     "z": 0
-
-&#x20;   },
+   },
 
 
 
-&#x20;   "scale": {
+   "rotation": {
 
-&#x20;     "x": 1,
+     "x": 0,
 
-&#x20;     "y": 1,
+     "y": 0,
 
-&#x20;     "z": 1
+     "z": 0
 
-&#x20;   }
+   },
 
-&#x20; }
+
+
+   "scale": {
+
+     "x": 1,
+
+     "y": 1,
+
+     "z": 1
+
+   }
+
+ }
 
 }
 
@@ -1048,19 +1048,19 @@ Represents an entire workspace.
 
 {
 
-&#x20; "geometry": {
+ "geometry": {
 
-&#x20;   "width": 0,
+   "width": 0,
 
-&#x20;   "depth": 0,
+   "depth": 0,
 
-&#x20;   "height": 0,
+   "height": 0,
 
-&#x20;   "volume": 0,
+   "volume": 0,
 
-&#x20;   "surfaceArea": 0
+   "surfaceArea": 0
 
-&#x20; }
+ }
 
 }
 
@@ -1080,13 +1080,13 @@ Represents an entire workspace.
 
 {
 
-&#x20; "mesh": {
+ "mesh": {
 
-&#x20;   "vertices": 0,
+   "vertices": 0,
 
-&#x20;   "triangles": 0
+   "triangles": 0
 
-&#x20; }
+ }
 
 }
 
@@ -1106,17 +1106,17 @@ Represents an entire workspace.
 
 {
 
-&#x20; "stability": {
+ "stability": {
 
-&#x20;   "contactArea": 0,
+   "contactArea": 0,
 
-&#x20;   "heightRatio": 0,
+   "heightRatio": 0,
 
-&#x20;   "centerOfGravity": {},
+   "centerOfGravity": {},
 
-&#x20;   "riskScore": 0
+   "riskScore": 0
 
-&#x20; }
+ }
 
 }
 
@@ -1136,15 +1136,15 @@ Represents an entire workspace.
 
 {
 
-&#x20; "overhangs": {
+ "overhangs": {
 
-&#x20;   "detected": true,
+   "detected": true,
 
-&#x20;   "maxAngle": 60,
+   "maxAngle": 60,
 
-&#x20;   "percentage": 25
+   "percentage": 25
 
-&#x20; }
+ }
 
 }
 
@@ -1164,15 +1164,15 @@ Represents an entire workspace.
 
 {
 
-&#x20; "bridges": {
+ "bridges": {
 
-&#x20;   "detected": true,
+   "detected": true,
 
-&#x20;   "count": 10,
+   "count": 10,
 
-&#x20;   "longestBridge": 25
+   "longestBridge": 25
 
-&#x20; }
+ }
 
 }
 
@@ -1192,13 +1192,13 @@ Represents an entire workspace.
 
 {
 
-&#x20; "thinWalls": {
+ "thinWalls": {
 
-&#x20;   "detected": true,
+   "detected": true,
 
-&#x20;   "minimumThickness": 0.8
+   "minimumThickness": 0.8
 
-&#x20; }
+ }
 
 }
 
@@ -1216,21 +1216,21 @@ Represents an entire workspace.
 
 {
 
-&#x20; "dimensions": {},
+ "dimensions": {},
 
-&#x20; "geometry": {},
+ "geometry": {},
 
-&#x20; "mesh": {},
+ "mesh": {},
 
-&#x20; "stability": {},
+ "stability": {},
 
-&#x20; "overhangs": {},
+ "overhangs": {},
 
-&#x20; "bridges": {},
+ "bridges": {},
 
-&#x20; "thinWalls": {},
+ "thinWalls": {},
 
-&#x20; "classification": {}
+ "classification": {}
 
 }
 
@@ -1291,25 +1291,25 @@ Functional Part
 
 {
 
-&#x20; "recommendedSettings": {
+ "recommendedSettings": {
 
-&#x20;   "layerHeight": 0.2,
+   "layerHeight": 0.2,
 
-&#x20;   "wallCount": 3,
+   "wallCount": 3,
 
-&#x20;   "topLayers": 5,
+   "topLayers": 5,
 
-&#x20;   "bottomLayers": 5,
+   "bottomLayers": 5,
 
-&#x20;   "infillDensity": 15,
+   "infillDensity": 15,
 
-&#x20;   "infillPattern": "gyroid",
+   "infillPattern": "gyroid",
 
-&#x20;   "supportType": "organic",
+   "supportType": "organic",
 
-&#x20;   "adhesionType": "brim"
+   "adhesionType": "brim"
 
-&#x20; }
+ }
 
 }
 
@@ -1366,19 +1366,19 @@ Structural
 
 {
 
-&#x20; "speed": {
+ "speed": {
 
-&#x20;   "print": 80,
+   "print": 80,
 
-&#x20;   "outerWall": 40,
+   "outerWall": 40,
 
-&#x20;   "innerWall": 80,
+   "innerWall": 80,
 
-&#x20;   "infill": 120,
+   "infill": 120,
 
-&#x20;   "travel": 250
+   "travel": 250
 
-&#x20; }
+ }
 
 }
 
@@ -1398,13 +1398,13 @@ Structural
 
 {
 
-&#x20; "cooling": {
+ "cooling": {
 
-&#x20;   "fanSpeed": 100,
+   "fanSpeed": 100,
 
-&#x20;   "minimumLayerTime": 5
+   "minimumLayerTime": 5
 
-&#x20; }
+ }
 
 }
 
@@ -1423,13 +1423,13 @@ Structural
 
 {
 
-&#x20; "retraction": {
+ "retraction": {
 
-&#x20;   "distance": 0.8,
+   "distance": 0.8,
 
-&#x20;   "speed": 35
+   "speed": 35
 
-&#x20; }
+ }
 
 }
 
@@ -1568,17 +1568,17 @@ critical
 
 {
 
-&#x20; "optimization": {
+ "optimization": {
 
-&#x20;   "orientationScore": 90,
+   "orientationScore": 90,
 
-&#x20;   "supportReduction": 35,
+   "supportReduction": 35,
 
-&#x20;   "timeReduction": 12,
+   "timeReduction": 12,
 
-&#x20;   "materialReduction": 8
+   "materialReduction": 8
 
-&#x20; }
+ }
 
 }
 
@@ -1596,19 +1596,19 @@ critical
 
 {
 
-&#x20; "cost": {
+ "cost": {
 
-&#x20;   "filamentLength": 0,
+   "filamentLength": 0,
 
-&#x20;   "filamentWeight": 0,
+   "filamentWeight": 0,
 
-&#x20;   "materialCost": 0,
+   "materialCost": 0,
 
-&#x20;   "electricityCost": 0,
+   "electricityCost": 0,
 
-&#x20;   "totalCost": 0
+   "totalCost": 0
 
-&#x20; }
+ }
 
 }
 
@@ -1626,13 +1626,13 @@ critical
 
 {
 
-&#x20; "estimation": {
+ "estimation": {
 
-&#x20;   "printTime": 0,
+   "printTime": 0,
 
-&#x20;   "layerCount": 0
+   "layerCount": 0
 
-&#x20; }
+ }
 
 }
 
@@ -1689,15 +1689,15 @@ critical
 
 {
 
-&#x20; "preferences": {
+ "preferences": {
 
-&#x20;   "theme": "dark",
+   "theme": "dark",
 
-&#x20;   "language": "en",
+   "language": "en",
 
-&#x20;   "units": "metric"
+   "units": "metric"
 
-&#x20; }
+ }
 
 }
 
@@ -1745,29 +1745,29 @@ he
 ```json
 
 {
-  &#x20; "pluginSystem": {},
+   "pluginSystem": {},
   
-  &#x20; "pluginMarketplace": {},
+   "pluginMarketplace": {},
   
-  &#x20; "communityProfiles": {},
+   "communityProfiles": {},
 
-  &#x20; "filamentTracking": {},
+   "filamentTracking": {},
   
-  &#x20; "visionClassification": {},
+   "visionClassification": {},
 
-  &#x20; "gcode": {},
+   "gcode": {},
 
-  &#x20; "multimaterial": {},
+   "multimaterial": {},
 
-  &#x20; "camera": {},
+   "camera": {},
 
-  &#x20; "cloud": {},
+   "cloud": {},
 
-  &#x20; "remotePrinter": {},
+   "remotePrinter": {},
 
-  &#x20; "telemetry": {},
+   "telemetry": {},
 
-  &#x20; "machineLearning": {}
+   "machineLearning": {}
 
 }
 
