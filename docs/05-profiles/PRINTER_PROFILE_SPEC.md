@@ -130,35 +130,35 @@ Custom Machines
 
 {
   
-&#x20; "metadata": {},
+ "metadata": {},
   
-&#x20; "buildVolume": {},
+ "buildVolume": {},
   
-&#x20; "motion": {},
+ "motion": {},
   
-&#x20; "extrusion": {},
+ "extrusion": {},
   
-&#x20; "nozzle": {},
+ "nozzle": {},
  
-&#x20; "thermal": {},
+ "thermal": {},
   
-&#x20; "cooling": {},
+ "cooling": {},
   
-&#x20; "sensors": {},
+ "sensors": {},
   
-&#x20; "supportedMaterials": [],
+ "supportedMaterials": [],
   
-&#x20; "limits": {},
+ "limits": {},
   
-&#x20; "features": {},
+ "features": {},
   
-&#x20; "power": {},
+ "power": {},
   
-&#x20; "multiMaterial": {},
+ "multiMaterial": {},
   
-&#x20; "remote": {},
+ "remote": {},
   
-&#x20; "source": {}
+ "source": {}
 }
 
 ```
@@ -193,23 +193,23 @@ Identify the printer.
 
 {
 
-&#x20; "id": "",
+ "id": "",
 
-&#x20; "brand": "",
+ "brand": "",
 
-&#x20; "model": "",
+ "model": "",
 
-&#x20; "series": "",
+ "series": "",
 
-&#x20; "manufacturer": "",
+ "manufacturer": "",
 
-&#x20; "firmware": "",
+ "firmware": "",
 
-&#x20; "releaseDate": "",
+ "releaseDate": "",
 
-&#x20; "supported": true,
+ "supported": true,
 
-&#x20; "verified": true
+ "verified": true
 
 }
 
@@ -229,15 +229,15 @@ Identify the printer.
 
 {
 
-&#x20; "id": "bambu\_x1c",
+ "id": "bambu\_x1c",
 
-&#x20; "brand": "Bambu Lab",
+ "brand": "Bambu Lab",
 
-&#x20; "model": "X1 Carbon",
+ "model": "X1 Carbon",
 
-&#x20; "series": "X1",
+ "series": "X1",
 
-&#x20; "supported": true
+ "supported": true
 
 }
 
@@ -273,15 +273,15 @@ Define printable space.
 
 {
 
-&#x20; "buildVolume": {
+ "buildVolume": {
 
-&#x20;   "x": 256,
+   "x": 256,
 
-&#x20;   "y": 256,
+   "y": 256,
 
-&#x20;   "z": 256
+   "z": 256
 
-&#x20; }
+ }
 
 }
 
@@ -341,7 +341,7 @@ custom
 
 {
 
-&#x20; "bedShape": "rectangular"
+ "bedShape": "rectangular"
 
 }
 
@@ -401,7 +401,7 @@ Unknown
 
 {
 
-&#x20; "bedSurface": "PEI Textured"
+ "bedSurface": "PEI Textured"
 
 }
 
@@ -437,19 +437,19 @@ Defines movement capabilities.
 
 {
 
-&#x20; "motion": {
+ "motion": {
 
-&#x20;   "kinematics": "",
+   "kinematics": "",
 
-&#x20;   "maxPrintSpeed": 0,
+   "maxPrintSpeed": 0,
 
-&#x20;   "maxTravelSpeed": 0,
+   "maxTravelSpeed": 0,
 
-&#x20;   "maxAcceleration": 0,
+   "maxAcceleration": 0,
 
-&#x20;   "maxJerk": 0
+   "maxJerk": 0
 
-&#x20; }
+ }
 
 }
 
@@ -533,15 +533,15 @@ Defines filament delivery system.
 
 {
 
-&#x20; "extrusion": {
+ "extrusion": {
 
-&#x20;   "type": "",
+   "type": "",
 
-&#x20;   "extruderCount": 1,
+   "extruderCount": 1,
 
-&#x20;   "filamentDiameter": 1.75
+   "filamentDiameter": 1.75
 
-&#x20; }
+ }
 
 }
 
@@ -585,7 +585,7 @@ Hybrid
 
 {
 
-&#x20; "extruderCount": 2
+ "extruderCount": 2
 
 }
 
@@ -649,23 +649,23 @@ Defines nozzle support.
 
 {
 
-&#x20; "nozzle": {
+ "nozzle": {
 
-&#x20;   "defaultSize": 0.4,
+   "defaultSize": 0.4,
 
-&#x20;   "supportedSizes": \[
+   "supportedSizes": \[
 
-&#x20;     0.2,
+     0.2,
 
-&#x20;     0.4,
+     0.4,
 
-&#x20;     0.6,
+     0.6,
 
-&#x20;     0.8
+     0.8
 
-&#x20;   ]
+   ]
 
-&#x20; }
+ }
 
 }
 
@@ -721,15 +721,15 @@ Defines heating capabilities.
 
 {
 
-&#x20; "thermal": {
+ "thermal": {
 
-&#x20;   "maxNozzleTemp": 300,
+   "maxNozzleTemp": 300,
 
-&#x20;   "maxBedTemp": 110,
+   "maxBedTemp": 110,
 
-&#x20;   "maxChamberTemp": 60
+   "maxChamberTemp": 60
 
-&#x20; }
+ }
 
 }
 
@@ -749,7 +749,7 @@ Defines heating capabilities.
 
 {
 
-&#x20; "heatedChamber": true
+ "heatedChamber": true
 
 }
 
@@ -805,15 +805,15 @@ Defines available cooling.
 
 {
 
-&#x20; "cooling": {
+ "cooling": {
 
-&#x20;   "partCoolingFan": true,
+   "partCoolingFan": true,
 
-&#x20;   "auxCoolingFan": false,
+   "auxCoolingFan": false,
 
-&#x20;   "chamberFan": false
+   "chamberFan": false
 
-&#x20; }
+ }
 
 }
 
@@ -849,19 +849,19 @@ Detect printer capabilities.
 
 {
 
-&#x20; "sensors": {
+ "sensors": {
 
-&#x20;   "filamentRunout": true,
+   "filamentRunout": true,
 
-&#x20;   "powerLossRecovery": true,
+   "powerLossRecovery": true,
 
-&#x20;   "autoBedLeveling": true,
+   "autoBedLeveling": true,
 
-&#x20;   "camera": false,
+   "camera": false,
 
-&#x20;   "lidar": false
+   "lidar": false
 
-&#x20; }
+ }
 
 }
 
@@ -897,17 +897,17 @@ Declare officially supported materials.
 
 {
 
-&#x20; "supportedMaterials": \[
+ "supportedMaterials": \[
 
-&#x20;   "PLA",
+   "PLA",
 
-&#x20;   "PETG",
+   "PETG",
 
-&#x20;   "ABS",
+   "ABS",
 
-&#x20;   "ASA"
+   "ASA"
 
-&#x20; ]
+ ]
 
 }
 
@@ -967,17 +967,17 @@ Advanced capabilities.
 
 {
 
-&#x20; "features": {
+ "features": {
 
-&#x20;   "inputShaping": true,
+   "inputShaping": true,
 
-&#x20;   "pressureAdvance": true,
+   "pressureAdvance": true,
 
-&#x20;   "wifi": true,
+   "wifi": true,
 
-&#x20;   "ethernet": false
+   "ethernet": false
 
-&#x20; }
+ }
 
 }
 
@@ -1013,15 +1013,15 @@ Protect recommendations.
 
 {
 
-&#x20; "limits": {
+ "limits": {
 
-&#x20;   "maxSafePrintSpeed": 250,
+   "maxSafePrintSpeed": 250,
 
-&#x20;   "maxSafeAcceleration": 10000,
+   "maxSafeAcceleration": 10000,
 
-&#x20;   "maxSafeFlowRate": 25
+   "maxSafeFlowRate": 25
 
-&#x20; }
+ }
 
 }
 
@@ -1089,13 +1089,13 @@ Optional
 
 {
 
-&#x20; "power": {
+ "power": {
 
-&#x20;   "voltage": 220,
+   "voltage": 220,
 
-&#x20;   "averageConsumption": 250
+   "averageConsumption": 250
 
-&#x20; }
+ }
 
 }
 
@@ -1167,7 +1167,7 @@ Custom
 
 {
 
-&#x20; "origin": "Center"
+ "origin": "Center"
 
 }
 
@@ -1199,13 +1199,13 @@ Reserved
 
 {
 
-&#x20; "multiMaterial": {
+ "multiMaterial": {
 
-&#x20;   "supported": true,
+   "supported": true,
 
-&#x20;   "maxMaterials": 4
+   "maxMaterials": 4
 
-&#x20; }
+ }
 
 }
 
@@ -1237,13 +1237,13 @@ Reserved
 
 {
 
-&#x20; "remote": {
+ "remote": {
 
-&#x20;   "supported": true,
+   "supported": true,
 
-&#x20;   "apiAvailable": true
+   "apiAvailable": true
 
-&#x20; }
+ }
 
 }
 
@@ -1433,13 +1433,13 @@ Local Custom
 
 {
 
-&#x20; "source": {
+ "source": {
 
-&#x20;   "type": "Official",
+   "type": "Official",
 
-&#x20;   "url": ""
+   "url": ""
 
-&#x20; }
+ }
 
 }
 
@@ -1507,7 +1507,7 @@ Schema
 
 {
 
-&#x20; "profileVersion": "1.0.0"
+ "profileVersion": "1.0.0"
 
 }
 
@@ -1563,43 +1563,43 @@ Migration Documentation
 
 {
 
-&#x20; "metadata": {
+ "metadata": {
 
-&#x20;   "brand": "Bambu Lab",
+   "brand": "Bambu Lab",
 
-&#x20;   "model": "X1 Carbon"
+   "model": "X1 Carbon"
 
-&#x20; },
-
-
-
-&#x20; "buildVolume": {
-
-&#x20;   "x": 256,
-
-&#x20;   "y": 256,
-
-&#x20;   "z": 256
-
-&#x20; },
+ },
 
 
 
-&#x20; "nozzle": {
+ "buildVolume": {
 
-&#x20;   "defaultSize": 0.4
+   "x": 256,
 
-&#x20; },
+   "y": 256,
+
+   "z": 256
+
+ },
 
 
 
-&#x20; "thermal": {
+ "nozzle": {
 
-&#x20;   "maxNozzleTemp": 300,
+   "defaultSize": 0.4
 
-&#x20;   "maxBedTemp": 120
+ },
 
-&#x20; }
+
+
+ "thermal": {
+
+   "maxNozzleTemp": 300,
+
+   "maxBedTemp": 120
+
+ }
 
 }
 
