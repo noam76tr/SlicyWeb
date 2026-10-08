@@ -1,4 +1,4 @@
-# AI SMART SLICER
+# SlicyWeb Smart Slicer
 
 # PLUGIN SYSTEM SPECIFICATION
 
@@ -15,7 +15,7 @@ Status: Approved
 
 
 
-This document defines the future plugin architecture of AI Smart Slicer.
+This document defines the future plugin architecture of SlicyWeb.
 
 
 
@@ -1593,4 +1593,3 @@ Plugins must never endanger the stability of the application.
 
 
 # End Of Document
-
