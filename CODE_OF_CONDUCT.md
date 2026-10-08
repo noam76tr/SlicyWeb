@@ -44,7 +44,7 @@ Examples of behavior that contributes to a positive environment include:
 - Focusing on the project's goals
 
 
-\---
+---
 
 
 # Examples of Unacceptable Behavior
@@ -72,7 +72,7 @@ The following behaviors are not acceptable:
 - Publishing private information without permission
 
 
-\---
+---
 
 
 # Technical Discussions
@@ -114,7 +114,7 @@ Contributors should communicate:
 Critique ideas, not people.
 
 
-\---
+---
 
 
 # Responsibilities
@@ -130,7 +130,7 @@ Project maintainers are responsible for:
 - Taking appropriate action when necessary
 
 
-\---
+---
 
 # Reporting Issues
 
@@ -157,7 +157,7 @@ Evidence (if available)
 Reports should be factual and respectful.
 
 
-\---
+---
 
 
 # Enforcement
@@ -180,7 +180,7 @@ Permanent Removal
 depending on severity.
 
 
-\---
+---
 
 
 # Scope
@@ -204,7 +204,7 @@ Project Communication
 ```
 
 
-\---
+---
 
 
 # AI-Assisted Contributions
@@ -225,7 +225,7 @@ Contributors remain responsible for:
 AI-generated content must meet the same quality standards as human-created content.
 
 
-\---
+---
 
 
 # Documentation First
@@ -236,13 +236,13 @@ Contributors should consult:
 
 ```text
 
-AI\_START\_HERE.md
+AI_START_HERE.md
 
-PROJECT\_SPEC.md
+PROJECT_SPEC.md
 
 ARCHITECTURE.md
 
-DEVELOPMENT\_RULES.md
+DEVELOPMENT_RULES.md
 
 ```
 
@@ -261,7 +261,7 @@ The purpose of this project is to build a professional AI-assisted 3D printing p
 All interactions should support that goal.
 
 
-\---
+---
 
 
 # Golden Rule
@@ -269,4 +269,4 @@ All interactions should support that goal.
 Treat contributors with the same respect you would expect when contributing to someone else's project.
 
 
-\---
+---
