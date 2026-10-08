@@ -676,7 +676,7 @@ Reference:
 
 ```text
 
-SUPPORT\_GENERATION\_SPEC.md
+SUPPORT_GENERATION_SPEC.md
 
 ```
 
