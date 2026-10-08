@@ -274,21 +274,21 @@ Example:
 
 {
 
-&#x20; "id": "example.plugin",
+ "id": "example.plugin",
 
-&#x20; "name": "Example Plugin",
+ "name": "Example Plugin",
 
-&#x20; "version": "1.0.0",
+ "version": "1.0.0",
 
-&#x20; "author": "",
+ "author": "",
 
-&#x20; "description": "",
+ "description": "",
 
-&#x20; "apiVersion": "1.0.0",
+ "apiVersion": "1.0.0",
 
-&#x20; "category": "tool",
+ "category": "tool",
 
-&#x20; "permissions": []
+ "permissions": []
 
 }
 
@@ -376,7 +376,7 @@ Schema:
 
 {
 
-&#x20; "category": "analysis"
+ "category": "analysis"
 
 }
 
@@ -480,7 +480,7 @@ Plugins must declare:
 
 {
 
-&#x20; "minimumAppVersion": "1.0.0"
+ "minimumAppVersion": "1.0.0"
 
 }
 
@@ -668,13 +668,13 @@ Access Storage
 
 {
 
-&#x20; "permissions": \[
+ "permissions": \[
 
-&#x20;   "ReadProject",
+   "ReadProject",
 
-&#x20;   "ModifyScene"
+   "ModifyScene"
 
-&#x20; ]
+ ]
 
 }
 
