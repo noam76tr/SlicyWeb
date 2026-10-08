@@ -227,15 +227,15 @@ Model Analysis
 
 {
 
-&#x20; "brand": "",
+ "brand": "",
 
-&#x20; "model": "",
+ "model": "",
 
-&#x20; "buildVolume": {},
+ "buildVolume": {},
 
-&#x20; "motion": {},
+ "motion": {},
 
-&#x20; "thermal": {}
+ "thermal": {}
 
 }
 
@@ -255,13 +255,13 @@ Model Analysis
 
 {
 
-&#x20; "name": "",
+ "name": "",
 
-&#x20; "temperature": {},
+ "temperature": {},
 
-&#x20; "cooling": {},
+ "cooling": {},
 
-&#x20; "physical": {}
+ "physical": {}
 
 }
 
@@ -295,17 +295,17 @@ Model Analysis
 
 {
 
-&#x20; "geometry": {},
+ "geometry": {},
 
-&#x20; "overhangs": {},
+ "overhangs": {},
 
-&#x20; "bridges": {},
+ "bridges": {},
 
-&#x20; "stability": {},
+ "stability": {},
 
-&#x20; "thinWalls": {},
+ "thinWalls": {},
 
-&#x20; "classification": {}
+ "classification": {}
 
 }
 
@@ -373,7 +373,7 @@ Unknown
 
 
 
-\---
+---
 
 
 
@@ -434,7 +434,7 @@ The engine evaluates risks before recommendations.
 
 
 
-\---
+---
 
 
 
@@ -753,7 +753,7 @@ Fine Details
 ```
 
 
-\---
+---
 
 
 ```text
@@ -815,7 +815,7 @@ Decorative Object
 ```
 
 
-\---
+---
 
 
 Mechanical Part
@@ -1089,7 +1089,7 @@ Tree
 
 
 
-\---
+---
 
 
 
