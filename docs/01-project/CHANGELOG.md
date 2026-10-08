@@ -409,6 +409,33 @@ Date:
 
 ---
 
+# VERSION 0.1.4
+
+Release Type:
+Documentation Update
+
+Status:
+Completed
+
+Date:
+2026-10-08
+
+## Added
+
+- SLICER_EXPORT_SPEC.md 1.0.0 (Draft): target slicer export specification
+- DIRECTORY_PURPOSES.md: data/cache/ and data/templates/ sections
+
+## Changed
+
+- CLAUDE_DOCUMENT_READING_ORDER.md: single official AI reading sequence, small change reading path, slicer export tasks
+- CLAUDE_DOCUMENT_READING_ORDER.md: SlicyWeb files explication.txt removed from the AI reading sequence (personal reference file)
+- AI_START_HERE.md, API_START_HERE.md, PROJECT_DOCUMENTATION_INDEX.md: authority hierarchy refers to CLAUDE_READING_PRIORITY.md
+- CLAUDE_PROJECT_CONTEXT.md, AI_START_HERE.md: target slicer export scope
+- FILE_STRUCTURE.md: config, events and storage sections, planned items list, undo_redo/ removed from future modules
+- Project name unified to SlicyWeb in all documents
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
