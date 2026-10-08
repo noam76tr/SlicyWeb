@@ -443,7 +443,7 @@ Rules:
 - A setting the target slicer does not support produces a warning, never a guessed value
 - The user's slicer installation and existing profiles are never modified
 
-Reference: PROJECT_SPEC.md, section 4.7
+Reference: PROJECT_SPEC.md, section 4.7, and SLICER_EXPORT_SPEC.md (detailed rules)
 
 A native G-Code engine is not part of the current scope (DECISIONS.md, ADR-006 and ADR-024).
 
@@ -733,6 +733,8 @@ DATA_SCHEMA.md
 PROJECT_SPEC.md
 
 DECISIONS.md
+
+SLICER_EXPORT_SPEC.md
 
 GCODE_ENGINE_SPEC.md
 ```
