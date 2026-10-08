@@ -680,7 +680,7 @@ analysisResult
 
 
 
-Use UPPER\_CASE
+Use UPPER_CASE
 
 
 
@@ -690,9 +690,9 @@ Example:
 
 ```text
 
-MAX\_BUILD\_VOLUME
+MAX_BUILD_VOLUME
 
-DEFAULT\_LAYER\_HEIGHT
+DEFAULT_LAYER_HEIGHT
 
 ```
 
