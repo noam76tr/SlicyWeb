@@ -416,20 +416,6 @@ Documentation inventory.
 
 ---
 
-## Step 26
-
-Read:
-
-```text
-SlicyWeb files explication.txt
-```
-
-Purpose:
-
-Documentation organization overview.
-
----
-
 # Bug Investigation Reading
 
 Required when the task involves a bug.
@@ -704,6 +690,7 @@ Testing requirements.
 Read:
 
 ```text
+docs/02-architecture/SLICER_EXPORT_SPEC.md
 docs/01-project/PROJECT_SPEC.md
 docs/02-architecture/IMPORT_EXPORT_SPEC.md
 docs/01-project/DECISIONS.md
