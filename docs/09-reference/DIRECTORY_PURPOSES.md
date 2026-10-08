@@ -1275,6 +1275,37 @@ Until the project owner decides otherwise:
 
 ---
 
+## data/cache/
+
+**Purpose:** Local Profile Cache
+
+**Role:** Local copy of validated profiles downloaded from remote repositories (printers, materials, filaments, presets), used for offline work. Corresponds to the "Local Cache" data source in PROJECT_SPEC.md. Cache entries follow the Cache Entry Schema of DATA_SCHEMA.md (validation and expiration metadata). Different from the root cache/ directory, which holds the technical application cache.
+
+**Contains:**
+
+- Cached Printer Profiles
+- Cached Material Profiles
+- Cached Filament Profiles
+- Cached Print Presets
+
+---
+
+## data/templates/
+
+**Purpose:** Target Slicer Templates
+
+**Role:** Base files and settings mapping data for each target slicer family, used by the slicer export (SLICER_EXPORT_SPEC.md). SlicyWeb fills these base files with the generated print settings.
+
+**Contains:**
+
+- bambu_family/ (OrcaSlicer, Bambu Studio)
+- prusa_family/ (PrusaSlicer)
+- cura_family/ (Cura)
+- Base Export Files
+- Settings Mapping Files
+
+---
+
 ## assets/
 
 **Purpose:** Static Project Assets
