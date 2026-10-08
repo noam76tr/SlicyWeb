@@ -140,7 +140,6 @@ Prusament PLA
 
 
 ```json
-
 {
 
  "metadata": {},
@@ -164,7 +163,6 @@ Prusament PLA
  "cost": {}
 
 }
-
 ```
 
 
@@ -191,13 +189,13 @@ Identify filament.
 ```json
 
 {
-  &#x20; "id": "",
-  &#x20; "name": "",
-  &#x20; "brand": "",
-  &#x20; "material": "",
-  &#x20; "color": "",
-  &#x20; "verified": true,
-  &#x20; "profileVersion": "1.0.0"
+   "id": "",
+   "name": "",
+   "brand": "",
+   "material": "",
+   "color": "",
+   "verified": true,
+   "profileVersion": "1.0.0"
 }
 
 ```
@@ -216,15 +214,15 @@ Identify filament.
 
 {
 
-&#x20; "id": "bambu\_pla\_basic\_black",
+ "id": "bambu\_pla\_basic\_black",
 
-&#x20; "name": "PLA Basic Black",
+ "name": "PLA Basic Black",
 
-&#x20; "brand": "Bambu Lab",
+ "brand": "Bambu Lab",
 
-&#x20; "material": "PLA",
+ "material": "PLA",
 
-&#x20; "color": "Black"
+ "color": "Black"
 
 }
 
@@ -252,15 +250,15 @@ Identify filament.
 
 {
 
-&#x20; "manufacturer": {
+ "manufacturer": {
 
-&#x20;   "name": "",
+   "name": "",
 
-&#x20;   "country": "",
+   "country": "",
 
-&#x20;   "website": ""
+   "website": ""
 
-&#x20; }
+ }
 
 }
 
@@ -296,23 +294,23 @@ Override generic material values.
 
 {
 
-&#x20; "thermal": {
+ "thermal": {
 
-&#x20;   "recommendedNozzle": 220,
+   "recommendedNozzle": 220,
 
-&#x20;   "minimumNozzle": 200,
+   "minimumNozzle": 200,
 
-&#x20;   "maximumNozzle": 230,
+   "maximumNozzle": 230,
 
 
 
-&#x20;   "recommendedBed": 60,
+   "recommendedBed": 60,
 
-&#x20;   "minimumBed": 50,
+   "minimumBed": 50,
 
-&#x20;   "maximumBed": 70
+   "maximumBed": 70
 
-&#x20; }
+ }
 
 }
 
@@ -348,15 +346,15 @@ Define fan usage.
 
 {
 
-&#x20; "cooling": {
+ "cooling": {
 
-&#x20;   "minimumFan": 70,
+   "minimumFan": 70,
 
-&#x20;   "recommendedFan": 100,
+   "recommendedFan": 100,
 
-&#x20;   "maximumFan": 100
+   "maximumFan": 100
 
-&#x20; }
+ }
 
 }
 
@@ -392,19 +390,19 @@ Store tested settings.
 
 {
 
-&#x20; "printing": {
+ "printing": {
 
-&#x20;   "recommendedSpeed": 120,
+   "recommendedSpeed": 120,
 
-&#x20;   "maximumSpeed": 250,
+   "maximumSpeed": 250,
 
 
 
-&#x20;   "recommendedRetraction": 0.8,
+   "recommendedRetraction": 0.8,
 
-&#x20;   "recommendedRetractionSpeed": 35
+   "recommendedRetractionSpeed": 35
 
-&#x20; }
+ }
 
 }
 
@@ -435,17 +433,17 @@ Improve calculations.
 
 {
 
- &#x20; "physical": {
+  "physical": {
 
- &#x20; "diameter": 1.75,
+  "diameter": 1.75,
 
- &#x20; "density": 1.24,
+  "density": 1.24,
 
- &#x20; "spoolWeight": 1000,
+  "spoolWeight": 1000,
 
- &#x20; "remainingWeight": 1000
+  "remainingWeight": 1000
 
- &#x20; }
+  }
 
 }
 
@@ -549,11 +547,11 @@ Estimate storage requirements.
 
 {
 
-&#x20; "quality": {
+ "quality": {
 
-&#x20;   "moistureSensitivity": 20
+   "moistureSensitivity": 20
 
-&#x20; }
+ }
 
 }
 
@@ -597,11 +595,11 @@ Example:
 
 {
 
-&#x20; "quality": {
+ "quality": {
 
-&#x20;   "stringingRisk": 30
+   "stringingRisk": 30
 
-&#x20; }
+ }
 
 }
 
@@ -645,11 +643,11 @@ Example:
 
 {
 
-&#x20; "quality": {
+ "quality": {
 
-&#x20;   "warpRisk": 10
+   "warpRisk": 10
 
-&#x20; }
+ }
 
 }
 
@@ -693,11 +691,11 @@ Example:
 
 {
 
-&#x20; "quality": {
+ "quality": {
 
-&#x20;   "layerAdhesion": 85
+   "layerAdhesion": 85
 
-&#x20; }
+ }
 
 }
 
@@ -741,11 +739,11 @@ Example:
 
 {
 
-&#x20; "quality": {
+ "quality": {
 
-&#x20;   "surfaceQuality": 92
+   "surfaceQuality": 92
 
-&#x20; }
+ }
 
 }
 
@@ -781,17 +779,17 @@ Store visual properties.
 
 {
 
-&#x20; "visual": {
+ "visual": {
 
-&#x20;   "transparent": false,
+   "transparent": false,
 
-&#x20;   "reflective": false,
+   "reflective": false,
 
-&#x20;   "glow": false,
+   "glow": false,
 
-&#x20;   "silk": false
+   "silk": false
 
-&#x20; }
+ }
 
 }
 
@@ -859,11 +857,11 @@ Example:
 
 {
 
-&#x20; "specialRequirements": {
+ "specialRequirements": {
 
-&#x20;   "hardenedNozzle": true
+   "hardenedNozzle": true
 
-&#x20; }
+ }
 
 }
 
@@ -899,11 +897,11 @@ Cost calculation.
 
 {
 
-&#x20; "cost": {
+ "cost": {
 
-&#x20;   "pricePerKg": 25.90
+   "pricePerKg": 25.90
 
-&#x20; }
+ }
 
 }
 
