@@ -12,7 +12,7 @@ Priority: High
 
 
 
-\# Purpose
+# Purpose
 
 
 
@@ -44,11 +44,11 @@ This specification is mandatory.
 
 
 
-\---
+---
 
 
 
-\# Profile Objectives
+# Profile Objectives
 
 
 
@@ -74,11 +74,11 @@ The profile must allow the AI Engine to generate accurate recommendations.
 
 
 
-\---
+---
 
 
 
-\# Profile Categories
+# Profile Categories
 
 
 
@@ -118,11 +118,11 @@ Custom Machines
 
 
 
-\---
+---
 
 
 
-\# Profile Structure
+# Profile Structure
 
 
 
@@ -165,11 +165,11 @@ Custom Machines
 
 
 
-\---
+---
 
 
 
-\# Metadata Section
+# Metadata Section
 
 
 
@@ -181,11 +181,11 @@ Identify the printer.
 
 
 
-\---
+---
 
 
 
-\## Metadata Schema
+## Metadata Schema
 
 
 
@@ -217,11 +217,11 @@ Identify the printer.
 
 
 
-\---
+---
 
 
 
-\# Example
+# Example
 
 
 
@@ -245,11 +245,11 @@ Identify the printer.
 
 
 
-\---
+---
 
 
 
-\# Build Volume Section
+# Build Volume Section
 
 
 
@@ -261,11 +261,11 @@ Define printable space.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -289,11 +289,11 @@ Define printable space.
 
 
 
-\---
+---
 
 
 
-\# Units
+# Units
 
 
 
@@ -305,11 +305,11 @@ millimeters (mm)
 
 
 
-\---
+---
 
 
 
-\# Plate Shape
+# Plate Shape
 
 
 
@@ -329,11 +329,11 @@ custom
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -349,11 +349,11 @@ custom
 
 
 
-\---
+---
 
 
 
-\# Plate Surface
+# Plate Surface
 
 
 
@@ -389,11 +389,11 @@ Unknown
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -409,11 +409,11 @@ Unknown
 
 
 
-\---
+---
 
 
 
-\# Motion System
+# Motion System
 
 
 
@@ -425,11 +425,11 @@ Defines movement capabilities.
 
 
 
-\---
+---
 
 
 
-\## Motion Schema
+## Motion Schema
 
 
 
@@ -457,11 +457,11 @@ Defines movement capabilities.
 
 
 
-\---
+---
 
 
 
-\# Supported Kinematics
+# Supported Kinematics
 
 
 
@@ -489,11 +489,11 @@ Custom
 
 
 
-\---
+---
 
 
 
-\# Motion Validation
+# Motion Validation
 
 
 
@@ -505,11 +505,11 @@ Negative values are invalid.
 
 
 
-\---
+---
 
 
 
-\# Extrusion System
+# Extrusion System
 
 
 
@@ -521,11 +521,11 @@ Defines filament delivery system.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -549,11 +549,11 @@ Defines filament delivery system.
 
 
 
-\---
+---
 
 
 
-\# Extruder Types
+# Extruder Types
 
 
 
@@ -573,11 +573,11 @@ Hybrid
 
 
 
-\---
+---
 
 
 
-\# Multi Extruder Support
+# Multi Extruder Support
 
 
 
@@ -597,11 +597,11 @@ Allowed for future versions.
 
 
 
-\---
+---
 
 
 
-\# Supported Filament Diameter
+# Supported Filament Diameter
 
 
 
@@ -621,11 +621,11 @@ Allowed Values:
 
 
 
-\---
+---
 
 
 
-\# Nozzle Configuration
+# Nozzle Configuration
 
 
 
@@ -637,11 +637,11 @@ Defines nozzle support.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -673,11 +673,11 @@ Defines nozzle support.
 
 
 
-\---
+---
 
 
 
-\# Validation
+# Validation
 
 
 
@@ -693,11 +693,11 @@ Nozzle Size must be:
 
 
 
-\---
+---
 
 
 
-\# Thermal System
+# Thermal System
 
 
 
@@ -709,11 +709,11 @@ Defines heating capabilities.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -737,11 +737,11 @@ Defines heating capabilities.
 
 
 
-\---
+---
 
 
 
-\# Chamber Support
+# Chamber Support
 
 
 
@@ -757,11 +757,11 @@ Defines heating capabilities.
 
 
 
-\---
+---
 
 
 
-\# Supported Values
+# Supported Values
 
 
 
@@ -777,11 +777,11 @@ false
 
 
 
-\---
+---
 
 
 
-\# Cooling System
+# Cooling System
 
 
 
@@ -793,11 +793,11 @@ Defines available cooling.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -821,11 +821,11 @@ Defines available cooling.
 
 
 
-\---
+---
 
 
 
-\# Sensor System
+# Sensor System
 
 
 
@@ -837,11 +837,11 @@ Detect printer capabilities.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -869,11 +869,11 @@ Detect printer capabilities.
 
 
 
-\---
+---
 
 
 
-\# Supported Materials
+# Supported Materials
 
 
 
@@ -885,11 +885,11 @@ Declare officially supported materials.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -915,11 +915,11 @@ Declare officially supported materials.
 
 
 
-\---
+---
 
 
 
-\# Unsupported Material Behavior
+# Unsupported Material Behavior
 
 
 
@@ -939,11 +939,11 @@ But Warning Generated
 
 
 
-\---
+---
 
 
 
-\# Hardware Features
+# Hardware Features
 
 
 
@@ -955,11 +955,11 @@ Advanced capabilities.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -985,11 +985,11 @@ Advanced capabilities.
 
 
 
-\---
+---
 
 
 
-\# Mechanical Limits
+# Mechanical Limits
 
 
 
@@ -1001,11 +1001,11 @@ Protect recommendations.
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1029,11 +1029,11 @@ Protect recommendations.
 
 
 
-\---
+---
 
 
 
-\# AI Recommendation Limits
+# AI Recommendation Limits
 
 
 
@@ -1065,11 +1065,11 @@ even if hardware maximum is higher.
 
 
 
-\---
+---
 
 
 
-\# Power Specifications
+# Power Specifications
 
 
 
@@ -1077,11 +1077,11 @@ Optional
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1103,11 +1103,11 @@ Optional
 
 
 
-\---
+---
 
 
 
-\# Energy Estimation Usage
+# Energy Estimation Usage
 
 
 
@@ -1127,11 +1127,11 @@ For electricity calculations.
 
 
 
-\---
+---
 
 
 
-\# Build Plate Origin
+# Build Plate Origin
 
 
 
@@ -1155,11 +1155,11 @@ Custom
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1175,11 +1175,11 @@ Custom
 
 
 
-\---
+---
 
 
 
-\# Multi Material Support
+# Multi Material Support
 
 
 
@@ -1187,11 +1187,11 @@ Reserved
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1213,11 +1213,11 @@ Reserved
 
 
 
-\---
+---
 
 
 
-\# Remote Features
+# Remote Features
 
 
 
@@ -1225,11 +1225,11 @@ Reserved
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1251,11 +1251,11 @@ Reserved
 
 
 
-\---
+---
 
 
 
-\# Validation Rules
+# Validation Rules
 
 
 
@@ -1281,11 +1281,11 @@ Thermal
 
 
 
-\---
+---
 
 
 
-\# Invalid Profile Conditions
+# Invalid Profile Conditions
 
 
 
@@ -1321,11 +1321,11 @@ Profile becomes invalid.
 
 
 
-\---
+---
 
 
 
-\# Warning Conditions
+# Warning Conditions
 
 
 
@@ -1353,11 +1353,11 @@ Unknown Material Support
 
 
 
-\---
+---
 
 
 
-\# Confidence Impact
+# Confidence Impact
 
 
 
@@ -1373,7 +1373,7 @@ Higher Confidence Score
 
 
 
-\---
+---
 
 
 
@@ -1389,11 +1389,11 @@ Lower Confidence Score
 
 
 
-\---
+---
 
 
 
-\# Profile Source Types
+# Profile Source Types
 
 
 
@@ -1421,11 +1421,11 @@ Local Custom
 
 
 
-\---
+---
 
 
 
-\## Schema
+## Schema
 
 
 
@@ -1447,11 +1447,11 @@ Local Custom
 
 
 
-\---
+---
 
 
 
-\# Source Priority
+# Source Priority
 
 
 
@@ -1491,11 +1491,11 @@ Custom
 
 
 
-\---
+---
 
 
 
-\# Profile Versioning
+# Profile Versioning
 
 
 
@@ -1515,11 +1515,11 @@ Schema
 
 
 
-\---
+---
 
 
 
-\# Backward Compatibility
+# Backward Compatibility
 
 
 
@@ -1551,11 +1551,11 @@ Migration Documentation
 
 
 
-\---
+---
 
 
 
-\# Example Complete Printer
+# Example Complete Printer
 
 
 
@@ -1607,11 +1607,11 @@ Migration Documentation
 
 
 
-\---
+---
 
 
 
-\# Golden Rule
+# Golden Rule
 
 
 
@@ -1627,9 +1627,9 @@ The printer must never be adapted to fit an AI recommendation.
 
 
 
-\---
+---
 
 
 
-\# End Of Document
+# End Of Document
 
