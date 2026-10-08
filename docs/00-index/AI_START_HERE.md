@@ -476,6 +476,7 @@ docs/06-quality/PERFORMANCE_SPEC.md
 Read:
 
 ```text
+docs/02-architecture/SLICER_EXPORT_SPEC.md
 docs/01-project/PROJECT_SPEC.md (sections 3 and 4.7)
 docs/02-architecture/IMPORT_EXPORT_SPEC.md
 docs/01-project/DECISIONS.md (ADR-024)
