@@ -491,6 +491,27 @@ Importance:
 
 ---
 
+## SLICER_EXPORT_SPEC.md
+
+Purpose:
+
+Target slicer export specification.
+
+Contains:
+
+- Supported target slicers
+- Export formats
+- Output modes
+- Settings mapping
+- Validation and export report
+- Security rules
+
+Importance:
+
+★★★★★
+
+---
+
 ## TECHNICAL_OVERVIEW.md
 
 Purpose:
