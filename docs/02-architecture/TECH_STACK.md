@@ -96,17 +96,17 @@ Selection priorities:
 
 
 
-1\. Stability
+1. Stability
 
-2\. Community Support
+2. Community Support
 
-3\. Performance
+3. Performance
 
-4\. Scalability
+4. Scalability
 
-5\. Developer Experience
+5. Developer Experience
 
-6\. AI Development Compatibility
+6. AI Development Compatibility
 
 
 
@@ -2053,13 +2053,13 @@ Changing a core technology requires:
 
 
 
-1\. Architecture Review
+1. Architecture Review
 
-2\. Changelog Update
+2. Changelog Update
 
-3\. Migration Plan
+3. Migration Plan
 
-4\. Compatibility Analysis
+4. Compatibility Analysis
 
 
 
