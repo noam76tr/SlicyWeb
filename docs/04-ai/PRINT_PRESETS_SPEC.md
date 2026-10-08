@@ -155,27 +155,27 @@ Custom
 
 {
 
-&#x20; "preset": "",
+ "preset": "",
 
-&#x20; "layerHeight": 0,
+ "layerHeight": 0,
 
-&#x20; "wallCount": 0,
+ "wallCount": 0,
 
-&#x20; "topLayers": 0,
+ "topLayers": 0,
 
-&#x20; "bottomLayers": 0,
+ "bottomLayers": 0,
 
-&#x20; "infillDensity": 0,
+ "infillDensity": 0,
 
-&#x20; "infillPattern": "",
+ "infillPattern": "",
 
-&#x20; "supports": {},
+ "supports": {},
 
-&#x20; "cooling": {},
+ "cooling": {},
 
-&#x20; "speed": {},
+ "speed": {},
 
-&#x20; "confidenceScore": 0
+ "confidenceScore": 0
 
 }
 
