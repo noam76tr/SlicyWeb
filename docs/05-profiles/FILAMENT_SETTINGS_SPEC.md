@@ -143,25 +143,25 @@ Prusament PLA
 
 {
 
-&#x20; "metadata": {},
-
-&#x20; "manufacturer": {},
-
-&#x20; "thermal": {},
-
-&#x20; "cooling": {},
-
-&#x20; "printing": {},
-
-&#x20; "physical": {},
-
-&#x20; "quality": {},
-
-&#x20; "visual": {},
-
-&#x20; "specialRequirements": {},
-
-&#x20; "cost": {}
+ "metadata": {},
+ 
+ "manufacturer": {},
+ 
+ "thermal": {},
+ 
+ "cooling": {},
+ 
+ "printing": {},
+ 
+ "physical": {},
+ 
+ "quality": {},
+ 
+ "visual": {},
+ 
+ "specialRequirements": {},
+ 
+ "cost": {}
 
 }
 
