@@ -963,6 +963,64 @@ releases/
 
 ---
 
+# Planned Items (Not Yet Created)
+
+This document describes the target structure of the project.
+
+The following items are part of the target structure but do not exist yet in the repository.
+
+They must not be assumed to exist.
+
+Root configuration files (Phase 1 - Project Bootstrap):
+
+```text
+package.json
+tsconfig.json
+vite.config.ts
+electron-builder.json
+eslint.config.js
+prettier.config.js
+.env.example
+```
+
+GitHub workflows:
+
+```text
+.github/workflows/lint.yml
+.github/workflows/test.yml
+.github/workflows/build.yml
+.github/workflows/release.yml
+```
+
+Source directories and files:
+
+```text
+src/gui/layouts/
+src/gui/windows/
+src/gui/dialogs/
+src/gui/menus/
+src/gui/toolbars/
+src/gui/components/
+src/gui/themes/
+src/gui/hooks/
+src/gui/styles/
+src/renderer/helpers/
+src/recovery/backups/
+src/schemas/ErrorSchema.ts
+```
+
+Log directories:
+
+```text
+logs/application/
+logs/errors/
+logs/diagnostics/
+```
+
+When one of these items is created, remove it from this list.
+
+---
+
 # Structure Rules
 
 1. Every directory must have a single responsibility.
