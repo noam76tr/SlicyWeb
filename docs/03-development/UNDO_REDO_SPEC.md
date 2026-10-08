@@ -1066,17 +1066,17 @@ when appropriate.
 
 {
 
-&#x20; "actionId": "",
+ "actionId": "",
 
-&#x20; "type": "",
+ "type": "",
 
-&#x20; "timestamp": "",
+ "timestamp": "",
 
 
 
-&#x20; "before": {},
+ "before": {},
 
-&#x20; "after": {}
+ "after": {}
 
 }
 
