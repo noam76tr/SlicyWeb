@@ -23,17 +23,17 @@ The primary goals are:
 All contributors must read the following documents before making changes:
 
 ```text
-docs/00-index/AI\_START\_HERE.md
+docs/00-index/AI_START_HERE.md
 
-docs/00-index/PROJECT\_DOCUMENTATION\_INDEX.md
+docs/00-index/PROJECT_DOCUMENTATION_INDEX.md
 
-docs/01-project/PROJECT\_SPEC.md
+docs/01-project/PROJECT_SPEC.md
 
-docs/03-development/SYSTEM\_RULES.md
+docs/03-development/SYSTEM_RULES.md
 
 docs/02-architecture/ARCHITECTURE.md
 
-docs/03-development/DEVELOPMENT\_RULES.md
+docs/03-development/DEVELOPMENT_RULES.md
 ```
 
 ---
@@ -116,13 +116,13 @@ Before creating or changing functionality:
 Check whether the behavior is already defined in:
 
 ```text
-PROJECT\_SPEC.md
+PROJECT_SPEC.md
 
 ARCHITECTURE.md
 
-DATA\_SCHEMA.md
+DATA_SCHEMA.md
 
-AI\_ENGINE\_SPEC.md
+AI_ENGINE_SPEC.md
 
 ```
 Documentation is considered the source of truth.
@@ -365,7 +365,7 @@ Constants:
 
 ```text
 
-UPPER\_CASE
+UPPER_CASE
 
 ```
 
@@ -375,9 +375,9 @@ Example:
 
 ```text
 
-DEFAULT\_LAYER\_HEIGHT
+DEFAULT_LAYER_HEIGHT
 
-MAX\_PRINT\_SPEED
+MAX_PRINT_SPEED
 
 ```
 
@@ -548,11 +548,11 @@ AI-assisted contributions must follow:
 
 ```text
 
-SYSTEM\_RULES.md
+SYSTEM_RULES.md
 
-DEVELOPMENT\_RULES.md
+DEVELOPMENT_RULES.md
 
-AI\_START\_HERE.md
+AI_START_HERE.md
 
 ```
 
@@ -650,7 +650,7 @@ Security issues should follow:
 
 ```text
 
-SECURITY\_SPEC.md
+SECURITY_SPEC.md
 
 ```
 
