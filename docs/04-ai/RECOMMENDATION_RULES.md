@@ -1,4 +1,4 @@
-# AI SMART SLICER
+# SlicyWeb Smart Slicer
 
 # RECOMMENDATION RULES
 
@@ -2335,4 +2335,3 @@ A successful print is always more important than an aggressive recommendation.
 
 
 # End Of Document
-
