@@ -104,6 +104,7 @@ docs/
 │   ├── API_SPEC.md                      = Comment les modules communiquent entre eux
 │   ├── FILE_STRUCTURE.md                = Où se trouve chaque fichier et dossier
 │   ├── IMPORT_EXPORT_SPEC.md            = Gestion des imports et exports de fichiers
+│   ├── SLICER_EXPORT_SPEC.md            = Export des réglages vers le slicer cible
 │   ├── TECH_STACK.md                    = Technologies utilisées dans le projet
 │   ├── DATA_SCHEMA.md                   = Structure officielle de toutes les données
 │   └── TECHNICAL_OVERVIEW.md            = Vue technique globale du projet
@@ -1063,8 +1064,6 @@ remote_printer/
 webcam/
 
 marketplace/
-
-undo_redo/
 ```
 
 ---
