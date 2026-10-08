@@ -721,7 +721,7 @@ Folder
 
 ```text
 
-/object\_manager
+object_manager
 
 ```
 
@@ -829,7 +829,7 @@ Folder
 
 ```text
 
-/printer\_database
+/printer_database
 
 ```
 
@@ -869,7 +869,7 @@ Folder
 
 ```text
 
-/material\_database
+/material_database
 
 ```
 
@@ -901,7 +901,7 @@ Folder
 
 ```text
 
-/model\_analysis
+/model_analysis
 
 ```
 
@@ -1050,7 +1050,7 @@ Folder
 
 ```text
 
-/recommendation\_engine
+/recommendation_engine
 
 ```
 
@@ -1211,7 +1211,7 @@ Folder
 
 ```text
 
-/cost\_engine
+/cost_engine
 
 ```
 
@@ -1745,19 +1745,19 @@ Reserved Modules
 
 ```text
 
-gcode\_engine
+gcode_engine
 
-multi\_material
+multi_material
 
 cloud
 
-remote\_printer
+remote_printer
 
 webcam
 
-machine\_learning
+machine_learning
 
-profile\_marketplace
+profile_marketplace
 
 filament_tracking
 
