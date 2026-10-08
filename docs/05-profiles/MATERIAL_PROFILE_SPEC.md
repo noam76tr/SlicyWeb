@@ -180,17 +180,17 @@ Custom
 ```json
 
 {
-  &#x20;"metadata": {},
-  &#x20;"thermal": {},
-  &#x20;"cooling": {},
-  &#x20;"mechanical": {},
-  &#x20;"physical": {},
-  &#x20;"printing": {},
-  &#x20;"drying": {},
-  &#x20;"behavior": {},
-  &#x20;"compatibility": {},
-  &#x20;"cost": {},
-  &#x20;"riskFactors": {}
+   "metadata": {},
+   "thermal": {},
+   "cooling": {},
+   "mechanical": {},
+   "physical": {},
+   "printing": {},
+   "drying": {},
+   "behavior": {},
+   "compatibility": {},
+   "cost": {},
+   "riskFactors": {}
 }
 
 
@@ -216,21 +216,21 @@ Identify material.
 
 {
 
-&#x20; "id": "",
+  "id": "",
 
-&#x20; "name": "",
+  "name": "",
 
-&#x20; "brand": "",
+  "brand": "",
 
-&#x20; "category": "",
+  "category": "",
 
-&#x20; "manufacturer": "",
+  "manufacturer": "",
 
-&#x20; "color": "",
+  "color": "",
 
-&#x20; "verified": true,
+  "verified": true,
 
-&#x20; "profileVersion": "1.0.0"
+  "profileVersion": "1.0.0"
 
 }
 
@@ -247,13 +247,13 @@ Identify material.
 
 {
 
-&#x20; "id": "pla\_generic",
+  "id": "pla\_generic",
 
-&#x20; "name": "PLA",
+  "name": "PLA",
 
-&#x20; "brand": "Generic",
+  "brand": "Generic",
 
-&#x20; "category": "PLA"
+  "category": "PLA"
 
 }
 
@@ -285,23 +285,23 @@ Defines heating requirements.
 
 {
 
-&#x20; "thermal": {
+  "thermal": {
 
-&#x20;   "minNozzleTemp": 190,
+    "minNozzleTemp": 190,
 
-&#x20;   "maxNozzleTemp": 220,
+    "maxNozzleTemp": 220,
 
-&#x20;   "recommendedNozzleTemp": 210,
+    "recommendedNozzleTemp": 210,
 
 
 
-&#x20;   "minBedTemp": 50,
+    "minBedTemp": 50,
 
-&#x20;   "maxBedTemp": 65,
+    "maxBedTemp": 65,
 
-&#x20;   "recommendedBedTemp": 60
+    "recommendedBedTemp": 60
 
-&#x20; }
+  }
 
 }
 
@@ -357,15 +357,15 @@ Determines cooling behavior.
 
 {
 
-&#x20; "cooling": {
+  "cooling": {
 
-&#x20;   "minFan": 80,
+    "minFan": 80,
 
-&#x20;   "maxFan": 100,
+    "maxFan": 100,
 
-&#x20;   "recommendedFan": 100
+    "recommendedFan": 100
 
-&#x20; }
+  }
 
 }
 
@@ -449,19 +449,19 @@ Used by AI for strength recommendations.
 
 {
 
-&#x20; "mechanical": {
+  "mechanical": {
 
-&#x20;   "strength": 70,
+    "strength": 70,
 
-&#x20;   "impactResistance": 50,
+    "impactResistance": 50,
 
-&#x20;   "flexibility": 20,
+    "flexibility": 20,
 
-&#x20;   "layerAdhesion": 85,
+    "layerAdhesion": 85,
 
-&#x20;   "wearResistance": 40
+    "wearResistance": 40
 
-&#x20; }
+  }
 
 }
 
@@ -533,15 +533,15 @@ Cost and material estimation.
 
 {
 
-&#x20; "physical": {
+  "physical": {
 
-&#x20;   "density": 1.24,
+    "density": 1.24,
 
-&#x20;   "shrinkage": 0.2,
+    "shrinkage": 0.2,
 
-&#x20;   "abrasive": false
+    "abrasive": false
 
-&#x20; }
+  }
 
 }
 
@@ -637,21 +637,21 @@ Recommended values.
 
 {
 
-&#x20; "printing": {
+  "printing": {
 
-&#x20;   "recommendedSpeed": 80,
+    "recommendedSpeed": 80,
 
-&#x20;   "maximumSpeed": 150,
+    "maximumSpeed": 150,
 
-&#x20;   "recommendedLayerHeight": 0.20,
+    "recommendedLayerHeight": 0.20,
 
-&#x20;   "recommendedRetractionDistance": 0.8,
+    "recommendedRetractionDistance": 0.8,
 
-&#x20;   "recommendedRetractionSpeed": 35,
+    "recommendedRetractionSpeed": 35,
 
-&#x20;   "recommendedPrintPreset": "Balanced"
+    "recommendedPrintPreset": "Balanced"
 
-&#x20; }
+  }
 
 }
 
@@ -735,15 +735,15 @@ Material preparation.
 
 {
 
-&#x20; "drying": {
+  "drying": {
 
-&#x20;   "required": true,
+    "required": true,
 
-&#x20;   "temperature": 55,
+    "temperature": 55,
 
-&#x20;   "durationHours": 6
+    "durationHours": 6
 
-&#x20; }
+  }
 
 }
 
@@ -827,17 +827,17 @@ Describes sensitivity.
 
 {
 
-&#x20; "behavior": {
+  "behavior": {
 
-&#x20;   "warpingRisk": 20,
+    "warpingRisk": 20,
 
-&#x20;   "moistureSensitivity": 30,
+    "moistureSensitivity": 30,
 
-&#x20;   "odorGeneration": 10,
+    "odorGeneration": 10,
 
-&#x20;   "uvResistance": 20
+    "uvResistance": 20
 
-&#x20; }
+  }
 
 }
 
@@ -937,19 +937,19 @@ Used by validation engine.
 
 {
 
-&#x20; "compatibility": {
+  "compatibility": {
 
-&#x20;   "heatedBedRequired": true,
+    "heatedBedRequired": true,
 
-&#x20;   "enclosureRecommended": false,
+    "enclosureRecommended": false,
 
-&#x20;   "enclosureRequired": false,
+    "enclosureRequired": false,
 
-&#x20;   "hardenedNozzleRequired": false,
+    "hardenedNozzleRequired": false,
 
-&#x20;   "supportedPrinterTypes": []
+    "supportedPrinterTypes": []
 
-&#x20; }
+  }
 
 }
 
@@ -973,9 +973,9 @@ PLA
 
 {
 
-&#x20; "heatedBedRequired": true,
+  "heatedBedRequired": true,
 
-&#x20; "enclosureRequired": false
+  "enclosureRequired": false
 
 }
 
@@ -999,9 +999,9 @@ ABS
 
 {
 
-&#x20; "heatedBedRequired": true,
+  "heatedBedRequired": true,
 
-&#x20; "enclosureRequired": true
+  "enclosureRequired": true
 
 }
 
@@ -1033,11 +1033,11 @@ Used by cost engine.
 
 {
 
-&#x20; "cost": {
+  "cost": {
 
-&#x20;   "pricePerKg": 20
+    "pricePerKg": 20
 
-&#x20; }
+  }
 
 }
 
@@ -1081,15 +1081,15 @@ Optional.
 
 {
 
-&#x20; "visual": {
+  "visual": {
 
-&#x20;   "color": "Black",
+    "color": "Black",
 
-&#x20;   "transparency": false,
+    "transparency": false,
 
-&#x20;   "reflective": false
+    "reflective": false
 
-&#x20; }
+  }
 
 }
 
@@ -1121,11 +1121,11 @@ Optional.
 
 {
 
-&#x20; "certifications": {
+  "certifications": {
 
-&#x20;   "foodSafe": false
+    "foodSafe": false
 
-&#x20; }
+  }
 
 }
 
@@ -1157,11 +1157,11 @@ Optional.
 
 {
 
-&#x20; "outdoor": {
+  "outdoor": {
 
-&#x20;   "recommended": false
+    "recommended": false
 
-&#x20; }
+  }
 
 }
 
@@ -1193,11 +1193,11 @@ Optional.
 
 {
 
-&#x20; "chemicalResistance": {
+  "chemicalResistance": {
 
-&#x20;   "level": 60
+    "level": 60
 
-&#x20; }
+  }
 
 }
 
@@ -1229,11 +1229,11 @@ Optional.
 
 {
 
-&#x20; "fireResistance": {
+  "fireResistance": {
 
-&#x20;   "level": 10
+    "level": 10
 
-&#x20; }
+  }
 
 }
 
@@ -1261,17 +1261,17 @@ Used by AI.
 
 {
 
-&#x20; "riskFactors": {
+  "riskFactors": {
 
-&#x20;   "stringing": 20,
+    "stringing": 20,
 
-&#x20;   "warping": 15,
+    "warping": 15,
 
-&#x20;   "cracking": 5,
+    "cracking": 5,
 
-&#x20;   "layerSeparation": 10
+    "layerSeparation": 10
 
-&#x20; }
+  }
 
 }
 
@@ -1581,13 +1581,13 @@ Custom User Profile
 
 {
 
-&#x20; "source": {
+  "source": {
 
-&#x20;   "type": "Official",
+    "type": "Official",
 
-&#x20;   "url": ""
+    "url": ""
 
-&#x20; }
+  }
 
 }
 
@@ -1647,7 +1647,7 @@ Custom
 
 {
 
-&#x20; "profileVersion": "1.0.0"
+  "profileVersion": "1.0.0"
 
 }
 
@@ -1671,19 +1671,19 @@ Reserved
 
 {
 
-&#x20; "recycling": {},
+  "recycling": {},
 
-&#x20; "carbonFootprint": {},
+  "carbonFootprint": {},
 
-&#x20; "manufacturerVerification": {},
+  "manufacturerVerification": {},
 
-&#x20; "batchTracking": {},
+  "batchTracking": {},
 
-&#x20; "materialAging": {},
+  "materialAging": {},
 
-&#x20; "communityRating": {},
+  "communityRating": {},
 
-&#x20; "filamentPerformanceHistory": {}
+  "filamentPerformanceHistory": {}
 
 }
 
@@ -1743,29 +1743,29 @@ Migration Guide
 
 {
 
-&#x20; "metadata": {
+  "metadata": {
 
-&#x20;   "name": "PLA"
+    "name": "PLA"
 
-&#x20; },
-
-
-
-&#x20; "thermal": {
-
-&#x20;   "recommendedNozzleTemp": 210,
-
-&#x20;   "recommendedBedTemp": 60
-
-&#x20; },
+  },
 
 
 
-&#x20; "cooling": {
+  "thermal": {
 
-&#x20;   "recommendedFan": 100
+    "recommendedNozzleTemp": 210,
 
-&#x20; }
+    "recommendedBedTemp": 60
+
+  },
+
+
+
+  "cooling": {
+
+    "recommendedFan": 100
+
+  }
 
 }
 
