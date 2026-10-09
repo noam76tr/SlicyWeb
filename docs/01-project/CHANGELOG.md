@@ -436,6 +436,29 @@ Date:
 
 ---
 
+# VERSION 0.1.5
+
+Release Type:
+Roadmap Update
+
+Status:
+Completed
+
+Date:
+2026-10-09
+
+## Changed
+
+- ROADMAP.md 2.1.0: new Phase 12 - Target Slicer Export; Advanced Features becomes Phase 13; Production Release becomes Phase 14
+- PHASES_IMPLEMENTATION_PLAN.md 2.1.0: new technical Phase 14 - Target Slicer Export; Advanced Features becomes Phase 15; Production Validation and Release becomes Phase 16
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 12 (Cost Estimation) section placed before Phase 13 (Project Persistence)
+
+## Fixed
+
+- Escaped Markdown characters removed from documentation files
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
