@@ -14,7 +14,7 @@
  *
  * Based on:
  * - ARCHITECTURE.md
- * - I18N_SPEC.md
+ * - TECHNICAL_OVERVIEW.md
  * - DATA_SCHEMA.md
  */
 

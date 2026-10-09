@@ -14,7 +14,7 @@
  * Based on:
  * - ARCHITECTURE.md
  * - FILE_STRUCTURE.md
- * - EVENT_SPEC.md
+ * - API_SPEC.md
  */
 
 export enum EventType {

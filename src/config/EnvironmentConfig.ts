@@ -14,7 +14,6 @@
  * Based on:
  * - TECH_STACK.md
  * - ARCHITECTURE.md
- * - CONFIG_SPEC.md
  */
 
 export interface EnvironmentConfig {

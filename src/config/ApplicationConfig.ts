@@ -14,7 +14,6 @@
  * Based on:
  * - ARCHITECTURE.md
  * - TECH_STACK.md
- * - CONFIG_SPEC.md
  */
 
 export interface ApplicationConfig {

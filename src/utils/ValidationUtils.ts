@@ -14,7 +14,7 @@
  *
  * Based on:
  * - ARCHITECTURE.md
- * - UTILS_SPEC.md
+ * - DIRECTORY_PURPOSES.md
  */
 
 export class ValidationUtils {

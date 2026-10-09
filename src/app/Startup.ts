@@ -14,7 +14,7 @@
  *
  * Based on:
  * - ARCHITECTURE.md
- * - STARTUP_SPEC.md
+ * - PERFORMANCE_SPEC.md
  * - TECH_STACK.md
  */
 

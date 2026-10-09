@@ -14,7 +14,6 @@
  * Based on:
  * - ROADMAP.md
  * - ARCHITECTURE.md
- * - CONFIG_SPEC.md
  */
 
 export interface FeatureFlags {

@@ -15,7 +15,6 @@
  * Based on:
  * - ARCHITECTURE.md
  * - API_SPEC.md
- * - EVENT_SPEC.md
  */
 
 import type { EventType } from "./EventTypes";

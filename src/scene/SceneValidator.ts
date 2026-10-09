@@ -14,7 +14,7 @@
  * Based on:
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
- * - SCENE_SPEC.md
+ * - API_SPEC.md
  */
 
 import type { Scene } from "../types/Scene";
