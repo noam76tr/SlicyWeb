@@ -2,7 +2,7 @@
 
 # IMPLEMENTATION PLAN
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -100,8 +100,9 @@ The technical phases are organized to provide the capabilities required by the f
 | Phase 11        | Optimization Engine                      | Phase 9 - Optimization Engine                              |
 | Phase 12        | Cost Estimation                          | Phase 10 - Cost Estimation                                 |
 | Phase 13        | Project Persistence                      | Phase 11 - Project Persistence                             |
-| Phase 14        | Advanced Features                        | Phase 12 - Advanced Features                               |
-| Phase 15        | Production Validation and Release        | Phase 13 - Production Release                              |
+| Phase 14        | Target Slicer Export                     | Phase 12 - Target Slicer Export                            |
+| Phase 15        | Advanced Features                        | Phase 13 - Advanced Features                               |
+| Phase 16        | Production Validation and Release        | Phase 14 - Production Release                              |
 |-----------------|------------------------------------------|------------------------------------------------------------|
 
 ### Mapping Rules
@@ -1503,49 +1504,6 @@ Reliability Maintained
 ```
 ---
 
-# PHASE 13
-
-# PROJECT PERSISTENCE
-
-## Objectives
-
-Implement the native WYPROJ project lifecycle.
-
-## Required Modules
-
-```text
-src/project/
-
-ProjectManager.ts
-
-ProjectSerializer.ts
-
-ProjectDeserializer.ts
-
-ProjectValidator.ts
-
-WYPROJImporter.ts
-
-WYPROJExporter.ts
-```
-
-Project can be created.
-
-Project can be serialized.
-
-Project can be deserialized.
-
-Invalid projects are rejected.
-
-Unsupported project versions are detected.
-
-Project data remains language-neutral.
-
-Existing project data remains backward compatible.
-
----
-
-
 # PHASE 12
 
 # COST ESTIMATION
@@ -1624,7 +1582,103 @@ Values Consistent
 
 ---
 
+# PHASE 13
+
+# PROJECT PERSISTENCE
+
+## Objectives
+
+Implement the native WYPROJ project lifecycle.
+
+## Required Modules
+
+```text
+src/project/
+
+ProjectManager.ts
+
+ProjectSerializer.ts
+
+ProjectDeserializer.ts
+
+ProjectValidator.ts
+
+WYPROJImporter.ts
+
+WYPROJExporter.ts
+```
+
+Project can be created.
+
+Project can be serialized.
+
+Project can be deserialized.
+
+Invalid projects are rejected.
+
+Unsupported project versions are detected.
+
+Project data remains language-neutral.
+
+Existing project data remains backward compatible.
+
+---
+
 # PHASE 14
+
+# TARGET SLICER EXPORT
+
+## Objectives
+
+Export the model and its generated print settings to the target slicer selected by the user.
+
+Reference: SLICER_EXPORT_SPEC.md
+
+## Required Modules (planned)
+
+```text
+src/services/SlicerExportService.ts
+
+src/slicer_export/
+
+SlicerExportManager.ts
+
+SettingsMapper.ts
+
+ExportValidator.ts
+
+ExportReportBuilder.ts
+
+BambuFamilyExporter.ts
+
+PrusaFamilyExporter.ts
+
+CuraFamilyExporter.ts
+
+src/schemas/SlicerMappingSchema.ts
+
+src/types/SlicerExport.ts
+
+data/templates/
+```
+
+## Prerequisites
+
+Every mapping entry used is Verified (SLICER_EXPORT_SPEC.md, Rule V1).
+
+The data model extensions listed in SLICER_EXPORT_SPEC.md are documented and implemented.
+
+## Validation
+
+Exported files open without error in each supported slicer.
+
+Every exported setting has the expected value in the target slicer.
+
+Unsupported settings are reported in the export report.
+
+---
+
+# PHASE 15
 
 # ADVANCED FEATURES
 
@@ -1658,7 +1712,7 @@ Values Consistent
 
 ---
 
-# PHASE 15
+# PHASE 16
 
 # PRODUCTION VALIDATION AND RELEASE
 
