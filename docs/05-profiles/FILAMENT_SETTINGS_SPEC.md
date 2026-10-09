@@ -214,7 +214,7 @@ Identify filament.
 
 {
 
- "id": "bambu\_pla\_basic\_black",
+ "id": "bambu_pla_basic_black",
 
  "name": "PLA Basic Black",
 
@@ -1091,23 +1091,23 @@ Used By:
 
 ```text
 
-MATERIAL\_PROFILE\_SPEC.md
+MATERIAL_PROFILE_SPEC.md
 
 
 
-PRINT\_SETTINGS\_SPEC.md
+PRINT_SETTINGS_SPEC.md
 
 
 
-AI\_ENGINE\_SPEC.md
+AI_ENGINE_SPEC.md
 
 
 
-RECOMMENDATION\_RULES.md
+RECOMMENDATION_RULES.md
 
 
 
-COST\_ENGINE
+COST_ENGINE
 
 ```
 
@@ -1163,4 +1163,3 @@ A filament profile always takes precedence over generic material recommendations
 
 
 # End Of Document
-
