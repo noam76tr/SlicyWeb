@@ -136,7 +136,7 @@ Avoid technologies that are:
 
 Frontend
 
-&#x20;   ↓
+    ↓
 
 React
 
@@ -144,7 +144,7 @@ React
 
 Desktop Runtime
 
-&#x20;   ↓
+    ↓
 
 Electron
 
@@ -152,7 +152,7 @@ Electron
 
 3D Rendering
 
-&#x20;   ↓
+    ↓
 
 Three.js
 
@@ -160,7 +160,7 @@ Three.js
 
 State Management
 
-&#x20;   ↓
+    ↓
 
 Zustand
 
@@ -168,7 +168,7 @@ Zustand
 
 Language
 
-&#x20;   ↓
+    ↓
 
 TypeScript
 
@@ -176,7 +176,7 @@ TypeScript
 
 Build Tool
 
-&#x20;   ↓
+    ↓
 
 Vite
 
@@ -184,7 +184,7 @@ Vite
 
 Testing
 
-&#x20;   ↓
+    ↓
 
 Vitest
 
@@ -292,11 +292,11 @@ Enabled
 
 {
 
-&#x20; "strict": true,
+  "strict": true,
 
-&#x20; "noImplicitAny": true,
+  "noImplicitAny": true,
 
-&#x20; "strictNullChecks": true
+  "strictNullChecks": true
 
 }
 
@@ -1707,7 +1707,7 @@ develop
 
 
 
-feature/\*
+feature/*
 
 ```
 
@@ -2080,4 +2080,3 @@ Choose technologies that make the project easier to maintain five years from now
 
 
 # End Of Document
-
