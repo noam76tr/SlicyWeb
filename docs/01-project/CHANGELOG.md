@@ -480,6 +480,7 @@ Date:
 
 - DATA_SCHEMA.md 2.1.0: analysisId, objectId and status added to the Complete Analysis Schema; objectId added to the Recommendation Schema; status values defined (generated, outdated); analysis and recommendations indexed by objectId in the Project Schema
 - API_SPEC.md 2.1.0: Analysis Result gains analysisId, objectId and status; Generate Recommendation returns one recommendation per objectId
+- Note: the DATA_SCHEMA.md changes are additive. The Generate Recommendation response change in API_SPEC.md is non-additive (recommendation becomes recommendations, indexed by objectId); the API is not implemented yet, no migration required
 - IMPORT_EXPORT_SPEC.md 2.2.0: Project Schema aligned with DATA_SCHEMA.md (WYPROJ format unchanged, 2.0.0)
 
 ## Fixed

@@ -1836,7 +1836,9 @@ Object lifecycle:
 - Duplication: the copy receives a new objectId and inherits no analysis and no recommendation.
 - Rotation or scaling: the analysis and the recommendation become outdated and must be recomputed before any export.
 
-All schema changes are additive. No field is removed, renamed or retyped.
+Schema changes in DATA_SCHEMA.md are additive. No field is removed, renamed or retyped.
+
+API_SPEC.md contains one non-additive change: the response of Generate Recommendation replaces the field recommendation with recommendations, indexed by objectId. The API is not implemented yet; no consumer requires migration.
 
 DATA_SCHEMA.md becomes 2.1.0. The WYPROJ format version remains 2.0.0.
 

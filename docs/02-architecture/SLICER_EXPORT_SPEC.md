@@ -482,9 +482,15 @@ The target slicer is supported
 The output mode is allowed for the target slicer
 The mapping file is valid and supports the target slicer version
 A matching printer profile exists in the target slicer
+Every exported object is inside the build volume of the printer
+No exported object collides with another exported object
 ```
 
 Any failed rule blocks the export and reports an error.
+
+Scene checks (every exported object inside the build volume of the printer, no collision between objects) are performed again before every export.
+
+Reason: moving an object does not make its analysis outdated (DATA_SCHEMA.md, Object Reference Rules, rule 8).
 
 ---
 
