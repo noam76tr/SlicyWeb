@@ -668,7 +668,7 @@ Access Storage
 
 {
 
- "permissions": \[
+ "permissions": [
 
    "ReadProject",
 
