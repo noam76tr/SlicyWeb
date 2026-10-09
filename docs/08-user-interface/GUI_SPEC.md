@@ -1284,7 +1284,7 @@ Brand
 
 
 
-&#x20;└─ Models
+ └─ Models
 
 ```
 
@@ -1300,11 +1300,11 @@ Bambu Lab
 
 
 
-&#x20;├─ X1C
+ ├─ X1C
 
-&#x20;├─ P1S
+ ├─ P1S
 
-&#x20;└─ A1
+ └─ A1
 
 
 
@@ -1312,9 +1312,9 @@ Prusa
 
 
 
-&#x20;├─ MK4
+ ├─ MK4
 
-&#x20;└─ XL
+ └─ XL
 
 ```
 
@@ -2062,4 +2062,3 @@ Profile Repository Browser
 
 
 # End Of Document
-
