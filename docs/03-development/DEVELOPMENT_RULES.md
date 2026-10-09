@@ -782,7 +782,7 @@ stuff/
 
 temp/
 
-new\_version/
+new_version/
 
 ```
 
