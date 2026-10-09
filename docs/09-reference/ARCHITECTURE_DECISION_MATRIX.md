@@ -2,7 +2,7 @@
 
 # ARCHITECTURE DECISION MATRIX
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -172,6 +172,7 @@ Requires:
 | ADM-018 | Deterministic Recommendation Engine | AI | Critical | Approved |
 | ADM-019 | Cache First Synchronization | Synchronization | High | Approved |
 | ADM-020 | Governance Controlled Evolution | Governance | Critical | Approved |
+| ADM-021 | Object Scoped Analysis And Recommendations | Data | High | Approved |
 
 ---
 
@@ -616,6 +617,32 @@ Benefits:
 - Controlled evolution
 - Reduced regressions
 - Better consistency
+
+---
+
+ADM-021
+
+Title:
+
+Object Scoped Analysis And Recommendations
+
+Decision:
+
+Every analysis and every recommendation belongs to one object, identified by objectId, and is marked outdated when the object is rotated or scaled.
+
+Rationale:
+
+A project may contain several objects, and target slicer export requires a recommendation for every exported object.
+
+Reference:
+
+ADR-026 (DECISIONS.md)
+
+Benefits:
+
+- Verifiable export validation
+- No export of results computed for a previous orientation or scale
+- Backward compatible schema evolution
 
 ---
 

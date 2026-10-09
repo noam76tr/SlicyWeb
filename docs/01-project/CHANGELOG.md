@@ -459,6 +459,35 @@ Date:
 
 ---
 
+# VERSION 0.1.6
+
+Release Type:
+Schema Update
+
+Status:
+Completed
+
+Date:
+2026-10-09
+
+## Added
+
+- DECISIONS.md: ADR-026 Object-Scoped Analysis And Recommendations
+- ARCHITECTURE_DECISION_MATRIX.md 2.1.0: ADM-021 (reference to ADR-026)
+- DATA_SCHEMA.md: Object Reference Rules (removal, duplication, transformation)
+
+## Changed
+
+- DATA_SCHEMA.md 2.1.0: analysisId, objectId and status added to the Complete Analysis Schema; objectId added to the Recommendation Schema; status values defined (generated, outdated); analysis and recommendations indexed by objectId in the Project Schema
+- API_SPEC.md 2.1.0: Analysis Result gains analysisId, objectId and status; Generate Recommendation returns one recommendation per objectId
+- IMPORT_EXPORT_SPEC.md 2.2.0: Project Schema aligned with DATA_SCHEMA.md (WYPROJ format unchanged, 2.0.0)
+
+## Fixed
+
+- Source file headers: "Based on" references to missing documents (STARTUP_SPEC, CONFIG_SPEC, EVENT_SPEC, SCENE_SPEC, OBJECT_MANAGEMENT_SPEC, UTILS_SPEC, I18N_SPEC) replaced by existing documents (20 files)
+
+---
+
 # VERSION 0.2.0
 
 Release Type:

@@ -1,7 +1,7 @@
 # SlicyWeb SMART SLICER
 # IMPORT EXPORT SPECIFICATION
 
-Version: 2.1.0
+Version: 2.2.0
 
 Status: Approved
 
@@ -507,7 +507,11 @@ Material
 
 Filament
 
+Preset
+
 Settings
+
+Analysis
 
 Recommendations
 ```
@@ -516,12 +520,14 @@ Metadata:
 
 ```text
 "metadata": {
-  "version": "2.0.0",
-  "createdAt": "",
-  "updatedAt": "",
-  "application": "SlicyWeb Smart Slicer"
+  "application": "SlicyWeb Smart Slicer",
+  "author": ""
 }
 ```
+
+author is optional (see Metadata Handling).
+
+Project identity, version and dates are stored in the project itself (projectId, projectName, version, createdAt, updatedAt).
 
 A WYPROJ project may contain one or more imported objects.
 
@@ -548,28 +554,42 @@ Official Extension:
 
 # Project Schema
 
+The WYPROJ file follows the Project File Schema and the Project Schema of DATA_SCHEMA.md.
+
 ```json
 {
   "format": "WYPROJ",
   "version": "2.0.0",
   "project": {
-    "metadata": {
-    "version": "2.0.0",
+    "projectId": "",
+    "projectName": "",
+    "projectFormat": "WYPROJ",
     "createdAt": "",
     "updatedAt": "",
-    "application": "SlicyWeb Smart Slicer"
-    },
+    "version": "2.0.0",
     "scene": {},
-    "printers": [],
-    "materials": [],
-    "filaments": [],
-    "presets": [],
-    "analysis": [],
-    "recommendations": [],
-    "settings": {}
+    "settings": {},
+    "analysis": {
+      "<objectId>": {}
+    },
+    "recommendations": {
+      "<objectId>": {}
+    },
+    "preset": {},
+    "printer": {},
+    "material": {},
+    "filament": {}
+  },
+  "metadata": {
+    "application": "SlicyWeb Smart Slicer",
+    "author": ""
   }
 }
 ```
+
+analysis and recommendations are indexed by objectId (ADR-026, Object Reference Rules in DATA_SCHEMA.md).
+
+In case of conflict, DATA_SCHEMA.md prevails.
 
 ---
 

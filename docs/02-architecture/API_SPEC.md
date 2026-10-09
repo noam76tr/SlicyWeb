@@ -3,7 +3,7 @@
 # API SPECIFICATION
 
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -1400,6 +1400,12 @@ POST
 
 {
 
+  "analysisId": "",
+
+  "objectId": "",
+
+  "status": "generated",
+
   "dimensions": {},
 
   "geometry": {},
@@ -1512,13 +1518,21 @@ POST
 
 
 
+One recommendation is returned for each objectId of the input, indexed by objectId (ADR-026).
+
 ```json
 {
-  "recommendation": {
-    "recommendedProfile": {},
-    "printPreset": {},
-    "warnings": [],
-    "confidenceScore": 95
+  "recommendations": {
+    "<objectId>": {
+      "recommendationId": "",
+      "objectId": "",
+      "analysisId": "",
+      "recommendedProfile": {},
+      "printPreset": {},
+      "warnings": [],
+      "confidenceScore": 95,
+      "status": "generated"
+    }
   }
 }
 ```

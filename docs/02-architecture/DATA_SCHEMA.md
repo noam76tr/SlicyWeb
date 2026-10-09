@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -918,6 +918,29 @@ Represents an entire workspace.
 
 ```
 
+Analysis And Recommendations Indexing (ADR-026):
+
+analysis and recommendations are indexed by objectId.
+
+```json
+
+{
+  "analysis": {
+    "<objectId>": {}
+  },
+  "recommendations": {
+    "<objectId>": {}
+  }
+}
+
+```
+
+Each analysis entry follows the Complete Analysis Schema.
+
+Each recommendation entry follows the Recommendation Schema.
+
+Integrity constraints are defined in Object Reference Rules.
+
 
 
 ---
@@ -1216,6 +1239,12 @@ Represents an entire workspace.
 
 {
 
+ "analysisId": "",
+
+ "objectId": "",
+
+ "status": "generated",
+
  "dimensions": {},
 
  "geometry": {},
@@ -1234,6 +1263,14 @@ Represents an entire workspace.
 
 }
 
+```
+
+Analysis Status Values:
+
+```text
+generated = Computed for the current geometry, rotation and scale of the object
+
+outdated = The object was rotated or scaled after computation; must be recomputed
 ```
 
 ---
@@ -1477,6 +1514,7 @@ Structural
 {
   "recommendation": {
     "recommendationId": "",
+    "objectId": "",
     "printerId": "",
     "materialId": "",
     "filamentId": "",
@@ -1491,6 +1529,46 @@ Structural
   }
 }
 
+```
+
+Recommendation Status Values:
+
+```text
+generated = Generated from the current analysis of the object
+
+outdated = The analysis of the object is outdated or was recomputed; must be regenerated
+```
+
+
+
+---
+
+
+
+# Object Reference Rules
+
+Reference: ADR-026
+
+```text
+1. Every analysis references exactly one object through objectId.
+
+2. Every recommendation references exactly one object through objectId.
+
+3. In the Project Schema, the key of each entry in analysis and recommendations equals the objectId of that entry.
+
+4. Every objectId must exist in scene.objects.
+
+5. recommendation.analysisId must reference the analysis of the same object.
+
+6. Object Removal: when an object is removed from the scene, its analysis and its recommendation are removed.
+
+7. Object Duplication: the copy receives a new objectId. The analysis and the recommendation of the original object are not copied. The copy has no analysis and no recommendation until it is analyzed.
+
+8. Object Transformation: when the rotation or the scale of an object changes (Transform Schema), the status of its analysis and of its recommendation becomes outdated. A change of position alone does not change the status.
+
+9. When the analysis of an object becomes outdated or is recomputed, the recommendation of the same object becomes outdated.
+
+10. An outdated analysis or recommendation must be recomputed before any export. Export is blocked for an object whose recommendation is missing or outdated (SLICER_EXPORT_SPEC.md, error EXP_003).
 ```
 
 

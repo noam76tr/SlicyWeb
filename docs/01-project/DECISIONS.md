@@ -1800,6 +1800,94 @@ Reason:
 
 ---
 
+# ADR-026
+
+Title: Object-Scoped Analysis And Recommendations
+
+Status: Accepted
+
+Date: 2026-10-09
+
+## Context
+
+A project may contain several objects (PROJECT_SPEC.md section 4.5).
+
+Target slicer export requires a Recommendation for every exported object (SLICER_EXPORT_SPEC.md, error EXP_003).
+
+DATA_SCHEMA.md 2.0.0 stores a single analysis and a single recommendations block per project.
+
+Neither the Complete Analysis Schema nor the Recommendation Schema identifies the object it belongs to.
+
+Recommendation.analysisId has no target, because no analysis schema defines analysisId.
+
+## Decision
+
+Analysis and recommendations are scoped to one object.
+
+- Complete Analysis Schema gains analysisId, objectId and status.
+- Recommendation Schema gains objectId. Its existing status field gets defined values.
+- Status values: generated, outdated.
+- In the Project Schema, analysis and recommendations remain objects, indexed by objectId.
+- Object Reference Rules define integrity, removal, duplication and transformation behavior.
+
+Object lifecycle:
+
+- Removal: the analysis and the recommendation of the object are removed.
+- Duplication: the copy receives a new objectId and inherits no analysis and no recommendation.
+- Rotation or scaling: the analysis and the recommendation become outdated and must be recomputed before any export.
+
+All schema changes are additive. No field is removed, renamed or retyped.
+
+DATA_SCHEMA.md becomes 2.1.0. The WYPROJ format version remains 2.0.0.
+
+## Consequences
+
+Advantages:
+
+- One analysis and one recommendation per object, enforced by the structure
+- Target slicer export validation (EXP_003) becomes verifiable
+- Results computed for a previous orientation or scale are never exported
+- Recommendation.analysisId becomes resolvable
+- Backward compatible with DATA_SCHEMA.md 2.0.0
+
+Disadvantages:
+
+- The recommendation response of API_SPEC.md changes from a single recommendation to one recommendation per object
+- Types, Zod schemas and stores must move from a single result to results per object
+- Scene and transform operations must update analysis and recommendation status
+
+## Alternatives Considered
+
+Arrays of analyses and recommendations in the Project Schema
+
+Rejected
+
+Reason:
+
+- Changes the type of existing fields
+- Does not enforce one recommendation per object
+
+Single project-level recommendation applied to every object
+
+Rejected
+
+Reason:
+
+- Contradicts SLICER_EXPORT_SPEC.md
+- Objects of different categories require different settings
+
+## Related Documents
+
+- DATA_SCHEMA.md
+- PROJECT_SPEC.md (section 4.5)
+- SLICER_EXPORT_SPEC.md
+- API_SPEC.md
+- IMPORT_EXPORT_SPEC.md
+- ADR-020
+- ADR-024
+
+---
+
 # Future Decision Template
 
 Copy and complete:
