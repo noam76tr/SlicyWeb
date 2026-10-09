@@ -46,19 +46,19 @@ This specification is used by:
 
 ```text
 
-AI\_ENGINE\_SPEC.md
+AI_ENGINE_SPEC.md
 
 
 
-RECOMMENDATION\_RULES.md
+RECOMMENDATION_RULES.md
 
 
 
-OBJECT\_CLASSIFICATION\_SPEC.md
+OBJECT_CLASSIFICATION_SPEC.md
 
 
 
-GCODE\_ENGINE\_SPEC.md
+GCODE_ENGINE_SPEC.md
 
 ```
 
@@ -1869,4 +1869,3 @@ The best support is the one that prevents failure while using the minimum amount
 
 
 # End Of Document
-
