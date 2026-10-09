@@ -547,31 +547,31 @@ Example:
 
 Creality
 
-&#x20;→ K1
+ → K1
 
-&#x20;→ K1 Max
+ → K1 Max
 
-&#x20;→ Ender 3 V3
+ → Ender 3 V3
 
 
 
 Bambu Lab
 
-&#x20;→ X1 Carbon
+ → X1 Carbon
 
-&#x20;→ P1S
+ → P1S
 
-&#x20;→ A1
+ → A1
 
 
 
 Prusa
 
-&#x20;→ MK4
+ → MK4
 
-&#x20;→ MINI+
+ → MINI+
 
-&#x20;→ XL
+ → XL
 
 
 ---
