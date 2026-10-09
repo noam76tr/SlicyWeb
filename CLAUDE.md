@@ -128,25 +128,11 @@ Never skip required reading.
 
 # Highest Authority Documents
 
-The following documents are considered highest authority:
+The document authority hierarchy is defined in:
 
-PROJECT_SPEC.md
+CLAUDE_READING_PRIORITY.md
 
-ARCHITECTURE.md
-
-TECHNICAL_OVERVIEW.md
-
-DATA_SCHEMA.md
-
-API_SPEC.md
-
-SYSTEM_RULES.md
-
-DEVELOPMENT_RULES.md
-
-DECISIONS.md
-
-These documents define project truth.
+Priority 0 documents define project truth.
 
 No lower-priority document may override them.
 
