@@ -350,14 +350,14 @@ materialProfile
 ---
 
 
-Constants: UPPER\_CASE
+Constants: UPPER_CASE
 
 
 Examples:
 
-MAX\_PRINT\_SPEED
+MAX_PRINT_SPEED
 
-DEFAULT\_LAYER\_HEIGHT
+DEFAULT_LAYER_HEIGHT
 
 ---
 
