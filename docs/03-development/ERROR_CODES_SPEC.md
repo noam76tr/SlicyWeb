@@ -58,7 +58,7 @@ Critical
 
 ---
 
-## STL\_001
+## STL_001
 
 ```text
 
@@ -68,7 +68,7 @@ STL File Not Found
 
 ---
 
-## STL\_002
+## STL_002
 
 ```text
 
@@ -80,7 +80,7 @@ Invalid STL Format
 
 
 
-## STL\_003
+## STL_003
 
 
 
@@ -96,7 +96,7 @@ Corrupted STL File
 
 
 
-## STL\_004
+## STL_004
 
 
 
@@ -119,7 +119,7 @@ Unsupported STL Version
 
 
 
-## MF\_001
+## MF_001
 
 
 
@@ -135,7 +135,7 @@ Unsupported STL Version
 
 
 
-## MF\_002
+## MF_002
 
 
 
@@ -151,7 +151,7 @@ Invalid 3MF Package
 
 
 
-## MF\_003
+## MF_003
 
 
 
@@ -175,7 +175,7 @@ Corrupted 3MF File
 
 
 
-## PRN\_001
+## PRN_001
 
 
 
@@ -191,7 +191,7 @@ Printer Not Found
 
 
 
-## PRN\_002
+## PRN_002
 
 
 
@@ -207,7 +207,7 @@ Invalid Printer Profile
 
 
 
-## PRN\_003
+## PRN_003
 
 
 
@@ -223,7 +223,7 @@ Unsupported Printer
 
 
 
-## PRN\_004
+## PRN_004
 
 
 
@@ -247,7 +247,7 @@ Build Volume Invalid
 
 
 
-## MAT\_001
+## MAT_001
 
 
 
@@ -263,7 +263,7 @@ Material Not Found
 
 
 
-## MAT\_002
+## MAT_002
 
 
 
@@ -279,7 +279,7 @@ Invalid Material Profile
 
 
 
-## MAT\_003
+## MAT_003
 
 
 
@@ -331,7 +331,7 @@ Invalid Project Data
 
 
 
-## ANA\_001
+## ANA_001
 
 
 
@@ -347,7 +347,7 @@ Analysis Failed
 
 
 
-## ANA\_002
+## ANA_002
 
 
 
@@ -363,7 +363,7 @@ Mesh Validation Failed
 
 
 
-## ANA\_003
+## ANA_003
 
 
 
@@ -379,7 +379,7 @@ Volume Calculation Failed
 
 
 
-## ANA\_004
+## ANA_004
 
 
 
@@ -403,7 +403,7 @@ Overhang Analysis Failed
 
 
 
-## REC\_001
+## REC_001
 
 
 
@@ -419,7 +419,7 @@ Recommendation Failed
 
 
 
-## REC\_002
+## REC_002
 
 
 
@@ -435,7 +435,7 @@ Insufficient Data
 
 
 
-## REC\_003
+## REC_003
 
 
 
@@ -459,7 +459,7 @@ Configuration Conflict
 
 
 
-## OPT\_001
+## OPT_001
 
 
 
@@ -475,7 +475,7 @@ Optimization Failed
 
 
 
-## OPT\_002
+## OPT_002
 
 
 
@@ -499,7 +499,7 @@ Orientation Search Failed
 
 
 
-## PROJ\_001
+## PROJ_001
 
 
 
@@ -515,7 +515,7 @@ Project Not Found
 
 
 
-## PROJ\_002
+## PROJ_002
 
 
 
@@ -531,7 +531,7 @@ Project Corrupted
 
 
 
-## PROJ\_003
+## PROJ_003
 
 
 
@@ -582,7 +582,7 @@ IPC Handler Not Registered
 
 
 
-## CACHE\_001
+## CACHE_001
 
 
 
@@ -598,7 +598,7 @@ Cache Corrupted
 
 
 
-## CACHE\_002
+## CACHE_002
 
 
 
@@ -622,7 +622,7 @@ Cache Expired
 
 
 
-## REPO\_001
+## REPO_001
 
 
 
@@ -638,7 +638,7 @@ Repository Unavailable
 
 
 
-## REPO\_002
+## REPO_002
 
 
 
@@ -654,7 +654,7 @@ Profile Download Failed
 
 
 
-## REPO\_003
+## REPO_003
 
 
 
@@ -701,7 +701,7 @@ Remote Source Access Forbidden
 
 
 
-## SEC\_001
+## SEC_001
 
 
 
@@ -717,7 +717,7 @@ Validation Failed
 
 
 
-## SEC\_002
+## SEC_002
 
 
 
@@ -733,7 +733,7 @@ Unauthorized Access
 
 
 
-## SEC\_003
+## SEC_003
 
 
 
@@ -783,7 +783,7 @@ Language Loading Failed
 
 
 
-## SYS\_001
+## SYS_001
 
 
 
@@ -799,7 +799,7 @@ Unexpected Exception
 
 
 
-## SYS\_002
+## SYS_002
 
 
 
@@ -815,7 +815,7 @@ Module Initialization Failed
 
 
 
-## SYS\_003
+## SYS_003
 
 
 
@@ -912,4 +912,3 @@ Every error must have a unique code.
 
 
 # End Of Document
-
