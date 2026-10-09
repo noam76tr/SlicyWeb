@@ -28,15 +28,15 @@ The objective is to provide:
 
 
 
-\- Consistency
+- Consistency
 
-\- Validation
+- Validation
 
-\- Compatibility
+- Compatibility
 
-\- Reliable Recommendations
+- Reliable Recommendations
 
-\- Accurate Limit Detection
+- Accurate Limit Detection
 
 
 
@@ -56,17 +56,17 @@ A printer profile must describe:
 
 
 
-\- Physical dimensions
+- Physical dimensions
 
-\- Motion capabilities
+- Motion capabilities
 
-\- Thermal capabilities
+- Thermal capabilities
 
-\- Extrusion capabilities
+- Extrusion capabilities
 
-\- Cooling capabilities
+- Cooling capabilities
 
-\- Supported materials
+- Supported materials
 
 
 
@@ -229,7 +229,7 @@ Identify the printer.
 
 {
 
- "id": "bambu\_x1c",
+ "id": "bambu_x1c",
 
  "brand": "Bambu Lab",
 
@@ -653,7 +653,7 @@ Defines nozzle support.
 
    "defaultSize": 0.4,
 
-   "supportedSizes": \[
+   "supportedSizes": [
 
      0.2,
 
@@ -897,7 +897,7 @@ Declare officially supported materials.
 
 {
 
- "supportedMaterials": \[
+ "supportedMaterials": [
 
    "PLA",
 
@@ -1632,4 +1632,3 @@ The printer must never be adapted to fit an AI recommendation.
 
 
 # End Of Document
-
