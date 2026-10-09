@@ -171,6 +171,20 @@ State Management:
 
 - Zustand
 
+Build Tool:
+
+- Vite
+
+Testing:
+
+- Vitest
+
+Runtime Validation:
+
+- Zod
+
+Reference: docs/02-architecture/TECH_STACK.md
+
 ---
 
 # Architecture
@@ -179,15 +193,19 @@ Application Flow:
 
 GUI
 ↓
-Application
+Application Layer
 ↓
-Service
+IPC Layer
 ↓
-Repository
+Services
 ↓
-RepositorySync
-↓
-Remote Source
+Repositories
+├── Local Storage / Cache
+└── RepositorySync
+    ↓
+    Remote Sources
+
+Reference: docs/02-architecture/ARCHITECTURE.md
 
 Repository access must remain centralized.
 
@@ -596,14 +614,7 @@ A working feature must never be broken to add a new feature.
 
 Highest Authority Documents:
 
-- PROJECT_SPEC.md
-- ARCHITECTURE.md
-- TECHNICAL_OVERVIEW.md
-- DATA_SCHEMA.md
-- API_SPEC.md
-- SYSTEM_RULES.md
-- DEVELOPMENT_RULES.md
-- DECISIONS.md
+The document authority hierarchy is defined in CLAUDE_READING_PRIORITY.md.
 
 Governance Documents:
 
