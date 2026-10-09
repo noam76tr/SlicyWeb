@@ -2029,31 +2029,31 @@ Profile Repository Browser
 
 
 
-1\. The viewport is the primary focus.
+1. The viewport is the primary focus.
 
 
 
-2\. Important information must remain visible.
+2. Important information must remain visible.
 
 
 
-3\. User actions should require the minimum number of clicks.
+3. User actions should require the minimum number of clicks.
 
 
 
-4\. Every action should provide visual feedback.
+4. Every action should provide visual feedback.
 
 
 
-5\. Changes must never surprise the user.
+5. Changes must never surprise the user.
 
 
 
-6\. Advanced options should be available without overwhelming beginners.
+6. Advanced options should be available without overwhelming beginners.
 
 
 
-7\. AI recommendations should assist, not replace, user decisions.
+7. AI recommendations should assist, not replace, user decisions.
 
 
 
