@@ -1608,23 +1608,23 @@ Used By:
 
 ```text
 
-AI\_ENGINE\_SPEC.md
+AI_ENGINE_SPEC.md
 
 
 
-RECOMMENDATION\_RULES.md
+RECOMMENDATION_RULES.md
 
 
 
-OBJECT\_CLASSIFICATION\_SPEC.md
+OBJECT_CLASSIFICATION_SPEC.md
 
 
 
-SUPPORT\_GENERATION\_SPEC.md
+SUPPORT_GENERATION_SPEC.md
 
 
 
-GCODE\_ENGINE\_SPEC.md
+GCODE_ENGINE_SPEC.md
 
 ```
 
@@ -1647,4 +1647,3 @@ Every print setting must improve the probability of a successful print without v
 
 
 # End Of Document
-
