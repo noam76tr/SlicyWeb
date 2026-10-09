@@ -153,11 +153,11 @@ Technology:
 
 Electron
 
-\+
++
 
 React
 
-\+
++
 
 TypeScript
 
