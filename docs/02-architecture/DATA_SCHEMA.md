@@ -497,7 +497,7 @@ Warnings
 
  "defaultNozzle": 0.4,
 
- "supportedNozzles": \[
+ "supportedNozzles": [
 
    0.2,
 
@@ -526,7 +526,7 @@ Warnings
 
  "extruder": {
 
-   "type": "direct\_drive",
+   "type": "direct_drive",
 
    "count": 1
 
@@ -542,7 +542,7 @@ Possible Values
 
 ```text
 
-direct\_drive
+direct_drive
 
 bowden
 
@@ -652,7 +652,7 @@ unknown
 
  "defaultNozzle": 0.4,
 
- "supportedNozzles": \[],
+ "supportedNozzles": [],
 
  "motion": {},
 
@@ -662,9 +662,9 @@ unknown
 
  "extruder": {},
 
- "supportedMaterials": \[],
+ "supportedMaterials": [],
 
- "supportedFilaments": \[]
+ "supportedFilaments": []
 
 }
 
@@ -934,7 +934,7 @@ Represents an entire workspace.
 
  "scene": {
 
-   "objects": \[],
+   "objects": [],
 
    "printer": {},
 
@@ -1816,7 +1816,7 @@ New fields should be added whenever possible.
 
 Breaking schema changes require:
 
-- PROJECT\_SPEC update
+- PROJECT_SPEC update
 
 - ARCHITECTURE update
 
