@@ -94,7 +94,7 @@ Future formats:
 - STEP
 - AMF
 
-\---
+---
 
 ### 3D Workspace
 
@@ -114,7 +114,7 @@ Features:
 - Transform Controls
 
 
-\---
+---
 
 
 ### Object Management
@@ -136,7 +136,7 @@ Supported operations:
 - Delete
 
 
-\---
+---
 
 
 ### Printer Profiles
@@ -239,7 +239,7 @@ Provides:
 - Print Time Optimization
 
 
-\---
+---
 
 
 ### Cost Estimation
@@ -259,7 +259,7 @@ Calculates:
 
 - Estimated Print Duration
 
-\---
+---
 
 ## Project Architecture
 
@@ -359,7 +359,7 @@ Playwright
 ```
 
 
-\---
+---
 
 
 ## Development Roadmap
