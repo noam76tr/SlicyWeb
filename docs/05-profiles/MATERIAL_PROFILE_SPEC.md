@@ -247,7 +247,7 @@ Identify material.
 
 {
 
-  "id": "pla\_generic",
+  "id": "pla_generic",
 
   "name": "PLA",
 
@@ -1798,4 +1798,3 @@ The material must never be modified to fit an AI recommendation.
 
 
 # End Of Document
-
