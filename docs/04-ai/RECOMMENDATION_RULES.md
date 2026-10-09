@@ -30,19 +30,19 @@ This is the decision layer that transforms:
 
 Printer
 
-\+
++
 
 Material
 
-\+
++
 
 Filament
 
-\+
++
 
 Model Analysis
 
-\+
++
 
 User Constraints
 
@@ -84,27 +84,27 @@ Priority Order:
 
 ```text
 
-1\. Print Success
+1. Print Success
 
 
 
-2\. Reliability
+2. Reliability
 
 
 
-3\. Mechanical Strength
+3. Mechanical Strength
 
 
 
-4\. Surface Quality
+4. Surface Quality
 
 
 
-5\. Print Duration
+5. Print Duration
 
 
 
-6\. Material Savings
+6. Material Savings
 
 ```
 
@@ -1963,7 +1963,7 @@ Unknown Printer
 ↓
 
 
-\-30
+-30
 
 
 ---
@@ -1975,7 +1975,7 @@ Unknown Material
 ↓
 
 
-\-30
+-30
 
 ---
 
@@ -1995,7 +1995,7 @@ Incomplete Analysis
 ↓
 
 
-\-20
+-20
 
 
 ---
