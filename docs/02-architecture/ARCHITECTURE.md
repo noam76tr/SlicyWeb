@@ -941,19 +941,19 @@ Responsibilities:
 
 Model
 
-&#x20;↓
+ ↓
 
 Geometry Analyzer
 
-&#x20;↓
+ ↓
 
 Printability Analyzer
 
-&#x20;↓
+ ↓
 
 Stability Analyzer
 
-&#x20;↓
+ ↓
 
 Result Generator
 
@@ -1012,7 +1012,7 @@ Output:
 Printability Report
 
 
-\---
+---
 
 
 
