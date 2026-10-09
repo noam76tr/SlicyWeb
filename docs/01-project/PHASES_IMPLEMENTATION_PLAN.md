@@ -405,13 +405,13 @@ Verify all documentation exists.
 
 ```text
 
-PROJECT\_SPEC.md
+PROJECT_SPEC.md
 
-SYSTEM\_RULES.md
+SYSTEM_RULES.md
 
 ARCHITECTURE.md
 
-DATA\_SCHEMA.md
+DATA_SCHEMA.md
 
 ...
 
@@ -433,7 +433,7 @@ LICENSE
 
 CONTRIBUTING.md
 
-CODE\_OF\_CONDUCT.md
+CODE_OF_CONDUCT.md
 
 ```
 
