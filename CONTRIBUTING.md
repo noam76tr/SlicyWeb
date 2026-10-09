@@ -159,7 +159,7 @@ Full File Rewrites
 
 unless explicitly required.
 
-\---
+---
 
 # Forbidden Contributions
 
@@ -190,7 +190,7 @@ main
 
 develop
 
-feature/\*
+feature/*
 
 ```
 
@@ -217,7 +217,7 @@ docs/update-roadmap
 ```
 
 
-\---
+---
 
 
 # Commit Message Format
@@ -246,7 +246,7 @@ refactor: simplify scene manager
 ```
 
 
-\---
+---
 
 
 # Commit Types
@@ -443,7 +443,7 @@ Regression Test
 ```
 
 
-\---
+---
 
 
 
@@ -505,7 +505,7 @@ Breaking Changes
 
 
 
-\---
+---
 
 
 
@@ -598,7 +598,7 @@ Logs (if available)
 ```
 
 
-\---
+---
 
 
 # Feature Requests
@@ -620,7 +620,7 @@ Potential Risks
 ```
 
 
-\---
+---
 
 
 # Performance Contributions
@@ -641,7 +641,7 @@ Maintainability
 for small performance gains.
 
 
-\---
+---
 
 
 # Security Contributions
@@ -668,7 +668,7 @@ Unverified Remote Data
 ```
 
 
-\---
+---
 
 
 # Project Goal
@@ -688,4 +688,3 @@ The objective is to build a reliable, maintainable, AI-assisted 3D printing plat
 Make the smallest safe change that solves the problem while preserving stability.
 
 ---
-
