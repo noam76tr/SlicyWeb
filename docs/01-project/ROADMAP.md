@@ -3,7 +3,7 @@
 # PROJECT ROADMAP
 
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -207,11 +207,17 @@ Project Persistence
 
 Phase 12
 
-Advanced Features
+Target Slicer Export
 
 ↓
 
 Phase 13
+
+Advanced Features
+
+↓
+
+Phase 14
 
 Production Release
 
@@ -1423,6 +1429,79 @@ Long-term usability.
 
 # PHASE 12
 
+# TARGET SLICER EXPORT
+
+
+Priority:
+
+
+High
+
+---
+
+
+## Objectives
+
+
+Export the model and its generated print settings to the target slicer selected by the user.
+
+The target slicer generates the G-Code.
+
+---
+
+
+## Deliverables
+
+
+Target Slicer Selection
+
+Settings Mapping (OrcaSlicer, Bambu Studio, PrusaSlicer, Cura)
+
+Export For Slicer (3MF project, INI profile, Cura profile)
+
+Export Validation
+
+Export Report
+
+Export And Generate G-Code (pending decision, DECISIONS.md ADR-024)
+
+---
+
+
+## Dependencies
+
+
+Phase 8 - Recommendation Engine
+
+Phase 11 - Project Persistence
+
+---
+
+
+## Validation Criteria
+
+
+Exported files open without error in each supported slicer.
+
+Every exported setting has the expected value in the target slicer.
+
+Unsupported settings are reported, never guessed.
+
+---
+
+
+## Output
+
+
+Print-ready configuration in the user's slicer.
+
+Reference: SLICER_EXPORT_SPEC.md
+
+---
+
+
+# PHASE 13
+
 # ADVANCED FEATURES
 
 
@@ -1436,7 +1515,7 @@ Future
 ## Possible Features
 
 
-G-Code Generation
+Native G-Code Generation (GCODE_ENGINE_SPEC.md)
 
 Multi Material
 
@@ -1484,7 +1563,7 @@ Professional ecosystem.
 ---
 
 
-# PHASE 13
+# PHASE 14
 
 # PRODUCTION RELEASE
 
@@ -1716,6 +1795,8 @@ Recommendations
 
 v1.0
 
+Target Slicer Export
+
 Stable Release
 
 ```
@@ -1753,6 +1834,7 @@ The project is successful if:
 - Preset recommendations improve workflow
 
 - Undo/Redo operations remain stable
+- Generated settings are exported correctly to the selected target slicer
 
 
 ---
@@ -1793,4 +1875,3 @@ Never start a new phase while the previous phase remains unstable.
 
 
 # End Of Document
-
