@@ -515,6 +515,29 @@ Date:
 
 ---
 
+# VERSION 0.1.8
+
+Release Type:
+Schema Update
+
+Status:
+Completed
+
+Date:
+2026-10-12
+
+## Added
+
+- DATA_SCHEMA.md: Selection Fields in the Project Schema and in the Scene Schema (printer, material, filament and preset are null while no selection has been made)
+- DATA_SCHEMA.md: Known Duplication note (the four selections exist in both the Project Schema and the Scene Schema; source of truth to be defined in a later change)
+
+## Changed
+
+- DATA_SCHEMA.md 2.2.0 (additive; WYPROJ format unchanged, 2.0.0)
+- src/schemas/ProjectSchema.ts: preset, printer, material and filament accept null
+
+---
+
 # VERSION 0.2.0
 
 Release Type:

@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 2.1.0
+Version: 2.2.0
 
 Status: Approved
 
@@ -941,6 +941,22 @@ Each recommendation entry follows the Recommendation Schema.
 
 Integrity constraints are defined in Object Reference Rules.
 
+Selection Fields:
+
+printer, material, filament and preset are null while no selection has been made.
+
+A new project starts with these four fields set to null.
+
+null means "not yet selected". It never means "unknown" or "invalid".
+
+Known Duplication:
+
+The four selections (printer, material, filament, preset) exist both in the Project Schema and in the Scene Schema.
+
+This duplication is known and is not resolved yet.
+
+A later change must define which of the two is the source of truth.
+
 
 
 ---
@@ -972,6 +988,14 @@ Integrity constraints are defined in Object Reference Rules.
 }
 
 ```
+
+Selection Fields:
+
+scene.printer, scene.material, scene.filament and scene.preset are null while no selection has been made.
+
+null means "not yet selected". It never means "unknown" or "invalid".
+
+The same four selections also exist in the Project Schema (see Known Duplication in the Project Schema).
 
 
 
