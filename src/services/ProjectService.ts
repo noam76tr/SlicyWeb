@@ -38,6 +38,8 @@ export class ProjectService {
 
       projectName,
 
+      projectFormat: "WYPROJ",
+
       createdAt: timestamp,
 
       updatedAt: timestamp,
@@ -48,9 +50,17 @@ export class ProjectService {
 
       settings: {},
 
+      analysis: {},
+
       recommendations: {},
 
       preset: null,
+
+      printer: null,
+
+      material: null,
+
+      filament: null,
     };
   }
 
