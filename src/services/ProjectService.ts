@@ -16,12 +16,23 @@
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
  * - Project.ts
+ * - IMPORT_EXPORT_SPEC.md
  */
 
 import type { Project } from "../types/Project";
 import type { Scene } from "../types/Scene";
+import { WYPROJ_FORMAT_VERSION } from "../project/ProjectManager";
+import { ProjectSerializer } from "../project/ProjectSerializer";
+import { ProjectDeserializer } from "../project/ProjectDeserializer";
+import { ProjectValidator } from "../project/ProjectValidator";
 
 export class ProjectService {
+  constructor(
+    private readonly serializer: ProjectSerializer = new ProjectSerializer(),
+    private readonly deserializer: ProjectDeserializer = new ProjectDeserializer(),
+    private readonly validator: ProjectValidator = new ProjectValidator(),
+  ) {}
+
   /**
    * Creates a new project.
    */
@@ -44,7 +55,7 @@ export class ProjectService {
 
       updatedAt: timestamp,
 
-      version: "1.0.0",
+      version: WYPROJ_FORMAT_VERSION,
 
       scene,
 
@@ -80,26 +91,29 @@ export class ProjectService {
 
   /**
    * Serializes a project.
+   * Delegated to the Project layer.
    */
   public serialize(
     project: Project,
   ): string {
-    return JSON.stringify(
+    return this.serializer.serialize(
       project,
-      null,
-      2,
     );
   }
 
   /**
-   * Deserializes a project.
+   * Deserializes and validates a project.
+   * Delegated to the Project layer.
    */
   public deserialize(
     json: string,
   ): Project {
-    return JSON.parse(
-      json,
-    ) as Project;
+    const project =
+      this.deserializer.deserialize(json);
+
+    this.validator.validate(project);
+
+    return project;
   }
 
   /**

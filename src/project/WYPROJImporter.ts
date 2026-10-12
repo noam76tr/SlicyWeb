@@ -15,6 +15,7 @@
  * Based on:
  * - ARCHITECTURE.md
  * - IMPORT_EXPORT_SPEC.md
+ * - DATA_SCHEMA.md
  */
 
 import { promises as fs } from "fs";
@@ -22,7 +23,7 @@ import path from "path";
 
 import { ProjectDeserializer } from "./ProjectDeserializer";
 import { ProjectValidator } from "./ProjectValidator";
-import { ProjectState } from "./ProjectManager";
+import type { Project } from "../types/Project";
 
 export class WYPROJImporter {
   constructor(
@@ -32,7 +33,7 @@ export class WYPROJImporter {
 
   public async importFromFile(
     filePath: string
-  ): Promise<ProjectState> {
+  ): Promise<Project> {
     await this.validateFilePath(filePath);
 
     const rawContent = await fs.readFile(filePath, "utf-8");
@@ -42,7 +43,7 @@ export class WYPROJImporter {
 
   public importFromString(
     content: string
-  ): ProjectState {
+  ): Project {
     const container = JSON.parse(content);
 
     if (container.format !== "WYPROJ") {

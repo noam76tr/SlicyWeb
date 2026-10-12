@@ -15,33 +15,37 @@
  * - ARCHITECTURE.md
  * - PROJECT_SPEC.md
  * - IMPORT_EXPORT_SPEC.md
+ * - DATA_SCHEMA.md
  */
 
-import { ProjectState } from "./ProjectManager";
+import type { Project } from "../types/Project";
 
 export class ProjectSerializer {
-  public serialize(project: ProjectState): string {
+  public serialize(project: Project): string {
     const normalizedProject = this.normalize(project);
 
     return JSON.stringify(normalizedProject, null, 2);
   }
 
-  private normalize(project: ProjectState): ProjectState {
+  /**
+   * Field order of the Project Schema (DATA_SCHEMA.md).
+   */
+  private normalize(project: Project): Project {
     return {
-      metadata: {
-        version: project.metadata.version,
-        createdAt: project.metadata.createdAt,
-        updatedAt: project.metadata.updatedAt,
-        application: project.metadata.application,
-      },
-      scene: project.scene ?? null,
-      printers: project.printers ?? [],
-      materials: project.materials ?? [],
-      filaments: project.filaments ?? [],
-      presets: project.presets ?? [],
-      analysis: project.analysis ?? [],
-      recommendations: project.recommendations ?? [],
-      settings: project.settings ?? {},
+      projectId: project.projectId,
+      projectName: project.projectName,
+      projectFormat: project.projectFormat,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      version: project.version,
+      scene: project.scene,
+      settings: project.settings,
+      analysis: project.analysis,
+      recommendations: project.recommendations,
+      preset: project.preset,
+      printer: project.printer,
+      material: project.material,
+      filament: project.filament,
     };
   }
 }

@@ -15,15 +15,24 @@
  * Based on:
  * - ARCHITECTURE.md
  * - IMPORT_EXPORT_SPEC.md
+ * - DATA_SCHEMA.md
  */
 
-import type { ProjectMetadata, ProjectState } from "./ProjectManager";
+import type { Project } from "../types/Project";
+
+/**
+ * WYPROJ file metadata (IMPORT_EXPORT_SPEC.md, Metadata).
+ */
+export interface WYPROJMetadata {
+  application: string;
+  author?: string;
+}
 
 export interface WYPROJFile {
   format: "WYPROJ";
   version: string;
-  project: ProjectState;
-  metadata: ProjectMetadata;
+  project: Project;
+  metadata: WYPROJMetadata;
 }
 
 export class WYPROJExporter {
@@ -31,13 +40,15 @@ export class WYPROJExporter {
    * Creates a valid WYPROJ container.
    */
   public static create(
-    project: ProjectState
+    project: Project
   ): WYPROJFile {
     return {
       format: "WYPROJ",
-      version: project.metadata.version,
+      version: project.version,
       project,
-      metadata: project.metadata,
+      metadata: {
+        application: "SlicyWeb Smart Slicer",
+      },
     };
   }
 
@@ -45,7 +56,7 @@ export class WYPROJExporter {
    * Serializes a project into WYPROJ JSON format.
    */
   public static serialize(
-    project: ProjectState
+    project: Project
   ): string {
     const wyproj = this.create(project);
 
@@ -56,7 +67,7 @@ export class WYPROJExporter {
    * Creates a downloadable blob.
    */
   public static createBlob(
-    project: ProjectState
+    project: Project
   ): Blob {
     const content = this.serialize(project);
 
@@ -69,15 +80,12 @@ export class WYPROJExporter {
    * Generates a safe WYPROJ filename.
    */
   public static createFileName(
-    project: ProjectState
+    project: Project
   ): string {
-    const projectName =
-      project.metadata.application ?? "project";
-
-    const safeName = projectName
+    const safeName = project.projectName
       .trim()
       .replace(/\s+/g, "_")
-      .replace(/[^a-zA-Z0-9_-]/g, "");
+      .replace(/[^\p{L}\p{N}_-]/gu, "");
 
     return `${safeName || "project"}.wyproj`;
   }
@@ -86,7 +94,7 @@ export class WYPROJExporter {
    * Exports file name and content.
    */
   public static export(
-    project: ProjectState
+    project: Project
   ): {
     fileName: string;
     content: string;

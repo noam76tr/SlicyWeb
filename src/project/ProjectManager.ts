@@ -18,34 +18,25 @@
  * - ARCHITECTURE.md
  * - PROJECT_SPEC.md
  * - IMPORT_EXPORT_SPEC.md
+ * - DATA_SCHEMA.md
  */
 
 import { EventEmitter } from "events";
 import { ProjectSerializer } from "./ProjectSerializer";
 import { ProjectDeserializer } from "./ProjectDeserializer";
 import { ProjectValidator } from "./ProjectValidator";
+import type { Project } from "../types/Project";
+import type { Scene } from "../types/Scene";
+import type { Analysis } from "../types/Analysis";
+import type { Recommendation } from "../types/Recommendation";
 
-export interface ProjectMetadata {
-  version: string;
-  createdAt: string;
-  updatedAt: string;
-  application: string;
-}
-
-export interface ProjectState {
-  metadata: ProjectMetadata;
-  scene?: unknown;
-  printers?: unknown[];
-  materials?: unknown[];
-  filaments?: unknown[];
-  presets?: unknown[];
-  analysis?: unknown[];
-  recommendations?: unknown[];
-  settings?: Record<string, unknown>;
-}
+/**
+ * WYPROJ format version (IMPORT_EXPORT_SPEC.md, Project Schema).
+ */
+export const WYPROJ_FORMAT_VERSION = "2.0.0";
 
 export class ProjectManager extends EventEmitter {
-  private currentProject: ProjectState | null = null;
+  private currentProject: Project | null = null;
 
   constructor(
     private readonly serializer: ProjectSerializer,
@@ -55,24 +46,24 @@ export class ProjectManager extends EventEmitter {
     super();
   }
 
-  public createProject(): ProjectState {
+  public createProject(projectName: string, scene: Scene): Project {
     const timestamp = new Date().toISOString();
 
     this.currentProject = {
-      metadata: {
-        version: "2.0.0",
-        createdAt: timestamp,
-        updatedAt: timestamp,
-        application: "SlicyWeb Smart Slicer",
-      },
-      scene: null,
-      printers: [],
-      materials: [],
-      filaments: [],
-      presets: [],
-      analysis: [],
-      recommendations: [],
+      projectId: crypto.randomUUID(),
+      projectName,
+      projectFormat: "WYPROJ",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      version: WYPROJ_FORMAT_VERSION,
+      scene,
       settings: {},
+      analysis: {},
+      recommendations: {},
+      preset: null,
+      printer: null,
+      material: null,
+      filament: null,
     };
 
     this.emit("project:created", this.currentProject);
@@ -80,7 +71,7 @@ export class ProjectManager extends EventEmitter {
     return this.currentProject;
   }
 
-  public loadProject(projectContent: string): ProjectState {
+  public loadProject(projectContent: string): Project {
     const project = this.deserializer.deserialize(projectContent);
 
     this.validator.validate(project);
@@ -95,7 +86,7 @@ export class ProjectManager extends EventEmitter {
   public saveProject(): string {
     this.ensureProjectLoaded();
 
-    this.currentProject!.metadata.updatedAt = new Date().toISOString();
+    this.currentProject!.updatedAt = new Date().toISOString();
 
     this.validator.validate(this.currentProject!);
 
@@ -114,11 +105,11 @@ export class ProjectManager extends EventEmitter {
     this.emit("project:closed", project);
   }
 
-  public getProject(): ProjectState | null {
+  public getProject(): Project | null {
     return this.currentProject;
   }
 
-  public updateScene(scene: unknown): void {
+  public updateScene(scene: Scene): void {
     this.ensureProjectLoaded();
 
     this.currentProject!.scene = scene;
@@ -128,7 +119,7 @@ export class ProjectManager extends EventEmitter {
     this.emit("project:scene-updated", scene);
   }
 
-  public updateAnalysis(analysis: unknown[]): void {
+  public updateAnalysis(analysis: Record<string, Analysis>): void {
     this.ensureProjectLoaded();
 
     this.currentProject!.analysis = analysis;
@@ -138,7 +129,9 @@ export class ProjectManager extends EventEmitter {
     this.emit("project:analysis-updated", analysis);
   }
 
-  public updateRecommendations(recommendations: unknown[]): void {
+  public updateRecommendations(
+    recommendations: Record<string, Recommendation>
+  ): void {
     this.ensureProjectLoaded();
 
     this.currentProject!.recommendations = recommendations;
@@ -176,7 +169,7 @@ export class ProjectManager extends EventEmitter {
       return;
     }
 
-    this.currentProject.metadata.updatedAt = new Date().toISOString();
+    this.currentProject.updatedAt = new Date().toISOString();
   }
 
   private ensureProjectLoaded(): void {
