@@ -561,6 +561,32 @@ Date:
 
 ---
 
+# VERSION 0.1.10
+
+Release Type:
+Project Format Implementation
+
+Status:
+Completed
+
+Date:
+2026-10-12
+
+## Changed
+
+- src/project/: ProjectState and ProjectMetadata replaced by the Project type (DATA_SCHEMA.md 2.2.0) in ProjectManager, ProjectSerializer, ProjectDeserializer, ProjectValidator, WYPROJImporter and WYPROJExporter
+- src/project/ProjectValidator.ts: validation delegated to ProjectSchema (Project Schema and Object Reference Rules 3 to 5)
+- src/project/WYPROJExporter.ts: the file metadata contains application only (IMPORT_EXPORT_SPEC.md); project identity, version and dates stay in the project
+- src/services/ProjectService.ts: serialization and deserialization delegated to the Project layer (ProjectSerializer, ProjectDeserializer, ProjectValidator)
+
+## Fixed
+
+- WYPROJ files were read and written in the former structure (metadata, printers, materials, filaments, presets, analysis and recommendations as arrays)
+- src/project/WYPROJExporter.ts: the file name is based on projectName instead of the application name; letters of every language are kept
+- src/services/ProjectService.ts: new projects are created with version 2.0.0 (WYPROJ format version) instead of 1.0.0
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
