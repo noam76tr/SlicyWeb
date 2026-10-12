@@ -69,10 +69,10 @@ export const ProjectSchema = z
       z.string(),
       RecommendationEntryReferenceSchema,
     ),
-    preset: SCHEMA_VALUE,
-    printer: SCHEMA_VALUE,
-    material: SCHEMA_VALUE,
-    filament: SCHEMA_VALUE,
+    preset: SCHEMA_VALUE.nullable(),
+    printer: SCHEMA_VALUE.nullable(),
+    material: SCHEMA_VALUE.nullable(),
+    filament: SCHEMA_VALUE.nullable(),
   })
   .superRefine((project, context) => {
     const sceneObjectIds = new Set(
