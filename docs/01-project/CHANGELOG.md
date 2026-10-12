@@ -538,6 +538,29 @@ Date:
 
 ---
 
+# VERSION 0.1.9
+
+Release Type:
+Type Alignment
+
+Status:
+Completed
+
+Date:
+2026-10-12
+
+## Changed
+
+- src/types/Project.ts: Project aligned with the Project Schema of DATA_SCHEMA.md 2.2.0 (projectId, projectName, projectFormat, createdAt, updatedAt, version, scene, settings, analysis and recommendations indexed by objectId, nullable preset, printer, material and filament)
+- src/types/Project.ts: unused ProjectMetadata removed (not part of the Project Schema)
+- src/services/ProjectService.ts: createProject sets projectFormat, analysis, and printer, material and filament to null
+
+## Fixed
+
+- TypeScript errors on the Project type in ProjectService.ts, RecoveryValidator.ts and SessionRestorer.ts (10 errors)
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
