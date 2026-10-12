@@ -1085,6 +1085,7 @@ Until the project owner decides otherwise:
 - PrintPresetSchema
 - AnalysisSchema
 - RecommendationSchema
+- ProjectSchema
 - Zod Validation Rules
 - Runtime Type Validation
 
@@ -1097,6 +1098,7 @@ Until the project owner decides otherwise:
 | `MaterialSchema.ts` | Zod schema for runtime validation of material data |
 | `PrintPresetSchema.ts` | Zod schema for runtime validation of print preset data |
 | `PrinterSchema.ts` | Zod schema for runtime validation of printer data |
+| `ProjectSchema.ts` | Zod schemas for runtime validation of the project (Project Schema) and of the WYPROJ file container (Project File Schema), including Object Reference Rules 3 to 5 (ADR-026) |
 | `RecommendationSchema.ts` | Zod schema for runtime validation of recommendation data |
 
 ---

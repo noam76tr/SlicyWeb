@@ -489,6 +489,32 @@ Date:
 
 ---
 
+# VERSION 0.1.7
+
+Release Type:
+Schema Implementation
+
+Status:
+Completed
+
+Date:
+2026-10-12
+
+## Added
+
+- src/schemas/ProjectSchema.ts: Zod runtime validation for the Project Schema and the Project File Schema (DATA_SCHEMA.md 2.1.0), including Object Reference Rules 3 to 5 (ADR-026)
+
+## Changed
+
+- FILE_STRUCTURE.md: ProjectSchema.ts added to the Schemas section
+- DIRECTORY_PURPOSES.md: ProjectSchema.ts added to src/schemas/
+
+## Fixed
+
+- src/electron/ipc/ProjectIPC.ts: missing module ../../schemas/ProjectSchema (blocked the Electron main process build)
+
+---
+
 # VERSION 0.2.0
 
 Release Type:

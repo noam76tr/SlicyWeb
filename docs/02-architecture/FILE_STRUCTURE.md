@@ -500,6 +500,7 @@ src/schemas/
 ├── MaterialSchema.ts
 ├── PrintPresetSchema.ts
 ├── PrinterSchema.ts
+├── ProjectSchema.ts
 └── RecommendationSchema.ts
 ```
 
