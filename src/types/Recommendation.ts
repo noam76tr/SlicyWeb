@@ -9,6 +9,7 @@
  * - PRINT_SETTINGS_SPEC.md
  */
 
+import type { ResultStatus } from "./Analysis";
 import type { PrintPreset } from "./PrintPreset";
 import type { Warning } from "./Warning";
 
@@ -87,6 +88,14 @@ export interface OptimizationResult {
 }
 
 export interface Recommendation {
+  recommendationId: string;
+
+  objectId: string;
+
+  analysisId: string;
+
+  status: ResultStatus;
+
   recommendedProfile: RecommendedProfile;
 
   printPreset: PrintPreset;

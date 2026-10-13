@@ -48,6 +48,7 @@ export class RecommendationEngine {
       );
 
     return this.recommendationBuilder.build(
+      analysis,
       validatedProfile,
       warnings
     );

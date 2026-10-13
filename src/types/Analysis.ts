@@ -59,7 +59,21 @@ export interface ThinWalls {
   minimumThickness: number;
 }
 
+/**
+ * Status of an analysis or a recommendation (DATA_SCHEMA.md,
+ * Analysis Status Values and Recommendation Status Values).
+ */
+export type ResultStatus =
+  | "generated"
+  | "outdated";
+
 export interface Analysis {
+  analysisId: string;
+
+  objectId: string;
+
+  status: ResultStatus;
+
   dimensions: Dimensions;
 
   geometry: Geometry;

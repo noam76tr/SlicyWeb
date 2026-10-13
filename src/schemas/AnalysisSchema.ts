@@ -10,7 +10,15 @@
 
 import { z } from "zod";
 
+import { ResultStatusSchema } from "./ProjectSchema";
+
 export const AnalysisSchema = z.object({
+  analysisId: z.string().min(1),
+
+  objectId: z.string().min(1),
+
+  status: ResultStatusSchema,
+
   dimensions: z.record(
     z.string(),
     z.unknown()

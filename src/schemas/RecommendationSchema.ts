@@ -10,6 +10,8 @@
 
 import { z } from "zod";
 
+import { ResultStatusSchema } from "./ProjectSchema";
+
 export const QualitySettingsSchema = z.object({
   layerHeight: z.number(),
 
@@ -108,6 +110,14 @@ export const OptimizationSchema =
 
 export const RecommendationSchema =
   z.object({
+    recommendationId: z.string().min(1),
+
+    objectId: z.string().min(1),
+
+    analysisId: z.string().min(1),
+
+    status: ResultStatusSchema,
+
     recommendedProfile:
       RecommendedProfileSchema,
 
