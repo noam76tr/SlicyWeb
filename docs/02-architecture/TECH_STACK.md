@@ -2,7 +2,7 @@
 
 # TECHNOLOGY STACK
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -320,7 +320,7 @@ Version:
 
 
 
-Latest Stable
+18 (major version, ADR-025)
 
 
 
@@ -1051,6 +1051,14 @@ Material
 
 
 
+Version:
+
+
+
+3.25.x, from Phase 1 (ADR-025)
+
+
+
 ---
 
 
@@ -1606,6 +1614,22 @@ GUI Workflows
 
 
 ## Vite
+
+
+
+Electron Integration:
+
+
+
+vite-plugin-electron builds the Electron main process (src/electron/main.ts) and the preload bridge (src/electron/preload.ts) with the renderer (ADR-025).
+
+
+
+Renderer Entry:
+
+
+
+index.html and src/gui/main.tsx
 
 
 

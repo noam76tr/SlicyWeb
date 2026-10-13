@@ -2,7 +2,7 @@
 
 # ARCHITECTURE DECISION MATRIX
 
-Version: 2.1.0
+Version: 2.2.0
 
 Status: Approved
 
@@ -173,6 +173,7 @@ Requires:
 | ADM-019 | Cache First Synchronization | Synchronization | High | Approved |
 | ADM-020 | Governance Controlled Evolution | Governance | Critical | Approved |
 | ADM-021 | Object Scoped Analysis And Recommendations | Data | High | Approved |
+| ADM-022 | Build Tooling And Library Versions | Tooling | Medium | Approved |
 
 ---
 
@@ -643,6 +644,32 @@ Benefits:
 - Verifiable export validation
 - No export of results computed for a previous orientation or scale
 - Backward compatible schema evolution
+
+---
+
+ADM-022
+
+Title:
+
+Build Tooling And Library Versions
+
+Decision:
+
+Vite with vite-plugin-electron builds the renderer, the Electron main process and the preload bridge. React uses major version 18. Zod uses version 3.25.x from Phase 1.
+
+Rationale:
+
+Reproducible tooling, compatible with the existing Zod 3 code.
+
+Reference:
+
+ADR-025 (DECISIONS.md)
+
+Benefits:
+
+- One build configuration
+- Reproducible versions
+- TypeScript checks inside the repository
 
 ---
 

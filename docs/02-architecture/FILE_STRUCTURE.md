@@ -60,6 +60,7 @@ SlicyWeb/
 ├── CODE_OF_CONDUCT.md
 ├── LICENSE.md
 │
+├── index.html
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
@@ -973,9 +974,10 @@ The following items are part of the target structure but do not exist yet in the
 
 They must not be assumed to exist.
 
-Root configuration files (Phase 1 - Project Bootstrap):
+Root configuration files (Phase 1 - Project Bootstrap, ADR-025):
 
 ```text
+index.html
 package.json
 tsconfig.json
 vite.config.ts

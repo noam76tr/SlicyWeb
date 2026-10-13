@@ -658,6 +658,46 @@ Date:
 
 ---
 
+# VERSION 0.1.14
+
+Release Type:
+Documentation
+
+Status:
+Completed
+
+Date:
+2026-10-13
+
+## Added
+
+- CHANGELOG.md: KNOWN ISSUES section (KI-001 to KI-004), inconsistencies left after 0.1.13 (ADR-026)
+
+---
+
+# VERSION 0.1.15
+
+Release Type:
+Architecture Decision
+
+Status:
+Completed
+
+Date:
+2026-10-13
+
+## Added
+
+- DECISIONS.md: ADR-025 Build Tooling And Library Versions (Vite with vite-plugin-electron, React 18, Zod 3.25.x from Phase 1)
+- ARCHITECTURE_DECISION_MATRIX.md 2.2.0: ADM-022 (reference to ADR-025)
+
+## Changed
+
+- TECH_STACK.md 2.1.0: React version 18 instead of "Latest Stable"; Zod version 3.25.x; Vite builds the Electron main process and the preload bridge through vite-plugin-electron; renderer entry index.html and src/gui/main.tsx
+- FILE_STRUCTURE.md: index.html added to the root structure and to the planned root files (Phase 1)
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -1401,6 +1441,103 @@ Required:
 
 ```
 
+
+
+---
+
+
+
+# KNOWN ISSUES
+
+
+Known inconsistencies that are not resolved yet.
+
+An entry is removed when the version that resolves it is released; that version records the fix.
+
+
+Template:
+
+
+
+```text
+
+Identifier:
+
+Since:
+
+Affected Module:
+
+Issue:
+
+Resolve Before:
+
+Planned Resolution:
+
+```
+
+
+---
+
+
+Identifier: KI-001
+
+Since: 0.1.13
+
+Affected Module: src/types/Recommendation.ts, src/schemas/RecommendationSchema.ts, src/recommendation_engine/
+
+Issue: The Recommendation type differs from the Recommendation Schema (DATA_SCHEMA.md). Missing fields: printerId, materialId, filamentId, classification, preset, createdAt. Fields not in the schema: printPreset, optimization.
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
+
+Planned Resolution: First lot after the tooling (ADR-025)
+
+
+---
+
+
+Identifier: KI-002
+
+Since: 0.1.13
+
+Affected Module: src/schemas/RecommendationSchema.ts
+
+Issue: printPreset is validated as a string, while the Recommendation type declares it as a PrintPreset object.
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
+
+Planned Resolution: With KI-001
+
+
+---
+
+
+Identifier: KI-003
+
+Since: 0.1.13
+
+Affected Module: src/schemas/ProjectSchema.ts, src/project/ProjectValidator.ts
+
+Issue: At project load, analysis and recommendation entries are validated only for their reference fields (analysisId, objectId, recommendationId, status). Their full content is not validated: AnalysisSchema and RecommendationSchema are not applied.
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
+
+Planned Resolution: After KI-001 and KI-002, once RecommendationSchema matches DATA_SCHEMA.md
+
+
+---
+
+
+Identifier: KI-004
+
+Since: 0.1.13
+
+Affected Module: src/state/analysisStore.ts, src/state/recommendationStore.ts, scene and transform operations
+
+Issue: Object Reference Rules 6 to 9 (ADR-026) are not triggered by scene operations. The store actions exist (removal, outdated status), but object removal, duplication, rotation and scaling do not call them. Rule 9 (a recomputed or outdated analysis makes the recommendation of the same object outdated) has no link between the two stores.
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12. Mandatory: export relies on Object Reference Rule 10 (SLICER_EXPORT_SPEC.md, error EXP_003), which is only reliable when rules 6 to 9 are applied.
+
+Planned Resolution: Lot to be scheduled before Phase 14
 
 
 ---

@@ -1800,6 +1800,82 @@ Reason:
 
 ---
 
+# ADR-025
+
+Title: Build Tooling And Library Versions
+
+Status: Accepted
+
+Date: 2026-10-13
+
+## Context
+
+TECH_STACK.md selects Vite as build tool, React, Electron and Zod.
+
+No build or configuration file exists yet (Phase 1 - Project Bootstrap). TypeScript checks are run outside the repository.
+
+The Electron main process and preload bridge are located in src/electron/ (main.ts, preload.ts). The renderer is located in src/gui/.
+
+The React version is "Latest Stable" in TECH_STACK.md, which does not identify a reproducible version.
+
+The validation code uses the Zod 3 API (.passthrough(), z.ZodIssueCode) in src/schemas/.
+
+## Decision
+
+Build Tool:
+
+- Vite builds the renderer.
+- vite-plugin-electron builds the Electron main process (src/electron/main.ts) and the preload bridge (src/electron/preload.ts) with the same Vite configuration.
+- Renderer entry: index.html at the repository root, and src/gui/main.tsx.
+
+Library Versions:
+
+- React: major version 18.
+- Zod: 3.25.x, installed from Phase 1.
+
+A change of the major version of one of these tools is recorded in this document before implementation.
+
+## Consequences
+
+Advantages:
+
+- One build configuration for the renderer, the main process and the preload bridge
+- Reproducible versions
+- TypeScript checks run inside the repository once the tooling exists (npm run typecheck)
+- The existing Zod 3 code compiles without change
+
+Disadvantages:
+
+- React 18 is not the latest major version
+- Moving to Zod 4 requires changes in src/schemas/
+
+## Alternatives Considered
+
+React "Latest Stable"
+
+Rejected
+
+Reason:
+
+- Not reproducible
+
+Zod 4
+
+Rejected for the current scope
+
+Reason:
+
+- The existing code uses the Zod 3 API
+
+## Related Documents
+
+- TECH_STACK.md
+- FILE_STRUCTURE.md
+- PHASES_IMPLEMENTATION_PLAN.md (Phase 1)
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-022)
+
+---
+
 # ADR-026
 
 Title: Object-Scoped Analysis And Recommendations
