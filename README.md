@@ -592,6 +592,15 @@ npm run lint           Check the code with ESLint
 npm run format:check   Check the formatting with Prettier
 ```
 
+The commands work on Windows (PowerShell or Command Prompt), macOS and Linux.
+
+On Windows, if PowerShell refuses to run npm because script execution is disabled (npm.ps1), use npm.cmd instead of npm, for example:
+
+```text
+npm.cmd install
+npm.cmd run dev
+```
+
 Tooling decisions: DECISIONS.md (ADR-025).
 
 ---

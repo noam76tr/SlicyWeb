@@ -734,6 +734,28 @@ Date:
 
 ---
 
+# VERSION 0.1.17
+
+Release Type:
+Bug Fix
+
+Status:
+Completed
+
+Date:
+2026-10-13
+
+## Fixed
+
+- prettier.config.js: endOfLine "auto" instead of "lf"; with Git for Windows (core.autocrlf), files checked out with CRLF were reported by format:check
+- .env.example: file missing from the repository (not uploaded with 0.1.16)
+
+## Added
+
+- README.md: Windows note (npm.cmd when PowerShell blocks npm.ps1)
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
