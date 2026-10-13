@@ -606,6 +606,27 @@ Date:
 
 ---
 
+# VERSION 0.1.12
+
+Release Type:
+Refactor
+
+Status:
+Completed
+
+Date:
+2026-10-13
+
+## Changed
+
+- src/services/ProjectService.ts: createProject delegated to ProjectManager.createProject; ProjectManager is the only project creator (CLAUDE.md, Project Management Rule)
+
+## Removed
+
+- src/services/ProjectService.ts: duplicate construction of the Project object
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
