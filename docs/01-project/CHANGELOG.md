@@ -627,6 +627,37 @@ Date:
 
 ---
 
+# VERSION 0.1.13
+
+Release Type:
+Schema Implementation
+
+Status:
+Completed
+
+Date:
+2026-10-13
+
+## Added
+
+- src/types/Analysis.ts: analysisId, objectId and status (Complete Analysis Schema, ADR-026); ResultStatus type (generated, outdated)
+- src/types/Recommendation.ts: recommendationId, objectId, analysisId and status (Recommendation Schema, ADR-026)
+- src/schemas/AnalysisSchema.ts: analysisId, objectId and status
+- src/schemas/RecommendationSchema.ts: recommendationId, objectId, analysisId and status
+
+## Changed
+
+- src/recommendation_engine/RecommendationBuilder.ts: the recommendation references the object and the analysis it is built from (Object Reference Rules 2 and 5); status is generated
+- src/recommendation_engine/RecommendationEngine.ts: the analysis is passed to RecommendationBuilder
+- src/state/analysisStore.ts: one analysis per object, indexed by objectId; removal (Object Reference Rule 6) and outdated status (Object Reference Rule 8)
+- src/state/recommendationStore.ts: one recommendation per object, indexed by objectId; removal (Object Reference Rule 6) and outdated status (Object Reference Rules 8 and 9)
+
+## Fixed
+
+- Projects containing analyses or recommendations were rejected at load: the entries had no analysisId, objectId or status
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
