@@ -35,6 +35,19 @@ export interface WYPROJFile {
   metadata: WYPROJMetadata;
 }
 
+/**
+ * Maximum file name length, in code points, without the extension.
+ * 60 code points stay within 255 bytes on every file system,
+ * including with 4-byte characters.
+ */
+const MAX_FILE_NAME_LENGTH = 60;
+
+/**
+ * Device names reserved by Windows, with or without an extension.
+ */
+const WINDOWS_RESERVED_NAMES =
+  /^(CON|PRN|AUX|NUL|COM[0-9¹²³]|LPT[0-9¹²³])$/i;
+
 export class WYPROJExporter {
   /**
    * Creates a valid WYPROJ container.
@@ -78,16 +91,34 @@ export class WYPROJExporter {
 
   /**
    * Generates a safe WYPROJ filename.
+   *
+   * Keeps letters (with their accents and vowel marks) and digits of
+   * every language, "_" and "-". Everything else is removed, including
+   * the characters forbidden by Windows, macOS and Linux
+   * (/ \ : * ? " < > |), control characters and direction marks.
    */
   public static createFileName(
     project: Project
   ): string {
-    const safeName = project.projectName
+    const cleanName = project.projectName
+      .normalize("NFC")
       .trim()
       .replace(/\s+/g, "_")
-      .replace(/[^\p{L}\p{N}_-]/gu, "");
+      .replace(/[^\p{L}\p{M}\p{N}_-]/gu, "");
 
-    return `${safeName || "project"}.wyproj`;
+    const safeName = Array.from(cleanName)
+      .slice(0, MAX_FILE_NAME_LENGTH)
+      .join("");
+
+    if (!safeName) {
+      return "project.wyproj";
+    }
+
+    if (WINDOWS_RESERVED_NAMES.test(safeName)) {
+      return `_${safeName}.wyproj`;
+    }
+
+    return `${safeName}.wyproj`;
   }
 
   /**
