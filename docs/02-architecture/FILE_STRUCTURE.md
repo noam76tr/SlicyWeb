@@ -63,7 +63,7 @@ SlicyWeb/
 ├── index.html
 ├── package.json
 ├── tsconfig.json
-├── vite.config.ts
+├── vite.config.mts
 ├── electron-builder.json
 ├── eslint.config.js
 ├── prettier.config.js

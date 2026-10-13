@@ -67,7 +67,7 @@ Every file should be placed in the directory that matches its responsibility.
 |------|------|
 | `package.json` | Dependencies, versions and npm scripts (dev, build, start, typecheck, lint, format) |
 | `tsconfig.json` | TypeScript configuration, strict mode |
-| `vite.config.ts` | Builds the renderer (dist/renderer/), the Electron main process and the preload bridge (dist/electron/) |
+| `vite.config.mts` | Builds the renderer (dist/renderer/), the Electron main process and the preload bridge (dist/electron/) |
 | `index.html` | Renderer HTML page, loads src/gui/main.tsx |
 | `eslint.config.js` | ESLint configuration |
 | `prettier.config.js` | Prettier configuration |

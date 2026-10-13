@@ -14,9 +14,9 @@
     "build": "vite build",
     "start": "electron .",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src vite.config.ts --max-warnings 0",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\" vite.config.ts",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx}\" vite.config.ts"
+    "lint": "eslint src vite.config.mts --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" vite.config.mts",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\" vite.config.mts"
   },
   "dependencies": {
     "react": "^18.3.1",

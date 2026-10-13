@@ -756,6 +756,28 @@ Date:
 
 ---
 
+# VERSION 0.1.18
+
+Release Type:
+Tooling
+
+Status:
+Completed
+
+Date:
+2026-10-13
+
+## Changed
+
+- vite.config.ts renamed to vite.config.mts: the configuration is loaded as an ES module; Vite no longer reports "ESM syntax in a file loaded as CommonJS". package.json stays without "type": "module" (ADR-025)
+- package.json (lint, format, format:check), tsconfig.json, FILE_STRUCTURE.md and DIRECTORY_PURPOSES.md: vite.config.mts
+
+## Added
+
+- KNOWN ISSUES: KI-005 (10 TypeScript errors, 5 ESLint errors, decisions for MaterialOptimizer and ProjectDeserializer)
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -1596,6 +1618,28 @@ Issue: Object Reference Rules 6 to 9 (ADR-026) are not triggered by scene operat
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12. Mandatory: export relies on Object Reference Rule 10 (SLICER_EXPORT_SPEC.md, error EXP_003), which is only reliable when rules 6 to 9 are applied.
 
 Planned Resolution: Lot to be scheduled before Phase 14
+
+
+---
+
+
+Identifier: KI-005
+
+Since: 0.1.16
+
+Affected Module: classification_engine, cost_engine, gui/panels, i18n, notifications, optimization_engine, preset_engine, electron/ipc, project, scene
+
+Issue: npm run typecheck reports 10 errors and npm run lint reports 5 errors.
+TypeScript: ClassificationEngine.ts:36, CostCalculator.ts:47, RecommendationPanel.tsx:56, LocalizationService.ts:35, NotificationFactory.ts:36, optimization_engine/ClassificationEngine.ts:65, OptimizationEngine.ts:56 and :77, PresetManager.ts:34 and :83.
+ESLint: ConfidenceScorer.ts:44 (category unused), ProjectIPC.ts:15 (Project unused), MaterialOptimizer.ts:31 (material unused), ProjectDeserializer.ts:31 (no cause on the rethrown error), SceneManager.ts:23 (Object3D unused).
+
+Decisions:
+- MaterialOptimizer and OptimizationEngine are fixed together. OptimizationEngine expects a material reduction percentage, while MaterialOptimizer.optimize returns a profile. The material parameter is removed from MaterialOptimizer.optimize because no documented rule uses the material for infill or material reduction (infill depends on the object category: RECOMMENDATION_RULES.md, AI_ENGINE_SPEC.md) and OptimizationEngine has no material input. OptimizationEngine receives the recommended profile and computes the reduction with optimizeInfillDensity and estimateMaterialReduction. validateMaterialSettings keeps its material parameter.
+- ProjectDeserializer: the rethrown error keeps the original error as cause.
+
+Resolve Before: Closure of Phase 1 (TECH_STACK.md, Linting Rules: no errors, no warnings)
+
+Planned Resolution: Lot after KI-001 and KI-002
 
 
 ---
