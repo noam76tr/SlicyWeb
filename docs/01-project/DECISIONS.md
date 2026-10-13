@@ -1820,6 +1820,16 @@ The React version is "Latest Stable" in TECH_STACK.md, which does not identify a
 
 The validation code uses the Zod 3 API (.passthrough(), z.ZodIssueCode) in src/schemas/.
 
+The Electron version is not defined in TECH_STACK.md.
+
+Electron supports the three latest stable major versions. On 2026-10-13, the supported versions are (planned end of support from the Electron release schedule):
+
+- Electron 42: 2026-10-20
+- Electron 43: 2027-01-05
+- Electron 44: 2027-03-02 (latest stable, 44.7.0)
+
+Electron 45 is in beta; its stable release is planned for 2026-10-20.
+
 ## Decision
 
 Build Tool:
@@ -1832,6 +1842,11 @@ Library Versions:
 
 - React: major version 18.
 - Zod: 3.25.x, installed from Phase 1.
+- Electron: major version 44 (44.7.0 or a later 44.x patch release).
+
+Electron 44 is the latest stable major version and the supported version with the longest remaining support. It embeds Node.js 24 and Chromium 152.
+
+Before the end of support of Electron 44 (planned 2027-03-02), the project moves to a supported major version.
 
 A change of the major version of one of these tools is recorded in this document before implementation.
 
@@ -1848,6 +1863,7 @@ Disadvantages:
 
 - React 18 is not the latest major version
 - Moving to Zod 4 requires changes in src/schemas/
+- Electron 44 requires a major version upgrade before 2027-03-02
 
 ## Alternatives Considered
 
@@ -1866,6 +1882,22 @@ Rejected for the current scope
 Reason:
 
 - The existing code uses the Zod 3 API
+
+Electron 45
+
+Rejected
+
+Reason:
+
+- Beta version on the date of the decision
+
+Electron 43
+
+Rejected
+
+Reason:
+
+- Support ends about two months before Electron 44
 
 ## Related Documents
 

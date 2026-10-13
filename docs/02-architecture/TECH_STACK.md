@@ -485,6 +485,14 @@ Use local component state instead.
 
 
 
+Version:
+
+
+
+44 (major version, ADR-025)
+
+
+
 ---
 
 

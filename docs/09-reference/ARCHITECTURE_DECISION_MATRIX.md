@@ -655,7 +655,7 @@ Build Tooling And Library Versions
 
 Decision:
 
-Vite with vite-plugin-electron builds the renderer, the Electron main process and the preload bridge. React uses major version 18. Zod uses version 3.25.x from Phase 1.
+Vite with vite-plugin-electron builds the renderer, the Electron main process and the preload bridge. React uses major version 18. Zod uses version 3.25.x from Phase 1. Electron uses major version 44.
 
 Rationale:
 

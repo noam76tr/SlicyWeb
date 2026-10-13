@@ -373,6 +373,7 @@ src/electron/
 ```text
 src/gui/
 
+├── main.tsx                   = Renderer entry point (ADR-025)
 ├── App.tsx
 ├── MainLayout.tsx
 ├── viewport/
@@ -977,15 +978,10 @@ They must not be assumed to exist.
 Root configuration files (Phase 1 - Project Bootstrap, ADR-025):
 
 ```text
-index.html
-package.json
-tsconfig.json
-vite.config.ts
 electron-builder.json
-eslint.config.js
-prettier.config.js
-.env.example
 ```
+
+Application packaging is not configured yet: no packaging setting (application identifier, product name, targets) is documented.
 
 GitHub workflows:
 

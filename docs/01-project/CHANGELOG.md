@@ -698,6 +698,42 @@ Date:
 
 ---
 
+# VERSION 0.1.16
+
+Release Type:
+Project Bootstrap
+
+Status:
+In Progress
+
+Date:
+2026-10-13
+
+## Added
+
+- package.json: dependencies, versions and scripts (dev, build, start, typecheck, lint, format, format:check)
+- tsconfig.json: TypeScript strict mode
+- vite.config.ts: renderer build (dist/renderer/), Electron main process and preload bridge build (dist/electron/) with vite-plugin-electron
+- index.html and src/gui/main.tsx: renderer entry point
+- eslint.config.js and prettier.config.js
+- .env.example: no environment variable required
+- README.md: Development section (requirements and commands)
+- CONTRIBUTING.md: check commands in Coding Standards
+- DIRECTORY_PURPOSES.md: Root Configuration Files; src/gui/main.tsx
+
+## Changed
+
+- DECISIONS.md: ADR-025 defines the Electron version (major version 44)
+- ARCHITECTURE_DECISION_MATRIX.md: ADM-022 includes the Electron version
+- TECH_STACK.md: Electron version 44
+- FILE_STRUCTURE.md: created root files removed from Planned Items; src/gui/main.tsx added to the GUI Layer
+
+## Validation Requirements
+
+- Phase 1 validation (Application Starts, Electron Works, React Works, Build Successful) is pending: it requires npm install, npm run dev and npm run build on a development machine
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
