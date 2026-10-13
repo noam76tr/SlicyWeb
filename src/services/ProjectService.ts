@@ -21,7 +21,7 @@
 
 import type { Project } from "../types/Project";
 import type { Scene } from "../types/Scene";
-import { WYPROJ_FORMAT_VERSION } from "../project/ProjectManager";
+import { ProjectManager } from "../project/ProjectManager";
 import { ProjectSerializer } from "../project/ProjectSerializer";
 import { ProjectDeserializer } from "../project/ProjectDeserializer";
 import { ProjectValidator } from "../project/ProjectValidator";
@@ -31,48 +31,25 @@ export class ProjectService {
     private readonly serializer: ProjectSerializer = new ProjectSerializer(),
     private readonly deserializer: ProjectDeserializer = new ProjectDeserializer(),
     private readonly validator: ProjectValidator = new ProjectValidator(),
+    private readonly projectManager: ProjectManager = new ProjectManager(
+      serializer,
+      deserializer,
+      validator,
+    ),
   ) {}
 
   /**
    * Creates a new project.
+   * Delegated to ProjectManager, the only project creator.
    */
   public createProject(
     projectName: string,
     scene: Scene,
   ): Project {
-    const timestamp =
-      new Date().toISOString();
-
-    return {
-      projectId:
-        crypto.randomUUID(),
-
+    return this.projectManager.createProject(
       projectName,
-
-      projectFormat: "WYPROJ",
-
-      createdAt: timestamp,
-
-      updatedAt: timestamp,
-
-      version: WYPROJ_FORMAT_VERSION,
-
       scene,
-
-      settings: {},
-
-      analysis: {},
-
-      recommendations: {},
-
-      preset: null,
-
-      printer: null,
-
-      material: null,
-
-      filament: null,
-    };
+    );
   }
 
   /**
