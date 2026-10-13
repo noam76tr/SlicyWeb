@@ -587,6 +587,25 @@ Date:
 
 ---
 
+# VERSION 0.1.11
+
+Release Type:
+Bug Fix
+
+Status:
+Completed
+
+Date:
+2026-10-12
+
+## Fixed
+
+- src/project/WYPROJExporter.ts: file name keeps accents and vowel marks (Unicode normalization NFC, combining marks kept)
+- src/project/WYPROJExporter.ts: Windows reserved names (CON, PRN, AUX, NUL, COM1 to COM9, LPT1 to LPT9) are prefixed with "_"
+- src/project/WYPROJExporter.ts: file name limited to 60 characters before the extension
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
