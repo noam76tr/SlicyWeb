@@ -571,6 +571,31 @@ Functional workflows are not yet complete.
 
 ---
 
+## Development
+
+Requirements:
+
+```text
+Node.js 20.19+, 22.13+ or 24+
+npm
+```
+
+Commands:
+
+```text
+npm install            Install dependencies
+npm run dev            Start the application in development mode
+npm run build          Build the renderer and the Electron files into dist/
+npm start              Start the built application
+npm run typecheck      Check TypeScript types
+npm run lint           Check the code with ESLint
+npm run format:check   Check the formatting with Prettier
+```
+
+Tooling decisions: DECISIONS.md (ADR-025).
+
+---
+
 ## Long-Term Vision
 
 Build a professional AI-powered ecosystem capable of:
