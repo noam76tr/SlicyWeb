@@ -10,9 +10,11 @@
 
 import { z } from "zod";
 
-import { AnalysisClassificationSchema } from "./AnalysisSchema";
+import {
+  AnalysisClassificationSchema,
+  ResultStatusSchema
+} from "./AnalysisSchema";
 import { PresetSchema } from "./PrintPresetSchema";
-import { ResultStatusSchema } from "./ProjectSchema";
 
 export const QualitySettingsSchema = z.object({
   layerHeight: z.number(),

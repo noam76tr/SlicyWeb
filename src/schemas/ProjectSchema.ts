@@ -9,9 +9,8 @@
  * - The WYPROJ file container (Project File Schema)
  * - Object Reference Rules 3, 4 and 5 (ADR-026)
  *
- * Analysis and recommendation entries are validated here only for
- * their reference fields. Their full content is validated by
- * AnalysisSchema and RecommendationSchema.
+ * Analysis and recommendation entries are validated in full
+ * with AnalysisSchema and RecommendationSchema (KI-003).
  *
  * Based on:
  * - DATA_SCHEMA.md
@@ -21,9 +20,12 @@
 
 import { z } from "zod";
 
-const SCHEMA_VALUE = z.record(z.string(), z.unknown());
+import { AnalysisSchema, ResultStatusSchema } from "./AnalysisSchema";
+import { RecommendationSchema } from "./RecommendationSchema";
 
-export const ResultStatusSchema = z.enum(["generated", "outdated"]);
+export { ResultStatusSchema };
+
+const SCHEMA_VALUE = z.record(z.string(), z.unknown());
 
 export const SceneObjectReferenceSchema = z
   .object({
@@ -37,23 +39,6 @@ export const ProjectSceneSchema = z
   })
   .passthrough();
 
-export const AnalysisEntryReferenceSchema = z
-  .object({
-    analysisId: z.string().min(1),
-    objectId: z.string().min(1),
-    status: ResultStatusSchema,
-  })
-  .passthrough();
-
-export const RecommendationEntryReferenceSchema = z
-  .object({
-    recommendationId: z.string().min(1),
-    objectId: z.string().min(1),
-    analysisId: z.string().min(1),
-    status: ResultStatusSchema,
-  })
-  .passthrough();
-
 export const ProjectSchema = z
   .object({
     projectId: z.string().min(1),
@@ -64,10 +49,10 @@ export const ProjectSchema = z
     version: z.string().min(1),
     scene: ProjectSceneSchema,
     settings: SCHEMA_VALUE,
-    analysis: z.record(z.string(), AnalysisEntryReferenceSchema),
+    analysis: z.record(z.string(), AnalysisSchema),
     recommendations: z.record(
       z.string(),
-      RecommendationEntryReferenceSchema,
+      RecommendationSchema,
     ),
     preset: SCHEMA_VALUE.nullable(),
     printer: SCHEMA_VALUE.nullable(),

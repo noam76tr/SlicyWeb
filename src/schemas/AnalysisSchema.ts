@@ -12,7 +12,11 @@ import { z } from "zod";
 
 import { CLASSIFICATION_CATEGORIES } from "../constants/AnalysisConstants";
 
-import { ResultStatusSchema } from "./ProjectSchema";
+/**
+ * Status of an analysis or a recommendation (DATA_SCHEMA.md,
+ * Analysis Status Values and Recommendation Status Values).
+ */
+export const ResultStatusSchema = z.enum(["generated", "outdated"]);
 
 /**
  * Object Classification Schema (DATA_SCHEMA.md).
