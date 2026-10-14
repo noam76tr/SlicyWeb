@@ -935,6 +935,38 @@ Date:
 
 ---
 
+# VERSION 0.1.24
+
+Release Type:
+Project Format Update
+
+Status:
+Completed
+
+Date:
+2026-10-14
+
+## Changed
+
+- WYPROJ format version 3.0.0 (ADR-027): DATA_SCHEMA.md Project File Schema (WYPROJ Version Rule), IMPORT_EXPORT_SPEC.md 3.0.0 (Project Schema example, Compatibility Policy exception), PROJECT_SPEC.md (container example)
+- src/constants/ApplicationConstants.ts: WYPROJ_FORMAT_VERSION 3.0.0 (moved from src/project/ProjectManager.ts, which re-exports it)
+- src/project/ProjectValidator.ts: validateFormatVersion; a project of another version, or without a version, is refused with PROJ_003 Project Version Mismatch and a message giving the found and supported versions
+- src/project/WYPROJImporter.ts: the version of the file container is checked before the project is read
+- TERMINOLOGY.md: Quality Preset renamed High Quality Preset; reference to the preset categories of PRINT_PRESETS_SPEC.md
+- DIRECTORY_PURPOSES.md: data/presets/ examples use the preset categories of PRINT_PRESETS_SPEC.md
+
+## Added
+
+- DECISIONS.md: ADR-027 WYPROJ Format Version 3.0.0
+- ARCHITECTURE_DECISION_MATRIX.md 2.3.0: ADM-023 (reference to ADR-027)
+- KNOWN ISSUES: KI-009 (fixed speeds above the preset print speed), KI-010 (recommendation confidence ignores the classification confidence), KI-011 (ClassificationValidator not called; confidence level not displayed), KI-012 (supports.type value table per target slicer)
+
+## Breaking Changes
+
+- WYPROJ 2.0.0 files are refused at load. No migration: no 2.0.0 file was distributed.
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -1726,7 +1758,7 @@ Issue: At project load, analysis and recommendation entries are validated only f
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
-Planned Resolution: Next lot after 0.1.23
+Planned Resolution: Next lot after 0.1.24
 
 
 ---
@@ -1754,7 +1786,7 @@ Since: 0.1.19
 
 Affected Module: docs/02-architecture/API_SPEC.md
 
-Issue: The response of Generate Recommendation differs from the Recommendation Schema (DATA_SCHEMA.md): it uses printPreset instead of preset and omits printerId, materialId, filamentId, classification and createdAt. API_SPEC.md is still 2.1.0, while the change of this response to one recommendation per object is non-additive (VERSIONING_POLICY.md: 3.0.0). DATA_SCHEMA.md 3.0.0 changes the allowed classification and preset category values stored in WYPROJ files; the WYPROJ format version (2.0.0) is unchanged and requires a decision.
+Issue: The response of Generate Recommendation differs from the Recommendation Schema (DATA_SCHEMA.md): it uses printPreset instead of preset and omits printerId, materialId, filamentId, classification and createdAt. API_SPEC.md is still 2.1.0, while the change of this response to one recommendation per object is non-additive (VERSIONING_POLICY.md: 3.0.0).
 
 Resolve Before: Implementation of the Recommendation API
 
@@ -1775,6 +1807,70 @@ Issue: The recommended profile is initialized from preset.settings and adjusted 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
 Planned Resolution: With Technical Phase 10 (Classification and Recommendation Engine)
+
+
+---
+
+
+Identifier: KI-009
+
+Since: 0.1.23
+
+Affected Module: src/recommendation_engine/DecisionEngine.ts
+
+Issue: The wall and infill speeds of the recommended profile are fixed engine defaults (outerWall 40, innerWall 80, infill 120) and may exceed the print speed of the preset (preset.settings.printSpeed).
+
+Planned Resolution: Limit speed.outerWall, speed.innerWall and speed.infill to preset.settings.printSpeed.
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
+
+
+---
+
+
+Identifier: KI-010
+
+Since: 0.1.23
+
+Affected Module: src/recommendation_engine/DecisionEngine.ts, src/recommendation_engine/RecommendationBuilder.ts
+
+Issue: The confidenceScore of the recommendation is the confidenceScore of the preset only. It does not take the classification confidence (classification.confidenceScore) into account.
+
+Planned Resolution: Define the combination rule in RECOMMENDATION_RULES.md or AI_ENGINE_SPEC.md (decision required), then apply it.
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
+
+
+---
+
+
+Identifier: KI-011
+
+Since: 0.1.23
+
+Affected Module: src/classification_engine/ClassificationValidator.ts, src/optimization_engine/ClassificationValidator.ts, src/gui/panels/AnalysisPanel.tsx, src/services/AnalysisService.ts
+
+Issue: ClassificationValidator is not called anywhere since the validated field was removed (0.1.23). AnalysisPanel no longer displays the confidence level: no component passes the confidenceLevel property (AnalysisService.getConfidenceLevel).
+
+Planned Resolution: Call ClassificationValidator in the classification workflow; pass the confidence level to AnalysisPanel when the panel is connected.
+
+Resolve Before: Technical Phase 3 - GUI Foundation (panel); Technical Phase 10 - Classification and Recommendation Engine (validator)
+
+
+---
+
+
+Identifier: KI-012
+
+Since: 0.1.23
+
+Affected Module: docs/02-architecture/SLICER_EXPORT_SPEC.md, src/recommendation_engine/DecisionEngine.ts
+
+Issue: The support type "organic" is forced when overhangs are detected and the preset has no supports. SLICER_EXPORT_SPEC.md has no value table for supports.type per target slicer (Value Conversion Rules, Enumerations); Cura has no "organic" support type (Cura equivalent: tree).
+
+Planned Resolution: Add the supports.type value table per target slicer to SLICER_EXPORT_SPEC.md (Cura: organic = tree).
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
 
 ---

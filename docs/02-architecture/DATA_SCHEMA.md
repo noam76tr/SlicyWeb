@@ -883,11 +883,19 @@ JSON
 ```json
 {
   "format": "WYPROJ",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "project": {},
   "metadata": {}
 }
 ```
+
+WYPROJ Version Rule:
+
+The WYPROJ format version is 3.0.0 (format and project.version).
+
+A file with another version, or without a version, is refused at load (ERROR_CODES_SPEC.md, PROJ_003 Project Version Mismatch). The error message gives the version of the file and the supported version.
+
+No migration exists from WYPROJ 2.0.0: no 2.0.0 file was distributed.
 
 ---
 

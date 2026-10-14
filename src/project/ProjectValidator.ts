@@ -3,6 +3,7 @@
  * Project Validator
  *
  * Responsible for:
+ * - WYPROJ format version (WYPROJ Version Rule)
  * - Project structure validation (Project Schema)
  * - Object Reference Rules 3 to 5 (ADR-026)
  * - Date format validation
@@ -17,17 +18,39 @@
  * - DATA_SCHEMA.md
  */
 
+import { WYPROJ_FORMAT_VERSION } from "../constants/ApplicationConstants";
 import { ProjectSchema } from "../schemas/ProjectSchema";
 import type { Project } from "../types/Project";
 
 export class ProjectValidator {
   public validate(project: Project): boolean {
     this.validateProject(project);
+    this.validateFormatVersion(project.version);
     this.validateSchema(project);
     this.validateDate(project.createdAt, "createdAt");
     this.validateDate(project.updatedAt, "updatedAt");
 
     return true;
+  }
+
+  /**
+   * WYPROJ Version Rule (DATA_SCHEMA.md, Project File Schema):
+   * only the current WYPROJ format version is accepted.
+   */
+  public validateFormatVersion(version: unknown): void {
+    if (version === WYPROJ_FORMAT_VERSION) {
+      return;
+    }
+
+    const found =
+      typeof version === "string" && version.trim().length > 0
+        ? `WYPROJ format version "${version}" is not supported`
+        : "The WYPROJ format version is missing";
+
+    throw new Error(
+      `PROJ_003 Project Version Mismatch: ${found}. ` +
+        `This version of SlicyWeb opens WYPROJ format version ${WYPROJ_FORMAT_VERSION} only.`
+    );
   }
 
   private validateProject(project: Project): void {

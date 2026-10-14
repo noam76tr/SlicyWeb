@@ -52,6 +52,8 @@ export class WYPROJImporter {
       );
     }
 
+    this.validator.validateFormatVersion(container.version);
+
     if (!container.project) {
       throw new Error(
         "Project data is missing."

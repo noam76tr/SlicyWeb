@@ -572,6 +572,12 @@ Definition:
 Predefined collection of print settings.
 ```
 
+Categories:
+
+```text
+PRINT_PRESETS_SPEC.md, Preset Categories
+```
+
 ---
 
 ## Draft Preset
@@ -594,7 +600,7 @@ Preset balancing quality and speed.
 
 ---
 
-## Quality Preset
+## High Quality Preset
 
 Definition:
 

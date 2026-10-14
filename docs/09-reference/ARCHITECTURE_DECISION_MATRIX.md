@@ -2,7 +2,7 @@
 
 # ARCHITECTURE DECISION MATRIX
 
-Version: 2.2.0
+Version: 2.3.0
 
 Status: Approved
 
@@ -174,6 +174,7 @@ Requires:
 | ADM-020 | Governance Controlled Evolution | Governance | Critical | Approved |
 | ADM-021 | Object Scoped Analysis And Recommendations | Data | High | Approved |
 | ADM-022 | Build Tooling And Library Versions | Tooling | Medium | Approved |
+| ADM-023 | WYPROJ Format Version 3.0.0 | Persistence | High | Approved |
 
 ---
 
@@ -670,6 +671,31 @@ Benefits:
 - One build configuration
 - Reproducible versions
 - TypeScript checks inside the repository
+
+---
+
+ADM-023
+
+Title:
+
+WYPROJ Format Version 3.0.0
+
+Decision:
+
+The WYPROJ format version is 3.0.0. Files of another version are refused at load (PROJ_003). No migration from 2.0.0.
+
+Rationale:
+
+DATA_SCHEMA.md 3.0.0 changes the stored category values; no 2.0.0 file was distributed.
+
+Reference:
+
+ADR-027 (DECISIONS.md)
+
+Benefits:
+
+- No file with former category values is loaded
+- No migration code
 
 ---
 

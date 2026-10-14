@@ -12,6 +12,12 @@ export const APPLICATION_TAGLINE =
 
 export const APPLICATION_VERSION = "1.0.0";
 
+/**
+ * WYPROJ format version (DATA_SCHEMA.md, Project File Schema,
+ * WYPROJ Version Rule). Files of any other version are refused at load.
+ */
+export const WYPROJ_FORMAT_VERSION = "3.0.0";
+
 export const DEFAULT_LANGUAGE = "en";
 
 export const DEFAULT_THEME = "dark";

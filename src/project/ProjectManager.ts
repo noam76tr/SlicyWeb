@@ -22,6 +22,7 @@
  */
 
 import { EventEmitter } from "events";
+import { WYPROJ_FORMAT_VERSION } from "../constants/ApplicationConstants";
 import { ProjectSerializer } from "./ProjectSerializer";
 import { ProjectDeserializer } from "./ProjectDeserializer";
 import { ProjectValidator } from "./ProjectValidator";
@@ -30,10 +31,7 @@ import type { Scene } from "../types/Scene";
 import type { Analysis } from "../types/Analysis";
 import type { Recommendation } from "../types/Recommendation";
 
-/**
- * WYPROJ format version (IMPORT_EXPORT_SPEC.md, Project Schema).
- */
-export const WYPROJ_FORMAT_VERSION = "2.0.0";
+export { WYPROJ_FORMAT_VERSION };
 
 export class ProjectManager extends EventEmitter {
   private currentProject: Project | null = null;

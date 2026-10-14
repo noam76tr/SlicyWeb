@@ -1287,10 +1287,11 @@ Until the project owner decides otherwise:
 
 **Contains:**
 
+- Presets of the categories of PRINT_PRESETS_SPEC.md (Preset Categories), for example:
 - Draft Presets
 - Balanced Presets
-- Quality Presets
-- Mechanical Presets
+- High Quality Presets
+- Engineering Presets
 - Miniature Presets
 - Custom Presets
 

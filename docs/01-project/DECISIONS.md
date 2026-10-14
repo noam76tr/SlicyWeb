@@ -1998,6 +1998,67 @@ Reason:
 
 ---
 
+# ADR-027
+
+Title: WYPROJ Format Version 3.0.0
+
+Status: Accepted
+
+Date: 2026-10-14
+
+## Context
+
+DATA_SCHEMA.md 3.0.0 changes the allowed classification and print preset category values stored in WYPROJ files.
+
+The WYPROJ format version was 2.0.0. No WYPROJ 2.0.0 file was distributed.
+
+## Decision
+
+The WYPROJ format version becomes 3.0.0.
+
+A file of another version, or without a version, is refused at load with error PROJ_003 Project Version Mismatch. The message gives the version of the file and the supported version.
+
+No migration from WYPROJ 2.0.0 is provided.
+
+## Consequences
+
+Advantages:
+
+- Files with the former category values are never loaded
+- No migration code to maintain
+
+Disadvantages:
+
+- WYPROJ 2.0.0 files cannot be opened
+
+## Alternatives Considered
+
+Keep WYPROJ 2.0.0
+
+Rejected
+
+Reason:
+
+- Files with incompatible category values would share the same version
+
+Migration from 2.0.0
+
+Rejected
+
+Reason:
+
+- No 2.0.0 file was distributed
+
+## Related Documents
+
+- DATA_SCHEMA.md (Project File Schema, WYPROJ Version Rule)
+- IMPORT_EXPORT_SPEC.md (Compatibility Policy)
+- ERROR_CODES_SPEC.md (PROJ_003)
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-023)
+- ADR-026
+
+---
+
 # Future Decision Template
 
 Copy and complete:

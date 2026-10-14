@@ -1,7 +1,7 @@
 # SlicyWeb SMART SLICER
 # IMPORT EXPORT SPECIFICATION
 
-Version: 2.2.0
+Version: 3.0.0
 
 Status: Approved
 
@@ -559,14 +559,14 @@ The WYPROJ file follows the Project File Schema and the Project Schema of DATA_S
 ```json
 {
   "format": "WYPROJ",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "project": {
     "projectId": "",
     "projectName": "",
     "projectFormat": "WYPROJ",
     "createdAt": "",
     "updatedAt": "",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "scene": {},
     "settings": {},
     "analysis": {
@@ -700,6 +700,8 @@ Object Name
 New formats may be added.
 
 Existing formats must remain supported.
+
+Exception: WYPROJ files of format version 2.0.0 are not supported. They are refused at load (DATA_SCHEMA.md, Project File Schema, WYPROJ Version Rule).
 
 ---
 
