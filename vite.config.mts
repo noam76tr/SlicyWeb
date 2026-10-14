@@ -10,6 +10,9 @@
  * - The Electron main process (src/electron/main.ts) into dist/electron/
  * - The Electron preload bridge (src/electron/preload.ts) into dist/electron/
  *
+ * Renderer: Tailwind CSS 4 (@tailwindcss/vite) and the "@/" alias
+ * for src/ (shadcn/ui prerequisite, ADR-025).
+ *
  * The output paths match src/electron/main.ts, which loads
  * preload.js next to itself and ../renderer/index.html.
  *
@@ -19,7 +22,9 @@
  */
 
 import { builtinModules } from "node:module";
+import { fileURLToPath } from "node:url";
 
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import electron from "vite-plugin-electron";
@@ -42,8 +47,14 @@ export default defineConfig({
   // Relative asset paths: the built index.html is loaded from disk
   // with BrowserWindow.loadFile (src/electron/main.ts).
   base: "./",
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
   plugins: [
     react(),
+    tailwindcss(),
     electron([
       {
         entry: "src/electron/main.ts",
