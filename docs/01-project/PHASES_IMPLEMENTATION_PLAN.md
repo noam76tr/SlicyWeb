@@ -488,6 +488,21 @@ Documentation Complete
 
 # PROJECT BOOTSTRAP
 
+Status: Completed
+
+Date: 2026-10-14
+
+Validation result (Windows 11):
+
+- Application Starts: npm start opens the application window
+- Electron Works: main process and preload bridge built by vite-plugin-electron (ADR-025)
+- React Works: the React application is displayed in the window
+- Build Successful: npm run build
+- npm run typecheck: 0 errors
+- npm run lint: 0 errors, 0 warnings
+
+The functional roadmap phase 1 (GUI Foundation) also requires technical phases 2 and 3; its status is unchanged.
+
 ---
 
 ## Objectives

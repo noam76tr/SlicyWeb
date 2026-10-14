@@ -731,7 +731,7 @@ Date:
 ## Validation Result
 
 - Phase 1 validation on Windows 11 (2026-10-14): npm install, npm run build, npm run dev and npm start succeed; the application window opens and displays the React application (Application Starts, Electron Works, React Works, Build Successful)
-- Phase 1 is not closed: npm run lint reports errors (KI-005)
+- Phase 1 closed in 0.1.22, after KI-005 was resolved (0.1.21)
 
 ---
 
@@ -859,9 +859,31 @@ Date:
 - src/electron/ipc/ProjectIPC.ts and src/scene/SceneManager.ts: unused imports removed
 - KI-005 resolved
 
-## Validation Requirements
+## Validation Result
 
-- npm run typecheck and npm run lint on Windows 11: 0 errors expected; Phase 1 is closed once confirmed
+- npm run typecheck and npm run lint on Windows 11 (2026-10-14): 0 errors
+
+---
+
+# VERSION 0.1.22
+
+Release Type:
+Phase Closure
+
+Status:
+Completed
+
+Date:
+2026-10-14
+
+## Completed
+
+- Technical Phase 1 - Project Bootstrap (PHASES_IMPLEMENTATION_PLAN.md): Application Starts, Electron Works, React Works, Build Successful; npm run typecheck and npm run lint report 0 errors on Windows 11
+
+## Changed
+
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 1 status Completed, with the validation result
+- README.md: Current Status
 
 ---
 
