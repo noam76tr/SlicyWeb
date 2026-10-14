@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.0.0
+Version: 3.1.0
 
 Status: Approved
 
@@ -1631,7 +1631,7 @@ Reference: ADR-026
 
 8. Object Transformation: when the rotation or the scale of an object changes (Transform Schema), the status of its analysis and of its recommendation becomes outdated. A change of position alone does not change the status.
 
-9. When the analysis of an object becomes outdated or is recomputed, the recommendation of the same object becomes outdated.
+9. When the analysis of an object becomes outdated or is recomputed, the recommendation of the same object becomes outdated. A recomputed analysis keeps the analysisId of the object, so that rule 5 remains satisfied.
 
 10. An outdated analysis or recommendation must be recomputed before any export. Export is blocked for an object whose recommendation is missing or outdated (SLICER_EXPORT_SPEC.md, error EXP_003).
 ```

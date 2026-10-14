@@ -79,11 +79,14 @@ export class DecisionEngine {
         bottomLayers: settings.bottomLayers,
       },
 
+      // Wall and infill speeds never exceed the print speed of the
+      // preset (PRINT_PRESETS_SPEC.md, Recommended Profile Initialization).
+      // Travel moves do not print and keep their default.
       speed: {
         print: settings.printSpeed,
-        outerWall: 40,
-        innerWall: 80,
-        infill: 120,
+        outerWall: Math.min(40, settings.printSpeed),
+        innerWall: Math.min(80, settings.printSpeed),
+        infill: Math.min(120, settings.printSpeed),
         travel: 250,
       },
 

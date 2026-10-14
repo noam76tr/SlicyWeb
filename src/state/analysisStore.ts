@@ -14,6 +14,8 @@ import { create } from "zustand";
 
 import type { Analysis } from "../types/Analysis";
 
+import { useRecommendationStore } from "./recommendationStore";
+
 interface AnalysisState {
   /**
    * Analyses indexed by objectId
@@ -22,8 +24,10 @@ interface AnalysisState {
   analysis: Record<string, Analysis>;
 
   /**
-   * Stores the analysis of its object.
-   * Replaces the previous analysis of the same object.
+   * Stores the analysis of its object (computed or recomputed).
+   * A recomputed analysis keeps the analysisId of the object
+   * (Object Reference Rule 5); the recommendation of the same
+   * object becomes outdated (Object Reference Rule 9).
    */
   setAnalysis: (
     analysis: Analysis
@@ -38,8 +42,8 @@ interface AnalysisState {
   ) => void;
 
   /**
-   * Marks the analysis of an object as outdated
-   * (Object Reference Rule 8).
+   * Marks the analysis of an object as outdated, and its
+   * recommendation (Object Reference Rules 8 and 9).
    */
   markAnalysisOutdated: (
     objectId: string
@@ -52,13 +56,24 @@ export const useAnalysisStore =
   create<AnalysisState>((set) => ({
     analysis: {},
 
-    setAnalysis: (analysis) =>
-      set((state) => ({
-        analysis: {
-          ...state.analysis,
-          [analysis.objectId]: analysis
-        }
-      })),
+    setAnalysis: (analysis) => {
+      set((state) => {
+        const previous = state.analysis[analysis.objectId];
+
+        return {
+          analysis: {
+            ...state.analysis,
+            [analysis.objectId]: previous
+              ? { ...analysis, analysisId: previous.analysisId }
+              : analysis
+          }
+        };
+      });
+
+      useRecommendationStore
+        .getState()
+        .markRecommendationOutdated(analysis.objectId);
+    },
 
     removeAnalysis: (objectId) =>
       set((state) => {
@@ -69,7 +84,11 @@ export const useAnalysisStore =
         return { analysis };
       }),
 
-    markAnalysisOutdated: (objectId) =>
+    markAnalysisOutdated: (objectId) => {
+      useRecommendationStore
+        .getState()
+        .markRecommendationOutdated(objectId);
+
       set((state) => {
         const current = state.analysis[objectId];
 
@@ -86,7 +105,8 @@ export const useAnalysisStore =
             }
           }
         };
-      }),
+      });
+    },
 
     clearAnalysis: () =>
       set({

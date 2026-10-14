@@ -17,9 +17,31 @@
  * - DATA_SCHEMA.md
  */
 
-import type { Object3D } from "../types/Object3D";
+import type {
+  Object3D,
+  Transform,
+} from "../types/Object3D";
 
 export class TransformValidator {
+  /**
+   * Returns whether a transform change modifies the rotation
+   * or the scale of an object (DATA_SCHEMA.md, Object Reference
+   * Rule 8). A change of position alone returns false.
+   */
+  public static changesOrientation(
+    before: Transform,
+    after: Transform,
+  ): boolean {
+    return (
+      before.rotation.x !== after.rotation.x ||
+      before.rotation.y !== after.rotation.y ||
+      before.rotation.z !== after.rotation.z ||
+      before.scale.x !== after.scale.x ||
+      before.scale.y !== after.scale.y ||
+      before.scale.z !== after.scale.z
+    );
+  }
+
   /**
    * Validates object transform.
    */

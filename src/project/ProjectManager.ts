@@ -30,6 +30,9 @@ import type { Project } from "../types/Project";
 import type { Scene } from "../types/Scene";
 import type { Analysis } from "../types/Analysis";
 import type { Recommendation } from "../types/Recommendation";
+import type { Object3D, Transform } from "../types/Object3D";
+import { ObjectDuplicator } from "../object_manager/ObjectDuplicator";
+import { TransformValidator } from "../transform/TransformValidator";
 
 export { WYPROJ_FORMAT_VERSION };
 
@@ -127,6 +130,155 @@ export class ProjectManager extends EventEmitter {
     this.emit("project:analysis-updated", analysis);
   }
 
+  /**
+   * Object Reference Rule 6: removing an object removes
+   * its analysis and its recommendation.
+   */
+  public removeObject(objectId: string): void {
+    this.ensureProjectLoaded();
+
+    const project = this.currentProject!;
+
+    project.scene = {
+      ...project.scene,
+      objects: project.scene.objects.filter(
+        (object) => object.objectId !== objectId
+      ),
+    };
+
+    const analysis = { ...project.analysis };
+    delete analysis[objectId];
+    project.analysis = analysis;
+
+    const recommendations = { ...project.recommendations };
+    delete recommendations[objectId];
+    project.recommendations = recommendations;
+
+    this.touch();
+
+    this.emit("project:object-removed", objectId);
+  }
+
+  /**
+   * Object Reference Rule 7: the copy receives a new objectId
+   * and inherits no analysis and no recommendation.
+   */
+  public duplicateObject(objectId: string): Object3D {
+    this.ensureProjectLoaded();
+
+    const project = this.currentProject!;
+
+    const original = project.scene.objects.find(
+      (object) => object.objectId === objectId
+    );
+
+    if (!original) {
+      throw new Error(`Object not found in the scene: ${objectId}`);
+    }
+
+    const copy = new ObjectDuplicator().duplicate(original);
+
+    project.scene = {
+      ...project.scene,
+      objects: [...project.scene.objects, copy],
+    };
+
+    this.touch();
+
+    this.emit("project:object-duplicated", copy);
+
+    return copy;
+  }
+
+  /**
+   * Object Reference Rule 8: a change of rotation or scale makes the
+   * analysis and the recommendation of the object outdated.
+   * A change of position alone does not change their status.
+   */
+  public updateObjectTransform(
+    objectId: string,
+    transform: Transform
+  ): void {
+    this.ensureProjectLoaded();
+
+    const project = this.currentProject!;
+
+    const object = project.scene.objects.find(
+      (candidate) => candidate.objectId === objectId
+    );
+
+    if (!object) {
+      throw new Error(`Object not found in the scene: ${objectId}`);
+    }
+
+    const orientationChanged = TransformValidator.changesOrientation(
+      object.transform,
+      transform
+    );
+
+    project.scene = {
+      ...project.scene,
+      objects: project.scene.objects.map((candidate) =>
+        candidate.objectId === objectId
+          ? { ...candidate, transform }
+          : candidate
+      ),
+    };
+
+    if (orientationChanged) {
+      this.markResultsOutdated(objectId);
+    }
+
+    this.touch();
+
+    this.emit("project:object-transformed", objectId);
+  }
+
+  /**
+   * Stores the analysis of one object (computed or recomputed).
+   * A recomputed analysis keeps the analysisId of the object
+   * (Object Reference Rule 5). Object Reference Rule 9: the
+   * recommendation of the same object becomes outdated.
+   */
+  public setObjectAnalysis(analysis: Analysis): Analysis {
+    this.ensureProjectLoaded();
+
+    const project = this.currentProject!;
+
+    const previous = project.analysis[analysis.objectId];
+
+    const stored: Analysis = previous
+      ? { ...analysis, analysisId: previous.analysisId }
+      : analysis;
+
+    project.analysis = {
+      ...project.analysis,
+      [analysis.objectId]: stored,
+    };
+
+    this.markRecommendationOutdated(analysis.objectId);
+
+    this.touch();
+
+    this.emit("project:analysis-updated", project.analysis);
+
+    return stored;
+  }
+
+  /**
+   * Object Reference Rules 8 and 9: the analysis of the object
+   * becomes outdated, and so does its recommendation.
+   */
+  public markAnalysisOutdated(objectId: string): void {
+    this.ensureProjectLoaded();
+
+    this.markResultsOutdated(objectId);
+
+    this.touch();
+
+    this.emit("project:analysis-updated", this.currentProject!.analysis);
+  }
+
   public updateRecommendations(
     recommendations: Record<string, Recommendation>
   ): void {
@@ -160,6 +312,34 @@ export class ProjectManager extends EventEmitter {
 
   public hasOpenProject(): boolean {
     return this.currentProject !== null;
+  }
+
+  private markResultsOutdated(objectId: string): void {
+    const project = this.currentProject!;
+
+    const analysis = project.analysis[objectId];
+
+    if (analysis) {
+      project.analysis = {
+        ...project.analysis,
+        [objectId]: { ...analysis, status: "outdated" },
+      };
+    }
+
+    this.markRecommendationOutdated(objectId);
+  }
+
+  private markRecommendationOutdated(objectId: string): void {
+    const project = this.currentProject!;
+
+    const recommendation = project.recommendations[objectId];
+
+    if (recommendation) {
+      project.recommendations = {
+        ...project.recommendations,
+        [objectId]: { ...recommendation, status: "outdated" },
+      };
+    }
   }
 
   private touch(): void {

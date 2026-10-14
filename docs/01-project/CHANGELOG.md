@@ -994,6 +994,53 @@ Date:
 
 ---
 
+# VERSION 0.1.26
+
+Release Type:
+Feature Implementation
+
+Status:
+Completed
+
+Date:
+2026-10-14
+
+## Added
+
+- src/project/ProjectManager.ts: Object Reference Rules 6 to 9 (ADR-026) on the project: removeObject (rule 6), duplicateObject (rule 7), updateObjectTransform (rule 8), setObjectAnalysis (rule 9, recomputed analysis keeps its analysisId), markAnalysisOutdated (rules 8 and 9)
+- src/transform/TransformValidator.ts: changesOrientation (rule 8: rotation or scale changed; position alone does not count)
+- src/state/objectStore.ts: removeObject removes the analysis and the recommendation of the object (rule 6); updateObjectTransform (rule 8)
+
+## Changed
+
+- src/state/analysisStore.ts: setAnalysis keeps the analysisId of the object and makes its recommendation outdated; markAnalysisOutdated also makes the recommendation outdated (rule 9, link between the two stores)
+- DATA_SCHEMA.md 3.1.0: Object Reference Rule 9 states that a recomputed analysis keeps the analysisId of the object (rule 5)
+
+## Fixed
+
+- KI-004 resolved
+
+---
+
+# VERSION 0.1.27
+
+Release Type:
+Bug Fix
+
+Status:
+Completed
+
+Date:
+2026-10-14
+
+## Fixed
+
+- src/recommendation_engine/DecisionEngine.ts: the outer wall, inner wall and infill speeds of the recommended profile are limited to preset.settings.printSpeed; the travel speed is unchanged
+- PRINT_PRESETS_SPEC.md 1.2.0: Recommended Profile Initialization states the speed limit
+- KI-009 resolved
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -1775,22 +1822,6 @@ Planned Resolution:
 ---
 
 
-Identifier: KI-004
-
-Since: 0.1.13
-
-Affected Module: src/state/analysisStore.ts, src/state/recommendationStore.ts, scene and transform operations
-
-Issue: Object Reference Rules 6 to 9 (ADR-026) are not triggered by scene operations. The store actions exist (removal, outdated status), but object removal, duplication, rotation and scaling do not call them. Rule 9 (a recomputed or outdated analysis makes the recommendation of the same object outdated) has no link between the two stores.
-
-Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12. Mandatory: export relies on Object Reference Rule 10 (SLICER_EXPORT_SPEC.md, error EXP_003), which is only reliable when rules 6 to 9 are applied.
-
-Planned Resolution: Lot to be scheduled before Phase 14
-
-
----
-
-
 Identifier: KI-007
 
 Since: 0.1.19
@@ -1818,22 +1849,6 @@ Issue: The recommended profile is initialized from preset.settings and adjusted 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
 Planned Resolution: With Technical Phase 10 (Classification and Recommendation Engine)
-
-
----
-
-
-Identifier: KI-009
-
-Since: 0.1.23
-
-Affected Module: src/recommendation_engine/DecisionEngine.ts
-
-Issue: The wall and infill speeds of the recommended profile are fixed engine defaults (outerWall 40, innerWall 80, infill 120) and may exceed the print speed of the preset (preset.settings.printSpeed).
-
-Planned Resolution: Limit speed.outerWall, speed.innerWall and speed.infill to preset.settings.printSpeed.
-
-Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
 
 ---

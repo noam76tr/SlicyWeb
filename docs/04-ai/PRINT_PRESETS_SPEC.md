@@ -4,7 +4,7 @@
 
 
 
-Version: 1.1.0
+Version: 1.2.0
 
 
 
@@ -1349,6 +1349,8 @@ These warnings are added to the warnings of the recommendation (DATA_SCHEMA.md, 
 The recommended profile is initialized from preset.settings, then adjusted (Golden Rule).
 
 Values not defined by preset.settings keep the defaults of the recommendation engine.
+
+The outer wall, inner wall and infill speeds never exceed preset.settings.printSpeed. The travel speed is not limited by it.
 
 The target slicer export uses the recommended profile values (DATA_SCHEMA.md, Recommended Profile Schema, Export Values).
 
