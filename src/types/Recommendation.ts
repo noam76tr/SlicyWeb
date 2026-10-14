@@ -10,6 +10,7 @@
  */
 
 import type { ResultStatus } from "./Analysis";
+import type { Classification } from "./Classification";
 import type { PrintPreset } from "./PrintPreset";
 import type { Warning } from "./Warning";
 
@@ -87,22 +88,33 @@ export interface OptimizationResult {
   materialReduction: number;
 }
 
+/**
+ * Recommendation of one object (DATA_SCHEMA.md, Recommendation Schema).
+ */
 export interface Recommendation {
   recommendationId: string;
 
   objectId: string;
 
+  printerId: string;
+
+  materialId: string;
+
+  filamentId: string;
+
   analysisId: string;
 
-  status: ResultStatus;
+  classification: Classification;
 
   recommendedProfile: RecommendedProfile;
 
-  printPreset: PrintPreset;
-
-  optimization: OptimizationResult;
+  preset: PrintPreset;
 
   warnings: Warning[];
 
   confidenceScore: number;
+
+  createdAt: string;
+
+  status: ResultStatus;
 }

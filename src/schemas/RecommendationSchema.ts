@@ -10,6 +10,8 @@
 
 import { z } from "zod";
 
+import { AnalysisClassificationSchema } from "./AnalysisSchema";
+import { PresetSchema } from "./PrintPresetSchema";
 import { ResultStatusSchema } from "./ProjectSchema";
 
 export const QualitySettingsSchema = z.object({
@@ -108,29 +110,40 @@ export const OptimizationSchema =
     materialReduction: z.number()
   });
 
+/**
+ * Recommendation Schema (DATA_SCHEMA.md).
+ */
 export const RecommendationSchema =
   z.object({
     recommendationId: z.string().min(1),
 
     objectId: z.string().min(1),
 
+    printerId: z.string().min(1),
+
+    materialId: z.string().min(1),
+
+    filamentId: z.string().min(1),
+
     analysisId: z.string().min(1),
 
-    status: ResultStatusSchema,
+    classification:
+      AnalysisClassificationSchema,
 
     recommendedProfile:
       RecommendedProfileSchema,
 
-    printPreset: z.string(),
-
-    optimization:
-      OptimizationSchema,
+    preset: PresetSchema,
 
     warnings: z.array(
       WarningSchema
     ),
 
-    confidenceScore: z.number()
+    confidenceScore: z.number(),
+
+    createdAt: z.string().min(1),
+
+    status: ResultStatusSchema
   });
 
 export type RecommendationSchemaType =

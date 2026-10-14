@@ -778,6 +778,36 @@ Date:
 
 ---
 
+# VERSION 0.1.19
+
+Release Type:
+Schema Implementation
+
+Status:
+Completed
+
+Date:
+2026-10-13
+
+## Changed
+
+- src/types/Recommendation.ts: Recommendation aligned with the Recommendation Schema (DATA_SCHEMA.md): printerId, materialId, filamentId, classification, preset and createdAt added; printPreset and optimization removed
+- src/schemas/RecommendationSchema.ts: same fields; preset validated with PresetSchema (object) instead of a string; classification validated with AnalysisClassificationSchema
+- src/schemas/AnalysisSchema.ts: classification schema extracted as AnalysisClassificationSchema (content unchanged)
+- src/recommendation_engine/RecommendationBuilder.ts, RecommendationEngine.ts and src/services/RecommendationService.ts: the printer, material and filament identifiers are inputs of the generation (API_SPEC.md, Generate Recommendation input)
+- src/gui/panels/RecommendationPanel.tsx: displays the preset name; the optimization result is an optional separate property (Optimization Result Schema)
+
+## Fixed
+
+- KI-001 and KI-002 resolved
+- TypeScript error in RecommendationPanel.tsx:56 (PrintPreset displayed as a React node)
+
+## Added
+
+- KNOWN ISSUES: KI-006 (sub-types of the Recommendation) and KI-007 (API_SPEC.md Generate Recommendation response)
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -1559,38 +1589,6 @@ Planned Resolution:
 ---
 
 
-Identifier: KI-001
-
-Since: 0.1.13
-
-Affected Module: src/types/Recommendation.ts, src/schemas/RecommendationSchema.ts, src/recommendation_engine/
-
-Issue: The Recommendation type differs from the Recommendation Schema (DATA_SCHEMA.md). Missing fields: printerId, materialId, filamentId, classification, preset, createdAt. Fields not in the schema: printPreset, optimization.
-
-Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
-
-Planned Resolution: First lot after the tooling (ADR-025)
-
-
----
-
-
-Identifier: KI-002
-
-Since: 0.1.13
-
-Affected Module: src/schemas/RecommendationSchema.ts
-
-Issue: printPreset is validated as a string, while the Recommendation type declares it as a PrintPreset object.
-
-Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
-
-Planned Resolution: With KI-001
-
-
----
-
-
 Identifier: KI-003
 
 Since: 0.1.13
@@ -1601,7 +1599,7 @@ Issue: At project load, analysis and recommendation entries are validated only f
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
-Planned Resolution: After KI-001 and KI-002, once RecommendationSchema matches DATA_SCHEMA.md
+Planned Resolution: After KI-006, once the sub-schemas used by RecommendationSchema match DATA_SCHEMA.md
 
 
 ---
@@ -1629,8 +1627,8 @@ Since: 0.1.16
 
 Affected Module: classification_engine, cost_engine, gui/panels, i18n, notifications, optimization_engine, preset_engine, electron/ipc, project, scene
 
-Issue: npm run typecheck reports 10 errors and npm run lint reports 5 errors.
-TypeScript: ClassificationEngine.ts:36, CostCalculator.ts:47, RecommendationPanel.tsx:56, LocalizationService.ts:35, NotificationFactory.ts:36, optimization_engine/ClassificationEngine.ts:65, OptimizationEngine.ts:56 and :77, PresetManager.ts:34 and :83.
+Issue: npm run typecheck reports 9 errors (10 before 0.1.19, which resolved RecommendationPanel.tsx:56) and npm run lint reports 5 errors.
+TypeScript: ClassificationEngine.ts:36, CostCalculator.ts:47, LocalizationService.ts:35, NotificationFactory.ts:36, optimization_engine/ClassificationEngine.ts:65, OptimizationEngine.ts:56 and :77, PresetManager.ts:34 and :83.
 ESLint: ConfidenceScorer.ts:44 (category unused), ProjectIPC.ts:15 (Project unused), MaterialOptimizer.ts:31 (material unused), ProjectDeserializer.ts:31 (no cause on the rethrown error), SceneManager.ts:23 (Object3D unused).
 
 Decisions:
@@ -1639,7 +1637,44 @@ Decisions:
 
 Resolve Before: Closure of Phase 1 (TECH_STACK.md, Linting Rules: no errors, no warnings)
 
-Planned Resolution: Lot after KI-001 and KI-002
+Planned Resolution: Next lot after 0.1.19
+
+
+---
+
+
+Identifier: KI-006
+
+Since: 0.1.19
+
+Affected Module: src/types/Recommendation.ts (RecommendedProfile), src/types/Classification.ts, src/types/PrintPreset.ts, src/schemas/RecommendationSchema.ts, src/schemas/AnalysisSchema.ts, src/schemas/PrintPresetSchema.ts, src/recommendation_engine/DecisionEngine.ts
+
+Issue: The sub-types used by the Recommendation differ from DATA_SCHEMA.md.
+- RecommendedProfile: the Recommended Profile Schema has preset, quality, speed, cooling, retraction, supports, adhesion and confidenceScore. The type has printPreset instead of preset, and infillDensity and infillPattern, which the schema places in the Recommended Settings Schema. RecommendedProfileSchema (Zod) has no preset field.
+- Classification: the Object Classification Schema has category, subcategory, confidenceScore, detectedFeatures, detectedTags and classificationVersion. The type has confidenceLevel and validated instead of subcategory, detectedTags and classificationVersion. AnalysisClassificationSchema (Zod) checks category, confidenceScore and detectedFeatures only.
+- PrintPreset: PresetSchema (Zod) does not check confidenceScore, and checks category, supportType and adhesionType as free strings.
+- DecisionEngine builds printPreset as an empty object; such a recommendation fails RecommendationSchema (preset.name missing).
+The placement of infillDensity and infillPattern requires a decision: DATA_SCHEMA.md does not define the content of quality.
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
+
+Planned Resolution: Lot to be scheduled after the decision on infill placement
+
+
+---
+
+
+Identifier: KI-007
+
+Since: 0.1.19
+
+Affected Module: docs/02-architecture/API_SPEC.md
+
+Issue: The response of Generate Recommendation differs from the Recommendation Schema (DATA_SCHEMA.md): it uses printPreset instead of preset and omits printerId, materialId, filamentId, classification and createdAt. API_SPEC.md is still 2.1.0, while the change of this response to one recommendation per object is non-additive (VERSIONING_POLICY.md: 3.0.0).
+
+Resolve Before: Implementation of the Recommendation API
+
+Planned Resolution: Documentation lot, with the API_SPEC.md 3.0.0 decision
 
 
 ---

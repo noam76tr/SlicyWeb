@@ -12,6 +12,16 @@ import { z } from "zod";
 
 import { ResultStatusSchema } from "./ProjectSchema";
 
+export const AnalysisClassificationSchema = z.object({
+  category: z.string(),
+
+  confidenceScore: z.number(),
+
+  detectedFeatures: z.array(
+    z.string()
+  )
+});
+
 export const AnalysisSchema = z.object({
   analysisId: z.string().min(1),
 
@@ -77,15 +87,7 @@ export const AnalysisSchema = z.object({
     minimumThickness: z.number()
   }),
 
-  classification: z.object({
-    category: z.string(),
-
-    confidenceScore: z.number(),
-
-    detectedFeatures: z.array(
-      z.string()
-    )
-  })
+  classification: AnalysisClassificationSchema
 });
 
 export type AnalysisSchemaType =

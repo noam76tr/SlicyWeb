@@ -18,14 +18,24 @@
  * - Recommendation.ts
  */
 
-import type { Recommendation } from "../../types/Recommendation";
+import type {
+  OptimizationResult,
+  Recommendation,
+} from "../../types/Recommendation";
 
 interface RecommendationPanelProps {
   recommendation: Recommendation | null;
+
+  /**
+   * Optimization result (DATA_SCHEMA.md, Optimization Result Schema).
+   * Not part of the Recommendation Schema; provided separately.
+   */
+  optimization?: OptimizationResult | null;
 }
 
 export default function RecommendationPanel({
   recommendation,
+  optimization = null,
 }: RecommendationPanelProps): JSX.Element {
   if (!recommendation) {
     return (
@@ -53,7 +63,7 @@ export default function RecommendationPanel({
         </h3>
 
         <div>
-          {recommendation.printPreset}
+          {recommendation.preset.name}
         </div>
 
         <div>
@@ -130,50 +140,48 @@ export default function RecommendationPanel({
         </div>
       </section>
 
-      <section className="rounded border border-neutral-800 p-3">
-        <h3 className="mb-2 font-medium">
-          Optimization
-        </h3>
+      {optimization && (
+        <section className="rounded border border-neutral-800 p-3">
+          <h3 className="mb-2 font-medium">
+            Optimization
+          </h3>
 
-        <div>
-          Orientation Score:{" "}
-          {
-            recommendation
-              .optimization
-              .orientationScore
-          }
-        </div>
+          <div>
+            Orientation Score:{" "}
+            {
+              optimization
+                .orientationScore
+            }
+          </div>
 
-        <div>
-          Support Reduction:{" "}
-          {
-            recommendation
-              .optimization
-              .supportReduction
-          }
-          %
-        </div>
+          <div>
+            Support Reduction:{" "}
+            {
+              optimization
+                .supportReduction
+            }
+            %
+          </div>
 
-        <div>
-          Time Reduction:{" "}
-          {
-            recommendation
-              .optimization
-              .timeReduction
-          }
-          %
-        </div>
+          <div>
+            Time Reduction:{" "}
+            {
+              optimization
+                .timeReduction
+            }
+            %
+          </div>
 
-        <div>
-          Material Reduction:{" "}
-          {
-            recommendation
-              .optimization
-              .materialReduction
-          }
-          %
-        </div>
-      </section>
+          <div>
+            Material Reduction:{" "}
+            {
+              optimization
+                .materialReduction
+            }
+            %
+          </div>
+        </section>
+      )}
 
       <section className="rounded border border-neutral-800 p-3">
         <h3 className="mb-2 font-medium">

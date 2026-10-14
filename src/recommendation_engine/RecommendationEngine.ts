@@ -14,7 +14,10 @@ import type { Recommendation } from "../types/Recommendation";
 import { DecisionEngine } from "./DecisionEngine";
 import { ValidationEngine } from "./ValidationEngine";
 import { WarningEngine } from "./WarningEngine";
-import { RecommendationBuilder } from "./RecommendationBuilder";
+import {
+  RecommendationBuilder,
+  type RecommendationSelection
+} from "./RecommendationBuilder";
 
 export class RecommendationEngine {
   private readonly decisionEngine =
@@ -30,7 +33,8 @@ export class RecommendationEngine {
     new RecommendationBuilder();
 
   public generateRecommendation(
-    analysis: Analysis
+    analysis: Analysis,
+    selection: RecommendationSelection
   ): Recommendation {
     const profile =
       this.decisionEngine.generate(
@@ -49,6 +53,7 @@ export class RecommendationEngine {
 
     return this.recommendationBuilder.build(
       analysis,
+      selection,
       validatedProfile,
       warnings
     );

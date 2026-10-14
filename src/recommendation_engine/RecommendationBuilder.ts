@@ -17,13 +17,25 @@ import type {
 
 import type { Warning } from "../types/Warning";
 
+/**
+ * Printer, material and filament the recommendation is generated for
+ * (API_SPEC.md, Generate Recommendation input).
+ */
+export type RecommendationSelection = Pick<
+  Recommendation,
+  "printerId" | "materialId" | "filamentId"
+>;
+
 export class RecommendationBuilder {
   /**
    * Builds the recommendation of the object analyzed by
-   * the given analysis (ADR-026, Object Reference Rules 2 and 5).
+   * the given analysis (ADR-026, Object Reference Rules 2 and 5),
+   * for the selected printer, material and filament
+   * (API_SPEC.md, Generate Recommendation input).
    */
   public build(
     analysis: Analysis,
+    selection: RecommendationSelection,
     profile: RecommendedProfile,
     warnings: Warning[]
   ): Recommendation {
@@ -33,29 +45,30 @@ export class RecommendationBuilder {
 
       objectId: analysis.objectId,
 
+      printerId: selection.printerId,
+
+      materialId: selection.materialId,
+
+      filamentId: selection.filamentId,
+
       analysisId: analysis.analysisId,
 
-      status: "generated",
+      classification:
+        analysis.classification,
 
       recommendedProfile: profile,
 
-      printPreset:
-        profile.printPreset,
-
-      optimization: {
-        orientationScore: 0,
-
-        supportReduction: 0,
-
-        timeReduction: 0,
-
-        materialReduction: 0
-      },
+      preset: profile.printPreset,
 
       warnings,
 
       confidenceScore:
-        profile.confidenceScore
+        profile.confidenceScore,
+
+      createdAt:
+        new Date().toISOString(),
+
+      status: "generated"
     };
   }
 }
