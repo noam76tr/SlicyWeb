@@ -8,18 +8,58 @@
  * - AI_ENGINE_SPEC.md
  */
 
+import type { ClassificationCategory } from "../types/Classification";
+import type { PresetCategory } from "../types/PrintPreset";
+
+/**
+ * Stored values of the print preset categories
+ * (DATA_SCHEMA.md, Print Preset Categories;
+ * PRINT_PRESETS_SPEC.md, Preset Categories).
+ */
 export const PRESET_CATEGORIES = [
-  "draft",
-  "fast",
-  "balanced",
-  "quality",
   "ultra_quality",
-  "mechanical",
-  "prototype",
+  "high_quality",
+  "balanced",
+  "draft",
+  "fast_prototype",
+  "structural",
+  "functional",
+  "engineering",
+  "flexible",
   "miniature",
-  "support_free",
-  "low_cost"
+  "vase",
+  "custom"
 ] as const;
+
+/**
+ * Default preset category
+ * (PRINT_PRESETS_SPEC.md, Default Preset).
+ */
+export const DEFAULT_PRESET_CATEGORY: PresetCategory = "balanced";
+
+/**
+ * Preset category selected by each classification category
+ * (PRINT_PRESETS_SPEC.md, Classification To Preset Mapping).
+ */
+export const CLASSIFICATION_PRESET_CATEGORIES: Readonly<
+  Record<ClassificationCategory, PresetCategory>
+> = {
+  figurine: "ultra_quality",
+  miniature: "miniature",
+  mechanical_part: "engineering",
+  gear: "engineering",
+  bracket: "structural",
+  container: "balanced",
+  vase: "vase",
+  enclosure: "functional",
+  tool: "functional",
+  articulated_model: "engineering",
+  prototype: "fast_prototype",
+  structural_part: "structural",
+  decorative_object: "high_quality",
+  functional_part: "functional",
+  unknown: "balanced"
+};
 
 export const INFILL_PATTERNS = [
   "gyroid",

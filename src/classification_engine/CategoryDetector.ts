@@ -8,10 +8,12 @@
  * - DATA_SCHEMA.md
  */
 
+import type { ClassificationCategory } from "../types/Classification";
+
 export class CategoryDetector {
   public detect(
     features: string[]
-  ): string {
+  ): ClassificationCategory {
     const normalizedFeatures =
       features.map((feature) =>
         feature.toLowerCase()
@@ -155,7 +157,7 @@ export class CategoryDetector {
         ]
       )
     ) {
-      return "structural_component";
+      return "structural_part";
     }
 
     if (
@@ -192,7 +194,7 @@ export class CategoryDetector {
         ]
       )
     ) {
-      return "mechanical_part";
+      return "functional_part";
     }
 
     return "unknown";

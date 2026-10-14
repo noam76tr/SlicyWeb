@@ -8,9 +8,9 @@
  * - DATA_SCHEMA.md
  */
 
+import { CLASSIFICATION_VERSION } from "../constants/AnalysisConstants";
 import type {
   Classification,
-  ConfidenceLevel,
   ClassificationCategory,
 } from "../types/Classification";
 
@@ -21,13 +21,19 @@ export class ClassificationEngine {
   private readonly categoryDetector =
     new CategoryDetector();
 
+  /**
+   * Classifies a model from extracted features
+   * (DATA_SCHEMA.md, Object Classification Schema).
+   * The confidence level is not stored; it is computed
+   * from confidenceScore with ConfidenceScorer.getLevel.
+   */
   public classify(
     features: string[],
   ): Classification {
-    const category =
+    const category: ClassificationCategory =
       this.categoryDetector.detect(
         features,
-      ) as ClassificationCategory;
+      );
 
     const confidenceScore =
       ConfidenceScorer.calculate(
@@ -35,35 +41,13 @@ export class ClassificationEngine {
         category,
       );
 
-    const confidenceLevel =
-      this.getConfidenceLevel(
-        confidenceScore,
-      );
-
     return {
       category,
+      subcategory: "",
       confidenceScore,
-      confidenceLevel,
       detectedFeatures: features,
-      validated: true,
+      detectedTags: [],
+      classificationVersion: CLASSIFICATION_VERSION,
     };
-  }
-
-  private getConfidenceLevel(
-    score: number,
-  ): ConfidenceLevel {
-    if (score >= 80) {
-      return "high";
-    }
-
-    if (score >= 50) {
-      return "medium";
-    }
-
-    if (score > 0) {
-      return "low";
-    }
-
-    return "unknown";
   }
 }

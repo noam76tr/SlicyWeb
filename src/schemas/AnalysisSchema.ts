@@ -10,16 +10,29 @@
 
 import { z } from "zod";
 
+import { CLASSIFICATION_CATEGORIES } from "../constants/AnalysisConstants";
+
 import { ResultStatusSchema } from "./ProjectSchema";
 
+/**
+ * Object Classification Schema (DATA_SCHEMA.md).
+ */
 export const AnalysisClassificationSchema = z.object({
-  category: z.string(),
+  category: z.enum(CLASSIFICATION_CATEGORIES),
 
-  confidenceScore: z.number(),
+  subcategory: z.string(),
+
+  confidenceScore: z.number().min(0).max(100),
 
   detectedFeatures: z.array(
     z.string()
-  )
+  ),
+
+  detectedTags: z.array(
+    z.string()
+  ),
+
+  classificationVersion: z.string().min(1)
 });
 
 export const AnalysisSchema = z.object({

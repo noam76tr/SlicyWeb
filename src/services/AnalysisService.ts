@@ -20,6 +20,9 @@
  */
 
 import type { Analysis } from "../types/Analysis";
+import type { ConfidenceLevel } from "../types/Classification";
+
+import { ConfidenceScorer } from "../classification_engine/ConfidenceScorer";
 
 export class AnalysisService {
   /**
@@ -111,6 +114,18 @@ export class AnalysisService {
     return (
       analysis.stability.riskScore <
       80
+    );
+  }
+
+  /**
+   * Returns the classification confidence level
+   * (OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels).
+   */
+  public getConfidenceLevel(
+    analysis: Analysis,
+  ): ConfidenceLevel {
+    return ConfidenceScorer.getLevel(
+      analysis.classification.confidenceScore,
     );
   }
 

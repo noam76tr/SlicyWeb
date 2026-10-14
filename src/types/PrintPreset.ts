@@ -8,17 +8,14 @@
  * - PRINT_SETTINGS_SPEC.md
  */
 
+import type { PRESET_CATEGORIES } from "../constants/PresetConstants";
+
+/**
+ * Stored value of a print preset category
+ * (DATA_SCHEMA.md, Print Preset Categories).
+ */
 export type PresetCategory =
-  | "draft"
-  | "fast"
-  | "balanced"
-  | "quality"
-  | "ultra_quality"
-  | "mechanical"
-  | "prototype"
-  | "miniature"
-  | "support_free"
-  | "low_cost";
+  (typeof PRESET_CATEGORIES)[number];
 
 export type SupportType =
   | "none"

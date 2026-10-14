@@ -4,7 +4,7 @@
 
 
 
-Version: 1.0.0
+Version: 1.1.0
 
 
 
@@ -671,10 +671,6 @@ General purpose functional parts.
 
 ```text
 
-Brackets
-
-
-
 Mounts
 
 
@@ -1285,89 +1281,78 @@ User Goal
 
 
 
-# Example Mapping
+# Classification To Preset Mapping
 
+Each classification category (OBJECT_CLASSIFICATION_SPEC.md, Supported Categories) selects one preset category.
 
+Stored values: DATA_SCHEMA.md, Classification Categories and Print Preset Categories.
 
-```text
-
-Figurine
-
-
-
-↓
-
-
-
-Ultra Quality
-
-```
-
-
-
----
-
-
-
-```text
-
-Mechanical Part
-
-
-
-↓
-
-
-
-Engineering
-
-```
-
-
+| Classification Category | Preset Category |
+|-------------------------|-----------------|
+| Figurine | Ultra Quality |
+| Miniature | Miniature |
+| Mechanical Part | Engineering |
+| Gear | Engineering |
+| Bracket | Structural |
+| Container | Balanced |
+| Vase | Vase |
+| Enclosure | Functional |
+| Tool | Functional |
+| Articulated Model | Engineering |
+| Prototype | Fast Prototype |
+| Structural Part | Structural |
+| Decorative Object | High Quality |
+| Functional Part | Functional |
+| Unknown | Balanced |
 
 ---
 
+# Default Preset
 
+The default preset category is Balanced.
+
+Rules:
 
 ```text
+1. Classification Unknown, or confidence level Unknown (score below 40,
+   OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels):
+   Balanced preset
+   Warning CLASSIFICATION_UNCERTAIN (severity info)
 
-Bracket
+2. The preset category given by the mapping is not available:
+   Balanced preset
+   Warning EXPECTED_PRESET_UNAVAILABLE (severity info)
 
-
-
-↓
-
-
-
-Structural
-
+3. No Balanced preset is available:
+   No recommendation is generated (ERROR_CODES_SPEC.md, REC_002 Insufficient Data)
 ```
 
+The first preset of a list is never used as a fallback.
 
+When several available presets have the selected category, the first of them in the list is used.
 
 ---
 
+# Preset Selection Warnings
 
+| Code | Severity | Message |
+|------|----------|---------|
+| CLASSIFICATION_UNCERTAIN | info | Object classification uncertain. Balanced preset used. |
+| EXPECTED_PRESET_UNAVAILABLE | info | Expected preset not available. Balanced preset used. |
 
-```text
-
-Prototype
-
-
-
-↓
-
-
-
-Fast Prototype
-
-```
-
-
+These warnings are added to the warnings of the recommendation (DATA_SCHEMA.md, Recommendation Schema).
 
 ---
 
+# Recommended Profile Initialization
 
+The recommended profile is initialized from preset.settings, then adjusted (Golden Rule).
+
+Values not defined by preset.settings keep the defaults of the recommendation engine.
+
+The target slicer export uses the recommended profile values (DATA_SCHEMA.md, Recommended Profile Schema, Export Values).
+
+---
 
 # User Objectives
 

@@ -19,13 +19,22 @@
  */
 
 import type { Analysis } from "../../types/Analysis";
+import type { ConfidenceLevel } from "../../types/Classification";
 
 interface AnalysisPanelProps {
   analysis: Analysis | null;
+
+  /**
+   * Confidence level of the classification, computed from
+   * confidenceScore (AnalysisService.getConfidenceLevel).
+   * Not stored in the classification.
+   */
+  confidenceLevel?: ConfidenceLevel | null;
 }
 
 export default function AnalysisPanel({
   analysis,
+  confidenceLevel = null,
 }: AnalysisPanelProps): JSX.Element {
   if (!analysis) {
     return (
@@ -154,13 +163,12 @@ export default function AnalysisPanel({
           %
         </div>
 
-        <div>
-          Level:{" "}
-          {
-            analysis.classification
-              .confidenceLevel
-          }
-        </div>
+        {confidenceLevel && (
+          <div>
+            Level:{" "}
+            {confidenceLevel}
+          </div>
+        )}
       </section>
     </div>
   );

@@ -58,7 +58,7 @@ export class RecommendationBuilder {
 
       recommendedProfile: profile,
 
-      preset: profile.printPreset,
+      preset: profile.preset,
 
       warnings,
 

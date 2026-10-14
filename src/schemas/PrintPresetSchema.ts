@@ -10,10 +10,19 @@
 
 import { z } from "zod";
 
-export const PresetSchema = z.object({
-  name: z.string(),
+import {
+  ADHESION_TYPES,
+  PRESET_CATEGORIES,
+  SUPPORT_TYPES
+} from "../constants/PresetConstants";
 
-  category: z.string(),
+/**
+ * Print Preset Schema (DATA_SCHEMA.md).
+ */
+export const PresetSchema = z.object({
+  name: z.string().min(1),
+
+  category: z.enum(PRESET_CATEGORIES),
 
   description: z.string(),
 
@@ -32,14 +41,16 @@ export const PresetSchema = z.object({
 
     supportEnabled: z.boolean(),
 
-    supportType: z.string(),
+    supportType: z.enum(SUPPORT_TYPES),
 
-    adhesionType: z.string(),
+    adhesionType: z.enum(ADHESION_TYPES),
 
     printSpeed: z.number(),
 
     fanSpeed: z.number()
-  })
+  }),
+
+  confidenceScore: z.number().min(0).max(100)
 });
 
 export type PresetSchemaType =

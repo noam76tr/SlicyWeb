@@ -8,51 +8,43 @@
  * - AI_ENGINE_SPEC.md
  */
 
-export type ClassificationCategory =
-  | "miniature"
-  | "figurine"
-  | "decorative_object"
-  | "vase"
-  | "container"
-  | "prototype"
-  | "tool"
-  | "gear"
-  | "bracket"
-  | "mechanical_part"
-  | "enclosure"
-  | "structural_component"
-  | "articulated_model"
-  | "unknown";
+import type { CLASSIFICATION_CATEGORIES } from "../constants/AnalysisConstants";
 
+/**
+ * Stored value of a classification category
+ * (DATA_SCHEMA.md, Classification Categories).
+ */
+export type ClassificationCategory =
+  (typeof CLASSIFICATION_CATEGORIES)[number];
+
+/**
+ * Confidence level of a classification
+ * (OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels).
+ * Computed from confidenceScore; not stored.
+ */
 export type ConfidenceLevel =
+  | "unknown"
   | "low"
   | "medium"
   | "high"
-  | "unknown";
+  | "very_high";
 
+/**
+ * Object Classification Schema (DATA_SCHEMA.md).
+ */
 export interface Classification {
-  /**
-   * Detected object category.
-   */
   category: ClassificationCategory;
+
+  subcategory: string;
 
   /**
    * Confidence score between 0 and 100.
    */
   confidenceScore: number;
 
-  /**
-   * Human-readable confidence level.
-   */
-  confidenceLevel: ConfidenceLevel;
-
-  /**
-   * Features detected during analysis.
-   */
   detectedFeatures: string[];
 
-  /**
-   * Whether classification passed validation.
-   */
-  validated: boolean;
+  detectedTags: string[];
+
+  classificationVersion: string;
 }

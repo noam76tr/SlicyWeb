@@ -107,9 +107,9 @@ Feature no longer supported.
 
 Release Type: Foundation Release
 
-Status: Planned
+Status: Completed
 
-Date: TBD
+Date: 2026-10-14 (formal closure of Phase 0)
 
 ---
 
@@ -884,6 +884,54 @@ Date:
 
 - PHASES_IMPLEMENTATION_PLAN.md: Phase 1 status Completed, with the validation result
 - README.md: Current Status
+
+---
+
+# VERSION 0.1.23
+
+Release Type:
+Schema Update
+
+Status:
+Completed
+
+Date:
+2026-10-14
+
+## Completed
+
+- Phase 0 - Foundation closed: PHASES_IMPLEMENTATION_PLAN.md Phase 0 status Completed with its validation result; CHANGELOG 0.1.0 status Completed
+
+## Changed
+
+- DATA_SCHEMA.md 3.0.0 (breaking: allowed category values changed): Classification Categories with the 15 categories of OBJECT_CLASSIFICATION_SPEC.md and their stored values; Print Preset Categories with the 12 categories of PRINT_PRESETS_SPEC.md and their stored values; Category Value Format (lowercase snake_case); Print Preset Schema gains confidenceScore; Object Classification Schema notes (classificationVersion, confidence level not stored)
+- PRINT_PRESETS_SPEC.md 1.1.0: Classification To Preset Mapping (15 categories), Default Preset (Balanced), Preset Selection Warnings (CLASSIFICATION_UNCERTAIN, EXPECTED_PRESET_UNAVAILABLE), Recommended Profile Initialization; "Brackets" removed from the intended objects of the Functional preset; Example Mapping replaced by the mapping table
+- OBJECT_CLASSIFICATION_SPEC.md 1.1.0: Print Preset Influence refers to the mapping of PRINT_PRESETS_SPEC.md; Unknown Object Strategy also applies to the Unknown confidence level
+- src/types/Classification.ts: Classification follows the Object Classification Schema (subcategory, detectedTags, classificationVersion added; confidenceLevel and validated removed); ConfidenceLevel gains very_high; ClassificationCategory derived from CLASSIFICATION_CATEGORIES
+- src/types/PrintPreset.ts: PresetCategory derived from PRESET_CATEGORIES (12 categories)
+- src/types/Recommendation.ts and src/schemas/RecommendationSchema.ts: RecommendedProfile.printPreset renamed preset; RecommendedProfileSchema validates preset
+- src/schemas/AnalysisSchema.ts: AnalysisClassificationSchema validates the whole Object Classification Schema
+- src/schemas/PrintPresetSchema.ts: category, supportType and adhesionType validated against their allowed values; confidenceScore validated
+- src/constants/AnalysisConstants.ts: CLASSIFICATION_CATEGORIES and CLASSIFICATION_VERSION
+- src/constants/PresetConstants.ts: PRESET_CATEGORIES (12), DEFAULT_PRESET_CATEGORY, CLASSIFICATION_PRESET_CATEGORIES
+- src/classification_engine and src/optimization_engine (ClassificationEngine, ConfidenceScorer, ClassificationValidator, CategoryDetector): Classification output aligned; confidence levels computed with CONFIDENCE_LEVELS (40, 60, 75, 90); structural_component renamed structural_part; the features "functional" and "engineering" give functional_part
+- src/preset_engine/PresetSelector.ts: uses the mapping table
+- src/recommendation_engine/DecisionEngine.ts: the profile is initialized from preset.settings, then adjusted (supports when overhangs are detected); the preset is selected with the mapping table and the default preset rules; the first preset of the list is never used as a fallback
+- src/recommendation_engine/RecommendationEngine.ts: the preset selection warnings are added to the recommendation warnings; REC_002 when no Balanced preset is available
+- src/services/AnalysisService.ts: getConfidenceLevel
+- src/gui/panels/AnalysisPanel.tsx: the confidence level is an optional property
+
+## Removed
+
+- ClassificationValidator: validateState (classification_engine), validateConsistency and validateComplete (optimization_engine); no code used the validated field to make a decision
+
+## Fixed
+
+- KI-006 resolved
+
+## Added
+
+- KNOWN ISSUES: KI-008 (printer and material limits not applied to the recommended profile)
 
 ---
 
@@ -1678,7 +1726,7 @@ Issue: At project load, analysis and recommendation entries are validated only f
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
-Planned Resolution: After KI-006
+Planned Resolution: Next lot after 0.1.23
 
 
 ---
@@ -1700,42 +1748,33 @@ Planned Resolution: Lot to be scheduled before Phase 14
 ---
 
 
-Identifier: KI-006
-
-Since: 0.1.19
-
-Affected Module: src/types/Recommendation.ts (RecommendedProfile), src/types/Classification.ts, src/types/PrintPreset.ts, src/schemas/RecommendationSchema.ts, src/schemas/AnalysisSchema.ts, src/schemas/PrintPresetSchema.ts, src/recommendation_engine/DecisionEngine.ts
-
-Issue: The sub-types used by the Recommendation differ from DATA_SCHEMA.md.
-- RecommendedProfile: the type names the preset printPreset instead of preset (Recommended Profile Schema). RecommendedProfileSchema (Zod) has no preset field. infillDensity and infillPattern are at the profile level, as documented in DATA_SCHEMA.md 2.3.0.
-- DecisionEngine: the profile values (quality, speed, cooling, retraction, adhesion, infill) are fixed constants; they are not derived from preset.settings, although the preset is the starting point of the recommendation (PRINT_PRESETS_SPEC.md, Golden Rule).
-- DecisionEngine.selectPreset compares the preset category (PresetCategory: balanced, mechanical...) with the classification category (ClassificationCategory: mechanical_part, figurine...); most categories never match and the first preset is returned. PresetSelector.getRecommendedCategory uses other category names (Prototype, Figurine...).
-- Classification: the Object Classification Schema has category, subcategory, confidenceScore, detectedFeatures, detectedTags and classificationVersion. The type has confidenceLevel and validated instead of subcategory, detectedTags and classificationVersion. AnalysisClassificationSchema (Zod) checks category, confidenceScore and detectedFeatures only. The confidence level thresholds of ConfidenceScorer.getLevel (60, 85) and of both ClassificationEngine.getConfidenceLevel (50, 80) differ from OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels (40, 60, 75, 90).
-- PrintPreset: PresetSchema (Zod) does not check confidenceScore, and checks category, supportType and adhesionType as free strings.
-
-Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
-
-Decisions (2026-10-14):
-- The recommended profile is initialized from preset.settings, then adjusted (PRINT_PRESETS_SPEC.md, Golden Rule).
-- A mapping table from the classification categories (OBJECT_CLASSIFICATION_SPEC.md) to the preset categories is documented in PRINT_PRESETS_SPEC.md. When no preset matches, a documented default preset is used and a warning is added to the recommendation; the first preset of the list is never used as a fallback.
-
-Planned Resolution: Next lot after 0.1.21, then KI-003
-
-
----
-
-
 Identifier: KI-007
 
 Since: 0.1.19
 
 Affected Module: docs/02-architecture/API_SPEC.md
 
-Issue: The response of Generate Recommendation differs from the Recommendation Schema (DATA_SCHEMA.md): it uses printPreset instead of preset and omits printerId, materialId, filamentId, classification and createdAt. API_SPEC.md is still 2.1.0, while the change of this response to one recommendation per object is non-additive (VERSIONING_POLICY.md: 3.0.0).
+Issue: The response of Generate Recommendation differs from the Recommendation Schema (DATA_SCHEMA.md): it uses printPreset instead of preset and omits printerId, materialId, filamentId, classification and createdAt. API_SPEC.md is still 2.1.0, while the change of this response to one recommendation per object is non-additive (VERSIONING_POLICY.md: 3.0.0). DATA_SCHEMA.md 3.0.0 changes the allowed classification and preset category values stored in WYPROJ files; the WYPROJ format version (2.0.0) is unchanged and requires a decision.
 
 Resolve Before: Implementation of the Recommendation API
 
 Planned Resolution: Documentation lot, with the API_SPEC.md 3.0.0 decision
+
+
+---
+
+
+Identifier: KI-008
+
+Since: 0.1.23
+
+Affected Module: src/recommendation_engine/DecisionEngine.ts, src/recommendation_engine/ValidationEngine.ts
+
+Issue: The recommended profile is initialized from preset.settings and adjusted for geometry (supports when overhangs are detected) and generic ranges (ValidationEngine). Printer limits and material limits are not applied (PRINT_PRESETS_SPEC.md, Printer Overrides, Material Overrides, Golden Rule): the recommendation generation receives printer, material and filament identifiers only.
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
+
+Planned Resolution: With Technical Phase 10 (Classification and Recommendation Engine)
 
 
 ---

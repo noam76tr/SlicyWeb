@@ -8,7 +8,12 @@
  * - OBJECT_CLASSIFICATION_SPEC.md
  */
 
-import type { PrintPreset } from "../types/PrintPreset";
+import { CLASSIFICATION_PRESET_CATEGORIES } from "../constants/PresetConstants";
+import type { ClassificationCategory } from "../types/Classification";
+import type {
+  PresetCategory,
+  PrintPreset
+} from "../types/PrintPreset";
 
 export class PresetSelector {
   public selectByName(
@@ -31,42 +36,31 @@ export class PresetSelector {
     );
   }
 
+  /**
+   * Returns the preset category selected by a classification category
+   * (PRINT_PRESETS_SPEC.md, Classification To Preset Mapping).
+   */
   public getRecommendedCategory(
-    classification: string
-  ): string {
-    switch (classification) {
-      case "Prototype":
-        return "prototype";
-
-      case "Figurine":
-        return "quality";
-
-      case "Miniature":
-        return "miniature";
-
-      case "Mechanical Part":
-        return "mechanical";
-
-      case "Structural Part":
-        return "mechanical";
-
-      default:
-        return "balanced";
-    }
+    classification: ClassificationCategory
+  ): PresetCategory {
+    return CLASSIFICATION_PRESET_CATEGORIES[
+      classification
+    ];
   }
 
+  /**
+   * Returns the first preset of the mapped category,
+   * or undefined when it is not available.
+   */
   public selectRecommended(
     presets: PrintPreset[],
-    classification: string
+    classification: ClassificationCategory
   ): PrintPreset | undefined {
-    const category =
-      this.getRecommendedCategory(
-        classification
-      );
-
     return this.selectByCategory(
       presets,
-      category
+      this.getRecommendedCategory(
+        classification
+      )
     );
   }
 }

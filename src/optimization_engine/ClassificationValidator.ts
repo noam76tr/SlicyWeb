@@ -9,39 +9,28 @@
  * - SYSTEM_RULES.md
  */
 
+import { CLASSIFICATION_CATEGORIES } from "../constants/AnalysisConstants";
 import type {
   Classification,
   ClassificationCategory,
   ConfidenceLevel
 } from "../types/Classification";
 
+import { ConfidenceScorer } from "./ConfidenceScorer";
+
 export class ClassificationValidator {
   private readonly validCategories:
     Set<ClassificationCategory> =
-      new Set([
-        "miniature",
-        "figurine",
-        "decorative_object",
-        "vase",
-        "container",
-        "prototype",
-        "tool",
-        "gear",
-        "bracket",
-        "mechanical_part",
-        "enclosure",
-        "structural_component",
-        "articulated_model",
-        "unknown"
-      ]);
+      new Set(CLASSIFICATION_CATEGORIES);
 
   private readonly validConfidenceLevels:
     Set<ConfidenceLevel> =
-      new Set([
+      new Set<ConfidenceLevel>([
+        "unknown",
         "low",
         "medium",
         "high",
-        "unknown"
+        "very_high"
       ]);
 
   /**
@@ -57,11 +46,11 @@ export class ClassificationValidator {
       this.validateConfidenceScore(
         classification.confidenceScore
       ) &&
-      this.validateConfidenceLevel(
-        classification.confidenceLevel
-      ) &&
       this.validateDetectedFeatures(
         classification.detectedFeatures
+      ) &&
+      Array.isArray(
+        classification.detectedTags
       )
     );
   }
@@ -119,56 +108,14 @@ export class ClassificationValidator {
   }
 
   /**
-   * Validates consistency between
-   * confidence score and confidence level.
-   */
-  public validateConsistency(
-    classification: Classification
-  ): boolean {
-    const expectedLevel =
-      this.calculateConfidenceLevel(
-        classification.confidenceScore
-      );
-
-    return (
-      classification.confidenceLevel ===
-      expectedLevel
-    );
-  }
-
-  /**
-   * Converts score into confidence level.
+   * Converts score into confidence level
+   * (OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels).
    */
   public calculateConfidenceLevel(
     score: number
   ): ConfidenceLevel {
-    if (score >= 80) {
-      return "high";
-    }
-
-    if (score >= 50) {
-      return "medium";
-    }
-
-    if (score > 0) {
-      return "low";
-    }
-
-    return "unknown";
-  }
-
-  /**
-   * Validates classification and
-   * consistency rules together.
-   */
-  public validateComplete(
-    classification: Classification
-  ): boolean {
-    return (
-      this.validate(classification) &&
-      this.validateConsistency(
-        classification
-      )
+    return ConfidenceScorer.getLevel(
+      score
     );
   }
 }

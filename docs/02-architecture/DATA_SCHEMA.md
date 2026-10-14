@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 2.3.0
+Version: 3.0.0
 
 Status: Approved
 
@@ -1314,34 +1314,38 @@ outdated = The object was rotated or scaled after computation; must be recompute
 }
 ```
 
+category: stored value (Classification Categories).
+
+classificationVersion: version of OBJECT_CLASSIFICATION_SPEC.md applied by the classification.
+
+The confidence level is not stored. It is computed from confidenceScore (OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels).
+
 
 ---
 
 # Classification Categories
 
-Supported values:
+Supported values (OBJECT_CLASSIFICATION_SPEC.md, Supported Categories):
 
-Figurine
+| Category | Stored Value |
+|----------|--------------|
+| Figurine | figurine |
+| Miniature | miniature |
+| Mechanical Part | mechanical_part |
+| Gear | gear |
+| Bracket | bracket |
+| Container | container |
+| Vase | vase |
+| Enclosure | enclosure |
+| Tool | tool |
+| Articulated Model | articulated_model |
+| Prototype | prototype |
+| Structural Part | structural_part |
+| Decorative Object | decorative_object |
+| Functional Part | functional_part |
+| Unknown | unknown |
 
-Miniature
-
-Mechanical Part
-
-Gear
-
-Bracket
-
-Tool
-
-Enclosure
-
-Vase
-
-Prototype
-
-Structural Part
-
-Functional Part
+The category field contains the stored value.
 
 ---
 
@@ -1387,36 +1391,48 @@ Functional Part
     "name": "",
     "category": "",
     "description": "",
-    "settings": {}
+    "settings": {},
+    "confidenceScore": 0
   }
 }
 ```
+
+confidenceScore: 0 to 100 (PRINT_PRESETS_SPEC.md, Preset Structure).
 
 ---
 
 # Print Preset Categories
 
-Supported values:
+Supported values (PRINT_PRESETS_SPEC.md, Preset Categories):
 
-Draft
+| Category | Stored Value |
+|----------|--------------|
+| Ultra Quality | ultra_quality |
+| High Quality | high_quality |
+| Balanced | balanced |
+| Draft | draft |
+| Fast Prototype | fast_prototype |
+| Structural | structural |
+| Functional | functional |
+| Engineering | engineering |
+| Flexible | flexible |
+| Miniature | miniature |
+| Vase | vase |
+| Custom | custom |
 
-Fast
+The category field contains the stored value.
 
-Balanced
+---
 
-Quality
+# Category Value Format
 
-Ultra Quality
+Classification categories and print preset categories are stored as lowercase snake_case values (for example structural_part, ultra_quality).
 
-Mechanical
+The same values are used in the source code, in WYPROJ files and in API payloads.
 
-Prototype
+They are data values. NAMING_CONVENTIONS.md, Enum Values (PascalCase) applies to the members of TypeScript enums, not to stored values.
 
-Miniature
-
-Vase
-
-Structural
+A display name is converted to its stored value by writing it in lowercase and replacing spaces with underscores.
 
 ---
 

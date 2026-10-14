@@ -18,6 +18,7 @@
  * - OBJECT_CLASSIFICATION_SPEC.md
  */
 
+import { CLASSIFICATION_CATEGORIES } from "../constants/AnalysisConstants";
 import type {
   Classification,
   ClassificationCategory,
@@ -26,29 +27,15 @@ import type {
 
 export class ClassificationValidator {
   private static readonly VALID_CATEGORIES: readonly ClassificationCategory[] =
-    [
-      "miniature",
-      "figurine",
-      "decorative_object",
-      "vase",
-      "container",
-      "prototype",
-      "tool",
-      "gear",
-      "bracket",
-      "mechanical_part",
-      "enclosure",
-      "structural_component",
-      "articulated_model",
-      "unknown",
-    ];
+    CLASSIFICATION_CATEGORIES;
 
   private static readonly VALID_CONFIDENCE_LEVELS: readonly ConfidenceLevel[] =
     [
+      "unknown",
       "low",
       "medium",
       "high",
-      "unknown",
+      "very_high",
     ];
 
   /**
@@ -71,11 +58,11 @@ export class ClassificationValidator {
       this.validateConfidenceScore(
         classification.confidenceScore,
       ) &&
-      this.validateConfidenceLevel(
-        classification.confidenceLevel,
-      ) &&
       this.validateFeatures(
         classification.detectedFeatures,
+      ) &&
+      this.validateFeatures(
+        classification.detectedTags,
       )
     );
   }
@@ -126,14 +113,5 @@ export class ClassificationValidator {
     features: string[],
   ): boolean {
     return Array.isArray(features);
-  }
-
-  /**
-   * Validates validation state.
-   */
-  public static validateState(
-    validated: boolean,
-  ): boolean {
-    return typeof validated === "boolean";
   }
 }

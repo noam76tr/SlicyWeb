@@ -172,7 +172,7 @@ export class CategoryDetector {
         ],
       )
     ) {
-      return "structural_component";
+      return "structural_part";
     }
 
     if (
@@ -209,7 +209,7 @@ export class CategoryDetector {
         ],
       )
     ) {
-      return "mechanical_part";
+      return "functional_part";
     }
 
     return "unknown";

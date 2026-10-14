@@ -18,93 +18,183 @@
  * - PRINT_PRESETS_SPEC.md
  * - OBJECT_CLASSIFICATION_SPEC.md
  */
+import {
+  CLASSIFICATION_PRESET_CATEGORIES,
+  DEFAULT_PRESET_CATEGORY
+} from "../constants/PresetConstants";
 import type { Analysis } from "../types/Analysis";
-import type { RecommendedProfile,} from "../types/Recommendation";
+import type { RecommendedProfile } from "../types/Recommendation";
 import type { Classification } from "../types/Classification";
 import type { PrintPreset } from "../types/PrintPreset";
+import type { Warning } from "../types/Warning";
+
+import { ConfidenceScorer } from "../classification_engine/ConfidenceScorer";
+
+/**
+ * Selected preset and the warnings of the selection
+ * (PRINT_PRESETS_SPEC.md, Default Preset).
+ */
+export interface PresetSelection {
+  preset: PrintPreset;
+
+  warnings: Warning[];
+}
+
+/**
+ * Preset selection warnings
+ * (PRINT_PRESETS_SPEC.md, Preset Selection Warnings).
+ */
+export const CLASSIFICATION_UNCERTAIN_WARNING: Warning = {
+  code: "CLASSIFICATION_UNCERTAIN",
+  severity: "info",
+  message: "Object classification uncertain. Balanced preset used.",
+};
+
+export const EXPECTED_PRESET_UNAVAILABLE_WARNING: Warning = {
+  code: "EXPECTED_PRESET_UNAVAILABLE",
+  severity: "info",
+  message: "Expected preset not available. Balanced preset used.",
+};
 
 export class DecisionEngine {
   /**
-   * Generates the recommended profile of an object
-   * from the selected print preset (its starting point,
-   * PRINT_PRESETS_SPEC.md, Golden Rule).
+   * Generates the recommended profile of an object.
+   * The profile is initialized from preset.settings, then adjusted
+   * (PRINT_PRESETS_SPEC.md, Recommended Profile Initialization, Golden Rule).
+   * Values not defined by preset.settings keep the engine defaults.
    */
-public generate(
-  analysis: Analysis,
-  preset: PrintPreset,
-): RecommendedProfile {
-  return {
-    printPreset: preset,
+  public generate(
+    analysis: Analysis,
+    preset: PrintPreset,
+  ): RecommendedProfile {
+    const settings = preset.settings;
 
-    quality: {
-      layerHeight: 0.2,
-      wallCount: 3,
-      topLayers: 5,
-      bottomLayers: 5,
-    },
+    return {
+      preset,
 
-    speed: {
-      print: 80,
-      outerWall: 40,
-      innerWall: 80,
-      infill: 120,
-      travel: 250,
-    },
+      quality: {
+        layerHeight: settings.layerHeight,
+        wallCount: settings.wallCount,
+        topLayers: settings.topLayers,
+        bottomLayers: settings.bottomLayers,
+      },
 
-    cooling: {
-      fanSpeed: 100,
-      minimumLayerTime: 5,
-    },
+      speed: {
+        print: settings.printSpeed,
+        outerWall: 40,
+        innerWall: 80,
+        infill: 120,
+        travel: 250,
+      },
 
-    retraction: {
-      distance: 0.8,
-      speed: 35,
-    },
+      cooling: {
+        fanSpeed: settings.fanSpeed,
+        minimumLayerTime: 5,
+      },
 
-    supports: {
-      enabled:
-        analysis.overhangs.detected,
-      type:
-        analysis.overhangs.detected
-          ? "organic"
-          : "none",
-    },
+      retraction: {
+        distance: 0.8,
+        speed: 35,
+      },
 
-    adhesion: "brim",
+      supports: this.adjustSupports(
+        analysis,
+        preset,
+      ),
 
-    infillDensity: 15,
+      adhesion: settings.adhesionType,
 
-    infillPattern: "gyroid",
+      infillDensity: settings.infillDensity,
 
-    confidenceScore: 75,
-  };
-}
-  
+      infillPattern: settings.infillPattern,
+
+      confidenceScore: preset.confidenceScore,
+    };
+  }
+
   /**
-   * Selects the most appropriate preset
-   * for a classification result.
+   * Geometry adjustment: detected overhangs require supports,
+   * whatever the preset (PRINT_PRESETS_SPEC.md, Golden Rule).
+   */
+  private adjustSupports(
+    analysis: Analysis,
+    preset: PrintPreset,
+  ): RecommendedProfile["supports"] {
+    const settings = preset.settings;
+
+    if (
+      analysis.overhangs.detected &&
+      (!settings.supportEnabled ||
+        settings.supportType === "none")
+    ) {
+      return {
+        enabled: true,
+        type: "organic",
+      };
+    }
+
+    return {
+      enabled: settings.supportEnabled,
+      type: settings.supportType,
+    };
+  }
+
+  /**
+   * Selects the preset of a classification
+   * (PRINT_PRESETS_SPEC.md, Classification To Preset Mapping, Default Preset).
+   * Returns null when no Balanced preset is available.
+   * The first preset of the list is never used as a fallback.
    */
   public selectPreset(
     classification: Classification,
     presets: PrintPreset[],
-  ): PrintPreset | null {
-    if (presets.length === 0) {
-      return null;
+  ): PresetSelection | null {
+    const balanced = this.findByCategory(
+      presets,
+      DEFAULT_PRESET_CATEGORY,
+    );
+
+    const uncertain =
+      classification.category === "unknown" ||
+      ConfidenceScorer.getLevel(
+        classification.confidenceScore,
+      ) === "unknown";
+
+    if (uncertain) {
+      return balanced
+        ? {
+            preset: balanced,
+            warnings: [CLASSIFICATION_UNCERTAIN_WARNING],
+          }
+        : null;
     }
 
-    const category =
-      classification.category;
+    const expected = this.findByCategory(
+      presets,
+      CLASSIFICATION_PRESET_CATEGORIES[classification.category],
+    );
 
-    const matchingPreset =
-      presets.find(
-        (preset) =>
-          preset.category ===
-          category,
-      );
+    if (expected) {
+      return {
+        preset: expected,
+        warnings: [],
+      };
+    }
 
-    return (
-      matchingPreset ??
-      presets[0]
+    return balanced
+      ? {
+          preset: balanced,
+          warnings: [EXPECTED_PRESET_UNAVAILABLE_WARNING],
+        }
+      : null;
+  }
+
+  private findByCategory(
+    presets: PrintPreset[],
+    category: PrintPreset["category"],
+  ): PrintPreset | undefined {
+    return presets.find(
+      (preset) => preset.category === category,
     );
   }
 

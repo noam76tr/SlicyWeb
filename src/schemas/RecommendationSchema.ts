@@ -59,8 +59,13 @@ export const SupportSettingsSchema = z.object({
   ])
 });
 
+/**
+ * Recommended Profile Schema (DATA_SCHEMA.md).
+ */
 export const RecommendedProfileSchema =
   z.object({
+    preset: PresetSchema,
+
     quality: QualitySettingsSchema,
 
     speed: SpeedSettingsSchema,

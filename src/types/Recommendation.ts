@@ -56,8 +56,11 @@ export interface SupportSettings {
   type: SupportType;
 }
 
+/**
+ * Recommended Profile Schema (DATA_SCHEMA.md).
+ */
 export interface RecommendedProfile {
-  printPreset: PrintPreset;
+  preset: PrintPreset;
 
   quality: QualitySettings;
 

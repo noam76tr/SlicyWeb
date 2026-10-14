@@ -17,13 +17,11 @@
  * - OBJECT_CLASSIFICATION_SPEC.md
  */
 
-import type { ClassificationCategory } from "../types/Classification";
-
-export type ConfidenceLevel =
-  | "low"
-  | "medium"
-  | "high"
-  | "unknown";
+import { CONFIDENCE_LEVELS } from "../constants/AnalysisConstants";
+import type {
+  ClassificationCategory,
+  ConfidenceLevel,
+} from "../types/Classification";
 
 export class ConfidenceScorer {
   /**
@@ -66,7 +64,9 @@ export class ConfidenceScorer {
   }
 
   /**
-   * Returns confidence level.
+   * Returns the confidence level
+   * (OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels:
+   * 0-39 unknown, 40-59 low, 60-74 medium, 75-89 high, 90-100 very high).
    */
   public static getLevel(
     score: number,
@@ -74,19 +74,23 @@ export class ConfidenceScorer {
     const normalizedScore =
       this.normalize(score);
 
-    if (normalizedScore === 0) {
-      return "unknown";
+    if (normalizedScore >= CONFIDENCE_LEVELS.VERY_HIGH.min) {
+      return "very_high";
     }
 
-    if (normalizedScore < 60) {
-      return "low";
+    if (normalizedScore >= CONFIDENCE_LEVELS.HIGH.min) {
+      return "high";
     }
 
-    if (normalizedScore < 85) {
+    if (normalizedScore >= CONFIDENCE_LEVELS.MEDIUM.min) {
       return "medium";
     }
 
-    return "high";
+    if (normalizedScore >= CONFIDENCE_LEVELS.LOW.min) {
+      return "low";
+    }
+
+    return "unknown";
   }
 
   /**

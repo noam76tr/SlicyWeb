@@ -77,6 +77,10 @@ export const CONFIDENCE_LEVELS = {
   }
 } as const;
 
+/**
+ * Display names of the classification categories
+ * (OBJECT_CLASSIFICATION_SPEC.md, Supported Categories).
+ */
 export const OBJECT_CATEGORIES = [
   "Figurine",
   "Miniature",
@@ -94,3 +98,33 @@ export const OBJECT_CATEGORIES = [
   "Functional Part",
   "Unknown"
 ] as const;
+
+/**
+ * Stored values of the classification categories
+ * (DATA_SCHEMA.md, Classification Categories and Category Value Format).
+ * Same order as OBJECT_CATEGORIES.
+ */
+export const CLASSIFICATION_CATEGORIES = [
+  "figurine",
+  "miniature",
+  "mechanical_part",
+  "gear",
+  "bracket",
+  "container",
+  "vase",
+  "enclosure",
+  "tool",
+  "articulated_model",
+  "prototype",
+  "structural_part",
+  "decorative_object",
+  "functional_part",
+  "unknown"
+] as const;
+
+/**
+ * Version of the classification rules
+ * (OBJECT_CLASSIFICATION_SPEC.md version), stored in
+ * classification.classificationVersion (DATA_SCHEMA.md).
+ */
+export const CLASSIFICATION_VERSION = "1.1.0";

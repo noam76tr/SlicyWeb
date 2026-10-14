@@ -2,7 +2,7 @@
 
 # OBJECT CLASSIFICATION SPECIFICATION
 
-Version: 1.0.0
+Version: 1.1.0
 
 Status: Approved
 
@@ -563,6 +563,8 @@ Unknown
 
 # Unknown Object Strategy
 
+Applies when the category is Unknown or the confidence level is Unknown (section Confidence Levels).
+
 Use:
 
 ```text
@@ -794,22 +796,9 @@ Increase Reliability
 ---
 # Print Preset Influence
 
-Classification may automatically select a preferred preset.
+Classification selects the preset category.
 
-Example:
-
-```text
-Prototype
-↓
-Draft Preset
-↓
-Figurine
-↓
-Quality Preset
-
-Mechanical Part
-↓
-Mechanical Preset
+The mapping, the default preset and the related warnings are defined in PRINT_PRESETS_SPEC.md (Classification To Preset Mapping, Default Preset).
 
 ---
 
