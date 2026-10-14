@@ -6,6 +6,9 @@
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
     "types": ["node", "vite/client"],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
 
     "strict": true,
     "noImplicitAny": true,

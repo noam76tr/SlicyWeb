@@ -839,6 +839,14 @@ AxesHelper
 
 
 
+Installation:
+
+
+
+shadcn command line tool (shadcn init, shadcn add); components are copied into the repository and imported with the "@/" alias (src/), ADR-025
+
+
+
 ---
 
 
@@ -927,6 +935,14 @@ Cards
 
 
 
+Version:
+
+
+
+4 (major version), through @tailwindcss/vite; entry point src/gui/styles/global.css (ADR-025)
+
+
+
 ---
 
 
@@ -996,6 +1012,14 @@ Tailwind Utilities
 
 
 ## Lucide React
+
+
+
+Version:
+
+
+
+1 (major version, ADR-025)
 
 
 

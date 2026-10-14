@@ -1,0 +1,9 @@
+/*
+ * SlicyWeb
+ * Global Styles
+ *
+ * Tailwind CSS 4 entry point (TECH_STACK.md, Styling System; ADR-025).
+ * Imported once by src/gui/main.tsx.
+ */
+
+@import "tailwindcss";

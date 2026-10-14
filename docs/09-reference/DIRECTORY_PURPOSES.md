@@ -340,6 +340,7 @@ Every file should be placed in the directory that matches its responsibility.
 | `main.tsx` | Renderer entry point: mounts App in index.html |
 | `App.tsx` | Main application component with the global structure |
 | `MainLayout.tsx` | Reusable component organizing the main page layout |
+| `styles/global.css` | Global styles: Tailwind CSS 4 entry point, imported by main.tsx |
 
 ---
 

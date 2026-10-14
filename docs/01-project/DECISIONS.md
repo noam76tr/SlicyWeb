@@ -1843,6 +1843,9 @@ Library Versions:
 - React: major version 18.
 - Zod: 3.25.x, installed from Phase 1.
 - Electron: major version 44 (44.7.0 or a later 44.x patch release).
+- Tailwind CSS: major version 4, through the @tailwindcss/vite plugin; the styles entry point is src/gui/styles/global.css (no Tailwind configuration file).
+- Lucide React: major version 1 (lucide-react).
+- shadcn/ui: installed with the shadcn command line tool (shadcn init); components are copied into the repository and use the "@/" import alias, which designates src/ (tsconfig.json paths and Vite resolve.alias).
 
 Electron 44 is the latest stable major version and the supported version with the longest remaining support. It embeds Node.js 24 and Chromium 152.
 

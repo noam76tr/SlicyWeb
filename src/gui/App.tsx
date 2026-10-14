@@ -11,6 +11,7 @@
  */
 
 import { useEffect } from "react";
+import { Upload } from "lucide-react";
 
 export default function App(): JSX.Element {
   useEffect(() => {
@@ -41,8 +42,12 @@ export default function App(): JSX.Element {
                 py-2
                 text-left
                 hover:bg-blue-500
+                flex
+                items-center
+                gap-2
               "
             >
+              <Upload className="h-4 w-4" aria-hidden="true" />
               Import STL
             </button>
 
@@ -55,8 +60,12 @@ export default function App(): JSX.Element {
                 py-2
                 text-left
                 hover:bg-blue-500
+                flex
+                items-center
+                gap-2
               "
             >
+              <Upload className="h-4 w-4" aria-hidden="true" />
               Import 3MF
             </button>
           </div>

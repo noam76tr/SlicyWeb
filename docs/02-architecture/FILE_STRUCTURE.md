@@ -402,6 +402,7 @@ src/gui/
 ├── themes/
 ├── hooks/
 └── styles/
+    └── global.css             = Tailwind CSS 4 entry point (ADR-025)
 ```
 
 ---
@@ -1003,7 +1004,6 @@ src/gui/toolbars/
 src/gui/components/
 src/gui/themes/
 src/gui/hooks/
-src/gui/styles/
 src/renderer/helpers/
 src/recovery/backups/
 src/schemas/ErrorSchema.ts
