@@ -6,8 +6,6 @@
  * - WYPROJ format version (WYPROJ Version Rule)
  * - Project structure validation (Project Schema)
  * - Object Reference Rules 3 to 5 (ADR-026)
- * - Full content of analysis and recommendation entries
- *   (AnalysisSchema, RecommendationSchema)
  * - Date format validation
  *
  * No business logic.

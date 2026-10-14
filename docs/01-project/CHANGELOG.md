@@ -967,33 +967,6 @@ Date:
 
 ---
 
-# VERSION 0.1.25
-
-Release Type:
-Validation Update
-
-Status:
-Completed
-
-Date:
-2026-10-14
-
-## Changed
-
-- src/schemas/ProjectSchema.ts: analysis and recommendation entries are validated in full with AnalysisSchema and RecommendationSchema at project load (previously reference fields only); Object Reference Rules 3 to 5 unchanged
-- src/schemas/AnalysisSchema.ts: ResultStatusSchema defined here (removes the import cycle with ProjectSchema); ProjectSchema re-exports it
-- src/schemas/RecommendationSchema.ts: imports ResultStatusSchema from AnalysisSchema
-
-## Removed
-
-- src/schemas/ProjectSchema.ts: AnalysisEntryReferenceSchema and RecommendationEntryReferenceSchema (replaced by the full schemas; not used elsewhere)
-
-## Fixed
-
-- KI-003 resolved
-
----
-
 # VERSION 0.2.0
 
 Release Type:
@@ -1770,6 +1743,22 @@ Resolve Before:
 Planned Resolution:
 
 ```
+
+
+---
+
+
+Identifier: KI-003
+
+Since: 0.1.13
+
+Affected Module: src/schemas/ProjectSchema.ts, src/project/ProjectValidator.ts
+
+Issue: At project load, analysis and recommendation entries are validated only for their reference fields (analysisId, objectId, recommendationId, status). Their full content is not validated: AnalysisSchema and RecommendationSchema are not applied.
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
+
+Planned Resolution: Next lot after 0.1.24
 
 
 ---
