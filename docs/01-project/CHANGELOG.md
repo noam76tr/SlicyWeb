@@ -1041,6 +1041,39 @@ Date:
 
 ---
 
+# VERSION 0.1.28
+
+Release Type:
+Core Dependencies
+
+Status:
+In Progress
+
+Date:
+2026-10-14
+
+## Added
+
+- Technical Phase 2 - Core Dependencies: Three.js, Zustand and Zod were already installed (0.1.16); Tailwind CSS 4 (tailwindcss, @tailwindcss/vite) and Lucide React (lucide-react) added
+- src/gui/styles/global.css: Tailwind CSS 4 entry point, imported by src/gui/main.tsx
+- vite.config.mts: @tailwindcss/vite plugin and "@/" alias for src/ (shadcn/ui prerequisite)
+- tsconfig.json: "@/*" path for src/*
+- src/gui/App.tsx: Lucide Upload icon on the import buttons (dependency check)
+
+## Changed
+
+- DECISIONS.md: ADR-025 defines Tailwind CSS 4, Lucide React 1 and the shadcn/ui installation (shadcn command line tool, "@/" alias)
+- ARCHITECTURE_DECISION_MATRIX.md: ADM-022 updated
+- TECH_STACK.md: Tailwind CSS, Lucide React and shadcn/ui installation details
+- FILE_STRUCTURE.md: src/gui/styles/global.css created; removed from Planned Items
+- DIRECTORY_PURPOSES.md: src/gui/styles/global.css
+
+## Validation Requirements
+
+- shadcn/ui: run shadcn init on the development machine; the generated files are reviewed in the next lot, which closes Phase 2
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
