@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 2.2.0
+Version: 2.3.0
 
 Status: Approved
 
@@ -1526,10 +1526,27 @@ Structural
     "retraction": {},
     "supports": {},
     "adhesion": {},
+    "infillDensity": 0,
+    "infillPattern": "",
     "confidenceScore": 0
   }
 }
 ```
+
+Infill Settings:
+
+infillDensity (percentage, 0 to 100) and infillPattern belong to the recommended profile, at the same level as quality.
+
+They are not part of quality.
+
+Export Values:
+
+The target slicer export uses the values of the recommended profile (SLICER_EXPORT_SPEC.md, Settings Mapping).
+
+The preset is the starting point of the recommendation (PRINT_PRESETS_SPEC.md, Golden Rule). The values of preset.settings are never exported.
+
+When a value exists in the recommended profile and in preset.settings (for example infillDensity), the value of the recommended profile is exported.
+
 ---
 
 # Recommendation Schema

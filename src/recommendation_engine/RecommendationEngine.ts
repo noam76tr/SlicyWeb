@@ -9,6 +9,7 @@
  */
 
 import type { Analysis } from "../types/Analysis";
+import type { PrintPreset } from "../types/PrintPreset";
 import type { Recommendation } from "../types/Recommendation";
 
 import { DecisionEngine } from "./DecisionEngine";
@@ -32,13 +33,32 @@ export class RecommendationEngine {
   private readonly recommendationBuilder =
     new RecommendationBuilder();
 
+  /**
+   * Generates the recommendation of one object.
+   * The print preset is selected among the available presets;
+   * no preset is invented when none is available.
+   */
   public generateRecommendation(
     analysis: Analysis,
-    selection: RecommendationSelection
+    selection: RecommendationSelection,
+    presets: PrintPreset[]
   ): Recommendation {
+    const preset =
+      this.decisionEngine.selectPreset(
+        analysis.classification,
+        presets
+      );
+
+    if (!preset) {
+      throw new Error(
+        "No print preset available: a recommendation requires a print preset."
+      );
+    }
+
     const profile =
       this.decisionEngine.generate(
-        analysis
+        analysis,
+        preset
       );
 
     const validatedProfile =

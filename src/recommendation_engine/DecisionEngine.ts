@@ -25,14 +25,16 @@ import type { PrintPreset } from "../types/PrintPreset";
 
 export class DecisionEngine {
   /**
-   * Selects the most appropriate preset
-   * for a classification result.
+   * Generates the recommended profile of an object
+   * from the selected print preset (its starting point,
+   * PRINT_PRESETS_SPEC.md, Golden Rule).
    */
 public generate(
   analysis: Analysis,
+  preset: PrintPreset,
 ): RecommendedProfile {
   return {
-    printPreset: {} as PrintPreset,
+    printPreset: preset,
 
     quality: {
       layerHeight: 0.2,
@@ -78,6 +80,10 @@ public generate(
   };
 }
   
+  /**
+   * Selects the most appropriate preset
+   * for a classification result.
+   */
   public selectPreset(
     classification: Classification,
     presets: PrintPreset[],

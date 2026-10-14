@@ -704,7 +704,7 @@ Release Type:
 Project Bootstrap
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-13
@@ -728,9 +728,10 @@ Date:
 - TECH_STACK.md: Electron version 44
 - FILE_STRUCTURE.md: created root files removed from Planned Items; src/gui/main.tsx added to the GUI Layer
 
-## Validation Requirements
+## Validation Result
 
-- Phase 1 validation (Application Starts, Electron Works, React Works, Build Successful) is pending: it requires npm install, npm run dev and npm run build on a development machine
+- Phase 1 validation on Windows 11 (2026-10-14): npm install, npm run build, npm run dev and npm start succeed; the application window opens and displays the React application (Application Starts, Electron Works, React Works, Build Successful)
+- Phase 1 is not closed: npm run lint reports errors (KI-005)
 
 ---
 
@@ -805,6 +806,30 @@ Date:
 ## Added
 
 - KNOWN ISSUES: KI-006 (sub-types of the Recommendation) and KI-007 (API_SPEC.md Generate Recommendation response)
+
+---
+
+# VERSION 0.1.20
+
+Release Type:
+Schema Update
+
+Status:
+Completed
+
+Date:
+2026-10-14
+
+## Changed
+
+- DATA_SCHEMA.md 2.3.0: Recommended Profile Schema gains infillDensity and infillPattern at the profile level (not in quality); Export Values rule: the target slicer export uses the recommended profile values, never preset.settings
+- src/recommendation_engine/DecisionEngine.ts: generate receives the selected print preset instead of building an empty preset
+- src/recommendation_engine/RecommendationEngine.ts and src/services/RecommendationService.ts: the available presets are an input; the preset is selected with DecisionEngine.selectPreset; generation fails when no preset is available
+
+## Fixed
+
+- Recommendations generated with an empty preset failed RecommendationSchema (KI-006)
+- CHANGELOG 0.1.16: status Completed (Phase 1 validation on Windows 11)
 
 ---
 
@@ -1599,7 +1624,7 @@ Issue: At project load, analysis and recommendation entries are validated only f
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
-Planned Resolution: After KI-006, once the sub-schemas used by RecommendationSchema match DATA_SCHEMA.md
+Planned Resolution: Next lot after 0.1.20
 
 
 ---
@@ -1637,7 +1662,7 @@ Decisions:
 
 Resolve Before: Closure of Phase 1 (TECH_STACK.md, Linting Rules: no errors, no warnings)
 
-Planned Resolution: Next lot after 0.1.19
+Planned Resolution: Lot after KI-003
 
 
 ---
@@ -1650,15 +1675,15 @@ Since: 0.1.19
 Affected Module: src/types/Recommendation.ts (RecommendedProfile), src/types/Classification.ts, src/types/PrintPreset.ts, src/schemas/RecommendationSchema.ts, src/schemas/AnalysisSchema.ts, src/schemas/PrintPresetSchema.ts, src/recommendation_engine/DecisionEngine.ts
 
 Issue: The sub-types used by the Recommendation differ from DATA_SCHEMA.md.
-- RecommendedProfile: the Recommended Profile Schema has preset, quality, speed, cooling, retraction, supports, adhesion and confidenceScore. The type has printPreset instead of preset, and infillDensity and infillPattern, which the schema places in the Recommended Settings Schema. RecommendedProfileSchema (Zod) has no preset field.
+- RecommendedProfile: the type names the preset printPreset instead of preset (Recommended Profile Schema). RecommendedProfileSchema (Zod) has no preset field. infillDensity and infillPattern are at the profile level, as documented in DATA_SCHEMA.md 2.3.0.
+- DecisionEngine: the profile values (quality, speed, cooling, retraction, adhesion, infill) are fixed constants; they are not derived from preset.settings, although the preset is the starting point of the recommendation (PRINT_PRESETS_SPEC.md, Golden Rule).
+- DecisionEngine.selectPreset compares the preset category (PresetCategory: balanced, mechanical...) with the classification category (ClassificationCategory: mechanical_part, figurine...); most categories never match and the first preset is returned. PresetSelector.getRecommendedCategory uses other category names (Prototype, Figurine...).
 - Classification: the Object Classification Schema has category, subcategory, confidenceScore, detectedFeatures, detectedTags and classificationVersion. The type has confidenceLevel and validated instead of subcategory, detectedTags and classificationVersion. AnalysisClassificationSchema (Zod) checks category, confidenceScore and detectedFeatures only.
 - PrintPreset: PresetSchema (Zod) does not check confidenceScore, and checks category, supportType and adhesionType as free strings.
-- DecisionEngine builds printPreset as an empty object; such a recommendation fails RecommendationSchema (preset.name missing).
-The placement of infillDensity and infillPattern requires a decision: DATA_SCHEMA.md does not define the content of quality.
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
-Planned Resolution: Lot to be scheduled after the decision on infill placement
+Planned Resolution: Lot to be scheduled; deriving the profile from preset.settings and the category mapping require a decision
 
 
 ---

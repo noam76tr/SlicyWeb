@@ -9,6 +9,7 @@
  */
 
 import type { Analysis } from "../types/Analysis";
+import type { PrintPreset } from "../types/PrintPreset";
 import type { Recommendation } from "../types/Recommendation";
 
 import { RecommendationEngine } from "../recommendation_engine/RecommendationEngine";
@@ -20,11 +21,13 @@ export class RecommendationService {
 
   public generateRecommendation(
     analysis: Analysis,
-    selection: RecommendationSelection
+    selection: RecommendationSelection,
+    presets: PrintPreset[]
   ): Recommendation {
     return this.recommendationEngine.generateRecommendation(
       analysis,
-      selection
+      selection,
+      presets
     );
   }
 }
