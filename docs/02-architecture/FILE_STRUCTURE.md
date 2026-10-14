@@ -62,6 +62,8 @@ SlicyWeb/
 │
 ├── index.html
 ├── package.json
+├── package-lock.json          = Exact installed versions (npm)
+├── components.json            = shadcn/ui configuration (ADR-025)
 ├── tsconfig.json
 ├── vite.config.mts
 ├── electron-builder.json
@@ -399,6 +401,7 @@ src/gui/
 ├── menus/
 ├── toolbars/
 ├── components/
+│   └── ui/                    = shadcn/ui components (button.tsx)
 ├── themes/
 ├── hooks/
 └── styles/
@@ -857,7 +860,8 @@ src/utils/
 ├── FileUtils.ts
 ├── JsonUtils.ts
 ├── MathUtils.ts
-└── ValidationUtils.ts
+├── ValidationUtils.ts
+└── cn.ts
 ```
 
 ---
@@ -1001,7 +1005,6 @@ src/gui/windows/
 src/gui/dialogs/
 src/gui/menus/
 src/gui/toolbars/
-src/gui/components/
 src/gui/themes/
 src/gui/hooks/
 src/renderer/helpers/

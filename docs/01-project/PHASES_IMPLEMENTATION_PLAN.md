@@ -635,6 +635,18 @@ Repositories
 
 # CORE DEPENDENCIES
 
+Status: Completed
+
+Date: 2026-10-14
+
+Validation result (Windows 11):
+
+- Three.js, Zustand, Zod: installed in Phase 1 (package.json)
+- Tailwind CSS 4: the application window is styled
+- Lucide React: icons displayed on the import buttons
+- shadcn/ui: shadcn init (Base UI, style base-nova); Button component generated
+- Build Successful: npm install and npm run dev succeed; npm run typecheck and npm run lint report 0 errors
+
 ---
 
 ## Objectives

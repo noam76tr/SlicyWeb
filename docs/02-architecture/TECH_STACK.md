@@ -847,6 +847,14 @@ shadcn command line tool (shadcn init, shadcn add); components are copied into t
 
 
 
+Settings:
+
+
+
+Base UI component library, style base-nova, Lucide icons; components in src/gui/components/ui/ (components.json)
+
+
+
 ---
 
 

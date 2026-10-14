@@ -1846,6 +1846,8 @@ Library Versions:
 - Tailwind CSS: major version 4, through the @tailwindcss/vite plugin; the styles entry point is src/gui/styles/global.css (no Tailwind configuration file).
 - Lucide React: major version 1 (lucide-react).
 - shadcn/ui: installed with the shadcn command line tool (shadcn init); components are copied into the repository and use the "@/" import alias, which designates src/ (tsconfig.json paths and Vite resolve.alias).
+- shadcn/ui settings (components.json): component library Base UI (@base-ui/react), style base-nova (preset Nova), Lucide icons; components in src/gui/components/ui/, utils alias src/utils/cn.ts.
+- Font: Inter (@fontsource-variable/inter), fallback Segoe UI, Roboto, sans-serif (GUI_SPEC.md, Font), instead of the Geist font of the Nova preset.
 
 Electron 44 is the latest stable major version and the supported version with the longest remaining support. It embeds Node.js 24 and Chromium 152.
 
