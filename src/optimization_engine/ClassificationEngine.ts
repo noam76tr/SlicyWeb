@@ -31,6 +31,9 @@ export class ClassificationEngine {
   private readonly categoryDetector =
     new CategoryDetector();
 
+  private readonly classificationValidator =
+    new ClassificationValidator();
+
   /**
    * Classifies a model from extracted features.
    */
@@ -62,7 +65,7 @@ export class ClassificationEngine {
     };
 
     classification.validated =
-      ClassificationValidator.validate(
+      this.classificationValidator.validate(
         classification,
       );
 

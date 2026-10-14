@@ -21,6 +21,7 @@
 import type { Analysis } from "../types/Analysis";
 import type {
   OptimizationResult,
+  RecommendedProfile,
 } from "../types/Recommendation";
 
 import { OrientationOptimizer } from "./OrientationOptimizer";
@@ -42,19 +43,27 @@ export class OptimizationEngine {
     new SupportOptimizer();
 
   /**
-   * Generates optimization result.
+   * Generates optimization result
+   * for an object and its recommended profile.
    */
   public optimize(
     analysis: Analysis,
+    profile: RecommendedProfile,
   ): OptimizationResult {
     const orientationScore =
       this.orientationOptimizer.optimize(
         analysis,
       );
 
+    const optimizedInfillDensity =
+      this.materialOptimizer.optimizeInfillDensity(
+        profile.infillDensity,
+      );
+
     const materialReduction =
-      this.materialOptimizer.optimize(
-        analysis,
+      this.materialOptimizer.estimateMaterialReduction(
+        profile.infillDensity,
+        optimizedInfillDensity,
       );
 
     const timeReduction =

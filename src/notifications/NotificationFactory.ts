@@ -17,14 +17,17 @@
  * - SYSTEM_RULES.md
  */
 
-import type { Notification } from "../types/Notification";
+import type {
+  Notification,
+  NotificationType,
+} from "../types/Notification";
 
 export class NotificationFactory {
   /**
    * Creates a notification.
    */
   public create(
-    type: string,
+    type: NotificationType,
     message: string,
   ): Notification {
     return {

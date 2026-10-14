@@ -28,7 +28,6 @@ export class MaterialOptimizer {
    */
   public optimize(
     profile: RecommendedProfile,
-    material: Material,
   ): RecommendedProfile {
     const optimizedInfill =
       this.optimizeInfillDensity(

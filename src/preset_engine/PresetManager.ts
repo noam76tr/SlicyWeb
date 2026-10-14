@@ -31,7 +31,7 @@ export class PresetManager {
   public addPreset(
     preset: PrintPreset,
   ): void {
-    this.repository.add(
+    this.repository.save(
       preset,
     );
   }
@@ -80,7 +80,7 @@ export class PresetManager {
    * Returns preset count.
    */
   public getPresetCount(): number {
-    return this.repository.getCount();
+    return this.repository.count();
   }
 
   /**

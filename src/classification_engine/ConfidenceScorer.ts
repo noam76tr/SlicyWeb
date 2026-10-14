@@ -17,6 +17,8 @@
  * - OBJECT_CLASSIFICATION_SPEC.md
  */
 
+import type { ClassificationCategory } from "../types/Classification";
+
 export type ConfidenceLevel =
   | "low"
   | "medium"
@@ -38,12 +40,18 @@ export class ConfidenceScorer {
 
   /**
    * Calculates a confidence score.
+   * An unknown category has no confidence
+   * (same rule as src/optimization_engine/ConfidenceScorer.ts).
    */
   public static calculate(
     features: string[],
-    category: string,
+    category: ClassificationCategory,
   ): number {
     if (features.length === 0) {
+      return 0;
+    }
+
+    if (category === "unknown") {
       return 0;
     }
 

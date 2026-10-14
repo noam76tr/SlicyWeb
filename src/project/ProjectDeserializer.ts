@@ -31,7 +31,8 @@ export class ProjectDeserializer {
       throw new Error(
         `Failed to deserialize project: ${
           error instanceof Error ? error.message : "Unknown error"
-        }`
+        }`,
+        { cause: error }
       );
     }
 

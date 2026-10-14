@@ -24,15 +24,11 @@ import { TranslationLoader } from "./TranslationLoader";
 export class LocalizationService {
   private translations: Record<string, string> = {};
 
-  constructor(
-    private readonly translationLoader: TranslationLoader
-  ) {}
-
   public async loadLanguage(
     language: SupportedLanguage
   ): Promise<void> {
     this.translations =
-      await this.translationLoader.load(language);
+      await TranslationLoader.load(language);
   }
 
   public translate(

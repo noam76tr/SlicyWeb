@@ -20,8 +20,6 @@
 
 import * as THREE from "three";
 
-import type { Object3D } from "../types/Object3D";
-
 export class SceneManager {
   private readonly scene: THREE.Scene;
 

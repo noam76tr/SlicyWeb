@@ -12,7 +12,6 @@
 import { ipcMain } from "electron";
 import { z } from "zod";
 
-import type { Project } from "../../types/Project";
 import { ProjectSchema } from "../../schemas/ProjectSchema";
 
 // Zod schema for IPC payloads

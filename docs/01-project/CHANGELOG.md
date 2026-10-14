@@ -833,6 +833,38 @@ Date:
 
 ---
 
+# VERSION 0.1.21
+
+Release Type:
+Bug Fix
+
+Status:
+Completed
+
+Date:
+2026-10-14
+
+## Fixed
+
+- src/classification_engine/ClassificationEngine.ts: ConfidenceScorer.calculate called as a static method
+- src/classification_engine/ConfidenceScorer.ts: an unknown category gives a confidence score of 0, as in src/optimization_engine/ConfidenceScorer.ts; category typed as ClassificationCategory
+- src/cost_engine/CostCalculator.ts: calculate returns the Cost Estimation Schema only; printTime and layerCount belong to the Print Estimation Schema (DATA_SCHEMA.md)
+- src/i18n/LocalizationService.ts: TranslationLoader.load called as a static method; unused constructor dependency removed
+- src/notifications/NotificationFactory.ts: create accepts a NotificationType
+- src/optimization_engine/ClassificationEngine.ts: ClassificationValidator used as an instance
+- src/optimization_engine/OptimizationEngine.ts: optimize receives the recommended profile; materialReduction is the percentage computed by MaterialOptimizer.optimizeInfillDensity and estimateMaterialReduction
+- src/optimization_engine/MaterialOptimizer.ts: material parameter removed from optimize (no documented rule uses the material for infill; validateMaterialSettings keeps it)
+- src/preset_engine/PresetManager.ts: uses PresetRepository.save and count
+- src/project/ProjectDeserializer.ts: the rethrown error keeps the parse error as cause
+- src/electron/ipc/ProjectIPC.ts and src/scene/SceneManager.ts: unused imports removed
+- KI-005 resolved
+
+## Validation Requirements
+
+- npm run typecheck and npm run lint on Windows 11: 0 errors expected; Phase 1 is closed once confirmed
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -1624,7 +1656,7 @@ Issue: At project load, analysis and recommendation entries are validated only f
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
-Planned Resolution: Next lot after 0.1.20
+Planned Resolution: After KI-006
 
 
 ---
@@ -1646,28 +1678,6 @@ Planned Resolution: Lot to be scheduled before Phase 14
 ---
 
 
-Identifier: KI-005
-
-Since: 0.1.16
-
-Affected Module: classification_engine, cost_engine, gui/panels, i18n, notifications, optimization_engine, preset_engine, electron/ipc, project, scene
-
-Issue: npm run typecheck reports 9 errors (10 before 0.1.19, which resolved RecommendationPanel.tsx:56) and npm run lint reports 5 errors.
-TypeScript: ClassificationEngine.ts:36, CostCalculator.ts:47, LocalizationService.ts:35, NotificationFactory.ts:36, optimization_engine/ClassificationEngine.ts:65, OptimizationEngine.ts:56 and :77, PresetManager.ts:34 and :83.
-ESLint: ConfidenceScorer.ts:44 (category unused), ProjectIPC.ts:15 (Project unused), MaterialOptimizer.ts:31 (material unused), ProjectDeserializer.ts:31 (no cause on the rethrown error), SceneManager.ts:23 (Object3D unused).
-
-Decisions:
-- MaterialOptimizer and OptimizationEngine are fixed together. OptimizationEngine expects a material reduction percentage, while MaterialOptimizer.optimize returns a profile. The material parameter is removed from MaterialOptimizer.optimize because no documented rule uses the material for infill or material reduction (infill depends on the object category: RECOMMENDATION_RULES.md, AI_ENGINE_SPEC.md) and OptimizationEngine has no material input. OptimizationEngine receives the recommended profile and computes the reduction with optimizeInfillDensity and estimateMaterialReduction. validateMaterialSettings keeps its material parameter.
-- ProjectDeserializer: the rethrown error keeps the original error as cause.
-
-Resolve Before: Closure of Phase 1 (TECH_STACK.md, Linting Rules: no errors, no warnings)
-
-Planned Resolution: Lot after KI-003
-
-
----
-
-
 Identifier: KI-006
 
 Since: 0.1.19
@@ -1678,12 +1688,16 @@ Issue: The sub-types used by the Recommendation differ from DATA_SCHEMA.md.
 - RecommendedProfile: the type names the preset printPreset instead of preset (Recommended Profile Schema). RecommendedProfileSchema (Zod) has no preset field. infillDensity and infillPattern are at the profile level, as documented in DATA_SCHEMA.md 2.3.0.
 - DecisionEngine: the profile values (quality, speed, cooling, retraction, adhesion, infill) are fixed constants; they are not derived from preset.settings, although the preset is the starting point of the recommendation (PRINT_PRESETS_SPEC.md, Golden Rule).
 - DecisionEngine.selectPreset compares the preset category (PresetCategory: balanced, mechanical...) with the classification category (ClassificationCategory: mechanical_part, figurine...); most categories never match and the first preset is returned. PresetSelector.getRecommendedCategory uses other category names (Prototype, Figurine...).
-- Classification: the Object Classification Schema has category, subcategory, confidenceScore, detectedFeatures, detectedTags and classificationVersion. The type has confidenceLevel and validated instead of subcategory, detectedTags and classificationVersion. AnalysisClassificationSchema (Zod) checks category, confidenceScore and detectedFeatures only.
+- Classification: the Object Classification Schema has category, subcategory, confidenceScore, detectedFeatures, detectedTags and classificationVersion. The type has confidenceLevel and validated instead of subcategory, detectedTags and classificationVersion. AnalysisClassificationSchema (Zod) checks category, confidenceScore and detectedFeatures only. The confidence level thresholds of ConfidenceScorer.getLevel (60, 85) and of both ClassificationEngine.getConfidenceLevel (50, 80) differ from OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels (40, 60, 75, 90).
 - PrintPreset: PresetSchema (Zod) does not check confidenceScore, and checks category, supportType and adhesionType as free strings.
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
-Planned Resolution: Lot to be scheduled; deriving the profile from preset.settings and the category mapping require a decision
+Decisions (2026-10-14):
+- The recommended profile is initialized from preset.settings, then adjusted (PRINT_PRESETS_SPEC.md, Golden Rule).
+- A mapping table from the classification categories (OBJECT_CLASSIFICATION_SPEC.md) to the preset categories is documented in PRINT_PRESETS_SPEC.md. When no preset matches, a documented default preset is used and a warning is added to the recommendation; the first preset of the list is never used as a fallback.
+
+Planned Resolution: Next lot after 0.1.21, then KI-003
 
 
 ---

@@ -21,9 +21,6 @@ export class ClassificationEngine {
   private readonly categoryDetector =
     new CategoryDetector();
 
-  private readonly confidenceScorer =
-    new ConfidenceScorer();
-
   public classify(
     features: string[],
   ): Classification {
@@ -33,7 +30,7 @@ export class ClassificationEngine {
       ) as ClassificationCategory;
 
     const confidenceScore =
-      this.confidenceScorer.calculate(
+      ConfidenceScorer.calculate(
         features,
         category,
       );

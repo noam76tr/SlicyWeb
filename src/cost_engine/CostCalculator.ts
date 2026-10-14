@@ -21,15 +21,16 @@ import type { CostEstimation } from "../types/CostEstimation";
 
 export class CostCalculator {
   /**
-   * Calculates total print cost.
+   * Calculates total print cost
+   * (DATA_SCHEMA.md, Cost Estimation Schema).
+   * Print time and layer count belong to the
+   * Print Estimation Schema.
    */
   public calculate(
     materialCost: number,
     electricityCost: number,
     filamentLength: number,
     filamentWeight: number,
-    printTime: number,
-    layerCount: number,
   ): CostEstimation {
     return {
       filamentLength,
@@ -43,10 +44,6 @@ export class CostCalculator {
       totalCost:
         materialCost +
         electricityCost,
-
-      printTime,
-
-      layerCount,
     };
   }
 
