@@ -401,9 +401,11 @@ src/gui/
 ├── menus/
 ├── toolbars/
 ├── components/
+│   ├── I18nProvider.tsx       = translations, language and text direction for the GUI
 │   └── ui/                    = shadcn/ui components (button.tsx)
 ├── themes/
 ├── hooks/
+│   └── useTranslation.ts      = access to translations from GUI components
 └── styles/
     └── global.css             = Tailwind CSS 4 entry point (ADR-025)
 ```
@@ -917,6 +919,7 @@ logs/
 scripts/
 
 ├── build/
+│   └── check-locales.mjs      = checks that en, fr and he dictionaries share the same keys
 ├── migration/
 ├── release/
 └── setup/
@@ -1006,7 +1009,6 @@ src/gui/dialogs/
 src/gui/menus/
 src/gui/toolbars/
 src/gui/themes/
-src/gui/hooks/
 src/renderer/helpers/
 src/recovery/backups/
 src/schemas/ErrorSchema.ts

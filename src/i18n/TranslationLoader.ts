@@ -16,6 +16,7 @@
  * - ARCHITECTURE.md
  * - TECHNICAL_OVERVIEW.md
  * - DATA_SCHEMA.md
+ * - GUI_SPEC.md (Localization)
  */
 
 export type SupportedLanguage =
@@ -24,6 +25,62 @@ export type SupportedLanguage =
   | "he";
 
 export type TranslationDictionary = Record<string, string>;
+
+/**
+ * Dictionaries are read from public/locales/ with a path relative
+ * to the page:
+ * - development: page served by Vite over http, the path resolves
+ *   to /locales/;
+ * - built application: page loaded from disk with
+ *   BrowserWindow.loadFile (src/electron/main.ts), the path resolves
+ *   next to dist/renderer/index.html, where Vite copies public/.
+ *
+ * Chromium's fetch does not accept file: URLs, so XMLHttpRequest
+ * is used when the page is loaded from disk.
+ */
+function isFileProtocol(): boolean {
+  return window.location.protocol === "file:";
+}
+
+async function readWithFetch(url: string): Promise<string> {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to load translation file: ${url} (HTTP ${response.status})`,
+    );
+  }
+
+  return response.text();
+}
+
+function readWithXhr(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+
+    request.open("GET", url);
+    request.responseType = "text";
+
+    request.onload = () => {
+      // Status 0 is returned for a successful file: request.
+      if (request.status === 0 || request.status === 200) {
+        resolve(request.responseText);
+      } else {
+        reject(
+          new Error(
+            `Failed to load translation file: ${url} (status ${request.status})`,
+          ),
+        );
+      }
+    };
+
+    request.onerror = () => {
+      reject(new Error(`Failed to load translation file: ${url}`));
+    };
+
+    request.send();
+  });
+}
 
 export class TranslationLoader {
   private static readonly DEFAULT_LANGUAGE: SupportedLanguage = "en";
@@ -54,18 +111,22 @@ export class TranslationLoader {
       return cached;
     }
 
-    const response = await fetch(
-      `/locales/${language}.json`,
-    );
+    const url = `./locales/${language}.json`;
 
-    if (!response.ok) {
+    const text = isFileProtocol()
+      ? await readWithXhr(url)
+      : await readWithFetch(url);
+
+    let dictionary: TranslationDictionary;
+
+    try {
+      dictionary = JSON.parse(text) as TranslationDictionary;
+    } catch (error) {
       throw new Error(
-        `Failed to load translations for language: ${language}`,
+        `Invalid translation file for language: ${language}`,
+        { cause: error },
       );
     }
-
-    const dictionary =
-      (await response.json()) as TranslationDictionary;
 
     this.cache.set(language, dictionary);
 

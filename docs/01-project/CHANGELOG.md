@@ -1128,6 +1128,40 @@ Date:
 
 ---
 
+# VERSION 0.1.31
+
+Release Type:
+GUI Foundation
+
+Status:
+In Progress
+
+Date:
+2026-10-15
+
+## Added
+
+- Technical Phase 3 - GUI Foundation, internationalization foundation
+- src/gui/components/I18nProvider.tsx: loads the dictionary of the current language (default English, fallback to English when a dictionary cannot be loaded) and provides it to the GUI; sets lang and dir on the document (dir="rtl" for Hebrew, LanguageManager.isRTL)
+- src/gui/hooks/useTranslation.ts: access to the translated texts, the current language, the supported languages and the language change
+- scripts/build/check-locales.mjs and npm script check:locales: checks that fr.json and he.json have exactly the keys of en.json, with no empty value
+- public/locales: keys for the GUI_SPEC menus (9 menus and their items), the 11 toolbar buttons, the object and properties panels, the status bar fields, the 12 preset categories (PRINT_PRESETS_SPEC), the 15 classification categories and the 5 confidence levels (OBJECT_CLASSIFICATION_SPEC), and app.notAvailable for actions not available yet
+
+## Changed
+
+- public/locales/en.json: reference dictionary (217 keys); obsolete keys removed: preset.fast, preset.quality, preset.prototype, preset.mechanical (not preset categories), menu.settings (not a GUI_SPEC menu)
+- public/locales/fr.json: aligned on en.json; "app.loadin" corrected to "app.loading"; existing translations kept
+- public/locales/he.json: rebuilt on the en.json keys (it used a different key scheme: 42 keys in common out of 120); existing Hebrew translations kept where the meaning matched
+- src/i18n/TranslationLoader.ts: dictionaries loaded with a path relative to the page (./locales/), so that they are found in the built application loaded from disk (BrowserWindow.loadFile); XMLHttpRequest is used for file: pages, since Chromium's fetch does not accept file: URLs; invalid JSON reported with its cause
+- src/gui/main.tsx: App mounted inside I18nProvider
+- src/gui/App.tsx: texts read from the dictionaries; temporary language buttons in the footer, to be replaced by the Language menu
+- DOMAINS_DEPENDENCY_MATRIX.md: the GUI Domain can depend on the Internationalization Domain
+- FILE_STRUCTURE.md: I18nProvider.tsx, hooks/useTranslation.ts, scripts/build/check-locales.mjs; src/gui/hooks/ removed from Planned Items
+- DIRECTORY_PURPOSES.md: src/gui/ files, public/locales/ reference rule, scripts/build/ files
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 3 In Progress
+
+---
+
 # VERSION 0.2.0
 
 Release Type:

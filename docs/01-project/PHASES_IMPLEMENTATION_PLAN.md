@@ -703,6 +703,12 @@ Dependencies Working
 
 # GUI FOUNDATION
 
+Status: In Progress
+
+Progress:
+
+- Internationalization foundation (CHANGELOG 0.1.31): dictionaries en, fr, he with the same keys; I18nProvider and useTranslation; right-to-left direction for Hebrew; npm run check:locales
+
 
 
 ---

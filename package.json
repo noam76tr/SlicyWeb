@@ -14,6 +14,7 @@
     "build": "vite build",
     "start": "electron .",
     "typecheck": "tsc --noEmit",
+    "check:locales": "node scripts/build/check-locales.mjs",
     "lint": "eslint src vite.config.mts --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" vite.config.mts",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\" vite.config.mts"

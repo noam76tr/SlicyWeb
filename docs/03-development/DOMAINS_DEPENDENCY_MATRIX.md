@@ -161,7 +161,10 @@ Service Domain
 State Management Domain
 IPC Domain
 Notification Domain
+Internationalization Domain
 ```
+
+The GUI reads its texts, the current language and the text direction through the Internationalization Domain (src/gui/components/I18nProvider.tsx, src/gui/hooks/useTranslation.ts). The Internationalization Domain does not depend on the GUI Domain.
 
 Cannot Depend On:
 

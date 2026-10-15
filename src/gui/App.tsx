@@ -4,6 +4,10 @@
  *
  * Main application component.
  *
+ * Texts come from the translation dictionaries (useTranslation).
+ * The language buttons of the footer are temporary: they will be
+ * replaced by the Language menu (GUI_SPEC.md, Menu Bar).
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - GUI_SPEC.md
@@ -13,7 +17,18 @@
 import { useEffect } from "react";
 import { Upload } from "lucide-react";
 
+import type { SupportedLanguage } from "../i18n/LanguageManager";
+import { useTranslation } from "./hooks/useTranslation";
+
+const LANGUAGE_NAME_KEYS: Record<SupportedLanguage, string> = {
+  en: "language.english",
+  fr: "language.french",
+  he: "language.hebrew",
+};
+
 export default function App(): JSX.Element {
+  const { t, language, languages, setLanguage } = useTranslation();
+
   useEffect(() => {
     document.title = "SlicyWeb";
   }, []);
@@ -29,7 +44,7 @@ export default function App(): JSX.Element {
       <main className="flex-1 flex overflow-hidden">
         <aside className="w-72 border-r border-neutral-800 p-4">
           <h2 className="text-sm font-semibold mb-4">
-            Project
+            {t("project.title")}
           </h2>
 
           <div className="space-y-2">
@@ -48,7 +63,7 @@ export default function App(): JSX.Element {
               "
             >
               <Upload className="h-4 w-4" aria-hidden="true" />
-              Import STL
+              {t("project.importStl")}
             </button>
 
             <button
@@ -66,7 +81,7 @@ export default function App(): JSX.Element {
               "
             >
               <Upload className="h-4 w-4" aria-hidden="true" />
-              Import 3MF
+              {t("project.import3mf")}
             </button>
           </div>
         </aside>
@@ -80,17 +95,33 @@ export default function App(): JSX.Element {
 
         <aside className="w-80 border-l border-neutral-800 p-4">
           <h2 className="text-sm font-semibold mb-4">
-            Analysis
+            {t("analysis.title")}
           </h2>
 
           <div className="text-sm text-neutral-400">
-            No model loaded.
+            {t("analysis.none")}
           </div>
         </aside>
       </main>
 
-      <footer className="h-8 flex items-center px-4 border-t border-neutral-800 text-xs text-neutral-500">
-        SlicyWeb v1.0.0
+      <footer className="h-8 flex items-center gap-4 px-4 border-t border-neutral-800 text-xs text-neutral-500">
+        <span>SlicyWeb v1.0.0</span>
+
+        <span className="ms-auto">{t("statusBar.language")}:</span>
+
+        {languages.map((code) => (
+          <button
+            key={code}
+            type="button"
+            className={code === language ? "text-white" : "hover:text-white"}
+            aria-pressed={code === language}
+            onClick={() => {
+              void setLanguage(code);
+            }}
+          >
+            {t(LANGUAGE_NAME_KEYS[code])}
+          </button>
+        ))}
       </footer>
     </div>
   );
