@@ -1107,6 +1107,27 @@ Date:
 
 ---
 
+# VERSION 0.1.30
+
+Release Type:
+Security
+
+Status:
+Completed
+
+Date:
+2026-10-15
+
+## Changed
+
+- package.json: shadcn moved from dependencies to devDependencies. It is used by the command line tool and by the CSS import resolved at build time (src/gui/styles/global.css, "shadcn/tailwind.css"); it is not needed at runtime and is no longer part of the shipped dependencies
+
+## Added
+
+- KNOWN ISSUES: KI-013 (braces advisory GHSA-vfj7-8cjw-p6xm reported by npm audit; no patched version; npm audit fix --force rejected)
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -1963,6 +1984,22 @@ Issue: The support type "organic" is forced when overhangs are detected and the 
 Planned Resolution: Add the supports.type value table per target slicer to SLICER_EXPORT_SPEC.md (Cura: organic = tree).
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
+
+
+---
+
+
+Identifier: KI-013
+
+Since: 0.1.29
+
+Affected Module: package.json (development dependencies: shadcn and its dependency chain)
+
+Issue: npm audit reports 7 high severity vulnerabilities from the braces package (GHSA-vfj7-8cjw-p6xm, braces through 3.0.3: deeply nested brace patterns exhaust the call stack, denial of service). No patched version of braces exists. The only fix offered by npm (npm audit fix --force) installs shadcn 1.0.0, an obsolete major version, and is rejected. braces is used by development tools to expand file patterns; SlicyWeb never passes user data to it, and the shadcn package is a development dependency (0.1.30), not shipped with the application.
+
+Resolve Before: Phase 16 - Production Validation and Release (technical plan)
+
+Planned Resolution: Update shadcn (or the package in the chain) when a version depending on a patched braces is published; check with npm audit and npm audit --omit=dev.
 
 
 ---
