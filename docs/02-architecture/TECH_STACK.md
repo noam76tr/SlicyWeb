@@ -853,7 +853,9 @@ Settings:
 
 Base UI component library, style base-nova, Lucide icons; components in src/gui/components/ui/ (components.json)
 
-Components added: Button (button.tsx), Resizable (resizable.tsx, react-resizable-panels 4)
+Components added: Button (button.tsx), Resizable (resizable.tsx, react-resizable-panels 4), Menubar (menubar.tsx) and Dropdown Menu (dropdown-menu.tsx)
+
+Text direction: the Base UI DirectionProvider (@base-ui/react/direction-provider) receives the direction of the current language, so that menus follow right-to-left in Hebrew (keyboard navigation, popup placement)
 
 Fonts: Inter (@fontsource-variable/inter) and Noto Sans Hebrew (@fontsource-variable/noto-sans-hebrew) for Hebrew characters
 

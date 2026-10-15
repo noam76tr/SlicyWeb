@@ -399,10 +399,12 @@ src/gui/
 ├── windows/
 ├── dialogs/
 ├── menus/
+│   └── MenuBar.tsx            = the nine menus of GUI_SPEC.md
 ├── toolbars/
+│   └── Toolbar.tsx            = the eleven toolbar buttons of GUI_SPEC.md
 ├── components/
 │   ├── I18nProvider.tsx       = translations, language and text direction for the GUI
-│   └── ui/                    = shadcn/ui components (button.tsx, resizable.tsx)
+│   └── ui/                    = shadcn/ui components (button, dropdown-menu, menubar, resizable)
 ├── themes/
 ├── hooks/
 │   └── useTranslation.ts      = access to translations from GUI components
@@ -1008,8 +1010,6 @@ Source directories and files:
 src/gui/layouts/
 src/gui/windows/
 src/gui/dialogs/
-src/gui/menus/
-src/gui/toolbars/
 src/gui/themes/
 src/renderer/helpers/
 src/recovery/backups/

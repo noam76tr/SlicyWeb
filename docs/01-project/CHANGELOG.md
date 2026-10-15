@@ -1206,7 +1206,7 @@ Release Type:
 GUI Foundation
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-15
@@ -1232,6 +1232,37 @@ Date:
 - GUI_SPEC.md (Font): Noto Sans Hebrew for Hebrew characters
 - FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: resizable.tsx; roles of MainLayout, sidebar and status bar files
 - PHASES_IMPLEMENTATION_PLAN.md: Phase 3 progress
+
+## Validation Result
+
+- Windows 11 (2026-10-15): npm install, npm run check:locales (223 keys), npm run typecheck and npm run lint report 0 errors; in npm run dev both separators resize the panels, the panel buttons collapse and expand them, the panels swap sides in Hebrew, and Rendered Fonts shows Noto Sans Hebrew Variable for Hebrew text
+
+---
+
+# VERSION 0.1.34
+
+Release Type:
+GUI Foundation
+
+Status:
+In Progress
+
+Date:
+2026-10-15
+
+## Added
+
+- src/gui/components/ui/menubar.tsx and dropdown-menu.tsx: shadcn/ui Menubar and Dropdown Menu components (shadcn add menubar, Base UI); no new dependency
+- src/gui/menus/MenuBar.tsx: the nine menus of GUI_SPEC.md (File, Edit, View, Printer, Material, Filament, Tools, Language, Help) with their items and the shortcuts of GUI_SPEC.md (Keyboard Shortcuts, displayed only); Language changes the interface language; File > Exit closes the window; the other items are disabled until their phase
+- src/gui/toolbars/Toolbar.tsx: the eleven buttons of GUI_SPEC.md (Toolbar Buttons) with Lucide icons, in four groups; disabled (aria-disabled, tooltip "Available in a later version") until their phase; Undo and Redo icons mirrored in right-to-left
+- Locale keys: menu.title, toolbar.title (225 keys)
+
+## Changed
+
+- src/gui/App.tsx: header with the Menu Bar and the Toolbar (the temporary language buttons are removed); DirectionProvider (Base UI) receives the direction of the current language
+- PHASES_IMPLEMENTATION_PLAN.md (Phase 3): Top Menu and Toolbar follow GUI_SPEC.md (nine menus, eleven buttons); actions not available in Phase 3 are visible and disabled
+- FILE_STRUCTURE.md: src/gui/menus/MenuBar.tsx, src/gui/toolbars/Toolbar.tsx, menubar and dropdown-menu components; src/gui/menus/ and src/gui/toolbars/ removed from Planned Items
+- DIRECTORY_PURPOSES.md, TECH_STACK.md: menu and toolbar files; Base UI DirectionProvider
 
 ---
 
