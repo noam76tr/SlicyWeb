@@ -402,7 +402,7 @@ src/gui/
 ├── toolbars/
 ├── components/
 │   ├── I18nProvider.tsx       = translations, language and text direction for the GUI
-│   └── ui/                    = shadcn/ui components (button.tsx)
+│   └── ui/                    = shadcn/ui components (button.tsx, resizable.tsx)
 ├── themes/
 ├── hooks/
 │   └── useTranslation.ts      = access to translations from GUI components

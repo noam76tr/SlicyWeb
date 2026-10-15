@@ -709,6 +709,7 @@ Progress:
 
 - Internationalization foundation (CHANGELOG 0.1.31): dictionaries en, fr, he with the same keys; I18nProvider and useTranslation; right-to-left direction for Hebrew; npm run check:locales
 - Language persistence (CHANGELOG 0.1.32): the chosen language is saved in settings.json and restored at the next start
+- Layout and theme (CHANGELOG 0.1.33): dark theme with the GUI_SPEC colors; Object Panel and Properties Panel resizable and collapsible; viewport placeholder; status bar; Hebrew font
 
 
 

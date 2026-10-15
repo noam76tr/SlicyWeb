@@ -656,7 +656,7 @@ Build Tooling And Library Versions
 
 Decision:
 
-Vite with vite-plugin-electron builds the renderer, the Electron main process and the preload bridge. React uses major version 18. Zod uses version 3.25.x from Phase 1. Electron uses major version 44. Tailwind CSS uses major version 4 (@tailwindcss/vite), Lucide React major version 1; shadcn/ui is installed with its command line tool, with the "@/" alias for src/, Base UI and the base-nova style; font Inter.
+Vite with vite-plugin-electron builds the renderer, the Electron main process and the preload bridge. React uses major version 18. Zod uses version 3.25.x from Phase 1. Electron uses major version 44. Tailwind CSS uses major version 4 (@tailwindcss/vite), Lucide React major version 1; shadcn/ui is installed with its command line tool, with the "@/" alias for src/, Base UI and the base-nova style; font Inter, with Noto Sans Hebrew for Hebrew characters; resizable panels with react-resizable-panels major version 4 (shadcn/ui Resizable).
 
 Rationale:
 

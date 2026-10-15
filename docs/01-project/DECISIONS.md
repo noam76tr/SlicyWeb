@@ -1848,6 +1848,8 @@ Library Versions:
 - shadcn/ui: installed with the shadcn command line tool (shadcn init); components are copied into the repository and use the "@/" import alias, which designates src/ (tsconfig.json paths and Vite resolve.alias).
 - shadcn/ui settings (components.json): component library Base UI (@base-ui/react), style base-nova (preset Nova), Lucide icons; components in src/gui/components/ui/, utils alias src/utils/cn.ts.
 - Font: Inter (@fontsource-variable/inter), fallback Segoe UI, Roboto, sans-serif (GUI_SPEC.md, Font), instead of the Geist font of the Nova preset.
+- Hebrew font: Inter has no Hebrew glyphs. Noto Sans Hebrew (@fontsource-variable/noto-sans-hebrew, major version 5) is placed right after Inter in the font stack: Hebrew characters use it, Latin text stays in Inter; its Hebrew file is only loaded when Hebrew text is displayed (unicode-range).
+- Resizable panels: shadcn/ui Resizable component (shadcn add resizable), on react-resizable-panels major version 4 (Group, Panel, Separator; numeric sizes are pixels, strings without unit are percentages).
 
 Electron 44 is the latest stable major version and the supported version with the longest remaining support. It embeds Node.js 24 and Chromium 152.
 

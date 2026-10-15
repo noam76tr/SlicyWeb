@@ -853,6 +853,10 @@ Settings:
 
 Base UI component library, style base-nova, Lucide icons; components in src/gui/components/ui/ (components.json)
 
+Components added: Button (button.tsx), Resizable (resizable.tsx, react-resizable-panels 4)
+
+Fonts: Inter (@fontsource-variable/inter) and Noto Sans Hebrew (@fontsource-variable/noto-sans-hebrew) for Hebrew characters
+
 
 
 ---

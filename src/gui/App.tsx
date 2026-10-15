@@ -2,11 +2,13 @@
  * SlicyWeb
  * App
  *
- * Main application component.
+ * Main application component: assembles the main window
+ * (GUI_SPEC.md, Main Window) in MainLayout.
  *
  * Texts come from the translation dictionaries (useTranslation).
- * The language buttons of the footer are temporary: they will be
- * replaced by the Language menu (GUI_SPEC.md, Menu Bar).
+ * The header holds the application name and temporary language
+ * buttons: Menu Bar and Toolbar come in the next step of Phase 3,
+ * and the buttons will be replaced by the Language menu.
  *
  * Based on:
  * - ARCHITECTURE.md
@@ -15,16 +17,12 @@
  */
 
 import { useEffect } from "react";
-import { Upload } from "lucide-react";
 
-import type { SupportedLanguage } from "../i18n/LanguageManager";
-import { useTranslation } from "./hooks/useTranslation";
-
-const LANGUAGE_NAME_KEYS: Record<SupportedLanguage, string> = {
-  en: "language.english",
-  fr: "language.french",
-  he: "language.hebrew",
-};
+import MainLayout from "./MainLayout";
+import { LANGUAGE_NAME_KEYS, useTranslation } from "./hooks/useTranslation";
+import LeftSidebar from "./sidebar/LeftSidebar";
+import RightSidebar from "./sidebar/RightSidebar";
+import StatusBar from "./statusbar/StatusBar";
 
 export default function App(): JSX.Element {
   const { t, language, languages, setLanguage } = useTranslation();
@@ -33,87 +31,20 @@ export default function App(): JSX.Element {
     document.title = "SlicyWeb";
   }, []);
 
-  return (
-    <div className="w-full h-screen flex flex-col bg-neutral-900 text-white">
-      <header className="h-14 flex items-center px-4 border-b border-neutral-800">
-        <h1 className="text-lg font-semibold">
-          SlicyWeb
-        </h1>
-      </header>
+  const header = (
+    <header className="flex h-10 shrink-0 items-center gap-4 border-b border-border bg-card px-3">
+      <h1 className="text-base font-semibold">SlicyWeb</h1>
 
-      <main className="flex-1 flex overflow-hidden">
-        <aside className="w-72 border-r border-neutral-800 p-4">
-          <h2 className="text-sm font-semibold mb-4">
-            {t("project.title")}
-          </h2>
-
-          <div className="space-y-2">
-            <button
-              className="
-                w-full
-                rounded
-                bg-blue-600
-                px-3
-                py-2
-                text-left
-                hover:bg-blue-500
-                flex
-                items-center
-                gap-2
-              "
-            >
-              <Upload className="h-4 w-4" aria-hidden="true" />
-              {t("project.importStl")}
-            </button>
-
-            <button
-              className="
-                w-full
-                rounded
-                bg-blue-600
-                px-3
-                py-2
-                text-left
-                hover:bg-blue-500
-                flex
-                items-center
-                gap-2
-              "
-            >
-              <Upload className="h-4 w-4" aria-hidden="true" />
-              {t("project.import3mf")}
-            </button>
-          </div>
-        </aside>
-
-        <section className="flex-1 relative">
-          <div
-            id="renderer-container"
-            className="absolute inset-0"
-          />
-        </section>
-
-        <aside className="w-80 border-l border-neutral-800 p-4">
-          <h2 className="text-sm font-semibold mb-4">
-            {t("analysis.title")}
-          </h2>
-
-          <div className="text-sm text-neutral-400">
-            {t("analysis.none")}
-          </div>
-        </aside>
-      </main>
-
-      <footer className="h-8 flex items-center gap-4 px-4 border-t border-neutral-800 text-xs text-neutral-500">
-        <span>SlicyWeb v1.0.0</span>
-
-        <span className="ms-auto">{t("statusBar.language")}:</span>
+      <div className="ms-auto flex items-center gap-3 text-xs text-muted-foreground">
+        <span>{t("menu.language")}:</span>
 
         {languages.map((code) => (
           <button
             key={code}
             type="button"
-            className={code === language ? "text-white" : "hover:text-white"}
+            className={
+              code === language ? "text-foreground" : "hover:text-foreground"
+            }
             aria-pressed={code === language}
             onClick={() => {
               void setLanguage(code);
@@ -122,7 +53,28 @@ export default function App(): JSX.Element {
             {t(LANGUAGE_NAME_KEYS[code])}
           </button>
         ))}
-      </footer>
+      </div>
+    </header>
+  );
+
+  const viewport = (
+    <div
+      id="renderer-container"
+      className="flex h-full w-full items-center justify-center bg-viewport text-sm text-muted-foreground"
+    >
+      {t("viewport.placeholder")}
     </div>
+  );
+
+  return (
+    <MainLayout
+      header={header}
+      leftTitle={t("objects.title")}
+      leftPanel={<LeftSidebar />}
+      centerPanel={viewport}
+      rightTitle={t("properties.title")}
+      rightPanel={<RightSidebar />}
+      statusBar={<StatusBar />}
+    />
   );
 }

@@ -188,6 +188,14 @@ Inter
 
 
 
+Hebrew Characters:
+
+```text
+Noto Sans Hebrew
+```
+
+Inter has no Hebrew glyphs. Noto Sans Hebrew follows Inter in the font stack, so Hebrew text keeps a consistent rendering while Latin text stays in Inter.
+
 Fallback:
 
 

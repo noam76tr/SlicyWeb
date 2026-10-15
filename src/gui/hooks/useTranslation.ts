@@ -40,6 +40,16 @@ export interface I18nContextValue {
   setLanguage: (language: SupportedLanguage) => Promise<void>;
 }
 
+/**
+ * Dictionary key of the name of each language
+ * (Language menu, status bar).
+ */
+export const LANGUAGE_NAME_KEYS: Record<SupportedLanguage, string> = {
+  en: "language.english",
+  fr: "language.french",
+  he: "language.hebrew",
+};
+
 export const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function useTranslation(): I18nContextValue {

@@ -1134,7 +1134,7 @@ Release Type:
 GUI Foundation
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-15
@@ -1160,6 +1160,10 @@ Date:
 - DIRECTORY_PURPOSES.md: src/gui/ files, public/locales/ reference rule, scripts/build/ files
 - PHASES_IMPLEMENTATION_PLAN.md: Phase 3 In Progress
 
+## Validation Result
+
+- Windows 11 (2026-10-15): npm run check:locales, npm run typecheck and npm run lint report 0 errors; npm run dev and the built application (npm run build, npm start) switch between English, French and Hebrew; Hebrew is displayed right-to-left
+
 ---
 
 # VERSION 0.1.32
@@ -1168,7 +1172,7 @@ Release Type:
 GUI Foundation
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-15
@@ -1189,6 +1193,45 @@ Date:
 - src/gui/components/I18nProvider.tsx: reads the saved language at start (settings:get) and saves each language change (settings:language); outside Electron nothing is saved
 - src/types/UserPreferences.ts: Language limited to en, fr, he (DATA_SCHEMA.md, Language Values); es, de, it are Future Extensions
 - FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: SettingsStorage.ts, UserPreferencesSchema.ts
+
+## Validation Result
+
+- Windows 11 (2026-10-15): the application starts in the last chosen language; settings.json is created in %APPDATA%\SlicyWeb with the chosen language
+
+---
+
+# VERSION 0.1.33
+
+Release Type:
+GUI Foundation
+
+Status:
+In Progress
+
+Date:
+2026-10-15
+
+## Added
+
+- src/gui/components/ui/resizable.tsx: shadcn/ui Resizable component (shadcn add resizable), on react-resizable-panels ^4.14.5
+- @fontsource-variable/noto-sans-hebrew ^5.3.0: Hebrew font placed after Inter in the font stack (Inter has no Hebrew glyphs)
+- Dark theme colors of GUI_SPEC.md (Color Philosophy) in the .dark variables of global.css; viewport, warning and success colors (bg-viewport, text-warning, text-success)
+- Locale keys: project.none, object.noSelection, result.generated, result.outdated, panel.collapse, panel.expand (223 keys)
+- KNOWN ISSUES: KI-014 (selection state duplicated between stores)
+
+## Changed
+
+- index.html: class "dark" on <html> (dark theme by default, GUI_SPEC.md, Visual Style)
+- src/gui/MainLayout.tsx: main window layout with resizable panels; Object Panel (start side) and Properties Panel (end side) resizable and collapsible, their width kept when the window is resized; a collapsed panel stays visible as a 40 px bar with an expand button; sides swap in right-to-left
+- src/gui/App.tsx: uses MainLayout; header with the application name and the temporary language buttons; viewport placeholder (#renderer-container)
+- src/gui/sidebar/LeftSidebar.tsx: Object Panel content: objects of the object store with icon, name, visibility and lock state, selection on click; empty state
+- src/gui/sidebar/RightSidebar.tsx: Properties Panel content: the nine sections of GUI_SPEC.md (Properties Sections) with the current selection or an empty state
+- src/gui/sidebar/SidebarSection.tsx, src/gui/statusbar/StatusBar.tsx: texts from the dictionaries; colors from the theme variables; the status bar shows the nine fields of GUI_SPEC.md (Status Bar)
+- src/gui/hooks/useTranslation.ts: LANGUAGE_NAME_KEYS shared by the header and the status bar
+- DECISIONS.md (ADR-025), ARCHITECTURE_DECISION_MATRIX.md (ADM-022), TECH_STACK.md: Noto Sans Hebrew, react-resizable-panels 4
+- GUI_SPEC.md (Font): Noto Sans Hebrew for Hebrew characters
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: resizable.tsx; roles of MainLayout, sidebar and status bar files
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 3 progress
 
 ---
 
@@ -2064,6 +2107,22 @@ Issue: npm audit reports 7 high severity vulnerabilities from the braces package
 Resolve Before: Phase 16 - Production Validation and Release (technical plan)
 
 Planned Resolution: Update shadcn (or the package in the chain) when a version depending on a patched braces is published; check with npm audit and npm audit --omit=dev.
+
+
+---
+
+
+Identifier: KI-014
+
+Since: 0.1.33
+
+Affected Module: src/state/ (appStore.ts, printerStore.ts, materialStore.ts, filamentStore.ts, presetStore.ts, sceneStore.ts, objectStore.ts)
+
+Issue: The selection is stored twice. appStore holds selectedPrinter, selectedMaterial, selectedFilament and selectedPreset, which printerStore, materialStore, filamentStore and presetStore also hold; sceneStore holds selectedObject while objectStore holds selectedObjectId. No document says which store is the reference. The GUI (status bar, Properties Panel, Object Panel) reads printerStore, materialStore, filamentStore, presetStore and objectStore, the stores that also hold the lists.
+
+Resolve Before: Phase 5 - Model Import (technical plan), before objects and selections are written by the application
+
+Planned Resolution: Decide the reference store for each selection, document it (DIRECTORY_PURPOSES.md, State Management), and remove or derive the duplicate.
 
 
 ---
