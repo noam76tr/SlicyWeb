@@ -7,11 +7,16 @@
  * - TECH_STACK.md
  * - GUI_SPEC.md
  * - API_SPEC.md (IPC Layer)
+ * - USER_SETTINGS_SPEC.md (Storage Location)
  */
 
 import { app, BrowserWindow } from "electron";
 
 import path from "node:path";
+
+import { StorageService } from "../services/StorageService";
+import { SettingsStorage } from "../storage/SettingsStorage";
+import { StorageManager } from "../storage/StorageManager";
 
 import { ProjectIPC } from "./ipc/ProjectIPC";
 import { ImportIPC } from "./ipc/ImportIPC";
@@ -31,7 +36,18 @@ function registerIPCHandlers(): void {
   const printerIPC = new PrinterIPC();
   printerIPC.register();
 
-  const settingsIPC = new SettingsIPC();
+  // User preferences: settings.json in the user data folder
+  // (Windows: %APPDATA%\SlicyWeb), separate from WYPROJ project files
+  // (USER_SETTINGS_SPEC.md, Storage Location).
+  const storageService = new StorageService(
+    new StorageManager(
+      new SettingsStorage(
+        path.join(app.getPath("userData"), "settings.json"),
+      ),
+    ),
+  );
+
+  const settingsIPC = new SettingsIPC(storageService);
   settingsIPC.register();
 
   const storageIPC = new StorageIPC();

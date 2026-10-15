@@ -6,15 +6,19 @@
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
  * - PROJECT_SPEC.md
+ * - USER_SETTINGS_SPEC.md
  */
 
 import type { Project } from "../types/Project";
+import type { UserPreferences } from "../types/UserPreferences";
 
 import { StorageManager } from "../storage/StorageManager";
 
 export class StorageService {
-  private readonly storageManager =
-    new StorageManager();
+  public constructor(
+    private readonly storageManager: StorageManager =
+      new StorageManager()
+  ) {}
 
   public saveProject(
     project: Project
@@ -53,5 +57,33 @@ export class StorageService {
 
   public clearCache(): void {
     this.storageManager.clearCache();
+  }
+
+  /**
+   * Returns the user preferences (settings.json)
+   */
+  public getSettings(): UserPreferences {
+    return this.storageManager.loadSettings();
+  }
+
+  /**
+   * Applies a partial update and returns the stored preferences.
+   * The update must have been validated by the caller
+   * (UserPreferencesUpdateSchema).
+   */
+  public updateSettings(
+    update: Partial<UserPreferences>
+  ): UserPreferences {
+    return this.storageManager.saveSettings({
+      ...this.storageManager.loadSettings(),
+      ...update,
+    });
+  }
+
+  /**
+   * Restores the default preferences
+   */
+  public resetSettings(): UserPreferences {
+    return this.storageManager.resetSettings();
   }
 }

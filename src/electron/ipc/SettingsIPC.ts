@@ -16,13 +16,23 @@
  * - ARCHITECTURE.md
  * - API_SPEC.md
  * - UserPreferences.ts
- * - DATA_SCHEMA.md (IPC Payload Schema)
+ * - DATA_SCHEMA.md (IPC Payload Schema, User Preferences Schema)
+ * - USER_SETTINGS_SPEC.md
+ *
+ * Preferences are read and written by StorageService
+ * (settings.json, USER_SETTINGS_SPEC.md, Storage Location).
+ * Responses carry the stored preferences: data.settings.
  */
 
 import { ipcMain } from "electron";
 import { z } from "zod";
 
-import type { UserPreferences } from "../../types/UserPreferences";
+import {
+  LanguageSchema as LanguageValueSchema,
+  ThemeSchema as ThemeValueSchema,
+  UserPreferencesUpdateSchema,
+} from "../../schemas/UserPreferencesSchema";
+import type { StorageService } from "../../services/StorageService";
 
 // Zod schemas for IPC payloads
 const IPCResponseSchema = z.object({
@@ -34,16 +44,20 @@ const IPCResponseSchema = z.object({
 });
 
 const ThemeSchema = z.object({
-  theme: z.string().min(1, "theme is required"),
+  theme: ThemeValueSchema,
 });
 
 const LanguageSchema = z.object({
-  language: z.string().min(1, "language is required"),
+  language: LanguageValueSchema,
 });
 
 type IPCResponse = z.infer<typeof IPCResponseSchema>;
 
 export class SettingsIPC {
+  public constructor(
+    private readonly storageService: StorageService,
+  ) {}
+
   private createResponse(
     channel: string,
     requestId: string,
@@ -68,9 +82,7 @@ export class SettingsIPC {
         requestId: string,
       ) => {
         try {
-          // Get settings (delegated to StorageService)
-          // TODO: Call StorageService.getSettings()
-          const settings: Partial<UserPreferences> = {};
+          const settings = this.storageService.getSettings();
 
           const response = this.createResponse(
             "settings:get",
@@ -103,10 +115,9 @@ export class SettingsIPC {
       ) => {
         try {
           // Validate incoming payload
-          const settings = payload as UserPreferences;
+          const update = UserPreferencesUpdateSchema.parse(payload);
 
-          // Update settings (delegated to StorageService)
-          // TODO: Call StorageService.updateSettings(settings)
+          const settings = this.storageService.updateSettings(update);
 
           const response = this.createResponse(
             "settings:update",
@@ -137,13 +148,13 @@ export class SettingsIPC {
         requestId: string,
       ) => {
         try {
-          // Reset settings (delegated to StorageService)
-          // TODO: Call StorageService.resetSettings()
+          const settings = this.storageService.resetSettings();
 
           const response = this.createResponse(
             "settings:reset",
             requestId,
             true,
+            { settings },
           );
 
           return IPCResponseSchema.parse(response);
@@ -172,14 +183,13 @@ export class SettingsIPC {
           // Validate incoming payload
           const { theme } = ThemeSchema.parse(payload);
 
-          // Update theme (delegated to StorageService)
-          // TODO: Call StorageService.setTheme(theme)
+          const settings = this.storageService.updateSettings({ theme });
 
           const response = this.createResponse(
             "settings:theme",
             requestId,
             true,
-            { theme },
+            { settings },
           );
 
           return IPCResponseSchema.parse(response);
@@ -208,14 +218,15 @@ export class SettingsIPC {
           // Validate incoming payload
           const { language } = LanguageSchema.parse(payload);
 
-          // Update language (delegated to StorageService/LocalizationService)
-          // TODO: Call LocalizationService.setLanguage(language)
+          // The renderer loads the translations of the new language
+          // (I18nProvider); the main process only stores the choice.
+          const settings = this.storageService.updateSettings({ language });
 
           const response = this.createResponse(
             "settings:language",
             requestId,
             true,
-            { language },
+            { settings },
           );
 
           return IPCResponseSchema.parse(response);

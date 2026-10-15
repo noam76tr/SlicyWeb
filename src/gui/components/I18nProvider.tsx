@@ -10,13 +10,23 @@
  * - <html dir> is "rtl" for Hebrew, "ltr" otherwise
  *   (LanguageManager.isRTL).
  *
- * Starts with the default language of LanguageManager (English).
+ * Language persistence (USER_SETTINGS_SPEC.md, General Settings):
+ * - at start, the language saved in the user settings is read
+ *   through SettingsIPC ("settings:get"); without a valid saved
+ *   language, the default language of LanguageManager (English)
+ *   is used;
+ * - a language change is saved through SettingsIPC
+ *   ("settings:language"), so that it is kept at the next start.
+ * Outside Electron (no window.slicyWeb), nothing is saved.
+ *
  * If a dictionary cannot be loaded, English is used instead.
  *
  * No business logic.
  *
  * Based on:
  * - GUI_SPEC.md (Localization, Accessibility)
+ * - USER_SETTINGS_SPEC.md (General Settings, Storage Location)
+ * - API_SPEC.md (IPC API, SettingsIPC)
  * - CLAUDE.md (Internationalization Rule)
  * - DOMAINS_DEPENDENCY_MATRIX.md (GUI Domain)
  */
@@ -48,6 +58,70 @@ interface LoadedLanguage {
   language: SupportedLanguage;
   direction: TextDirection;
   service: LocalizationService;
+}
+
+/**
+ * Settings bridge exposed by the preload script, absent outside
+ * Electron (for example a page opened in a browser).
+ */
+function getSettingsBridge(): Window["slicyWeb"] | null {
+  return typeof window.slicyWeb?.invoke === "function"
+    ? window.slicyWeb
+    : null;
+}
+
+/**
+ * Reads the language saved in the user settings.
+ * Returns null when there is none, or when it cannot be read.
+ */
+async function readSavedLanguage(): Promise<SupportedLanguage | null> {
+  const bridge = getSettingsBridge();
+
+  if (!bridge) {
+    return null;
+  }
+
+  try {
+    const response = (await bridge.invoke("settings:get")) as {
+      success?: boolean;
+      data?: { settings?: { language?: unknown } };
+    };
+
+    const language = response.data?.settings?.language;
+    const manager = new LanguageManager();
+
+    return response.success === true &&
+      typeof language === "string" &&
+      manager.isSupported(language)
+      ? language
+      : null;
+  } catch (error) {
+    console.error("Saved language could not be read.", error);
+    return null;
+  }
+}
+
+/**
+ * Saves the language in the user settings
+ */
+async function saveLanguage(language: SupportedLanguage): Promise<void> {
+  const bridge = getSettingsBridge();
+
+  if (!bridge) {
+    return;
+  }
+
+  try {
+    const response = (await bridge.invoke("settings:language", {
+      language,
+    })) as { success?: boolean; errors?: unknown };
+
+    if (response.success !== true) {
+      console.error("Language could not be saved.", response.errors);
+    }
+  } catch (error) {
+    console.error("Language could not be saved.", error);
+  }
 }
 
 /**
@@ -93,13 +167,20 @@ export function I18nProvider({ children }: I18nProviderProps) {
   const setLanguage = useCallback(async (language: SupportedLanguage) => {
     const next = await loadLanguage(language);
     setLoaded(next);
+
+    // The language actually displayed is saved (English when the
+    // requested dictionary could not be loaded).
+    await saveLanguage(next.language);
   }, []);
 
-  // Initial load of the default language
+  // Initial load: saved language, or the default language
   useEffect(() => {
     let cancelled = false;
 
-    loadLanguage(new LanguageManager().getDefaultLanguage())
+    readSavedLanguage()
+      .then((saved) =>
+        loadLanguage(saved ?? new LanguageManager().getDefaultLanguage()),
+      )
       .then((next) => {
         if (!cancelled) {
           setLoaded(next);

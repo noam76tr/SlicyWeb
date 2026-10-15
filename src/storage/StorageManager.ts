@@ -6,14 +6,26 @@
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
  * - PROJECT_SPEC.md
+ * - USER_SETTINGS_SPEC.md (Storage Location)
  */
 
 import type { Project } from "../types/Project";
+import type { UserPreferences } from "../types/UserPreferences";
 
 import { ProjectStorage } from "./ProjectStorage";
 import { CacheStorage } from "./CacheStorage";
+import type { SettingsStorage } from "./SettingsStorage";
 
 export class StorageManager {
+  /**
+   * settingsStorage: settings.json storage, created by the
+   * Electron main process (file path in the user data folder).
+   * Without it, the settings methods throw.
+   */
+  public constructor(
+    private readonly settingsStorage: SettingsStorage | null = null,
+  ) {}
+
   private readonly projectStorage =
     new ProjectStorage();
 
@@ -57,5 +69,31 @@ export class StorageManager {
 
   public clearCache(): void {
     this.cacheStorage.clear();
+  }
+
+  public loadSettings(): UserPreferences {
+    return this.requireSettingsStorage().load();
+  }
+
+  public saveSettings(
+    preferences: UserPreferences
+  ): UserPreferences {
+    return this.requireSettingsStorage().save(
+      preferences
+    );
+  }
+
+  public resetSettings(): UserPreferences {
+    return this.requireSettingsStorage().reset();
+  }
+
+  private requireSettingsStorage(): SettingsStorage {
+    if (!this.settingsStorage) {
+      throw new Error(
+        "Settings storage is not configured."
+      );
+    }
+
+    return this.settingsStorage;
   }
 }

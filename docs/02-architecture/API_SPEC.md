@@ -208,6 +208,24 @@ The IPC layer must validate incoming and outgoing payloads.
 
 ---
 
+## SettingsIPC Channels
+
+User preferences (DATA_SCHEMA.md, User Preferences Schema), stored in settings.json by StorageService (USER_SETTINGS_SPEC.md, Storage Location).
+
+| Channel | Payload | Response data |
+|---|---|---|
+| `settings:get` | none | `{ settings }` |
+| `settings:update` | partial preferences (`theme`, `language`, `units`); unknown fields refused | `{ settings }` |
+| `settings:reset` | none | `{ settings }` (default preferences) |
+| `settings:theme` | `{ theme }`: dark, light or system | `{ settings }` |
+| `settings:language` | `{ language }`: en, fr or he | `{ settings }` |
+
+`settings` is always the complete stored preferences after the operation. Payloads are validated by src/schemas/UserPreferencesSchema.ts; an invalid payload returns `success: false` with the validation errors and changes nothing.
+
+The renderer reads the saved language at start (`settings:get`) and saves each language change (`settings:language`) through src/gui/components/I18nProvider.tsx.
+
+---
+
 # Internal API Rules
 
 All internal APIs must:

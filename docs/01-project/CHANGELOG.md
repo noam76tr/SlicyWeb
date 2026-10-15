@@ -1162,6 +1162,36 @@ Date:
 
 ---
 
+# VERSION 0.1.32
+
+Release Type:
+GUI Foundation
+
+Status:
+In Progress
+
+Date:
+2026-10-15
+
+## Added
+
+- Language persistence: the chosen language is saved in the user settings and restored at the next start (USER_SETTINGS_SPEC.md, General Settings)
+- src/storage/SettingsStorage.ts: reads and writes settings.json in the user data folder (Windows: %APPDATA%\SlicyWeb); missing or invalid file gives the default preferences; an invalid field takes its default value; other top-level entries are kept; write through a temporary file and a rename
+- src/schemas/UserPreferencesSchema.ts: Zod schemas of the user preferences (theme, language, units), partial update schema, default preferences (ApplicationConstants)
+- StorageManager and StorageService: loadSettings/getSettings, saveSettings/updateSettings, resetSettings
+- API_SPEC.md: SettingsIPC Channels (payloads and response data)
+- USER_SETTINGS_SPEC.md: location and content of settings.json, reading rules
+
+## Changed
+
+- src/electron/ipc/SettingsIPC.ts: the five channels (settings:get, settings:update, settings:reset, settings:theme, settings:language) call StorageService instead of TODO stubs; payloads validated by UserPreferencesSchema (settings:update no longer casts the payload); responses carry the stored preferences in data.settings
+- src/electron/main.ts: creates the settings storage (app.getPath("userData")/settings.json) and passes StorageService to SettingsIPC
+- src/gui/components/I18nProvider.tsx: reads the saved language at start (settings:get) and saves each language change (settings:language); outside Electron nothing is saved
+- src/types/UserPreferences.ts: Language limited to en, fr, he (DATA_SCHEMA.md, Language Values); es, de, it are Future Extensions
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: SettingsStorage.ts, UserPreferencesSchema.ts
+
+---
+
 # VERSION 0.2.0
 
 Release Type:

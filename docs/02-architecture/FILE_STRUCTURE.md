@@ -509,7 +509,8 @@ src/schemas/
 ├── PrintPresetSchema.ts
 ├── PrinterSchema.ts
 ├── ProjectSchema.ts
-└── RecommendationSchema.ts
+├── RecommendationSchema.ts
+└── UserPreferencesSchema.ts
 ```
 
 ---
@@ -836,6 +837,7 @@ src/storage/
 
 ├── CacheStorage.ts
 ├── ProjectStorage.ts
+├── SettingsStorage.ts
 └── StorageManager.ts
 ```
 

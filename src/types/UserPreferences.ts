@@ -12,13 +12,15 @@ export type Theme =
   | "light"
   | "system";
 
+/**
+ * Supported languages (DATA_SCHEMA.md, Language Values).
+ * es, de and it are Future Extensions in DATA_SCHEMA.md:
+ * they are not accepted yet.
+ */
 export type Language =
   | "en"
   | "fr"
-  | "he"
-  | "es"
-  | "de"
-  | "it";
+  | "he";
 
 export interface UserPreferences {
   theme: Theme;

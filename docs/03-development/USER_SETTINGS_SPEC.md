@@ -423,6 +423,32 @@ settings.json
 Stored separately from WYPROJ project files.
 User settings must not alter project data.
 
+Location: the user data folder of the application (Electron app.getPath("userData"); on Windows: %APPDATA%\SlicyWeb\settings.json).
+
+Content (DATA_SCHEMA.md, User Preferences Schema):
+
+```json
+{
+  "preferences": {
+    "theme": "dark",
+    "language": "en",
+    "units": "metric"
+  }
+}
+```
+
+Read and written by src/storage/SettingsStorage.ts, through StorageService and SettingsIPC (API_SPEC.md, SettingsIPC Channels).
+
+Reading rules:
+
+```text
+Missing or unreadable file: default preferences (ApplicationConstants)
+Invalid field: default value for that field, valid fields kept
+Other top-level entries: kept when the file is written
+```
+
+The language choice is saved at each change and restored at the next start.
+
 ---
 
 

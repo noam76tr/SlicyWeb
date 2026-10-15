@@ -883,7 +883,8 @@ Until the project owner decides otherwise:
 |------|------|
 | `CacheStorage.ts` | Generic cache storage using a Map |
 | `ProjectStorage.ts` | Project-specific storage |
-| `StorageManager.ts` | Orchestrates storage (projects and cache) |
+| `SettingsStorage.ts` | Reads and writes the user preferences in settings.json (user data folder); main process only |
+| `StorageManager.ts` | Orchestrates storage (projects, cache and user settings) |
 
 ---
 
@@ -958,7 +959,7 @@ Until the project owner decides otherwise:
 | `PrinterService.ts` | Printer service: add, remove, retrieve printers |
 | `ProjectService.ts` | Project service: complete lifecycle (creation, validation, serialization) |
 | `RecommendationService.ts` | Recommendation service that delegates generation to the RecommendationEngine |
-| `StorageService.ts` | Storage service for projects and cache |
+| `StorageService.ts` | Storage service for projects, cache and user settings |
 
 ---
 
@@ -1126,6 +1127,7 @@ Until the project owner decides otherwise:
 | `PrinterSchema.ts` | Zod schema for runtime validation of printer data |
 | `ProjectSchema.ts` | Zod schemas for runtime validation of the project (Project Schema) and of the WYPROJ file container (Project File Schema), including Object Reference Rules 3 to 5 (ADR-026) |
 | `RecommendationSchema.ts` | Zod schema for runtime validation of recommendation data |
+| `UserPreferencesSchema.ts` | Zod schema for runtime validation of the user preferences (theme, language, units) and their default values |
 
 ---
 
