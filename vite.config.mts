@@ -19,6 +19,15 @@
  * The warning limit is raised to 1500 kB (DECISIONS.md, ADR-025), so
  * that it still reports an unexpected growth of the bundle.
  *
+ * Content Security Policy (SECURITY_SPEC.md, Renderer Content Security
+ * Policy): a <meta> tag is added at the top of index.html.
+ * - Built application (npm run build, npm start): strict policy,
+ *   only files of the application ('self'); no inline script, no
+ *   eval, no network access.
+ * - Development server (npm run dev): also allows the inline script of
+ *   React Fast Refresh, the <style> tags inserted by Vite and the
+ *   WebSocket of hot reload. Never used by the built application.
+ *
  * The output paths match src/electron/main.ts, which loads
  * preload.js next to itself and ../renderer/index.html.
  *
@@ -32,7 +41,7 @@ import { fileURLToPath } from "node:url";
 
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import electron from "vite-plugin-electron";
 
 const electronExternals = [
@@ -40,6 +49,64 @@ const electronExternals = [
   ...builtinModules,
   ...builtinModules.map((name) => `node:${name}`),
 ];
+
+/**
+ * Content Security Policy of the built application
+ * (loaded from disk with BrowserWindow.loadFile).
+ */
+const PRODUCTION_CSP = [
+  "default-src 'none'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "font-src 'self'",
+  "img-src 'self' data: blob:",
+  "connect-src 'self'",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join("; ");
+
+/**
+ * Content Security Policy of the development server (npm run dev):
+ * inline script of React Fast Refresh, <style> tags of Vite,
+ * WebSocket of hot reload on localhost. No eval.
+ */
+const DEVELOPMENT_CSP = [
+  "default-src 'none'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self'",
+  "img-src 'self' data: blob:",
+  "connect-src 'self' ws://localhost:* ws://127.0.0.1:*",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join("; ");
+
+/**
+ * Adds the Content Security Policy at the top of index.html:
+ * development policy with the dev server, production policy in builds.
+ */
+function contentSecurityPolicy(): Plugin {
+  return {
+    name: "slicyweb-content-security-policy",
+    transformIndexHtml: {
+      order: "pre",
+      handler(_html, context) {
+        return [
+          {
+            tag: "meta",
+            attrs: {
+              "http-equiv": "Content-Security-Policy",
+              content: context.server ? DEVELOPMENT_CSP : PRODUCTION_CSP,
+            },
+            injectTo: "head-prepend",
+          },
+        ];
+      },
+    },
+  };
+}
 
 const electronBuild = {
   outDir: "dist/electron",
@@ -59,6 +126,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    contentSecurityPolicy(),
     react(),
     tailwindcss(),
     electron([

@@ -1844,6 +1844,7 @@ Library Versions:
 - Zod: 3.25.x, installed from Phase 1.
 - Electron: major version 44 (44.7.0 or a later 44.x patch release).
 - Tailwind CSS: major version 4, through the @tailwindcss/vite plugin; the styles entry point is src/gui/styles/global.css (no Tailwind configuration file).
+- Content Security Policy: vite.config.mts adds a meta tag to index.html, strict for the built application and adapted for the development server (SECURITY_SPEC.md, Renderer Content Security Policy).
 - Bundle size warning: build.chunkSizeWarningLimit is 1500 kB in vite.config.mts. The renderer bundle includes Three.js (about 950 kB in Phase 4); it is loaded from disk by Electron, so its size does not slow the start of the application. The bundle is not split; the raised limit still reports an unexpected growth.
 - Lucide React: major version 1 (lucide-react).
 - shadcn/ui: installed with the shadcn command line tool (shadcn init); components are copied into the repository and use the "@/" import alias, which designates src/ (tsconfig.json paths and Vite resolve.alias).

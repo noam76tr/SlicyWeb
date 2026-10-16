@@ -1394,6 +1394,37 @@ Date:
 
 - KI-016 resolved (preload bridge open to any IPC channel; no unsubscribe for on())
 
+## Validation Result
+
+- Windows 11 (2026-10-16): npm run check:ipc (22 invoke channels), npm run check:locales (225 keys), npm run typecheck and npm run lint report 0 errors; in the console, window.slicyWeb.invoke("fs:readFile") is refused with "IPC channel not allowed: fs:readFile"
+
+---
+
+# VERSION 0.1.39
+
+Release Type:
+Security
+
+Status:
+Completed
+
+Date:
+2026-10-16
+
+## Added
+
+- Content Security Policy of the renderer page, added to index.html by vite.config.mts (plugin slicyweb-content-security-policy): strict policy for the built application (only files of the application, no inline script, no eval, no network access); development policy for npm run dev (inline script of React Fast Refresh, style elements of Vite, WebSocket of hot reload on localhost, no eval)
+- SECURITY_SPEC.md: Renderer Content Security Policy
+
+## Changed
+
+- SECURITY_SPEC.md (IPC Security Rules): reference to the IPC allow list
+- DECISIONS.md (ADR-025): Content Security Policy in vite.config.mts
+
+## Fixed
+
+- Electron Security Warning "Insecure Content-Security-Policy" in npm run dev: the page had no Content Security Policy
+
 ---
 
 # VERSION 0.2.0

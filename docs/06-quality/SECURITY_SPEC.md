@@ -644,6 +644,47 @@ Payload Origin Is Untrusted
 
 IPC error handling must never expose internal paths, raw stack traces, or sensitive data. 
 
+The preload bridge accepts only the channels of the allow list (API_SPEC.md, Allowed IPC Channels).
+
+
+
+---
+
+# Renderer Content Security Policy
+
+The renderer page (index.html) declares a Content Security Policy. It is added by vite.config.mts (meta tag at the top of the page).
+
+Built application (npm run build, npm start; page loaded from disk):
+
+```text
+default-src 'none'
+script-src 'self'
+style-src 'self'
+font-src 'self'
+img-src 'self' data: blob:
+connect-src 'self'
+object-src 'none'
+base-uri 'none'
+form-action 'none'
+```
+
+Development server (npm run dev) only, never in the built application:
+
+```text
+script-src adds 'unsafe-inline' (inline script of React Fast Refresh)
+style-src adds 'unsafe-inline' (style elements inserted by Vite)
+connect-src adds ws://localhost:* ws://127.0.0.1:* (hot reload)
+```
+
+Rules:
+
+```text
+No 'unsafe-eval' in any mode
+No remote source in any mode: the renderer loads only files of the application
+A component that inserts style elements (Base UI Select, ScrollArea) uses CSPProvider or a reviewed policy change
+A change of the policy is reviewed and recorded in CHANGELOG.md
+```
+
 
 
 ---
