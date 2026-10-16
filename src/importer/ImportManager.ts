@@ -3,26 +3,43 @@
  * Import Manager
  *
  * Responsible for:
- * - Import coordination
- * - Import workflow management
- * - Format routing
+ * - Import workflow (IMPORT_EXPORT_SPEC.md, Import Workflow):
+ *   file validation, format detection, parser selection, geometry
+ *   extraction and mesh validation, scene integration
+ * - Import errors with their code (ImportError)
  *
- * No business logic.
+ * Formats (IMPORT_EXPORT_SPEC.md, Supported Import Formats): STL.
+ * 3MF comes with the next step of Phase 5.
+ *
+ * Domain: Import. Depends on the Scene Domain (scene integration),
+ * called by the Service Domain (ImportService), DOMAINS_DEPENDENCY_MATRIX.md.
+ *
  * No AI logic.
- * No scene management.
+ * No rendering logic.
  *
  * Based on:
- * - ARCHITECTURE.md
- * - API_SPEC.md
- * - DATA_SCHEMA.md
+ * - IMPORT_EXPORT_SPEC.md
+ * - SECURITY_SPEC.md (File Import Security)
+ * - DECISIONS.md (ADR-029)
  */
 
-import type { Object3D } from "../types/Object3D";
+import { registerImportedObject } from "../scene/SceneIntegration";
 
-import { ObjectFactory } from "../object_manager/ObjectFactory";
-import { STLImporter } from "./STLImporter";
-import { ThreeMFImporter } from "./ThreeMFImporter";
 import { FileValidator } from "./FileValidator";
+import { ImportError } from "./ImportError";
+import {
+  READ_SHARE,
+  STLImporter,
+  type ImportProgress,
+} from "./STLImporter";
+
+export type ImportPhase = "reading" | "analyzing";
+
+/** Progress of an import: phase and fraction from 0 to 1 */
+export type ImportProgressListener = (
+  phase: ImportPhase,
+  fraction: number,
+) => void;
 
 export class ImportManager {
   private readonly fileValidator =
@@ -31,52 +48,50 @@ export class ImportManager {
   private readonly stlImporter =
     new STLImporter();
 
-  private readonly threeMFImporter =
-    new ThreeMFImporter();
-
   /**
-   * Imports a file and creates an Object3D.
+   * Imports a file and registers its objects in the scene.
+   * Returns the objectId of each imported object.
+   * Throws an ImportError when the file is refused.
    */
   public async importFile(
     file: File,
-  ): Promise<Object3D | null> {
-    if (
-      !this.fileValidator.validate(
-        file,
-      )
-    ) {
-      return null;
-    }
+    onProgress: ImportProgressListener = () => {},
+  ): Promise<string[]> {
+    const fileType = this.fileValidator.getExtension(file.name);
 
-    const fileName = file.name;
-
-    const fileType =
-      this.getFileExtension(
-        fileName,
+    if (!this.fileValidator.validateExtension(file)) {
+      throw new ImportError(
+        "UNSUPPORTED_FORMAT",
+        `Unsupported file extension: ${fileType || "(none)"}`,
       );
-
-    switch (fileType) {
-      case "stl":
-        await this.stlImporter.import(
-          file,
-        );
-        break;
-
-      case "3mf":
-        await this.threeMFImporter.import(
-          file,
-        );
-        break;
-
-      default:
-        return null;
     }
 
-    return ObjectFactory.create(
-      crypto.randomUUID(),
-      fileName,
-      fileType,
-    );
+    if (file.size === 0) {
+      throw new ImportError(
+        fileType === "stl" ? "STL_002" : "MF_002",
+        "Empty file.",
+      );
+    }
+
+    if (!this.fileValidator.validateSize(file)) {
+      throw new ImportError(
+        "FILE_TOO_LARGE",
+        `File larger than ${FileValidator.getMaxFileSize()} bytes.`,
+      );
+    }
+
+    if (fileType !== "stl") {
+      // 3MF: next step of Phase 5
+      throw new ImportError("MF_NOT_AVAILABLE", "3MF import not available yet.");
+    }
+
+    const progress: ImportProgress = (fraction) => {
+      onProgress(fraction < READ_SHARE ? "reading" : "analyzing", fraction);
+    };
+
+    const result = await this.stlImporter.import(file, progress);
+
+    return [registerImportedObject(file.name, fileType, result)];
   }
 
   /**
@@ -85,26 +100,8 @@ export class ImportManager {
   public isSupportedFormat(
     fileType: string,
   ): boolean {
-    return [
-      "stl",
-      "3mf",
-    ].includes(
-      fileType.toLowerCase(),
-    );
-  }
-
-  /**
-   * Extracts file extension.
-   */
-  private getFileExtension(
-    fileName: string,
-  ): string {
-    const parts =
-      fileName.split(".");
-
-    return (
-      parts.pop()?.toLowerCase() ??
-      ""
-    );
+    return this.fileValidator
+      .getSupportedFormats()
+      .includes(fileType.toLowerCase());
   }
 }

@@ -5,8 +5,9 @@
  * The eleven buttons of GUI_SPEC.md (Toolbar Buttons): Import, Save,
  * Undo, Redo, Move, Rotate, Scale, Reset, Analyze, Optimize, Generate.
  *
- * Phase 3 (GUI Foundation): the buttons are visible and disabled
- * until the phase that provides their action. They use aria-disabled
+ * Import (Phase 5) opens the system file dialog (STL). The other
+ * buttons are visible and disabled until the phase that provides
+ * their action. They use aria-disabled
  * instead of disabled, so that their tooltip ("available in a later
  * version") is still shown and they stay reachable with the keyboard.
  *
@@ -34,6 +35,7 @@ import {
 } from "lucide-react";
 
 import { useTranslation } from "../hooks/useTranslation";
+import { IMPORT_ACCEPT, openImportDialog } from "../import/openImportDialog";
 
 interface ToolbarButtonDefinition {
   /** Dictionary key of the button label */
@@ -51,7 +53,11 @@ interface ToolbarButtonDefinition {
 /** Groups of buttons, separated by a line */
 const TOOLBAR_GROUPS: ToolbarButtonDefinition[][] = [
   [
-    { key: "toolbar.import", icon: Upload },
+    {
+      key: "toolbar.import",
+      icon: Upload,
+      action: () => openImportDialog(IMPORT_ACCEPT.stl),
+    },
     { key: "toolbar.save", icon: Save },
   ],
   [

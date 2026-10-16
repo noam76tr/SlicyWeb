@@ -18,6 +18,8 @@
  * - ARCHITECTURE.md
  */
 
+import { useMemo } from "react";
+
 import { useAnalysisStore } from "../../state/analysisStore";
 import { useFilamentStore } from "../../state/filamentStore";
 import { useMaterialStore } from "../../state/materialStore";
@@ -27,6 +29,7 @@ import { usePrinterStore } from "../../state/printerStore";
 import { useRecommendationStore } from "../../state/recommendationStore";
 import { useTranslation } from "../hooks/useTranslation";
 
+import { getDisplayNames } from "./objectNames";
 import SidebarSection from "./SidebarSection";
 
 export default function RightSidebar(): JSX.Element {
@@ -37,11 +40,18 @@ export default function RightSidebar(): JSX.Element {
   const filament = useFilamentStore((state) => state.selectedFilament);
   const preset = usePresetStore((state) => state.selectedPreset);
 
+  const objects = useObjectStore((state) => state.objects);
+  const names = useMemo(() => getDisplayNames(objects), [objects]);
+
   const selectedObject = useObjectStore((state) =>
     state.objects.find(
       (object) => object.objectId === state.selectedObjectId,
     ) ?? null,
   );
+
+  const selectedName = selectedObject
+    ? (names.get(selectedObject.objectId) ?? selectedObject.fileName)
+    : "";
 
   const analysis = useAnalysisStore((state) =>
     selectedObject ? state.analysis[selectedObject.objectId] : undefined,
@@ -82,7 +92,7 @@ export default function RightSidebar(): JSX.Element {
       </SidebarSection>
 
       <SidebarSection title={t("object.title")}>
-        {selectedObject ? selectedObject.fileName : noObject}
+        {selectedObject ? selectedName : noObject}
       </SidebarSection>
 
       <SidebarSection title={t("transform.title")}>

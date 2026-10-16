@@ -8,6 +8,10 @@
  * - Geometry extraction
  * - Mesh statistics extraction
  *
+ * The file chosen by the user is read in the renderer, then parsed in
+ * a Web Worker (ADR-029), so that the window never freezes.
+ * Progress: reading the file 0 to 30 %, parsing 30 to 100 %.
+ *
  * No business logic.
  * No AI logic.
  * No scene management.
@@ -16,75 +20,121 @@
  * - ARCHITECTURE.md
  * - FILE_STRUCTURE.md
  * - DATA_SCHEMA.md
+ * - IMPORT_EXPORT_SPEC.md (STL Import, Performance Requirements)
+ * - DECISIONS.md (ADR-029)
  */
 
-import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
-import * as THREE from "three";
+import { ImportError, isImportErrorCode } from "./ImportError";
+import type { StlParseResult } from "./StlParser";
+
+/** Progress callback: fraction from 0 to 1 */
+export type ImportProgress = (fraction: number) => void;
+
+/** Share of the progress used to read the file */
+export const READ_SHARE = 0.3;
+
+type WorkerMessage =
+  | { type: "progress"; fraction: number }
+  | { type: "result"; result: StlParseResult }
+  | { type: "error"; code: string; message: string };
+
+/**
+ * Reads a file, reporting the share of bytes already read.
+ */
+export function readFile(
+  file: File,
+  onProgress: ImportProgress,
+  errorCode: "STL_001" | "MF_001",
+): Promise<ArrayBuffer> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onprogress = (event) => {
+      if (event.lengthComputable && event.total > 0) {
+        onProgress(event.loaded / event.total);
+      }
+    };
+
+    reader.onload = () => {
+      resolve(reader.result as ArrayBuffer);
+    };
+
+    reader.onerror = () => {
+      reject(
+        new ImportError(
+          errorCode,
+          `The file could not be read: ${reader.error?.message ?? "unknown error"}`,
+        ),
+      );
+    };
+
+    reader.readAsArrayBuffer(file);
+  });
+}
 
 export class STLImporter {
-  private readonly loader: STLLoader;
-
-  constructor() {
-    this.loader = new STLLoader();
-  }
-
   /**
-   * Loads an STL file from a File object.
+   * Reads and parses an STL file.
    */
   public async import(
     file: File,
-  ): Promise<THREE.BufferGeometry> {
-    const arrayBuffer =
-      await file.arrayBuffer();
+    onProgress: ImportProgress = () => {},
+  ): Promise<StlParseResult> {
+    const buffer = await readFile(
+      file,
+      (fraction) => onProgress(fraction * READ_SHARE),
+      "STL_001",
+    );
 
-    return this.loader.parse(arrayBuffer);
-  }
-
-  /**
-   * Returns vertex count from geometry.
-   */
-  public getVertexCount(
-    geometry: THREE.BufferGeometry,
-  ): number {
-    const position =
-      geometry.getAttribute("position");
-
-    if (!position) {
-      return 0;
-    }
-
-    return position.count;
-  }
-
-  /**
-   * Returns triangle count from geometry.
-   */
-  public getTriangleCount(
-    geometry: THREE.BufferGeometry,
-  ): number {
-    const position =
-      geometry.getAttribute("position");
-
-    if (!position) {
-      return 0;
-    }
-
-    return Math.floor(
-      position.count / 3,
+    return this.parseInWorker(buffer, (fraction) =>
+      onProgress(READ_SHARE + fraction * (1 - READ_SHARE)),
     );
   }
 
-  /**
-   * Computes geometry bounding box.
-   */
-  public computeBoundingBox(
-    geometry: THREE.BufferGeometry,
-  ): THREE.Box3 {
-    geometry.computeBoundingBox();
+  private parseInWorker(
+    buffer: ArrayBuffer,
+    onProgress: ImportProgress,
+  ): Promise<StlParseResult> {
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(
+        new URL("./workers/stlParser.worker.ts", import.meta.url),
+        { type: "module" },
+      );
 
-    return (
-      geometry.boundingBox ??
-      new THREE.Box3()
-    );
+      worker.onmessage = (event: MessageEvent<WorkerMessage>) => {
+        const message = event.data;
+
+        if (message.type === "progress") {
+          onProgress(message.fraction);
+          return;
+        }
+
+        worker.terminate();
+
+        if (message.type === "result") {
+          resolve(message.result);
+        } else {
+          reject(
+            new ImportError(
+              isImportErrorCode(message.code) ? message.code : "STL_003",
+              message.message,
+            ),
+          );
+        }
+      };
+
+      worker.onerror = (event) => {
+        worker.terminate();
+        reject(
+          new ImportError(
+            "STL_003",
+            `STL parsing failed: ${event.message || "worker error"}`,
+          ),
+        );
+      };
+
+      // The buffer is transferred to the worker (no copy)
+      worker.postMessage(buffer, [buffer]);
+    });
   }
 }

@@ -659,6 +659,7 @@ Built application (npm run build, npm start; page loaded from disk):
 ```text
 default-src 'none'
 script-src 'self'
+worker-src 'self'
 style-src 'self'
 font-src 'self'
 img-src 'self' data: blob:

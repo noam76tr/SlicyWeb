@@ -8,7 +8,8 @@
  * - Renderer lifecycle
  *
  * The viewport shows the coordinate grid, the axes and, when a
- * printer is selected, its build plate (WorkspaceHelpers).
+ * printer is selected, its build plate (WorkspaceHelpers), and the
+ * objects of the scene (ObjectRenderer, object store).
  * Camera: mouse controls of GUI_SPEC.md (CameraManager); projection
  * and view presets come from the View menu (viewport store);
  * the Home key resets the view (GUI_SPEC.md, Keyboard Shortcuts).
@@ -34,9 +35,11 @@ import { useEffect, useRef, useState } from "react";
 
 import { CameraManager } from "../../renderer/CameraManager";
 import { LightingManager } from "../../renderer/LightingManager";
+import { ObjectRenderer } from "../../renderer/ObjectRenderer";
 import { RendererManager } from "../../renderer/RendererManager";
 import { SceneRenderer } from "../../renderer/SceneRenderer";
 import { WorkspaceHelpers } from "../../renderer/helpers/WorkspaceHelpers";
+import { useObjectStore } from "../../state/objectStore";
 import { usePrinterStore } from "../../state/printerStore";
 import { useViewportStore } from "../../state/viewportStore";
 
@@ -88,6 +91,7 @@ export default function Viewport({
     const scene = rendererManager.getScene();
     const lightingManager = new LightingManager(scene);
     const workspace = new WorkspaceHelpers(scene);
+    const objectRenderer = new ObjectRenderer(scene);
     const sceneRenderer = new SceneRenderer(rendererManager);
 
     cameraManager.attachControls(rendererManager.getCanvas());
@@ -112,6 +116,14 @@ export default function Viewport({
       rendererManager.resize();
     });
     resizeObserver.observe(container);
+
+    // Objects of the scene (imported models)
+    const syncObjects = (): void => {
+      const { objects, selectedObjectId } = useObjectStore.getState();
+      objectRenderer.sync(objects, selectedObjectId);
+    };
+    syncObjects();
+    const unsubscribeObjects = useObjectStore.subscribe(syncObjects);
 
     const unsubscribePrinter = usePrinterStore.subscribe((state, previous) => {
       if (state.selectedPrinter === previous.selectedPrinter) {
@@ -154,8 +166,10 @@ export default function Viewport({
       window.removeEventListener("keydown", handleKeyDown);
       unsubscribeViewport();
       unsubscribePrinter();
+      unsubscribeObjects();
       resizeObserver.disconnect();
       sceneRenderer.stop();
+      objectRenderer.dispose();
       workspace.dispose();
       lightingManager.dispose();
       cameraManager.dispose();

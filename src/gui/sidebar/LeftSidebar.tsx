@@ -17,16 +17,20 @@
  * - ARCHITECTURE.md
  */
 
+import { useMemo } from "react";
 import { Box, Eye, EyeOff, Lock, LockOpen } from "lucide-react";
 
 import { useObjectStore } from "../../state/objectStore";
 import { useTranslation } from "../hooks/useTranslation";
+
+import { getDisplayNames } from "./objectNames";
 
 export default function LeftSidebar(): JSX.Element {
   const { t } = useTranslation();
   const objects = useObjectStore((state) => state.objects);
   const selectedObjectId = useObjectStore((state) => state.selectedObjectId);
   const selectObject = useObjectStore((state) => state.selectObject);
+  const names = useMemo(() => getDisplayNames(objects), [objects]);
 
   if (objects.length === 0) {
     return (
@@ -59,7 +63,9 @@ export default function LeftSidebar(): JSX.Element {
               }}
             >
               <Box className="size-4 shrink-0" aria-hidden="true" />
-              <span className="truncate">{object.fileName}</span>
+              <span className="truncate">
+                {names.get(object.objectId) ?? object.fileName}
+              </span>
             </button>
 
             <button

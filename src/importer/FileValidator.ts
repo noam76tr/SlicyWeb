@@ -89,6 +89,10 @@ export class FileValidator {
     );
   }
 
+  public static getMaxFileSize(): number {
+    return FileValidator.MAX_FILE_SIZE;
+  }
+
   public getSupportedFormats():
     readonly string[] {
     return FileValidator.SUPPORTED_FORMATS;

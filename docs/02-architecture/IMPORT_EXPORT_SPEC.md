@@ -649,6 +649,35 @@ Read Failure
 
 ---
 
+# Import Error Codes
+
+Codes of ERROR_CODES_SPEC.md used by the STL import (src/importer/StlParser.ts, ImportManager.ts):
+
+| Code | When |
+|---|---|
+| STL_001 | The file could not be read (read failure) |
+| STL_002 | Empty file; neither binary STL (size = 84 + 50 x triangle count) nor ASCII STL ("solid" with facets) |
+| STL_003 | Truncated binary data or triangle count not matching the size; malformed ASCII facet (not 3 vertices); no triangle; coordinate not finite |
+| STL_004 | Not used yet |
+
+Reasons without a code in ERROR_CODES_SPEC.md (KI-018): unsupported format (extension other than .stl and .3mf), file larger than the limit of FileValidator (1 GB).
+
+The GUI shows a translated message for each code (import.error.<code>), never the technical message.
+
+---
+
+# Import Progress And Placement
+
+The import runs in the renderer; the file is parsed in a Web Worker (DECISIONS.md, ADR-029). Each file shows its progress (reading, then analyzing), then a short confirmation or its error message.
+
+Several files can be chosen or dropped at once; they are imported one after the other.
+
+An imported object is centered on the origin and placed on the build plate (lowest point at Z = 0, ADR-028, ADR-029). Objects may overlap.
+
+Object names (Duplicate Names): the names "cube (1)", "cube (2)" are display names; the project keeps the file name of each object (DATA_SCHEMA.md, Object Schema).
+
+---
+
 # Security Requirements
 
 The import system must:

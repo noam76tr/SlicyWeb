@@ -386,7 +386,12 @@ src/gui/
 ├── sidebar/
 │   ├── LeftSidebar.tsx
 │   ├── RightSidebar.tsx
-│   └── SidebarSection.tsx
+│   ├── SidebarSection.tsx
+│   └── objectNames.ts         = display names of the objects (duplicates: "cube (1)")
+├── import/
+│   ├── openImportDialog.ts    = system file dialog for File > Import STL and the toolbar
+│   ├── ImportDropZone.tsx     = drag and drop of files in the viewport
+│   └── ImportStatus.tsx       = progress, confirmation and errors of the imports
 ├── panels/
 │   ├── PrinterPanel.tsx
 │   ├── MaterialPanel.tsx
@@ -425,6 +430,7 @@ src/renderer/
 ├── CameraManager.ts
 ├── LightingManager.ts
 ├── SceneRenderer.ts
+├── ObjectRenderer.ts          = meshes of the scene objects in the viewport
 ├── SelectionRenderer.ts
 └── helpers/
     └── WorkspaceHelpers.ts    = grid, axes and build plate of the viewport (ADR-028)
@@ -527,7 +533,9 @@ src/scene/
 ├── SceneManager.ts
 ├── SceneFactory.ts
 ├── SceneSerializer.ts
-└── SceneValidator.ts
+├── SceneValidator.ts
+├── GeometryRegistry.ts        = triangle geometry of the objects, by objectId (ADR-029)
+└── SceneIntegration.ts        = registers an imported model in the scene (ADR-029)
 ```
 
 ---
@@ -568,9 +576,13 @@ src/transform/
 src/importer/
 
 ├── STLImporter.ts
+├── StlParser.ts               = binary and ASCII STL parser with validation (no DOM)
 ├── ThreeMFImporter.ts
 ├── ImportManager.ts
-└── FileValidator.ts
+├── ImportError.ts             = import errors with their code (ERROR_CODES_SPEC.md)
+├── FileValidator.ts
+└── workers/
+    └── stlParser.worker.ts    = Web Worker parsing STL files (ADR-029)
 ```
 
 ---
@@ -751,6 +763,7 @@ src/services/
 ├── PrinterService.ts
 ├── ProjectService.ts
 ├── RecommendationService.ts
+├── ImportService.ts           = import queue, progress and errors for the GUI (ADR-029)
 └── StorageService.ts
 ```
 
@@ -769,6 +782,7 @@ src/state/
 ├── materialStore.ts
 ├── analysisStore.ts
 ├── recommendationStore.ts
+├── importStore.ts             = imports in progress and their result
 └── viewportStore.ts           = projection and view presets of the viewport
 ```
 

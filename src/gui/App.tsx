@@ -29,6 +29,7 @@ import LeftSidebar from "./sidebar/LeftSidebar";
 import RightSidebar from "./sidebar/RightSidebar";
 import StatusBar from "./statusbar/StatusBar";
 import Toolbar from "./toolbars/Toolbar";
+import ImportDropZone from "./import/ImportDropZone";
 import Viewport from "./viewport/Viewport";
 
 export default function App(): JSX.Element {
@@ -56,10 +57,12 @@ export default function App(): JSX.Element {
         leftTitle={t("objects.title")}
         leftPanel={<LeftSidebar />}
         centerPanel={
-          <Viewport
-            label={t("viewport.title")}
-            unavailableMessage={t("viewport.unavailable")}
-          />
+          <ImportDropZone>
+            <Viewport
+              label={t("viewport.title")}
+              unavailableMessage={t("viewport.unavailable")}
+            />
+          </ImportDropZone>
         }
         rightTitle={t("properties.title")}
         rightPanel={<RightSidebar />}

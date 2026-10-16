@@ -16,6 +16,8 @@
  * - ARCHITECTURE.md
  */
 
+import { useMemo } from "react";
+
 import { useAnalysisStore } from "../../state/analysisStore";
 import { useFilamentStore } from "../../state/filamentStore";
 import { useMaterialStore } from "../../state/materialStore";
@@ -26,6 +28,7 @@ import {
   LANGUAGE_NAME_KEYS,
   useTranslation,
 } from "../hooks/useTranslation";
+import { getDisplayNames } from "../sidebar/objectNames";
 
 interface StatusFieldProps {
   label: string;
@@ -50,11 +53,18 @@ export default function StatusBar(): JSX.Element {
   const preset = usePresetStore((state) => state.selectedPreset);
   const objectCount = useObjectStore((state) => state.objects.length);
 
+  const objects = useObjectStore((state) => state.objects);
+  const names = useMemo(() => getDisplayNames(objects), [objects]);
+
   const selectedObject = useObjectStore((state) =>
     state.objects.find(
       (object) => object.objectId === state.selectedObjectId,
     ) ?? null,
   );
+
+  const selectedName = selectedObject
+    ? (names.get(selectedObject.objectId) ?? selectedObject.fileName)
+    : "";
 
   const analysis = useAnalysisStore((state) =>
     selectedObject ? state.analysis[selectedObject.objectId] : undefined,
@@ -74,7 +84,7 @@ export default function StatusBar(): JSX.Element {
       />
       <StatusField
         label={t("statusBar.selectedObject")}
-        value={selectedObject ? selectedObject.fileName : none}
+        value={selectedObject ? selectedName : none}
       />
       <StatusField
         label={t("statusBar.objectCount")}

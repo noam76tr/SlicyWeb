@@ -46,6 +46,10 @@ export const GRID_MAJOR_EVERY = 5;
 export const BUILD_PLATE_COLOR = 0x2f2f33;
 export const BUILD_VOLUME_EDGE_COLOR = 0x4fa3ff;
 
+/** Color of the objects, and of the selected object (GUI_SPEC.md accent #4FA3FF) */
+export const OBJECT_COLOR = 0xb4b8c0;
+export const SELECTED_OBJECT_COLOR = 0x4fa3ff;
+
 /** Length of the axes at the origin, as a fraction of the workspace side */
 export const AXES_LENGTH_RATIO = 0.15;
 

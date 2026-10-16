@@ -245,6 +245,8 @@ on returns a function that removes its listener
 the callback of on receives the data only, never the Electron event
 ```
 
+The model import does not use the channels import:stl, import:3mf and import:validate: the files chosen by the user are read and parsed in the renderer (DECISIONS.md, ADR-029). These channels stay registered for a later use.
+
 A new IPC handler is added to the allow list in the same change. `npm run check:ipc` (scripts/build/check-ipc-channels.mjs) compares INVOKE_CHANNELS with the ipcMain.handle registrations of src/electron/ipc/.
 
 ---

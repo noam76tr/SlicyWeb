@@ -23,7 +23,7 @@ export class LightingManager {
     this.ambientLight =
       new THREE.AmbientLight(
         0xffffff,
-        1.0
+        0.8
       );
 
     this.directionalLight =
@@ -36,10 +36,12 @@ export class LightingManager {
   }
 
   private initialize(): void {
+    // Z axis up (ADR-028): light from the front right, above the
+    // plate, on the side of the default isometric view
     this.directionalLight.position.set(
-      100,
-      200,
-      100
+      150,
+      -200,
+      300
     );
 
     this.scene.add(

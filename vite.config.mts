@@ -59,6 +59,7 @@ const electronExternals = [
 const PRODUCTION_CSP = [
   "default-src 'none'",
   "script-src 'self'",
+  "worker-src 'self'",
   "style-src 'self'",
   "font-src 'self'",
   "img-src 'self' data: blob:",
@@ -76,6 +77,7 @@ const PRODUCTION_CSP = [
 const DEVELOPMENT_CSP = [
   "default-src 'none'",
   "script-src 'self' 'unsafe-inline'",
+  "worker-src 'self'",
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self'",
   "img-src 'self' data: blob:",

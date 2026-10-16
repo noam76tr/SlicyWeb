@@ -431,6 +431,21 @@ Every file should be placed in the directory that matches its responsibility.
 | `LeftSidebar.tsx` | Object Panel content: list of the imported objects (icon, name, visibility, lock, selection) from the object store |
 | `RightSidebar.tsx` | Properties Panel content: the nine sections of GUI_SPEC.md (Properties Sections) with the current selection |
 | `SidebarSection.tsx` | Reusable titled section of a side panel |
+| `objectNames.ts` | Display names of the objects: source file name, "cube (1)", "cube (2)" for duplicates (IMPORT_EXPORT_SPEC.md, Duplicate Names) |
+
+---
+
+## src/gui/import/
+
+**Purpose:** Model Import User Interface
+
+**Files:**
+
+| File | Role |
+|------|------|
+| `openImportDialog.ts` | Opens the system file dialog (File > Import STL, toolbar Import) and sends the chosen files to ImportService |
+| `ImportDropZone.tsx` | Drag and drop of files in the viewport (GUI_SPEC.md, Drag And Drop) |
+| `ImportStatus.tsx` | Progress bar, confirmation and translated error message of each import, over the viewport |
 
 ---
 
@@ -455,6 +470,7 @@ Every file should be placed in the directory that matches its responsibility.
 | `LightingManager.ts` | Manages lighting (ambient and directional light) |
 | `Renderer.ts` | WebGL renderer; not used, duplicates RendererManager (KI-015) |
 | `RendererManager.ts` | WebGL renderer and scene of the viewport, drawn with the camera of CameraManager; background color of GUI_SPEC.md |
+| `ObjectRenderer.ts` | One mesh per scene object (GeometryRegistry): position, scale, visibility, selected object in the accent color |
 | `SceneRenderer.ts` | Render loop (frame callback, then drawing) and scene objects |
 | `helpers/WorkspaceHelpers.ts` | Grid with adaptive spacing, axes (X red, Y green, Z blue) and build plate of the selected printer |
 | `SelectionRenderer.ts` | Visual rendering of object selection (BoxHelper) |
@@ -481,6 +497,8 @@ Every file should be placed in the directory that matches its responsibility.
 | `SceneManager.ts` | Manages the Three.js scene and its 3D objects |
 | `SceneSerializer.ts` | Serializes and deserializes scenes to and from JSON |
 | `SceneValidator.ts` | Validates scenes and allowed operations |
+| `GeometryRegistry.ts` | Triangle geometry of the scene objects, indexed by objectId (local coordinates, origin at the bottom center) |
+| `SceneIntegration.ts` | Registers an imported model: centered on the origin at Z = 0, geometry and mesh statistics, object added and selected (ADR-029) |
 
 ---
 
@@ -595,8 +613,11 @@ Until the project owner decides otherwise:
 | File | Role |
 |------|------|
 | `FileValidator.ts` | Validates files before import (name, size, extension) |
-| `ImportManager.ts` | Orchestrates the import workflow and routes by format |
-| `STLImporter.ts` | Loads and parses STL files with geometry extraction |
+| `ImportError.ts` | Import error with its code (STL_001 to STL_004, MF_001 to MF_003, and reasons without code, KI-018) |
+| `ImportManager.ts` | Import workflow: validation, format detection, parsing, scene integration; errors with codes |
+| `StlParser.ts` | Parses binary and ASCII STL files with the validation of SECURITY_SPEC.md; vertices, normals, bounds, volume, surface area |
+| `STLImporter.ts` | Reads an STL file (progress) and parses it in the Web Worker |
+| `workers/stlParser.worker.ts` | Web Worker running StlParser, with progress messages (ADR-029) |
 | `ThreeMFImporter.ts` | Loads and parses 3MF files (placeholder implementation until Phase 3, ROADMAP.md) |
 
 ---
@@ -966,6 +987,7 @@ Until the project owner decides otherwise:
 | `ProjectService.ts` | Project service: complete lifecycle (creation, validation, serialization) |
 | `RecommendationService.ts` | Recommendation service that delegates generation to the RecommendationEngine |
 | `StorageService.ts` | Storage service for projects, cache and user settings |
+| `ImportService.ts` | Imports the chosen files one after the other; progress and errors in the import store (ADR-029) |
 
 ---
 
@@ -1019,6 +1041,7 @@ Until the project owner decides otherwise:
 | `presetStore.ts` | Zustand store for print presets (list and selection) |
 | `printerStore.ts` | Zustand store for printers (list and selection) |
 | `recommendationStore.ts` | Zustand store for print recommendations |
+| `importStore.ts` | Zustand store for the imports in progress (file, phase, progress, error code) |
 | `sceneStore.ts` | Zustand store for the 3D scene (scene of the project) |
 | `viewportStore.ts` | Zustand store for the viewport (projection, requested view preset) |
 

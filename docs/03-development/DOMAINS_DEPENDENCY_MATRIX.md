@@ -288,7 +288,10 @@ Notification Domain
 Cost Estimation Domain
 State Management Domain
 IPC Domain
+Import Domain
 ```
+
+The Service Domain triggers the import (ImportService, ADR-029); the GUI calls ImportService.
 
 Cannot Depend On:
 

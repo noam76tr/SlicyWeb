@@ -1488,6 +1488,55 @@ Date:
 
 - KI-014 resolved (selection state duplicated between stores)
 
+## Validation Result
+
+- Windows 11 (2026-10-16): npm run typecheck and npm run lint report 0 errors; npm run dev starts, the interface is unchanged; src/state/appStore.ts removed locally and on GitHub
+
+---
+
+# VERSION 0.1.42
+
+Release Type:
+Model Import
+
+Status:
+In Progress
+
+Date:
+2026-10-16
+
+## Added
+
+- STL import (Technical Phase 5): File > Import STL and the toolbar Import button open the system file dialog (several files at once); STL files can be dropped in the viewport (GUI_SPEC.md, Drag And Drop)
+- src/importer/StlParser.ts: binary and ASCII STL parser without DOM; format detection (size of the binary data first, then "solid" with facets); validation of SECURITY_SPEC.md (empty file, truncated data, triangle count, malformed facet, no triangle, non finite coordinates) with the codes STL_002 and STL_003; normals recomputed from the vertices; bounds, volume and surface area
+- src/importer/workers/stlParser.worker.ts: Web Worker running the parser, with progress messages (ADR-029)
+- src/importer/ImportError.ts: import errors with their code
+- src/scene/GeometryRegistry.ts, src/scene/SceneIntegration.ts: geometry of the scene objects; registration of an imported model, centered on the origin and placed at Z = 0, with its Model Geometry (width, depth, height, volume, surface area) and Mesh Statistics; the new object is selected
+- src/services/ImportService.ts, src/state/importStore.ts: files imported one after the other; progress, success and errors for the GUI
+- src/renderer/ObjectRenderer.ts: one mesh per object in the viewport; selected object in the accent color
+- src/gui/import/: file dialog, drop zone, import status over the viewport (progress bar, confirmation, translated error message that stays until closed)
+- src/gui/sidebar/objectNames.ts: display names, "cube (1)", "cube (2)" for objects from files with the same name
+- Locale keys import.* (237 keys)
+- IMPORT_EXPORT_SPEC.md: Import Error Codes, Import Progress And Placement
+- KNOWN ISSUES: KI-018 (import errors without code in ERROR_CODES_SPEC.md)
+
+## Changed
+
+- src/importer/STLImporter.ts: reads the file with progress and parses it in the Web Worker (three.js STLLoader no longer used)
+- src/importer/ImportManager.ts: import workflow with errors and codes; registers the objects in the scene; 3MF refused with "available in a later version" until the 3MF step
+- src/importer/FileValidator.ts: getMaxFileSize()
+- src/gui/viewport/Viewport.tsx: displays the scene objects (ObjectRenderer, object store)
+- src/renderer/LightingManager.ts: directional light from the front right above the plate (Z up), ambient light 0.8
+- src/gui/menus/MenuBar.tsx: File > Import STL active; src/gui/toolbars/Toolbar.tsx: Import active (STL)
+- src/gui/App.tsx: the viewport is wrapped in the import drop zone
+- src/gui/sidebar/LeftSidebar.tsx, RightSidebar.tsx, src/gui/statusbar/StatusBar.tsx: display names of the objects
+- src/constants/ViewportConstants.ts: object colors
+- vite.config.mts, SECURITY_SPEC.md: worker-src 'self' in the Content Security Policy (both modes)
+- DOMAINS_DEPENDENCY_MATRIX.md: Service Domain can depend on the Import Domain
+- API_SPEC.md: the import does not use the import:* IPC channels (ADR-029)
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: new files and src/gui/import/
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 5 progress
+
 ---
 
 # VERSION 0.2.0
@@ -2394,6 +2443,22 @@ Issue: The Transform Schema gives rotation x, y, z without unit (degrees or radi
 Resolve Before: Phase 6 - Transform System (technical plan)
 
 Planned Resolution: Define the unit and the order of rotation in DATA_SCHEMA.md (Transform Schema), then use them in the transform code and in the viewport.
+
+
+---
+
+
+Identifier: KI-018
+
+Since: 0.1.42
+
+Affected Module: ERROR_CODES_SPEC.md, src/importer/ImportError.ts
+
+Issue: Two import refusals have no code in ERROR_CODES_SPEC.md: a file of an unsupported format (IMPORT_EXPORT_SPEC.md, Import Errors: Unsupported Format) and a file larger than the size limit of FileValidator (1 GB). The import uses the reasons UNSUPPORTED_FORMAT and FILE_TOO_LARGE, and MF_NOT_AVAILABLE until the 3MF import exists. STL_004 (Unsupported STL Version) has no defined condition.
+
+Resolve Before: Phase 5 closure (technical plan)
+
+Planned Resolution: Add import codes to ERROR_CODES_SPEC.md (for example IMP_001 Unsupported Format, IMP_002 File Too Large) or decide to keep these reasons without code; define or remove the condition of STL_004.
 
 
 ---

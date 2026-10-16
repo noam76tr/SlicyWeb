@@ -11,6 +11,8 @@
  * - File > Exit: closes the application window;
  * - View (Phase 4): perspective or orthographic projection, the seven
  *   view presets and Reset View (viewport store);
+ * - File > Import STL (Phase 5): system file dialog, import
+ *   (openImportDialog, ImportService);
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -47,6 +49,7 @@ import {
   LANGUAGE_NAME_KEYS,
   useTranslation,
 } from "../hooks/useTranslation";
+import { IMPORT_ACCEPT, openImportDialog } from "../import/openImportDialog";
 
 interface MenuItemDefinition {
   /** Dictionary key of the item label */
@@ -93,7 +96,13 @@ const MENUS: MenuDefinition[] = [
         { key: "project.saveAs" },
         { key: "project.exportWyproj" },
       ],
-      [{ key: "project.importStl" }, { key: "project.import3mf" }],
+      [
+        {
+          key: "project.importStl",
+          action: () => openImportDialog(IMPORT_ACCEPT.stl),
+        },
+        { key: "project.import3mf" },
+      ],
       [{ key: "project.close" }],
       [{ key: "app.exit", action: closeApplication }],
     ],
