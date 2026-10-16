@@ -13,6 +13,12 @@
  * Renderer: Tailwind CSS 4 (@tailwindcss/vite) and the "@/" alias
  * for src/ (shadcn/ui prerequisite, ADR-025).
  *
+ * Size warning: the renderer bundle includes Three.js (Phase 4, 3D
+ * viewport) and is about 950 kB. The application is loaded from disk
+ * by Electron, not downloaded, so this size does not slow its start.
+ * The warning limit is raised to 1500 kB (DECISIONS.md, ADR-025), so
+ * that it still reports an unexpected growth of the bundle.
+ *
  * The output paths match src/electron/main.ts, which loads
  * preload.js next to itself and ../renderer/index.html.
  *
@@ -73,5 +79,6 @@ export default defineConfig({
   build: {
     outDir: "dist/renderer",
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1500,
   },
 });

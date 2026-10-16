@@ -1306,7 +1306,7 @@ Release Type:
 3D Viewport
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-16
@@ -1336,6 +1336,30 @@ Date:
 - PHASES_IMPLEMENTATION_PLAN.md: Phase 4 In Progress
 - KNOWN ISSUES: KI-015 updated (Viewport.tsx is used; Renderer.ts is unused and duplicates RendererManager)
 - PASSATION.md: working rules (Windows PowerShell, no git status, check of the GitHub upload)
+
+
+## Validation Result
+
+- Windows 11 (2026-10-16): npm run check:locales (225 keys), npm run typecheck and npm run lint report 0 errors; grid and axes displayed; zoom, pan and rotation work and are smooth; all View menu items work; Home resets the view; resizing and collapsing the side panels do not distort the viewport; npm run build succeeds (warning: renderer bundle larger than 500 kB, see 0.1.37) and npm start opens the application
+
+---
+
+# VERSION 0.1.37
+
+Release Type:
+Phase Closure
+
+Status:
+Completed
+
+Date:
+2026-10-16
+
+## Changed
+
+- vite.config.mts: build.chunkSizeWarningLimit 1500 kB; the renderer bundle includes Three.js (about 950 kB) and is loaded from disk by Electron
+- DECISIONS.md (ADR-025): bundle size warning limit
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 4 - 3D Viewport Completed, with the validation result
 
 ---
 

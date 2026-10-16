@@ -902,11 +902,22 @@ Menus Functional
 
 # 3D VIEWPORT
 
-Status: In Progress
+Status: Completed
+
+Date: 2026-10-16
 
 Progress:
 
 - 3D viewport (CHANGELOG 0.1.36): coordinate system of ADR-028 (mm, Z up, origin at the center of the build plate); grid with adaptive spacing; axes X red, Y green, Z blue; build plate and build volume limits of the selected printer (none without a printer); camera controls of GUI_SPEC.md (wheel zoom, middle button pan, right button rotate); View menu: perspective and orthographic projections, the seven view presets (Top, Bottom, Front, Back, Left, Right, Isometric) and Reset View (Home key); the canvas follows the window and the side panels
+- Bundle size warning limit (CHANGELOG 0.1.37): 1500 kB in vite.config.mts (Three.js in the renderer bundle)
+
+Validation result (Windows 11):
+
+- Viewport Functional: grid and axes displayed (X red, Y green, Z blue); View menu: the seven view presets, perspective and orthographic projections; Home resets the view; the viewport follows the window and the side panels (resized or collapsed) without distortion
+- Smooth Navigation: wheel zoom, middle button pan and right button rotate are smooth
+- npm run check:locales (225 keys), npm run typecheck and npm run lint report 0 errors; npm run build succeeds and npm start opens the application
+
+The build plate is shown only with a selected printer (Phase 7 - Printer Database); it was checked in Chromium with a simulated 256 x 256 x 256 mm printer.
 
 ---
 
