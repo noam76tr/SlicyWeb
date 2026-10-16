@@ -2158,6 +2158,76 @@ Reason:
 
 ---
 
+# ADR-029
+
+Title: Model Import In The Renderer With A Web Worker
+
+Status: Accepted
+
+Date: 2026-10-16
+
+## Context
+
+Phase 5 (Model Import) imports STL and 3MF files (IMPORT_EXPORT_SPEC.md).
+
+The import must avoid UI freezes and provide progress updates (IMPORT_EXPORT_SPEC.md, Performance Requirements).
+
+The file can be read in the renderer (file chosen by the user in the system file dialog, or dropped in the viewport, GUI_SPEC.md, Drag And Drop) or in the main process (IPC channels import:stl and import:3mf with a file path).
+
+ImportManager, STLImporter and ThreeMFImporter already work on File objects of the renderer.
+
+DOMAINS_DEPENDENCY_MATRIX.md allowed the Import Domain to depend on the Scene Domain and the Scene Domain to depend on the Import Domain.
+
+## Decision
+
+- The file is read in the renderer: system file dialog (File > Import STL, File > Import 3MF, toolbar Import) and drag and drop in the viewport. Only the file chosen by the user is read. No file path goes through IPC; the IPC channels import:stl, import:3mf and import:validate are not used by the import.
+- The file content is parsed in a Web Worker, so that the window never freezes; the import shows its progress.
+- Placement: each imported object is centered on the origin (center of the build plate, ADR-028) and placed on the plate (lowest point at Z = 0). Objects may overlap; automatic arrangement is a later feature.
+- Domain direction: the Import Domain depends on the Scene Domain (it registers the imported objects); the Scene Domain does not depend on the Import Domain.
+- Selection reference (KI-014): each selection is stored once, in the store of its domain (objectStore.selectedObjectId, printerStore, materialStore, filamentStore, presetStore). appStore is removed; sceneStore keeps the scene only.
+
+## Consequences
+
+Advantages:
+
+- The renderer never receives a file path and never reads a file the user did not choose
+- No large geometry transfer through IPC
+- The window stays responsive with large models
+
+Disadvantages:
+
+- Worker code must not use DOM APIs (for example DOMParser for 3MF XML)
+- The Content Security Policy must allow the worker script of the application
+
+## Alternatives Considered
+
+Reading and parsing in the main process
+
+Rejected
+
+Reason:
+
+- Requires file paths in IPC and the transfer of large geometry buffers to the renderer
+
+Parsing on the main thread of the renderer
+
+Rejected
+
+Reason:
+
+- Large STL files would freeze the window
+
+## Related Documents
+
+- IMPORT_EXPORT_SPEC.md (Import Workflow, Scene Integration, Performance Requirements)
+- GUI_SPEC.md (Drag And Drop, File Menu)
+- SECURITY_SPEC.md (File Import Security, Renderer Content Security Policy)
+- DOMAINS_DEPENDENCY_MATRIX.md (Import Domain, Scene Domain)
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-025)
+- ADR-028
+
+---
+
 # Future Decision Template
 
 Copy and complete:

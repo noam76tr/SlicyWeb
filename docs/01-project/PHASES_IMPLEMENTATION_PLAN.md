@@ -1012,6 +1012,15 @@ Smooth Navigation
 
 
 
+Status: In Progress
+
+Decisions (ADR-029):
+
+- Files read in the renderer (file dialog, drag and drop in the viewport), parsed in a Web Worker with visible progress
+- Imported objects centered on the origin and placed at Z = 0
+- Import Domain depends on Scene Domain, not the reverse
+- Selection stored once, in the store of its domain (KI-014 resolved, CHANGELOG 0.1.41)
+
 ---
 
 

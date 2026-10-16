@@ -1450,6 +1450,44 @@ Date:
 
 - SECURITY_SPEC.md (Renderer Content Security Policy): built assets are never inlined as data: URLs
 
+## Validation Result
+
+- Windows 11 (2026-10-16): npm run build writes the small Noto Sans Hebrew font as a file (the cyrillic-ext and greek-ext subsets have the same content, Vite writes one file); npm start shows no Content Security Policy violation; npm run lint reports 0 errors
+
+---
+
+# VERSION 0.1.41
+
+Release Type:
+Model Import
+
+Status:
+Completed
+
+Date:
+2026-10-16
+
+## Added
+
+- Technical Phase 5 - Model Import started: decisions recorded before implementation
+- DECISIONS.md: ADR-029 (files read in the renderer, parsed in a Web Worker with progress; imported objects centered on the origin at Z = 0; Import Domain depends on Scene Domain; one store per selection); ARCHITECTURE_DECISION_MATRIX.md: ADM-025
+- DIRECTORY_PURPOSES.md (src/state/): Selection Reference table
+
+## Changed
+
+- src/state/sceneStore.ts: keeps the scene only; selectedObject, setSelectedObject and clearSelection removed (objectStore.selectedObjectId is the reference)
+- DOMAINS_DEPENDENCY_MATRIX.md: the Scene Domain no longer depends on the Import Domain (circular dependency removed); the Import Domain keeps its dependency on the Scene Domain
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: appStore.ts removed, sceneStore.ts role
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 5 In Progress, with its decisions
+
+## Removed
+
+- src/state/appStore.ts: its four selections (printer, material, filament, preset) duplicated printerStore, materialStore, filamentStore and presetStore; it was not used
+
+## Fixed
+
+- KI-014 resolved (selection state duplicated between stores)
+
 ---
 
 # VERSION 0.2.0
@@ -2324,22 +2362,6 @@ Issue: npm audit reports 7 high severity vulnerabilities from the braces package
 Resolve Before: Phase 16 - Production Validation and Release (technical plan)
 
 Planned Resolution: Update shadcn (or the package in the chain) when a version depending on a patched braces is published; check with npm audit and npm audit --omit=dev.
-
-
----
-
-
-Identifier: KI-014
-
-Since: 0.1.33
-
-Affected Module: src/state/ (appStore.ts, printerStore.ts, materialStore.ts, filamentStore.ts, presetStore.ts, sceneStore.ts, objectStore.ts)
-
-Issue: The selection is stored twice. appStore holds selectedPrinter, selectedMaterial, selectedFilament and selectedPreset, which printerStore, materialStore, filamentStore and presetStore also hold; sceneStore holds selectedObject while objectStore holds selectedObjectId. No document says which store is the reference. The GUI (status bar, Properties Panel, Object Panel) reads printerStore, materialStore, filamentStore, presetStore and objectStore, the stores that also hold the lists.
-
-Resolve Before: Phase 5 - Model Import (technical plan), before objects and selections are written by the application
-
-Planned Resolution: Decide the reference store for each selection, document it (DIRECTORY_PURPOSES.md, State Management), and remove or derive the duplicate.
 
 
 ---

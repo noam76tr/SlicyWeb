@@ -761,7 +761,6 @@ src/services/
 ```text
 src/state/
 
-├── appStore.ts
 ├── filamentStore.ts
 ├── presetStore.ts
 ├── sceneStore.ts

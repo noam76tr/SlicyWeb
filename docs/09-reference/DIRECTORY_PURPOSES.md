@@ -1000,7 +1000,6 @@ Until the project owner decides otherwise:
 **Contains:**
 
 - Analysis Store
-- Application Store
 - Filament Store
 - Material Store
 - Object Store
@@ -1014,15 +1013,26 @@ Until the project owner decides otherwise:
 | File | Role |
 |------|------|
 | `analysisStore.ts` | Zustand store for analysis state |
-| `appStore.ts` | Zustand store for global state (printer, material, filament, preset) |
 | `filamentStore.ts` | Zustand store for filaments (list and selection) |
 | `materialStore.ts` | Zustand store for materials (list and selection) |
 | `objectStore.ts` | Zustand store for 3D objects (list, selection, add, remove) |
 | `presetStore.ts` | Zustand store for print presets (list and selection) |
 | `printerStore.ts` | Zustand store for printers (list and selection) |
 | `recommendationStore.ts` | Zustand store for print recommendations |
-| `sceneStore.ts` | Zustand store for the 3D scene (scene and selected object) |
+| `sceneStore.ts` | Zustand store for the 3D scene (scene of the project) |
 | `viewportStore.ts` | Zustand store for the viewport (projection, requested view preset) |
+
+**Selection Reference:** each selection is stored once, in the store of its domain, next to its list (KI-014 resolved, CHANGELOG 0.1.41):
+
+| Selection | Reference |
+|------|------|
+| Selected object | `objectStore.selectedObjectId` |
+| Selected printer | `printerStore.selectedPrinter` |
+| Selected material | `materialStore.selectedMaterial` |
+| Selected filament | `filamentStore.selectedFilament` |
+| Selected print preset | `presetStore.selectedPreset` |
+
+No other store keeps a copy of a selection.
 
 ---
 

@@ -374,16 +374,18 @@ Scene management.
 Can Depend On:
 
 ```text
-Import Domain
 State Management Domain
 ```
 
 Cannot Depend On:
 
 ```text
+Import Domain
 Repository Domain
 RepositorySync Domain
 ```
+
+The Import Domain registers imported objects in the scene (IMPORT_EXPORT_SPEC.md, Scene Integration); the Scene Domain does not depend on the Import Domain (no circular dependency).
 
 ---
 

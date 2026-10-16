@@ -176,6 +176,7 @@ Requires:
 | ADM-022 | Build Tooling And Library Versions | Tooling | Medium | Approved |
 | ADM-023 | WYPROJ Format Version 3.0.0 | Persistence | High | Approved |
 | ADM-024 | Viewport Coordinate System And Viewport Domain Direction | Viewport | High | Approved |
+| ADM-025 | Model Import In The Renderer With A Web Worker | Import | High | Approved |
 
 ---
 
@@ -723,6 +724,32 @@ Benefits:
 - No axis conversion at import
 - Positions kept when the printer changes
 - One dependency direction
+
+---
+
+ADM-025
+
+Title:
+
+Model Import In The Renderer With A Web Worker
+
+Decision:
+
+STL and 3MF files chosen by the user (file dialog or drag and drop) are read in the renderer and parsed in a Web Worker with progress. Imported objects are centered on the origin and placed at Z = 0. The Import Domain depends on the Scene Domain, not the reverse. Each selection is stored once, in the store of its domain.
+
+Rationale:
+
+No file path in IPC, no large IPC transfer, no UI freeze; one dependency direction; one source for each selection.
+
+Reference:
+
+ADR-029 (DECISIONS.md)
+
+Benefits:
+
+- Responsive window during import
+- Only user-chosen files are read
+- No duplicated selection state
 
 ---
 
