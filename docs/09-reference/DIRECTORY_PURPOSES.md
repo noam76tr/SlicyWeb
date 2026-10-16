@@ -1215,7 +1215,7 @@ Until the project owner decides otherwise:
 | File | Role |
 |------|------|
 | `main.ts` | Electron entry point: window creation and IPC handler registration |
-| `preload.ts` | Exposes the IPC API to the renderer with context isolation and requestId generation |
+| `preload.ts` | Exposes the IPC API to the renderer with context isolation and requestId generation; accepts only the channels of the allow list (ipc/IpcChannels.ts); on() returns a function that removes its listener |
 
 ---
 
@@ -1238,6 +1238,7 @@ Until the project owner decides otherwise:
 | File | Role |
 |------|------|
 | `ImportIPC.ts`  | IPC communication for file import (STL, 3MF) and validation |
+| `IpcChannels.ts` | Allow list of the IPC channels the renderer may use (invoke, send, receive), read by preload.ts (API_SPEC.md, Allowed IPC Channels) |
 | `PrinterIPC.ts` | IPC communication for printer operations (get, get all, add, update, remove, count) |
 | `ProjectIPC.ts` | IPC communication for project operations (create, load, save, delete) |
 | `SettingsIPC.ts`| IPC communication for user settings (get, update, reset, theme, language) |
@@ -1531,6 +1532,7 @@ Until the project owner decides otherwise:
 | File | Role |
 |------|------|
 | `check-locales.mjs` | Checks that the dictionaries of public/locales/ have the same keys as en.json and no empty value (`npm run check:locales`) |
+| `check-ipc-channels.mjs` | Checks that the IPC allow list (src/electron/ipc/IpcChannels.ts) matches the ipcMain.handle registrations (`npm run check:ipc`) |
 
 ---
 

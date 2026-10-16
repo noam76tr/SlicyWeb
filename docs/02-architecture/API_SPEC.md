@@ -226,6 +226,29 @@ The renderer reads the saved language at start (`settings:get`) and saves each l
 
 ---
 
+## Allowed IPC Channels
+
+The preload bridge (src/electron/preload.ts, window.slicyWeb) accepts only the channels of the allow list src/electron/ipc/IpcChannels.ts:
+
+| Bridge method | Allow list | Channels |
+|---|---|---|
+| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle: `import:3mf`, `import:stl`, `import:validate`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:remove`, `printer:update`, `project:create`, `project:delete`, `project:load`, `project:save`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
+| `send(channel, data)` | SEND_CHANNELS | none yet |
+| `on(channel, callback)` | RECEIVE_CHANNELS | none yet |
+
+Rules:
+
+```text
+invoke with a channel outside the allow list: the promise is rejected
+send or on with a channel outside the allow list: an error is thrown
+on returns a function that removes its listener
+the callback of on receives the data only, never the Electron event
+```
+
+A new IPC handler is added to the allow list in the same change. `npm run check:ipc` (scripts/build/check-ipc-channels.mjs) compares INVOKE_CHANNELS with the ipcMain.handle registrations of src/electron/ipc/.
+
+---
+
 # Internal API Rules
 
 All internal APIs must:

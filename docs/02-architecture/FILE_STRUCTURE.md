@@ -336,6 +336,7 @@ src/electron/
 
 └── ipc/
     ├── ImportIPC.ts
+    ├── IpcChannels.ts         = allow list of the IPC channels (API_SPEC.md)
     ├── PrinterIPC.ts
     ├── ProjectIPC.ts
     ├── SettingsIPC.ts
@@ -926,7 +927,8 @@ logs/
 scripts/
 
 ├── build/
-│   └── check-locales.mjs      = checks that en, fr and he dictionaries share the same keys
+│   ├── check-locales.mjs      = checks that en, fr and he dictionaries share the same keys
+│   └── check-ipc-channels.mjs = checks the IPC allow list against the registered handlers
 ├── migration/
 ├── release/
 └── setup/

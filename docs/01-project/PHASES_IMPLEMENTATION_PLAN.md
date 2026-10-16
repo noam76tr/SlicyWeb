@@ -725,7 +725,7 @@ Validation result (Windows 11):
 
 Not part of this phase (ROADMAP.md, Phase 1 - GUI Foundation): theme switching (light and system themes, Edit > Preferences) and the notification area (Notification Domain) come with the phases that provide them. The dark theme is applied by default.
 
-Before Phase 5 (Model Import): KI-016 (allow list of IPC channels in preload.ts, unsubscribe for on()).
+Before Phase 5 (Model Import): KI-016 (allow list of IPC channels in preload.ts, unsubscribe for on()), resolved in 0.1.38.
 
 ---
 

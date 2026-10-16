@@ -1361,6 +1361,39 @@ Date:
 - DECISIONS.md (ADR-025): bundle size warning limit
 - PHASES_IMPLEMENTATION_PLAN.md: Phase 4 - 3D Viewport Completed, with the validation result
 
+## Validation Result
+
+- Windows 11 (2026-10-16): npm run build succeeds without the bundle size warning; npm run lint reports 0 errors
+
+---
+
+# VERSION 0.1.38
+
+Release Type:
+Security
+
+Status:
+Completed
+
+Date:
+2026-10-16
+
+## Added
+
+- src/electron/ipc/IpcChannels.ts: allow list of the IPC channels the renderer may use: INVOKE_CHANNELS (the 22 channels registered with ipcMain.handle), SEND_CHANNELS and RECEIVE_CHANNELS (none yet)
+- scripts/build/check-ipc-channels.mjs and npm script check:ipc: checks that INVOKE_CHANNELS matches the ipcMain.handle registrations of src/electron/ipc/
+- API_SPEC.md: Allowed IPC Channels
+
+## Changed
+
+- src/electron/preload.ts: invoke() rejects a channel outside the allow list; send() and on() throw an error for such a channel; on() returns a function that removes its listener; the callback of on() receives the data only, not the Electron event
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: IpcChannels.ts, check-ipc-channels.mjs
+- PHASES_IMPLEMENTATION_PLAN.md: KI-016 resolved
+
+## Fixed
+
+- KI-016 resolved (preload bridge open to any IPC channel; no unsubscribe for on())
+
 ---
 
 # VERSION 0.2.0
@@ -2267,22 +2300,6 @@ Issue: These components are not used by the interface of Phase 3, and some of th
 Resolve Before: the phase that displays each component (Phase 6 - Transform System for ViewportToolbar and ViewportStatus; Phases 7 to 10 for the panels; KI-011 for AnalysisPanel); Renderer.ts can be removed at any time
 
 Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it.
-
-
----
-
-
-Identifier: KI-016
-
-Since: 0.1.35
-
-Affected Module: src/electron/preload.ts (window.slicyWeb)
-
-Issue: The preload bridge exposes send(channel, data), invoke(channel, data) and on(channel, callback) for any channel name given by the renderer. Nothing limits the renderer to the channels registered by the main process (src/electron/ipc/: project:*, import:*, printer:*, settings:*, storage:*). on() adds an ipcRenderer listener that can never be removed: a component that subscribes again at each display accumulates listeners. Today only invoke("settings:get") and invoke("settings:language") are used (I18nProvider); send and on are not used.
-
-Resolve Before: Phase 5 - Model Import (technical plan), and at the latest with the first IPC channel that reads files on disk (import:stl, import:3mf, project:load or storage:load once implemented)
-
-Planned Resolution: Allow list of the IPC channels in preload.ts (invoke, send and on refuse any other channel); on() returns a function that removes its listener; document the allowed channels in API_SPEC.md (IPC API).
 
 
 ---

@@ -3,22 +3,37 @@
  * Electron Preload Process
  *
  * Exposes IPC API to renderer process with context isolation.
- * 
+ *
+ * Only the channels of the allow list (src/electron/ipc/IpcChannels.ts)
+ * are accepted: invoke() rejects any other channel, send() and on()
+ * throw an error. on() returns a function that removes its listener.
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - TECH_STACK.md
- * - API_SPEC.md (IPC Layer)
+ * - API_SPEC.md (IPC Layer, Allowed IPC Channels)
  * - DATA_SCHEMA.md (IPC Payload Schema)
  */
 
 import {
   contextBridge,
   ipcRenderer,
+  type IpcRendererEvent,
 } from "electron";
+
+import {
+  isInvokeChannel,
+  isReceiveChannel,
+  isSendChannel,
+} from "./ipc/IpcChannels";
 
 // Generate unique request ID
 function generateRequestId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
+function refusedChannel(channel: string): Error {
+  return new Error(`IPC channel not allowed: ${channel}`);
 }
 
 contextBridge.exposeInMainWorld(
@@ -34,6 +49,10 @@ contextBridge.exposeInMainWorld(
       channel: string,
       data?: unknown,
     ): void => {
+      if (!isSendChannel(channel)) {
+        throw refusedChannel(channel);
+      }
+
       ipcRenderer.send(
         channel,
         data,
@@ -44,6 +63,10 @@ contextBridge.exposeInMainWorld(
       channel: string,
       data?: unknown,
     ): Promise<unknown> => {
+      if (!isInvokeChannel(channel)) {
+        return Promise.reject(refusedChannel(channel));
+      }
+
       // Generate unique request ID for this invocation
       const requestId = generateRequestId();
 
@@ -60,16 +83,31 @@ contextBridge.exposeInMainWorld(
       callback: (
         data: unknown,
       ) => void,
-    ): void => {
+    ): (() => void) => {
+      if (!isReceiveChannel(channel)) {
+        throw refusedChannel(channel);
+      }
+
+      // The Electron event is not passed to the renderer
+      const listener = (
+        _event: IpcRendererEvent,
+        data: unknown,
+      ): void => {
+        callback(data);
+      };
+
       ipcRenderer.on(
         channel,
-        (
-          _event,
-          data,
-        ) => {
-          callback(data);
-        },
+        listener,
       );
+
+      // Removes this listener only
+      return () => {
+        ipcRenderer.removeListener(
+          channel,
+          listener,
+        );
+      };
     },
   },
 );
@@ -83,7 +121,7 @@ declare global {
       isElectron: boolean;
       send: (channel: string, data?: unknown) => void;
       invoke: (channel: string, data?: unknown) => Promise<unknown>;
-      on: (channel: string, callback: (data: unknown) => void) => void;
+      on: (channel: string, callback: (data: unknown) => void) => () => void;
     };
   }
 }
