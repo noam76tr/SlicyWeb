@@ -1425,6 +1425,31 @@ Date:
 
 - Electron Security Warning "Insecure Content-Security-Policy" in npm run dev: the page had no Content Security Policy
 
+## Validation Result
+
+- Windows 11 (2026-10-16): npm run dev shows no Content Security Policy warning or violation; npm run build and npm start: two fonts refused by font-src 'self' (Noto Sans Hebrew cyrillic-ext and greek-ext subsets, 1.2 kB each, inlined by Vite as data: URLs), fixed in 0.1.40
+
+---
+
+# VERSION 0.1.40
+
+Release Type:
+Security
+
+Status:
+Completed
+
+Date:
+2026-10-16
+
+## Fixed
+
+- Built application: two font files of Noto Sans Hebrew (cyrillic-ext and greek-ext subsets, 1.2 kB each) were inlined by Vite as data: URLs and refused by the Content Security Policy (font-src 'self'). vite.config.mts: build.assetsInlineLimit 0, every asset is a file of the application; the policy stays strict
+
+## Changed
+
+- SECURITY_SPEC.md (Renderer Content Security Policy): built assets are never inlined as data: URLs
+
 ---
 
 # VERSION 0.2.0

@@ -23,7 +23,9 @@
  * Policy): a <meta> tag is added at the top of index.html.
  * - Built application (npm run build, npm start): strict policy,
  *   only files of the application ('self'); no inline script, no
- *   eval, no network access.
+ *   eval, no network access. Assets are never inlined as data: URLs
+ *   (build.assetsInlineLimit 0): the policy allows fonts from the
+ *   application files only.
  * - Development server (npm run dev): also allows the inline script of
  *   React Fast Refresh, the <style> tags inserted by Vite and the
  *   WebSocket of hot reload. Never used by the built application.
@@ -148,5 +150,8 @@ export default defineConfig({
     outDir: "dist/renderer",
     emptyOutDir: true,
     chunkSizeWarningLimit: 1500,
+    // No data: URL for small assets (fonts under 4 kB were inlined and
+    // refused by font-src 'self'); every asset is a file of the application.
+    assetsInlineLimit: 0,
   },
 });

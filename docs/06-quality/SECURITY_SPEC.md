@@ -680,6 +680,7 @@ Rules:
 
 ```text
 No 'unsafe-eval' in any mode
+Built assets are never inlined as data: URLs (vite.config.mts, build.assetsInlineLimit 0): fonts and styles are files of the application
 No remote source in any mode: the renderer loads only files of the application
 A component that inserts style elements (Base UI Select, ScrollArea) uses CSPProvider or a reviewed policy change
 A change of the policy is reviewed and recorded in CHANGELOG.md
