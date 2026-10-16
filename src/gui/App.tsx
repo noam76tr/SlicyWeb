@@ -29,6 +29,7 @@ import LeftSidebar from "./sidebar/LeftSidebar";
 import RightSidebar from "./sidebar/RightSidebar";
 import StatusBar from "./statusbar/StatusBar";
 import Toolbar from "./toolbars/Toolbar";
+import Viewport from "./viewport/Viewport";
 
 export default function App(): JSX.Element {
   const { t, direction } = useTranslation();
@@ -48,22 +49,18 @@ export default function App(): JSX.Element {
     </header>
   );
 
-  const viewport = (
-    <div
-      id="renderer-container"
-      className="flex h-full w-full items-center justify-center bg-viewport text-sm text-muted-foreground"
-    >
-      {t("viewport.placeholder")}
-    </div>
-  );
-
   return (
     <DirectionProvider direction={direction}>
       <MainLayout
         header={header}
         leftTitle={t("objects.title")}
         leftPanel={<LeftSidebar />}
-        centerPanel={viewport}
+        centerPanel={
+          <Viewport
+            label={t("viewport.title")}
+            unavailableMessage={t("viewport.unavailable")}
+          />
+        }
         rightTitle={t("properties.title")}
         rightPanel={<RightSidebar />}
         statusBar={<StatusBar />}

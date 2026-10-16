@@ -5,10 +5,12 @@
  * The nine menus of GUI_SPEC.md (Menu Bar to Help Menu): File, Edit,
  * View, Printer, Material, Filament, Tools, Language, Help.
  *
- * Phase 3 (GUI Foundation):
+ * Active items:
  * - Language: changes the interface language (saved in the user
  *   settings, I18nProvider);
  * - File > Exit: closes the application window;
+ * - View (Phase 4): perspective or orthographic projection, the seven
+ *   view presets and Reset View (viewport store);
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -25,6 +27,11 @@
 import { Fragment } from "react";
 
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import {
+  useViewportStore,
+  type ViewPreset,
+  type ViewportProjection,
+} from "../../state/viewportStore";
 import {
   Menubar,
   MenubarContent,
@@ -58,6 +65,12 @@ interface MenuDefinition {
 
   /** Groups of items, separated by a line */
   groups: MenuItemDefinition[][];
+}
+
+function requestView(view: ViewPreset): () => void {
+  return () => {
+    useViewportStore.getState().requestView(view);
+  };
 }
 
 function closeApplication(): void {
@@ -101,22 +114,6 @@ const MENUS: MenuDefinition[] = [
     ],
   },
   {
-    key: "menu.view",
-    groups: [
-      [{ key: "view.perspective" }, { key: "view.orthographic" }],
-      [
-        { key: "view.top" },
-        { key: "view.bottom" },
-        { key: "view.front" },
-        { key: "view.back" },
-        { key: "view.left" },
-        { key: "view.right" },
-        { key: "view.isometric" },
-      ],
-      [{ key: "view.resetView", shortcut: "Home" }],
-    ],
-  },
-  {
     key: "menu.printer",
     groups: [
       [{ key: "printer.select" }, { key: "printer.manage" }],
@@ -153,6 +150,31 @@ const MENUS: MenuDefinition[] = [
   },
 ];
 
+/**
+ * View menu (GUI_SPEC.md, View Menu). The projection is a choice
+ * between two items, shown as a radio group before these groups.
+ */
+const VIEW_MENU: MenuDefinition = {
+  key: "menu.view",
+  groups: [
+    [
+      { key: "view.top", action: requestView("top") },
+      { key: "view.bottom", action: requestView("bottom") },
+      { key: "view.front", action: requestView("front") },
+      { key: "view.back", action: requestView("back") },
+      { key: "view.left", action: requestView("left") },
+      { key: "view.right", action: requestView("right") },
+      { key: "view.isometric", action: requestView("isometric") },
+    ],
+    [{ key: "view.resetView", shortcut: "Home", action: requestView("reset") }],
+  ],
+};
+
+const PROJECTIONS: { value: ViewportProjection; key: string }[] = [
+  { value: "perspective", key: "view.perspective" },
+  { value: "orthographic", key: "view.orthographic" },
+];
+
 const HELP_MENU: MenuDefinition = {
   key: "menu.help",
   groups: [
@@ -163,15 +185,22 @@ const HELP_MENU: MenuDefinition = {
 
 export default function MenuBar(): JSX.Element {
   const { t, language, languages, setLanguage } = useTranslation();
+  const projection = useViewportStore((state) => state.projection);
+  const setProjection = useViewportStore((state) => state.setProjection);
 
-  const renderMenu = (menu: MenuDefinition): JSX.Element => (
+  const renderMenu = (
+    menu: MenuDefinition,
+    header?: JSX.Element,
+  ): JSX.Element => (
     <MenubarMenu key={menu.key}>
       <MenubarTrigger>{t(menu.key)}</MenubarTrigger>
 
       <MenubarContent>
+        {header}
+
         {menu.groups.map((group, index) => (
           <Fragment key={group[0].key}>
-            {index > 0 && <MenubarSeparator />}
+            {(index > 0 || header) && <MenubarSeparator />}
 
             {group.map((item) => (
               <MenubarItem
@@ -196,7 +225,27 @@ export default function MenuBar(): JSX.Element {
       aria-label={t("menu.title")}
       className="h-8 border-0 bg-transparent p-0"
     >
-      {MENUS.map(renderMenu)}
+      {/* File, Edit */}
+      {MENUS.slice(0, 2).map((menu) => renderMenu(menu))}
+
+      {renderMenu(
+        VIEW_MENU,
+        <MenubarRadioGroup
+          value={projection}
+          onValueChange={(value: ViewportProjection) => {
+            setProjection(value);
+          }}
+        >
+          {PROJECTIONS.map((item) => (
+            <MenubarRadioItem key={item.value} value={item.value} closeOnClick>
+              {t(item.key)}
+            </MenubarRadioItem>
+          ))}
+        </MenubarRadioGroup>,
+      )}
+
+      {/* Printer, Material, Filament, Tools */}
+      {MENUS.slice(2).map((menu) => renderMenu(menu))}
 
       <MenubarMenu>
         <MenubarTrigger>{t("menu.language")}</MenubarTrigger>

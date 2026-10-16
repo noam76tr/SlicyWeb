@@ -61,7 +61,7 @@
   "view.isometric": "Isometric",
   "view.resetView": "Reset View",
   "viewport.title": "3D Viewport",
-  "viewport.placeholder": "The 3D viewport will be displayed here.",
+  "viewport.unavailable": "3D view unavailable: the graphics card or its driver does not support WebGL.",
   "viewport.grid": "Grid",
   "viewport.camera": "Camera",
   "viewport.zoom": "Zoom",

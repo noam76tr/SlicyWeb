@@ -426,6 +426,7 @@ src/renderer/
 ├── SceneRenderer.ts
 ├── SelectionRenderer.ts
 └── helpers/
+    └── WorkspaceHelpers.ts    = grid, axes and build plate of the viewport (ADR-028)
 ```
 
 ---
@@ -767,7 +768,8 @@ src/state/
 ├── printerStore.ts
 ├── materialStore.ts
 ├── analysisStore.ts
-└── recommendationStore.ts
+├── recommendationStore.ts
+└── viewportStore.ts           = projection and view presets of the viewport
 ```
 
 ---
@@ -854,7 +856,8 @@ src/constants
 ├── ApplicationConstants.ts
 ├── MaterialConstants.ts
 ├── PresetConstants.ts
-└── PrinterConstants.ts
+├── PrinterConstants.ts
+└── ViewportConstants.ts       = coordinate system, colors and camera of the viewport (ADR-028)
 ```
 ---
 
@@ -1011,7 +1014,6 @@ src/gui/layouts/
 src/gui/windows/
 src/gui/dialogs/
 src/gui/themes/
-src/renderer/helpers/
 src/recovery/backups/
 src/schemas/ErrorSchema.ts
 ```

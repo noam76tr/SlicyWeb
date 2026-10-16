@@ -902,6 +902,12 @@ Menus Functional
 
 # 3D VIEWPORT
 
+Status: In Progress
+
+Progress:
+
+- 3D viewport (CHANGELOG 0.1.36): coordinate system of ADR-028 (mm, Z up, origin at the center of the build plate); grid with adaptive spacing; axes X red, Y green, Z blue; build plate and build volume limits of the selected printer (none without a printer); camera controls of GUI_SPEC.md (wheel zoom, middle button pan, right button rotate); View menu: perspective and orthographic projections, the seven view presets (Top, Bottom, Front, Back, Left, Right, Isometric) and Reset View (Home key); the canvas follows the window and the side panels
+
 ---
 
 ## Objectives

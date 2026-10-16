@@ -2067,6 +2067,95 @@ Reason:
 
 ---
 
+# ADR-028
+
+Title: Viewport Coordinate System And Viewport Domain Direction
+
+Status: Accepted
+
+Date: 2026-10-16
+
+## Context
+
+Phase 4 (3D Viewport) creates the build plate, the grid, the axes and the camera.
+
+Three.js uses the Y axis up by default. 3D printers, slicers and STL and 3MF files use the Z axis up.
+
+DATA_SCHEMA.md (Transform Schema) stores object positions, without stating their origin.
+
+PRINTER_PROFILE_SPEC.md (Build Plate Origin) allows printers with the origin at the center, at the front left corner, or custom.
+
+No printer can be selected before Phase 7 (Printer Database).
+
+DOMAINS_DEPENDENCY_MATRIX.md allowed the Viewport Domain to depend on the GUI Domain, but not the GUI Domain to depend on the Viewport Domain, while the main window (GUI) must display the viewport.
+
+## Decision
+
+Coordinate system of the viewport and of the project:
+
+- Units: millimeters.
+- Axes: X to the right, Y to the back, Z up.
+- Origin: center of the build plate, Z = 0 on the plate surface.
+- transform.position (DATA_SCHEMA.md) is expressed in this coordinate system, whatever the printer. The origin of the printer is applied only when exporting to the target slicer.
+
+Build plate:
+
+- Without a selected printer, no build plate is shown; the grid covers a default workspace of 400 x 400 mm.
+- With a selected printer, the plate and the build volume limits are sized from its build volume.
+
+Camera (GUI_SPEC.md, Viewport Controls): wheel zooms towards the cursor, middle button pans, right button rotates around the target; the left button is reserved for selection. The View menu offers the perspective and orthographic projections, the seven view presets and Reset View (also the Home key).
+
+Domain direction: the GUI Domain depends on the Viewport Domain (it mounts the viewport component and passes its translated texts). The Viewport Domain no longer depends on the GUI Domain; it may depend on the Scene, State Management and Internationalization Domains. The Viewport Domain owns src/renderer/ and src/gui/viewport/.
+
+## Consequences
+
+Advantages:
+
+- Imported STL and 3MF models need no axis conversion
+- Object positions do not change when the printer changes
+- One dependency direction between GUI and Viewport, no cycle
+
+Disadvantages:
+
+- Export must convert positions to the origin of the printer
+- The default up axis of Three.js is changed for the viewport scene
+
+## Alternatives Considered
+
+Y axis up (Three.js default)
+
+Rejected
+
+Reason:
+
+- Every imported model would need an axis conversion
+
+Origin at the front left corner of the plate
+
+Rejected
+
+Reason:
+
+- Positions would depend on the size of the plate of the selected printer
+
+Viewport Domain depending on the GUI Domain
+
+Rejected
+
+Reason:
+
+- The main window could not mount the viewport without a circular dependency
+
+## Related Documents
+
+- DATA_SCHEMA.md (Transform Schema, Coordinate System)
+- GUI_SPEC.md (3D Viewport, Build Plate, Viewport Controls, Camera Views)
+- PRINTER_PROFILE_SPEC.md (Build Plate Origin)
+- DOMAINS_DEPENDENCY_MATRIX.md (GUI Domain, Viewport Domain)
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-024)
+
+---
+
 # Future Decision Template
 
 Copy and complete:

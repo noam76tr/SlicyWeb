@@ -1293,6 +1293,50 @@ Date:
 
 - KNOWN ISSUES: KI-015 (unused GUI components with hardcoded English text), KI-016 (preload bridge open to any IPC channel; no unsubscribe for on())
 
+
+## Validation Result
+
+- Windows 11 (2026-10-16): npm run typecheck and npm run lint report 0 errors; in Hebrew the check mark of the Language menu is on the right and the shortcuts are against the left edge of the menu; in English and French the shortcuts stay on the right
+
+---
+
+# VERSION 0.1.36
+
+Release Type:
+3D Viewport
+
+Status:
+In Progress
+
+Date:
+2026-10-16
+
+## Added
+
+- Technical Phase 4 - 3D Viewport
+- DECISIONS.md: ADR-028 (viewport coordinate system: mm, X right, Y back, Z up, origin at the center of the build plate; no build plate without a selected printer; the GUI Domain depends on the Viewport Domain, not the reverse); ARCHITECTURE_DECISION_MATRIX.md: ADM-024
+- src/renderer/helpers/WorkspaceHelpers.ts: grid on Z = 0 with adaptive spacing (1 to 100 mm, lines at least 10 pixels apart, one major line out of five), axes at the origin always visible (X red, Y green, Z blue), build plate and build volume limits sized from the build volume of the selected printer
+- src/state/viewportStore.ts: projection (perspective, orthographic) and requested view preset
+- src/constants/ViewportConstants.ts: background #252526 (GUI_SPEC.md), default workspace 400 x 400 mm, grid, colors and camera values
+- Locale key viewport.unavailable (message when WebGL is not available); viewport.placeholder removed (225 keys)
+- KNOWN ISSUES: KI-017 (unit and order of rotation not defined in the Transform Schema)
+
+## Changed
+
+- src/renderer/CameraManager.ts: perspective and orthographic cameras with Z up; view presets framing the workspace or the build volume; projection change keeping the point of view; controls (OrbitControls): wheel zoom towards the cursor, middle button pan, right button rotate, left button left free for selection, damping; pixels per millimeter for the grid spacing
+- src/renderer/RendererManager.ts: uses the camera of CameraManager instead of its own; background color of GUI_SPEC.md; canvas positioned over its container; resize ignores an empty container
+- src/renderer/SceneRenderer.ts: start() accepts a frame callback (camera damping, grid spacing)
+- src/gui/viewport/Viewport.tsx: builds the viewport (renderer, camera, lights, workspace helpers, render loop); follows its container size (ResizeObserver: window, side panels), the selected printer (printer store), the View menu (viewport store) and the Home key (Reset View); shows a message when WebGL is not available; receives its translated texts from the GUI
+- src/gui/App.tsx: the viewport replaces the placeholder
+- src/gui/menus/MenuBar.tsx: View menu active: Perspective and Orthographic as a choice, Top, Bottom, Front, Back, Left, Right, Isometric, Reset View
+- DATA_SCHEMA.md 3.2.0: Transform Schema states the coordinate system of position (ADR-028); no field change
+- GUI_SPEC.md (Build Plate): no plate without a selected printer, default workspace, coordinate system
+- DOMAINS_DEPENDENCY_MATRIX.md: GUI Domain can depend on the Viewport Domain; Viewport Domain owns src/renderer/, src/gui/viewport/ and ViewportConstants.ts, can depend on Scene, State Management and Internationalization, and cannot depend on the GUI Domain
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: WorkspaceHelpers.ts, viewportStore.ts, ViewportConstants.ts; roles of the renderer files; src/renderer/helpers/ removed from Planned Items
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 4 In Progress
+- KNOWN ISSUES: KI-015 updated (Viewport.tsx is used; Renderer.ts is unused and duplicates RendererManager)
+- PASSATION.md: working rules (Windows PowerShell, no git status, check of the GitHub upload)
+
 ---
 
 # VERSION 0.2.0
@@ -2192,11 +2236,11 @@ Identifier: KI-015
 
 Since: 0.1.35
 
-Affected Module: src/gui/panels/ (PrinterPanel, MaterialPanel, FilamentPanel, PresetPanel, AnalysisPanel, RecommendationPanel), src/gui/viewport/ (Viewport, ViewportToolbar, ViewportStatus)
+Affected Module: src/gui/panels/ (PrinterPanel, MaterialPanel, FilamentPanel, PresetPanel, AnalysisPanel, RecommendationPanel), src/gui/viewport/ (ViewportToolbar, ViewportStatus), src/renderer/Renderer.ts
 
-Issue: These components are not used by the interface of Phase 3, and some of them contain hardcoded English text, against the Internationalization Rule (CLAUDE.md). The Properties Panel (src/gui/sidebar/RightSidebar.tsx) and the viewport placeholder (src/gui/App.tsx) are used instead.
+Issue: These components are not used by the interface of Phase 3, and some of them contain hardcoded English text, against the Internationalization Rule (CLAUDE.md). The Properties Panel (src/gui/sidebar/RightSidebar.tsx) is used instead of the panels. Since 0.1.36, Viewport.tsx is used (3D viewport); src/renderer/Renderer.ts is no longer used and duplicates RendererManager.
 
-Resolve Before: the phase that displays each component (Phase 4 - 3D Viewport for src/gui/viewport/; Phases 7 to 10 for the panels; KI-011 for AnalysisPanel)
+Resolve Before: the phase that displays each component (Phase 6 - Transform System for ViewportToolbar and ViewportStatus; Phases 7 to 10 for the panels; KI-011 for AnalysisPanel); Renderer.ts can be removed at any time
 
 Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it.
 
@@ -2215,6 +2259,22 @@ Issue: The preload bridge exposes send(channel, data), invoke(channel, data) and
 Resolve Before: Phase 5 - Model Import (technical plan), and at the latest with the first IPC channel that reads files on disk (import:stl, import:3mf, project:load or storage:load once implemented)
 
 Planned Resolution: Allow list of the IPC channels in preload.ts (invoke, send and on refuse any other channel); on() returns a function that removes its listener; document the allowed channels in API_SPEC.md (IPC API).
+
+
+---
+
+
+Identifier: KI-017
+
+Since: 0.1.36
+
+Affected Module: DATA_SCHEMA.md (Transform Schema), src/types/Object3D.ts (Transform)
+
+Issue: The Transform Schema gives rotation x, y, z without unit (degrees or radians) and without the order in which the three rotations are applied. ADR-028 defines the coordinate system of position only.
+
+Resolve Before: Phase 6 - Transform System (technical plan)
+
+Planned Resolution: Define the unit and the order of rotation in DATA_SCHEMA.md (Transform Schema), then use them in the transform code and in the viewport.
 
 
 ---

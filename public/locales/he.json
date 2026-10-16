@@ -61,7 +61,7 @@
   "view.isometric": "איזומטרי",
   "view.resetView": "אפס תצוגה",
   "viewport.title": "תצוגת תלת־ממד",
-  "viewport.placeholder": "תצוגת התלת־ממד תוצג כאן.",
+  "viewport.unavailable": "תצוגת התלת־ממד אינה זמינה: כרטיס המסך או מנהל ההתקן שלו אינם תומכים ב־WebGL.",
   "viewport.grid": "רשת",
   "viewport.camera": "מצלמה",
   "viewport.zoom": "זום",

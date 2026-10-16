@@ -2,34 +2,43 @@
  * SlicyWeb
  * Renderer Manager Definition
  *
+ * Owns the Three.js renderer and scene of the 3D viewport, and draws
+ * the scene with the active camera of the CameraManager.
+ *
+ * The canvas size follows the size of its container: resize() is
+ * called by the viewport component when the container changes size
+ * (window resized, side panel resized or collapsed).
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - TECH_STACK.md
- * - GUI_SPEC.md
+ * - GUI_SPEC.md (3D Viewport, Color Philosophy)
  */
 
 import * as THREE from "three";
+
+import { VIEWPORT_BACKGROUND_COLOR } from "../constants/ViewportConstants";
+
+import type { CameraManager } from "./CameraManager";
 
 export class RendererManager {
   private renderer: THREE.WebGLRenderer;
 
   private scene: THREE.Scene;
 
-  private camera: THREE.PerspectiveCamera;
+  private cameraManager: CameraManager;
 
   private container: HTMLElement;
 
-  constructor(container: HTMLElement) {
+  constructor(
+    container: HTMLElement,
+    cameraManager: CameraManager
+  ) {
     this.container = container;
 
-    this.scene = new THREE.Scene();
+    this.cameraManager = cameraManager;
 
-    this.camera = new THREE.PerspectiveCamera(
-      75,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      10000
-    );
+    this.scene = new THREE.Scene();
 
     this.renderer = new THREE.WebGLRenderer({
       antialias: true
@@ -43,14 +52,22 @@ export class RendererManager {
       window.devicePixelRatio
     );
 
-    this.renderer.setSize(
-      this.container.clientWidth,
-      this.container.clientHeight
+    this.renderer.setClearColor(
+      VIEWPORT_BACKGROUND_COLOR
     );
+
+    // Positioned over its container, so that the canvas never
+    // prevents the container from shrinking
+    const style = this.renderer.domElement.style;
+    style.display = "block";
+    style.position = "absolute";
+    style.inset = "0";
 
     this.container.appendChild(
       this.renderer.domElement
     );
+
+    this.resize();
   }
 
   public getRenderer(): THREE.WebGLRenderer {
@@ -61,14 +78,22 @@ export class RendererManager {
     return this.scene;
   }
 
-  public getCamera(): THREE.PerspectiveCamera {
-    return this.camera;
+  public getCamera(): THREE.Camera {
+    return this.cameraManager.getCamera();
+  }
+
+  public getCanvas(): HTMLCanvasElement {
+    return this.renderer.domElement;
+  }
+
+  public getHeight(): number {
+    return this.container.clientHeight;
   }
 
   public render(): void {
     this.renderer.render(
       this.scene,
-      this.camera
+      this.cameraManager.getCamera()
     );
   }
 
@@ -79,10 +104,14 @@ export class RendererManager {
     const height =
       this.container.clientHeight;
 
-    this.camera.aspect =
-      width / height;
+    if (width === 0 || height === 0) {
+      return;
+    }
 
-    this.camera.updateProjectionMatrix();
+    this.cameraManager.updateAspect(
+      width,
+      height
+    );
 
     this.renderer.setSize(
       width,
@@ -92,5 +121,7 @@ export class RendererManager {
 
   public dispose(): void {
     this.renderer.dispose();
+
+    this.renderer.domElement.remove();
   }
 }

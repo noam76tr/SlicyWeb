@@ -20,6 +20,14 @@ Date : 2026-10-13. État vérifié sur `main` au commit `62a0f05` : le lot 8 y e
   - CRLF : DATA_SCHEMA.md, API_SPEC.md, DECISIONS.md, CHANGELOG.md, FILE_STRUCTURE.md.
   - LF : IMPORT_EXPORT_SPEC.md, ARCHITECTURE_DECISION_MATRIX.md, DIRECTORY_PURPOSES.md, SLICER_EXPORT_SPEC.md et tout `src/`.
 - **Langue :** réponses en français.
+- **Poste de Noam :** Windows 11. Toutes les commandes et les scripts `package.json` doivent fonctionner dans PowerShell, sans commande propre à Mac ou Linux.
+- **Pas de `git status` chez Noam :** son dossier local n'est pas un dépôt git. Pour connaître les fichiers créés ou modifiés par un outil (par exemple `npx shadcn add …`), lui donner cette commande PowerShell, à lancer depuis le dossier du projet (remplacer `-30` par le nombre de minutes écoulées) :
+
+  ```powershell
+  Get-ChildItem -Path . -Exclude node_modules,dist,.git | Get-ChildItem -Recurse -File -ErrorAction SilentlyContinue | Where-Object LastWriteTime -gt (Get-Date).AddMinutes(-30) | ForEach-Object { Resolve-Path -Relative $_.FullName }
+  ```
+
+- **Envoi sur GitHub par le site web :** l'envoi ne garde pas toujours les chemins des dossiers (lot 32 : fichiers posés à la racine). Après chaque envoi, Claude compare `main` avec le lot, fichier par fichier, avant de continuer.
 
 ---
 

@@ -868,6 +868,10 @@ Must visually represent selected printer.
 
 Dynamic sizing.
 
+No printer selected: no build plate is shown. The grid covers a default workspace of 400 x 400 mm, centered on the origin.
+
+Coordinate system (ADR-028): millimeters, X to the right, Y to the back, Z up; origin at the center of the build plate, Z = 0 on the plate surface.
+
 
 
 ---

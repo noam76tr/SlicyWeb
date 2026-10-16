@@ -148,7 +148,7 @@ Owns:
 
 ```text
 GUI_SPEC.md
-src/gui/
+src/gui/ (except src/gui/viewport/, owned by the Viewport Domain)
 src/components/
 src/pages/
 ```
@@ -162,7 +162,10 @@ State Management Domain
 IPC Domain
 Notification Domain
 Internationalization Domain
+Viewport Domain
 ```
+
+The GUI mounts the 3D viewport component (src/gui/viewport/Viewport.tsx) in the main window and passes its translated texts as properties. The Viewport Domain does not depend on the GUI Domain (ADR-028).
 
 The GUI reads its texts, the current language and the text direction through the Internationalization Domain (src/gui/components/I18nProvider.tsx, src/gui/hooks/useTranslation.ts). The Internationalization Domain does not depend on the GUI Domain.
 
@@ -212,17 +215,26 @@ Responsible for:
 - Selection
 - Visual Transformations
 
+Owns:
+
+```text
+src/renderer/
+src/gui/viewport/
+src/constants/ViewportConstants.ts
+```
+
 Can Depend On:
 
 ```text
-GUI Domain
 Scene Domain
 State Management Domain
+Internationalization Domain
 ```
 
 Cannot Depend On:
 
 ```text
+GUI Domain
 Repository Domain
 RepositorySync Domain
 Analysis Domain

@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.1.0
+Version: 3.2.0
 
 Status: Approved
 
@@ -1088,6 +1088,18 @@ The same four selections also exist in the Project Schema (see Known Duplication
 }
 
 ```
+
+Coordinate System (DECISIONS.md, ADR-028):
+
+```text
+Units: mm
+Axes: X to the right, Y to the back, Z up
+Origin: center of the build plate, Z = 0 on the plate surface
+```
+
+position is expressed in this coordinate system. It does not depend on the printer: the origin of the printer (PRINTER_PROFILE_SPEC.md, Build Plate Origin: Center, Front Left, Custom) is applied only when exporting to the target slicer.
+
+The unit and the order of rotation are not defined yet (CHANGELOG.md, KI-017).
 
 
 

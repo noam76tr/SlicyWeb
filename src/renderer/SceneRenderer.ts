@@ -2,6 +2,9 @@
  * SlicyWeb
  * Scene Renderer Definition
  *
+ * Render loop of the 3D viewport: at each frame, calls the optional
+ * frame callback (camera movement, grid spacing), then draws the scene.
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - TECH_STACK.md
@@ -25,7 +28,9 @@ export class SceneRenderer {
       rendererManager;
   }
 
-  public start(): void {
+  public start(
+    onFrame?: () => void
+  ): void {
     if (
       this.animationFrameId !== null
     ) {
@@ -33,6 +38,8 @@ export class SceneRenderer {
     }
 
     const renderLoop = (): void => {
+      onFrame?.();
+
       this.rendererManager.render();
 
       this.animationFrameId =

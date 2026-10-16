@@ -61,7 +61,7 @@
   "view.isometric": "Isométrique",
   "view.resetView": "Réinitialiser la vue",
   "viewport.title": "Vue 3D",
-  "viewport.placeholder": "La vue 3D s'affichera ici.",
+  "viewport.unavailable": "Vue 3D indisponible : la carte graphique ou son pilote ne prend pas en charge WebGL.",
   "viewport.grid": "Grille",
   "viewport.camera": "Caméra",
   "viewport.zoom": "Zoom",

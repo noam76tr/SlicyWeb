@@ -175,6 +175,7 @@ Requires:
 | ADM-021 | Object Scoped Analysis And Recommendations | Data | High | Approved |
 | ADM-022 | Build Tooling And Library Versions | Tooling | Medium | Approved |
 | ADM-023 | WYPROJ Format Version 3.0.0 | Persistence | High | Approved |
+| ADM-024 | Viewport Coordinate System And Viewport Domain Direction | Viewport | High | Approved |
 
 ---
 
@@ -696,6 +697,32 @@ Benefits:
 
 - No file with former category values is loaded
 - No migration code
+
+---
+
+ADM-024
+
+Title:
+
+Viewport Coordinate System And Viewport Domain Direction
+
+Decision:
+
+Millimeters, X to the right, Y to the back, Z up; origin at the center of the build plate, Z = 0 on the plate surface; transform.position uses this system, the printer origin is applied only at export. No build plate without a selected printer. The GUI Domain depends on the Viewport Domain, not the reverse.
+
+Rationale:
+
+Printers, slicers and STL/3MF files use Z up; positions independent from the printer; no circular dependency between GUI and Viewport.
+
+Reference:
+
+ADR-028 (DECISIONS.md)
+
+Benefits:
+
+- No axis conversion at import
+- Positions kept when the printer changes
+- One dependency direction
 
 ---
 

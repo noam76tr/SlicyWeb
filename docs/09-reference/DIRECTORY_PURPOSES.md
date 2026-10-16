@@ -369,7 +369,7 @@ Every file should be placed in the directory that matches its responsibility.
 
 | File | Role |
 |------|------|
-| `Viewport.tsx` | 3D viewport container with renderer management and resizing |
+| `Viewport.tsx` | 3D viewport (Viewport Domain, ADR-028): creates the renderer, camera, lights, grid, axes and build plate; follows the size of its container, the View menu (viewport store), the selected printer and the Home key |
 | `ViewportStatus.tsx` | Viewport status bar displaying objects, camera and FPS |
 | `ViewportToolbar.tsx` | Viewport toolbar for transformation operations |
 
@@ -451,11 +451,12 @@ Every file should be placed in the directory that matches its responsibility.
 
 | File | Role |
 |------|------|
-| `CameraManager.ts` | Manages the 3D camera (creation, positioning, orientation) |
+| `CameraManager.ts` | Perspective and orthographic cameras (Z up), view presets, mouse controls of GUI_SPEC.md (OrbitControls) |
 | `LightingManager.ts` | Manages lighting (ambient and directional light) |
-| `Renderer.ts` | Creates and manages the WebGL renderer |
-| `RendererManager.ts` | Orchestrates the rendering system (scene, camera, renderer) |
-| `SceneRenderer.ts` | Manages the render loop and the scene objects |
+| `Renderer.ts` | WebGL renderer; not used, duplicates RendererManager (KI-015) |
+| `RendererManager.ts` | WebGL renderer and scene of the viewport, drawn with the camera of CameraManager; background color of GUI_SPEC.md |
+| `SceneRenderer.ts` | Render loop (frame callback, then drawing) and scene objects |
+| `helpers/WorkspaceHelpers.ts` | Grid with adaptive spacing, axes (X red, Y green, Z blue) and build plate of the selected printer |
 | `SelectionRenderer.ts` | Visual rendering of object selection (BoxHelper) |
 
 ---
@@ -1021,6 +1022,7 @@ Until the project owner decides otherwise:
 | `printerStore.ts` | Zustand store for printers (list and selection) |
 | `recommendationStore.ts` | Zustand store for print recommendations |
 | `sceneStore.ts` | Zustand store for the 3D scene (scene and selected object) |
+| `viewportStore.ts` | Zustand store for the viewport (projection, requested view preset) |
 
 ---
 
@@ -1069,6 +1071,7 @@ Until the project owner decides otherwise:
 | `MaterialConstants.ts` | Material constants (categories, warping risks, cooling ranges) |
 | `PresetConstants.ts` | Preset constants (categories, infill patterns, support, adhesion, layer heights) |
 | `PrinterConstants.ts` | Printer constants (nozzles, build volume, temperatures, extruder types) |
+| `ViewportConstants.ts` | Viewport constants (coordinate system, default workspace, grid, colors, camera) |
 
 ---
 
