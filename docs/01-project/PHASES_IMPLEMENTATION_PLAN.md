@@ -703,7 +703,9 @@ Dependencies Working
 
 # GUI FOUNDATION
 
-Status: In Progress
+Status: Completed
+
+Date: 2026-10-15
 
 Progress:
 
@@ -711,8 +713,19 @@ Progress:
 - Language persistence (CHANGELOG 0.1.32): the chosen language is saved in settings.json and restored at the next start
 - Layout and theme (CHANGELOG 0.1.33): dark theme with the GUI_SPEC colors; Object Panel and Properties Panel resizable and collapsible; viewport placeholder; status bar; Hebrew font
 - Menu Bar and Toolbar (CHANGELOG 0.1.34): the nine menus and the eleven toolbar buttons of GUI_SPEC.md; Language menu and File > Exit functional; other actions visible and disabled until their phase
+- Right-to-left in the shadcn/ui components (CHANGELOG 0.1.35): logical classes (shadcn migrate rtl)
 
+Validation result (Windows 11):
 
+- Responsive Layout: the layout fits the window from the minimum size 1280x720; panel widths are kept and the viewport takes the remaining space when the window is resized; checked in Chromium at 1280x720, 1920x1080, 2560x1440 and 3840x2160 (no page scrolling, toolbar and status bar without overflow)
+- Panels Resize: both separators resize the Object Panel and the Properties Panel; the panel buttons collapse and expand them; the panels swap sides in Hebrew
+- Menus Functional: the nine menus open; Language changes the interface language (saved); File > Exit closes the window (npm run dev and npm start); the other items are disabled until their phase
+- Localization: English, French and Hebrew (right-to-left), npm run check:locales passes; the language is restored at the next start
+- npm run typecheck and npm run lint report 0 errors; npm run build succeeds
+
+Not part of this phase (ROADMAP.md, Phase 1 - GUI Foundation): theme switching (light and system themes, Edit > Preferences) and the notification area (Notification Domain) come with the phases that provide them. The dark theme is applied by default.
+
+Before Phase 5 (Model Import): KI-016 (allow list of IPC channels in preload.ts, unsubscribe for on()).
 
 ---
 

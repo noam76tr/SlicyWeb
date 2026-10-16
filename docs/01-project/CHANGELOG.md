@@ -1245,7 +1245,7 @@ Release Type:
 GUI Foundation
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-15
@@ -1263,6 +1263,35 @@ Date:
 - PHASES_IMPLEMENTATION_PLAN.md (Phase 3): Top Menu and Toolbar follow GUI_SPEC.md (nine menus, eleven buttons); actions not available in Phase 3 are visible and disabled
 - FILE_STRUCTURE.md: src/gui/menus/MenuBar.tsx, src/gui/toolbars/Toolbar.tsx, menubar and dropdown-menu components; src/gui/menus/ and src/gui/toolbars/ removed from Planned Items
 - DIRECTORY_PURPOSES.md, TECH_STACK.md: menu and toolbar files; Base UI DirectionProvider
+
+
+## Validation Result
+
+- Windows 11 (2026-10-15): npm run check:locales (225 keys), npm run typecheck and npm run lint report 0 errors; npm run build succeeds; the nine menus open, only Exit and the three languages are active; Language changes the whole interface and closes the menu; the toolbar tooltips are shown in the three languages; File > Exit closes the window
+
+---
+
+# VERSION 0.1.35
+
+Release Type:
+Phase Closure
+
+Status:
+Completed
+
+Date:
+2026-10-15
+
+## Changed
+
+- components.json: "rtl": true (shadcn migrate rtl)
+- src/gui/components/ui/button.tsx, resizable.tsx, menubar.tsx, dropdown-menu.tsx: left and right classes replaced by logical classes (ms, me, ps, pe, start, end) by shadcn migrate rtl; in Hebrew the check mark of the Language menu is on the right and the shortcuts on the left; submenus open on the inline end side; project headers kept
+- DECISIONS.md (ADR-025), TECH_STACK.md, DIRECTORY_PURPOSES.md: right-to-left support of the shadcn/ui components
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 3 - GUI Foundation Completed, with the validation result; theme switching and the notification area (ROADMAP.md, Phase 1) left to the phases that provide them
+
+## Added
+
+- KNOWN ISSUES: KI-015 (unused GUI components with hardcoded English text), KI-016 (preload bridge open to any IPC channel; no unsubscribe for on())
 
 ---
 
@@ -2154,6 +2183,38 @@ Issue: The selection is stored twice. appStore holds selectedPrinter, selectedMa
 Resolve Before: Phase 5 - Model Import (technical plan), before objects and selections are written by the application
 
 Planned Resolution: Decide the reference store for each selection, document it (DIRECTORY_PURPOSES.md, State Management), and remove or derive the duplicate.
+
+
+---
+
+
+Identifier: KI-015
+
+Since: 0.1.35
+
+Affected Module: src/gui/panels/ (PrinterPanel, MaterialPanel, FilamentPanel, PresetPanel, AnalysisPanel, RecommendationPanel), src/gui/viewport/ (Viewport, ViewportToolbar, ViewportStatus)
+
+Issue: These components are not used by the interface of Phase 3, and some of them contain hardcoded English text, against the Internationalization Rule (CLAUDE.md). The Properties Panel (src/gui/sidebar/RightSidebar.tsx) and the viewport placeholder (src/gui/App.tsx) are used instead.
+
+Resolve Before: the phase that displays each component (Phase 4 - 3D Viewport for src/gui/viewport/; Phases 7 to 10 for the panels; KI-011 for AnalysisPanel)
+
+Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it.
+
+
+---
+
+
+Identifier: KI-016
+
+Since: 0.1.35
+
+Affected Module: src/electron/preload.ts (window.slicyWeb)
+
+Issue: The preload bridge exposes send(channel, data), invoke(channel, data) and on(channel, callback) for any channel name given by the renderer. Nothing limits the renderer to the channels registered by the main process (src/electron/ipc/: project:*, import:*, printer:*, settings:*, storage:*). on() adds an ipcRenderer listener that can never be removed: a component that subscribes again at each display accumulates listeners. Today only invoke("settings:get") and invoke("settings:language") are used (I18nProvider); send and on are not used.
+
+Resolve Before: Phase 5 - Model Import (technical plan), and at the latest with the first IPC channel that reads files on disk (import:stl, import:3mf, project:load or storage:load once implemented)
+
+Planned Resolution: Allow list of the IPC channels in preload.ts (invoke, send and on refuse any other channel); on() returns a function that removes its listener; document the allowed channels in API_SPEC.md (IPC API).
 
 
 ---
