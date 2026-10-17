@@ -8,8 +8,9 @@
  * - UNSUPPORTED_FORMAT: neither STL nor 3MF (IMPORT_EXPORT_SPEC.md,
  *   Import Errors: Unsupported Format);
  * - FILE_TOO_LARGE: larger than the size limit of FileValidator;
- * - MF_NOT_AVAILABLE: 3MF import not available yet (until the 3MF
- *   step of Phase 5).
+ * - MF_TOO_LARGE: the content of a 3MF file is over the extraction
+ *   limits (decompressed size, number of triangles, SECURITY_SPEC.md,
+ *   Archive Extraction Limits).
  *
  * The message is technical (logs); the GUI shows a translated text
  * chosen from the code (key import.error.<code>).
@@ -29,7 +30,7 @@ export type ImportErrorCode =
   | "MF_003"
   | "UNSUPPORTED_FORMAT"
   | "FILE_TOO_LARGE"
-  | "MF_NOT_AVAILABLE";
+  | "MF_TOO_LARGE";
 
 export class ImportError extends Error {
   public readonly code: ImportErrorCode;
@@ -54,7 +55,7 @@ export function isImportErrorCode(value: unknown): value is ImportErrorCode {
       "MF_003",
       "UNSUPPORTED_FORMAT",
       "FILE_TOO_LARGE",
-      "MF_NOT_AVAILABLE",
+      "MF_TOO_LARGE",
     ].includes(value)
   );
 }

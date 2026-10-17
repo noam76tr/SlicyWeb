@@ -8,8 +8,9 @@
  *   extraction and mesh validation, scene integration
  * - Import errors with their code (ImportError)
  *
- * Formats (IMPORT_EXPORT_SPEC.md, Supported Import Formats): STL.
- * 3MF comes with the next step of Phase 5.
+ * Formats (IMPORT_EXPORT_SPEC.md, Supported Import Formats): STL and
+ * 3MF. Each build item of a 3MF file becomes one object; the objects
+ * keep their layout (ADR-030).
  *
  * Domain: Import. Depends on the Scene Domain (scene integration),
  * called by the Service Domain (ImportService), DOMAINS_DEPENDENCY_MATRIX.md.
@@ -20,18 +21,19 @@
  * Based on:
  * - IMPORT_EXPORT_SPEC.md
  * - SECURITY_SPEC.md (File Import Security)
- * - DECISIONS.md (ADR-029)
+ * - DECISIONS.md (ADR-029, ADR-030)
  */
 
-import { registerImportedObject } from "../scene/SceneIntegration";
+import {
+  registerImportedObject,
+  registerImportedObjects,
+} from "../scene/SceneIntegration";
 
 import { FileValidator } from "./FileValidator";
 import { ImportError } from "./ImportError";
-import {
-  READ_SHARE,
-  STLImporter,
-  type ImportProgress,
-} from "./STLImporter";
+import { READ_SHARE, type ImportProgress } from "./ImportRunner";
+import { STLImporter } from "./STLImporter";
+import { ThreeMFImporter } from "./ThreeMFImporter";
 
 export type ImportPhase = "reading" | "analyzing";
 
@@ -47,6 +49,9 @@ export class ImportManager {
 
   private readonly stlImporter =
     new STLImporter();
+
+  private readonly threeMFImporter =
+    new ThreeMFImporter();
 
   /**
    * Imports a file and registers its objects in the scene.
@@ -80,14 +85,15 @@ export class ImportManager {
       );
     }
 
-    if (fileType !== "stl") {
-      // 3MF: next step of Phase 5
-      throw new ImportError("MF_NOT_AVAILABLE", "3MF import not available yet.");
-    }
-
     const progress: ImportProgress = (fraction) => {
       onProgress(fraction < READ_SHARE ? "reading" : "analyzing", fraction);
     };
+
+    if (fileType === "3mf") {
+      const result = await this.threeMFImporter.import(file, progress);
+
+      return registerImportedObjects(file.name, fileType, result.objects);
+    }
 
     const result = await this.stlImporter.import(file, progress);
 

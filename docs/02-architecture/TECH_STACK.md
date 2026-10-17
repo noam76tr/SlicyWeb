@@ -748,7 +748,7 @@ Primary Library:
 
 ```text
 
-STLLoader
+src/importer/StlParser.ts (project parser, binary and ASCII STL)
 
 ```
 
@@ -758,7 +758,7 @@ Source:
 
 
 
-Three.js Examples
+SlicyWeb (runs in the import Web Worker, ADR-029; the STLLoader of Three.js is not used)
 
 
 
@@ -770,12 +770,13 @@ Three.js Examples
 
 
 
-Primary Library:
+Primary Libraries:
 
 
 ```text
 
-3MFLoader
+fflate        ZIP archive
+fast-xml-parser   XML parts
 
 ```
 
@@ -783,7 +784,7 @@ Primary Library:
 Source:
 
 
-Three.js Examples
+npm (MIT licenses), used by src/importer/ThreeMFParser.ts in the import Web Worker (ADR-030). The 3MFLoader of Three.js is not used: it needs DOMParser, which does not exist in a Web Worker.
 
 
 ---

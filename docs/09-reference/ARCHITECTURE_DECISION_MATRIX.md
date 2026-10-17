@@ -177,6 +177,7 @@ Requires:
 | ADM-023 | WYPROJ Format Version 3.0.0 | Persistence | High | Approved |
 | ADM-024 | Viewport Coordinate System And Viewport Domain Direction | Viewport | High | Approved |
 | ADM-025 | Model Import In The Renderer With A Web Worker | Import | High | Approved |
+| ADM-026 | 3MF Import With fflate And fast-xml-parser In The Web Worker | Import | High | Approved |
 
 ---
 
@@ -750,6 +751,32 @@ Benefits:
 - Responsive window during import
 - Only user-chosen files are read
 - No duplicated selection state
+
+---
+
+ADM-026
+
+Title:
+
+3MF Import With fflate And fast-xml-parser In The Web Worker
+
+Decision:
+
+3MF files are parsed in the Web Worker with fflate (ZIP) and fast-xml-parser (XML), not with the 3MFLoader of three.js. Units, build item transforms, components and the Production extension are supported. Each build item becomes one object; objects of type "other" are not imported. The objects of one file keep their layout, centered on the origin at Z = 0.
+
+Rationale:
+
+DOMParser does not exist in a Web Worker; a proven XML parser; files of Bambu Studio and OrcaSlicer.
+
+Reference:
+
+ADR-030 (DECISIONS.md)
+
+Benefits:
+
+- Responsive window with large 3MF files
+- Units and layout respected
+- Archive extraction limits against zip bombs
 
 ---
 

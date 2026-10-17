@@ -5,7 +5,7 @@
  * The eleven buttons of GUI_SPEC.md (Toolbar Buttons): Import, Save,
  * Undo, Redo, Move, Rotate, Scale, Reset, Analyze, Optimize, Generate.
  *
- * Import (Phase 5) opens the system file dialog (STL). The other
+ * Import (Phase 5) opens the system file dialog (STL and 3MF). The other
  * buttons are visible and disabled until the phase that provides
  * their action. They use aria-disabled
  * instead of disabled, so that their tooltip ("available in a later
@@ -56,7 +56,7 @@ const TOOLBAR_GROUPS: ToolbarButtonDefinition[][] = [
     {
       key: "toolbar.import",
       icon: Upload,
-      action: () => openImportDialog(IMPORT_ACCEPT.stl),
+      action: () => openImportDialog(IMPORT_ACCEPT.all),
     },
     { key: "toolbar.save", icon: Save },
   ],

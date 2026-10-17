@@ -400,6 +400,8 @@ m
 inches
 ```
 
+3MF files also use micron and foot (3MF Core Specification); they are converted too (3MF Reading). STL files have no unit: their values are millimeters.
+
 ---
 
 # Export Formats
@@ -651,7 +653,7 @@ Read Failure
 
 # Import Error Codes
 
-Codes of ERROR_CODES_SPEC.md used by the STL import (src/importer/StlParser.ts, ImportManager.ts):
+Codes of ERROR_CODES_SPEC.md used by the import (src/importer/StlParser.ts, ThreeMFParser.ts, ImportManager.ts):
 
 | Code | When |
 |---|---|
@@ -659,8 +661,11 @@ Codes of ERROR_CODES_SPEC.md used by the STL import (src/importer/StlParser.ts, 
 | STL_002 | Empty file; neither binary STL (size = 84 + 50 x triangle count) nor ASCII STL ("solid" with facets) |
 | STL_003 | Truncated binary data or triangle count not matching the size; malformed ASCII facet (not 3 vertices); no triangle; coordinate not finite |
 | STL_004 | Not used yet |
+| MF_001 | The file could not be read (read failure) |
+| MF_002 | Empty file; not a ZIP archive; [Content_Types].xml or _rels/.rels missing; no 3D model relationship, or its part missing |
+| MF_003 | Corrupted archive; invalid XML or UTF-8; DOCTYPE; no model element; invalid number, vertex index or transform; unknown unit; object or model part not found; component cycle or nesting deeper than 32; no build item; no triangle |
 
-Reasons without a code in ERROR_CODES_SPEC.md (KI-018): unsupported format (extension other than .stl and .3mf), file larger than the limit of FileValidator (1 GB).
+Reasons without a code in ERROR_CODES_SPEC.md (KI-018): unsupported format (extension other than .stl and .3mf), file larger than the limit of FileValidator (1 GB), 3MF content over the archive extraction limits (MF_TOO_LARGE, SECURITY_SPEC.md, Archive Extraction Limits).
 
 The GUI shows a translated message for each code (import.error.<code>), never the technical message.
 
@@ -674,7 +679,28 @@ Several files can be chosen or dropped at once; they are imported one after the 
 
 An imported object is centered on the origin and placed on the build plate (lowest point at Z = 0, ADR-028, ADR-029). Objects may overlap.
 
-Object names (Duplicate Names): the names "cube (1)", "cube (2)" are display names; the project keeps the file name of each object (DATA_SCHEMA.md, Object Schema).
+A 3MF file gives one object per build item; its objects keep the layout of the file, the group is centered on the origin and its lowest point is at Z = 0 (ADR-030). Each object has its own transform position; the first object is selected.
+
+Object names (Duplicate Names): the names "cube (1)", "cube (2)" are display names; the project keeps the file name of each object (DATA_SCHEMA.md, Object Schema). The objects of one 3MF file share its file name ("plate (1)", "plate (2)"); the object names and metadata stored in the 3MF file are not kept (KI-020).
+
+---
+
+# 3MF Reading
+
+The 3MF import follows the 3MF Core Specification and the Production extension (DECISIONS.md, ADR-030):
+
+| Element | Handling |
+|---|---|
+| Package | _rels/.rels gives the root model part (3D model relationship) |
+| Units | unit of the root model: micron, millimeter (default), centimeter, inch, foot, meter; converted to millimeters |
+| Build items | each item becomes one object, with its transform |
+| Components | merged into the object of the build item, with their transforms |
+| Production extension | a component (or item) with a path attribute references an object of another model part (3D/Objects/*.model, Bambu Studio and OrcaSlicer) |
+| Object type "other" | not printed, not imported (for example modifier parts) |
+| Mirror transform | triangle order reversed, normals stay outward |
+| Mesh Statistics | vertices: vertices of the meshes used by the object; triangles: triangles produced |
+
+Not read: materials, colors, textures, thumbnails, slicer settings (Metadata/), build plates of Bambu Studio (KI-019).
 
 ---
 

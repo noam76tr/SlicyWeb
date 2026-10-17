@@ -16,6 +16,8 @@ import { ImportService } from "../../services/ImportService";
 /** File extensions accepted by the dialog of each import action */
 export const IMPORT_ACCEPT = {
   stl: ".stl",
+  threeMf: ".3mf",
+  all: ".stl,.3mf",
 } as const;
 
 export function openImportDialog(accept: string): void {

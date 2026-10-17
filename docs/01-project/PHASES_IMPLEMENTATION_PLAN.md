@@ -1021,10 +1021,13 @@ Decisions (ADR-029):
 - Import Domain depends on Scene Domain, not the reverse
 - Selection stored once, in the store of its domain (KI-014 resolved, CHANGELOG 0.1.41)
 - Service Domain triggers the import (ImportService); Service Domain can depend on the Import Domain
+- 3MF parsed with fflate and fast-xml-parser in the Web Worker; the objects of one 3MF file keep their layout (ADR-030)
 
 Progress:
 
 - STL import (CHANGELOG 0.1.42): File > Import STL, toolbar Import, drag and drop in the viewport; binary and ASCII STL parsed in a Web Worker with a progress bar; validation and error messages (STL_001 to STL_003); objects centered at Z = 0, shown in the viewport, the Object Panel and the status bar; duplicate names "cube (1)", "cube (2)"
+- 3MF import (CHANGELOG 0.1.43): File > Import 3MF, toolbar Import and drag and drop; units, build item transforms, components, Production extension (Bambu Studio, OrcaSlicer); archive extraction limits; one object per build item, layout kept; error messages (MF_001 to MF_003)
+- Remaining before closure: KI-018 decision, closure against the criteria below (Single Import, Multiple Imports, Error Handling)
 
 ---
 

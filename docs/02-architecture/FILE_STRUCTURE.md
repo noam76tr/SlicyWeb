@@ -535,7 +535,7 @@ src/scene/
 ├── SceneSerializer.ts
 ├── SceneValidator.ts
 ├── GeometryRegistry.ts        = triangle geometry of the objects, by objectId (ADR-029)
-└── SceneIntegration.ts        = registers an imported model in the scene (ADR-029)
+└── SceneIntegration.ts        = registers imported models in the scene (ADR-029, ADR-030)
 ```
 
 ---
@@ -578,11 +578,14 @@ src/importer/
 ├── STLImporter.ts
 ├── StlParser.ts               = binary and ASCII STL parser with validation (no DOM)
 ├── ThreeMFImporter.ts
+├── ThreeMFParser.ts           = 3MF parser with fflate and fast-xml-parser (no DOM, ADR-030)
+├── ImportRunner.ts            = file reading with progress, parser worker (STL and 3MF)
 ├── ImportManager.ts
 ├── ImportError.ts             = import errors with their code (ERROR_CODES_SPEC.md)
 ├── FileValidator.ts
 └── workers/
-    └── stlParser.worker.ts    = Web Worker parsing STL files (ADR-029)
+    ├── stlParser.worker.ts    = Web Worker parsing STL files (ADR-029)
+    └── threeMfParser.worker.ts = Web Worker parsing 3MF files (ADR-030)
 ```
 
 ---

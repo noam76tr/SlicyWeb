@@ -8,6 +8,10 @@
  * - Geometry extraction
  * - Mesh statistics extraction
  *
+ * The file chosen by the user is read in the renderer, then parsed in
+ * a Web Worker (ADR-029, ADR-030), so that the window never freezes
+ * (ImportRunner.ts, ThreeMFParser.ts).
+ *
  * No business logic.
  * No AI logic.
  * No scene management.
@@ -16,68 +20,31 @@
  * - ARCHITECTURE.md
  * - FILE_STRUCTURE.md
  * - DATA_SCHEMA.md
+ * - IMPORT_EXPORT_SPEC.md (3MF Import, Performance Requirements)
+ * - DECISIONS.md (ADR-029, ADR-030)
  */
 
-import * as THREE from "three";
+import { readAndParse, type ImportProgress } from "./ImportRunner";
+import type { ThreeMFParseResult } from "./ThreeMFParser";
 
 export class ThreeMFImporter {
   /**
-   * Imports a 3MF file.
-   *
-   * Placeholder implementation until Phase 3 (Model Import System, ROADMAP.md).
-   * Full 3MF parsing will be added later.
+   * Reads and parses a 3MF file.
    */
-  public async import(
+  public import(
     file: File,
-  ): Promise<ArrayBuffer> {
-    return file.arrayBuffer();
-  }
-
-  /**
-   * Returns mesh vertex count.
-   */
-  public getVertexCount(
-    geometry: THREE.BufferGeometry,
-  ): number {
-    const position =
-      geometry.getAttribute("position");
-
-    if (!position) {
-      return 0;
-    }
-
-    return position.count;
-  }
-
-  /**
-   * Returns mesh triangle count.
-   */
-  public getTriangleCount(
-    geometry: THREE.BufferGeometry,
-  ): number {
-    const position =
-      geometry.getAttribute("position");
-
-    if (!position) {
-      return 0;
-    }
-
-    return Math.floor(
-      position.count / 3,
-    );
-  }
-
-  /**
-   * Computes geometry bounding box.
-   */
-  public computeBoundingBox(
-    geometry: THREE.BufferGeometry,
-  ): THREE.Box3 {
-    geometry.computeBoundingBox();
-
-    return (
-      geometry.boundingBox ??
-      new THREE.Box3()
+    onProgress: ImportProgress = () => {},
+  ): Promise<ThreeMFParseResult> {
+    return readAndParse<ThreeMFParseResult>(
+      file,
+      () =>
+        new Worker(
+          new URL("./workers/threeMfParser.worker.ts", import.meta.url),
+          { type: "module" },
+        ),
+      onProgress,
+      "MF_001",
+      "MF_003",
     );
   }
 }

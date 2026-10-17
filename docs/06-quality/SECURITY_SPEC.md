@@ -316,6 +316,37 @@ Invalid XML
 Incomplete Package
 ```
 
+How the 3MF import applies these rules (src/importer/ThreeMFParser.ts, ADR-030):
+
+| Rule | Check |
+|---|---|
+| Archive Structure, Corrupted Archive | ZIP signature; every part read must decompress without error |
+| Incomplete Package, Relationships | [Content_Types].xml and _rels/.rels present; the 3D model relationship points to a part of the archive |
+| Invalid XML | Every XML part is well-formed (fast-xml-parser XMLValidator) and valid UTF-8; DOCTYPE refused; entities not processed |
+| Model Data | Coordinates and transforms are finite numbers; vertex indices exist; known unit; at least one build item and one triangle |
+| Missing Components, Broken References, Referenced Files | Every referenced object and model part exists; component cycles and nesting deeper than 32 levels refused |
+| Metadata | Not read by the import (thumbnails, slicer settings and Metadata/ parts are not decompressed) |
+
+---
+
+# Archive Extraction Limits
+
+Protection against zip bombs and model amplification (3MF):
+
+```text
+Only the parts needed are decompressed: .rels, .model, [Content_Types].xml
+
+Declared decompressed size checked before decompression:
+  one part: 500 MB at most
+  all parts read: 1 GB at most
+
+Decompression never writes more than the declared size of a part
+
+Triangles produced (objects reused by build items or components): 20 million at most
+```
+
+A file over these limits is refused (reason MF_TOO_LARGE, IMPORT_EXPORT_SPEC.md, Import Error Codes).
+
 ---
 
 # Project File Validation

@@ -2228,6 +2228,73 @@ Reason:
 
 ---
 
+# ADR-030
+
+Title: 3MF Import With fflate And fast-xml-parser In The Web Worker
+
+Status: Accepted
+
+Date: 2026-10-16
+
+## Context
+
+TECH_STACK.md (3MF Support) named the 3MFLoader of the three.js examples.
+
+3MFLoader reads the XML parts with DOMParser, which does not exist in a Web Worker (ADR-029), and it does not convert the units of the file.
+
+3MF files exported by Bambu Studio and OrcaSlicer store each object in its own model part (3D/Objects/*.model) and reference it with the Production extension (attribute p:path of a component). They often contain several objects already placed on the build plate.
+
+## Decision
+
+- The 3MF file is parsed in the Web Worker with two libraries: fflate (ZIP archive) and fast-xml-parser (XML). 3MFLoader is not used.
+- fast-xml-parser checks that each XML part is well-formed (XMLValidator), then reads it tag by tag (updateTag); the tags are not kept, so no XML tree is built in memory.
+- Supported: units (micron, millimeter, centimeter, inch, foot, meter, converted to millimeters), build item transforms, components with their transforms, model parts referenced with the Production extension.
+- Each build item becomes one object; the meshes of its components are merged into it. Objects of type "other" are not printed (3MF Core Specification): they are not imported (for example the modifier parts of Bambu Studio).
+- Placement: the objects of one 3MF file keep their layout; the group is centered on the origin and its lowest point is at Z = 0 (ADR-028, ADR-029).
+- Security: archive extraction limits (SECURITY_SPEC.md, Archive Extraction Limits); DOCTYPE refused, entities not processed.
+
+## Consequences
+
+Advantages:
+
+- Window responsive with large 3MF files, with progress
+- Units and layout of the file respected
+- Bambu Studio and OrcaSlicer files supported
+
+Disadvantages:
+
+- Two new dependencies (fflate, fast-xml-parser)
+- Parsing a very large 3MF file is slower than an STL file of the same size (generic XML parser and validation)
+- Several build plates of Bambu Studio are imported as one layout (KNOWN ISSUES: KI-019)
+
+## Alternatives Considered
+
+3MFLoader on the main thread of the renderer
+
+Rejected
+
+Reason:
+
+- The window would freeze without progress while a large file is parsed; units not converted
+
+3MF XML reader written for the project
+
+Rejected
+
+Reason:
+
+- A proven XML parser is preferred
+
+## Related Documents
+
+- IMPORT_EXPORT_SPEC.md (3MF Import, Unit Conversion, Import Error Codes, Import Progress And Placement)
+- SECURITY_SPEC.md (3MF Validation, 3MF Rejection Conditions, Archive Extraction Limits)
+- TECH_STACK.md (3MF Support)
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-026)
+- ADR-028, ADR-029
+
+---
+
 # Future Decision Template
 
 Copy and complete:

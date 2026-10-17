@@ -1500,7 +1500,7 @@ Release Type:
 Model Import
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-16
@@ -1536,6 +1536,55 @@ Date:
 - API_SPEC.md: the import does not use the import:* IPC channels (ADR-029)
 - FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: new files and src/gui/import/
 - PHASES_IMPLEMENTATION_PLAN.md: Phase 5 progress
+
+## Validation Result
+
+- Windows 11 (2026-10-16): STL files imported, centered on the build plate; 3MF refused with "available in a later version"; same behavior with npm run build and npm start (Web Worker in the built application); src/gui/import/ and src/importer/workers/ on GitHub. Objects cannot be moved yet and overlap at the center: expected (ADR-029; moving objects is Phase 6 - Transform System)
+
+---
+
+# VERSION 0.1.43
+
+Release Type:
+Model Import
+
+Status:
+In Progress
+
+Date:
+2026-10-16
+
+## Added
+
+- 3MF import (Technical Phase 5): File > Import 3MF and the toolbar Import button (STL and 3MF) open the system file dialog; 3MF files can be dropped in the viewport
+- DECISIONS.md: ADR-030 (3MF parsed with fflate and fast-xml-parser in the Web Worker, not with the 3MFLoader of three.js; layout of the file kept); ARCHITECTURE_DECISION_MATRIX.md: ADM-026
+- Dependencies: fflate (ZIP archive) and fast-xml-parser (XML), MIT licenses
+- src/importer/ThreeMFParser.ts: 3MF parser without DOM; package and relationships; XML checked with XMLValidator, then read tag by tag without XML tree; units converted to millimeters; build item and component transforms; Production extension (model parts 3D/Objects/*.model of Bambu Studio and OrcaSlicer); objects of type "other" not imported; mirror transforms keep the normals outward; codes MF_002 and MF_003
+- src/importer/workers/threeMfParser.worker.ts: Web Worker running the 3MF parser, with progress messages
+- src/importer/ImportRunner.ts: file reading with progress and parser worker, shared by the STL and 3MF importers
+- SECURITY_SPEC.md: how the 3MF import applies the 3MF rules; Archive Extraction Limits (only the needed parts decompressed; 500 MB per part, 1 GB in total, checked before decompression; 20 million triangles)
+- IMPORT_EXPORT_SPEC.md: 3MF Reading; codes MF_001 to MF_003; 3MF placement
+- Locale keys import.error.MF_001, MF_002, MF_003, MF_TOO_LARGE (240 keys)
+- KNOWN ISSUES: KI-019 (several build plates of a Bambu Studio file), KI-020 (3MF object names and metadata not kept)
+
+## Changed
+
+- src/importer/ThreeMFImporter.ts: reads the file with progress and parses it in the Web Worker (placeholder replaced)
+- src/importer/STLImporter.ts: uses ImportRunner.ts (same behavior)
+- src/importer/StlParser.ts: TriangleCollector exported for the 3MF parser, with the error code of the format
+- src/importer/ImportManager.ts: 3MF files imported; one object per build item
+- src/scene/SceneIntegration.ts: registerImportedObjects, the objects of one file keep their layout, the group centered on the origin at Z = 0; the first object is selected; vertex count of the mesh statistics given by the parser (3MF)
+- src/importer/ImportError.ts: reason MF_TOO_LARGE (3MF content over the extraction limits); MF_NOT_AVAILABLE removed
+- src/gui/menus/MenuBar.tsx: File > Import 3MF active; src/gui/toolbars/Toolbar.tsx: Import accepts STL and 3MF; src/gui/import/openImportDialog.ts: accepted extensions
+- Locale key import.dropHint: STL or 3MF
+- TECH_STACK.md: STL Support (project parser, STLLoader not used since 0.1.42) and 3MF Support (fflate, fast-xml-parser)
+- IMPORT_EXPORT_SPEC.md (Unit Conversion): micron and foot for 3MF files
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: new files
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 5 progress
+
+## Removed
+
+- Locale key import.error.MF_NOT_AVAILABLE
 
 ---
 
@@ -2454,11 +2503,43 @@ Since: 0.1.42
 
 Affected Module: ERROR_CODES_SPEC.md, src/importer/ImportError.ts
 
-Issue: Two import refusals have no code in ERROR_CODES_SPEC.md: a file of an unsupported format (IMPORT_EXPORT_SPEC.md, Import Errors: Unsupported Format) and a file larger than the size limit of FileValidator (1 GB). The import uses the reasons UNSUPPORTED_FORMAT and FILE_TOO_LARGE, and MF_NOT_AVAILABLE until the 3MF import exists. STL_004 (Unsupported STL Version) has no defined condition.
+Issue: Three import refusals have no code in ERROR_CODES_SPEC.md: a file of an unsupported format (IMPORT_EXPORT_SPEC.md, Import Errors: Unsupported Format), a file larger than the size limit of FileValidator (1 GB), and a 3MF file over the archive extraction limits (SECURITY_SPEC.md, Archive Extraction Limits, since 0.1.43). The import uses the reasons UNSUPPORTED_FORMAT, FILE_TOO_LARGE and MF_TOO_LARGE. STL_004 (Unsupported STL Version) has no defined condition.
 
 Resolve Before: Phase 5 closure (technical plan)
 
-Planned Resolution: Add import codes to ERROR_CODES_SPEC.md (for example IMP_001 Unsupported Format, IMP_002 File Too Large) or decide to keep these reasons without code; define or remove the condition of STL_004.
+Planned Resolution: Add import codes to ERROR_CODES_SPEC.md (for example IMP_001 Unsupported Format, IMP_002 File Too Large, MF_004 Content Too Large) or decide to keep these reasons without code; define or remove the condition of STL_004.
+
+
+---
+
+
+Identifier: KI-019
+
+Since: 0.1.43
+
+Affected Module: src/importer/ThreeMFParser.ts, src/scene/SceneIntegration.ts
+
+Issue: A Bambu Studio (or OrcaSlicer) project with several build plates stores the objects of every plate in one build, each plate placed beside the previous one. The import keeps the layout of the file (ADR-030): the objects of the different plates are far from each other, and the group can be larger than the build plate.
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan, Bambu Family)
+
+Planned Resolution: Read the plate of each object (Metadata/model_settings.config of Bambu Studio), then import one plate chosen by the user or place each plate on the build plate; or keep the layout and let the user arrange the objects (Phase 6 - Transform System).
+
+
+---
+
+
+Identifier: KI-020
+
+Since: 0.1.43
+
+Affected Module: DATA_SCHEMA.md (Object Schema), src/importer/ThreeMFParser.ts
+
+Issue: IMPORT_EXPORT_SPEC.md (3MF Import, Extracted Data; Metadata Handling) lists the object names and the metadata (author, creation date, application) of a 3MF file, but the Object Schema has no field for them. The import does not keep them: the objects of a 3MF file are named after the file ("plate (1)", "plate (2)").
+
+Resolve Before: Phase 13 - Project Persistence (technical plan)
+
+Planned Resolution: Decide whether the Object Schema gets a name field (and where the metadata of an imported file are stored), then read them in ThreeMFParser.ts; or remove them from IMPORT_EXPORT_SPEC.md.
 
 
 ---

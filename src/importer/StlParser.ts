@@ -34,25 +34,8 @@
 
 import { ImportError } from "./ImportError";
 
-export interface StlParseResult {
+export interface StlParseResult extends TriangleData {
   format: "binary" | "ascii";
-
-  /** 9 values per triangle (3 vertices x, y, z), millimeters */
-  positions: Float32Array;
-
-  /** Normal of each vertex (face normal repeated 3 times) */
-  normals: Float32Array;
-
-  triangleCount: number;
-
-  min: [number, number, number];
-  max: [number, number, number];
-
-  /** Volume enclosed by the mesh, mm³ (absolute value) */
-  volume: number;
-
-  /** Total area of the triangles, mm² */
-  surfaceArea: number;
 }
 
 /** Progress callback: fraction from 0 to 1 */
@@ -111,8 +94,32 @@ function looksLikeAscii(buffer: ArrayBuffer): boolean {
   return /^\s*solid/i.test(start);
 }
 
-/** Accumulates triangles, statistics and bounds */
-class TriangleCollector {
+/** Triangle data with statistics and bounds (millimeters) */
+export interface TriangleData {
+  /** 9 values per triangle (3 vertices x, y, z) */
+  positions: Float32Array;
+
+  /** Normal of each vertex (face normal repeated 3 times) */
+  normals: Float32Array;
+
+  triangleCount: number;
+
+  min: [number, number, number];
+  max: [number, number, number];
+
+  /** mm³ (absolute value) */
+  volume: number;
+
+  /** mm² */
+  surfaceArea: number;
+}
+
+/**
+ * Accumulates triangles, statistics and bounds.
+ * Also used by the 3MF parser (ThreeMFParser.ts), with its own error
+ * code for a coordinate that is not finite.
+ */
+export class TriangleCollector {
   readonly positions: Float32Array;
   readonly normals: Float32Array;
 
@@ -123,9 +130,12 @@ class TriangleCollector {
   readonly min: [number, number, number] = [Infinity, Infinity, Infinity];
   readonly max: [number, number, number] = [-Infinity, -Infinity, -Infinity];
 
-  constructor(capacity: number) {
+  private readonly errorCode: "STL_003" | "MF_003";
+
+  constructor(capacity: number, errorCode: "STL_003" | "MF_003" = "STL_003") {
     this.positions = new Float32Array(capacity * 9);
     this.normals = new Float32Array(capacity * 9);
+    this.errorCode = errorCode;
   }
 
   get count(): number {
@@ -136,7 +146,7 @@ class TriangleCollector {
     for (let i = 0; i < 9; i += 1) {
       if (!Number.isFinite(v[i])) {
         throw new ImportError(
-          "STL_003",
+          this.errorCode,
           `Coordinate not finite in triangle ${this.index + 1}.`,
         );
       }
@@ -192,14 +202,18 @@ class TriangleCollector {
   }
 
   result(format: "binary" | "ascii"): StlParseResult {
+    return { format, ...this.data() };
+  }
+
+  /** Collected triangles; at least one triangle is required */
+  data(): TriangleData {
     if (this.index === 0) {
-      throw new ImportError("STL_003", "The file contains no triangle.");
+      throw new ImportError(this.errorCode, "The file contains no triangle.");
     }
 
     const used = this.index * 9;
 
     return {
-      format,
       positions:
         used === this.positions.length
           ? this.positions

@@ -498,7 +498,7 @@ Every file should be placed in the directory that matches its responsibility.
 | `SceneSerializer.ts` | Serializes and deserializes scenes to and from JSON |
 | `SceneValidator.ts` | Validates scenes and allowed operations |
 | `GeometryRegistry.ts` | Triangle geometry of the scene objects, indexed by objectId (local coordinates, origin at the bottom center) |
-| `SceneIntegration.ts` | Registers an imported model: centered on the origin at Z = 0, geometry and mesh statistics, object added and selected (ADR-029) |
+| `SceneIntegration.ts` | Registers imported models: centered on the origin at Z = 0 (the objects of one 3MF file keep their layout), geometry and mesh statistics, objects added, first one selected (ADR-029, ADR-030) |
 
 ---
 
@@ -614,11 +614,14 @@ Until the project owner decides otherwise:
 |------|------|
 | `FileValidator.ts` | Validates files before import (name, size, extension) |
 | `ImportError.ts` | Import error with its code (STL_001 to STL_004, MF_001 to MF_003, and reasons without code, KI-018) |
+| `ImportRunner.ts` | Shared steps of the importers: reads the file with progress, runs the parser Web Worker |
 | `ImportManager.ts` | Import workflow: validation, format detection, parsing, scene integration; errors with codes |
 | `StlParser.ts` | Parses binary and ASCII STL files with the validation of SECURITY_SPEC.md; vertices, normals, bounds, volume, surface area |
 | `STLImporter.ts` | Reads an STL file (progress) and parses it in the Web Worker |
 | `workers/stlParser.worker.ts` | Web Worker running StlParser, with progress messages (ADR-029) |
-| `ThreeMFImporter.ts` | Loads and parses 3MF files (placeholder implementation until Phase 3, ROADMAP.md) |
+| `ThreeMFParser.ts` | Parses 3MF files (fflate, fast-xml-parser): units, build items, components, Production extension; archive extraction limits; one object per build item (ADR-030) |
+| `ThreeMFImporter.ts` | Reads a 3MF file (progress) and parses it in the Web Worker |
+| `workers/threeMfParser.worker.ts` | Web Worker running ThreeMFParser, with progress messages (ADR-030) |
 
 ---
 
