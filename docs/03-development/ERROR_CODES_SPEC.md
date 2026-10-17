@@ -3,7 +3,7 @@
 # ERROR CODES SPECIFICATION
 
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -51,6 +51,36 @@ Error
 
 Critical
 ```
+
+---
+
+# Import Errors
+
+Refusals before the file is parsed, for every model format (IMPORT_EXPORT_SPEC.md, Import Errors).
+
+---
+
+## IMP_001
+
+```text
+
+Unsupported File Format
+
+```
+
+Extension other than .stl and .3mf.
+
+---
+
+## IMP_002
+
+```text
+
+File Too Large
+
+```
+
+File larger than the size limit of the import (1 GB, FileValidator).
 
 ---
 
@@ -106,6 +136,8 @@ Unsupported STL Version
 
 ```
 
+Reserved: not used. No STL format has a version (binary and ASCII STL are both supported).
+
 
 ---
 
@@ -160,6 +192,24 @@ Invalid 3MF Package
 Corrupted 3MF File
 
 ```
+
+
+
+---
+
+
+
+## MF_004
+
+
+
+```text
+
+3MF Content Too Large
+
+```
+
+The content of the 3MF file is over the archive extraction limits (SECURITY_SPEC.md, Archive Extraction Limits): decompressed size of a part or of all the parts read, or number of triangles produced.
 
 
 

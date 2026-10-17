@@ -66,7 +66,7 @@ export class ImportManager {
 
     if (!this.fileValidator.validateExtension(file)) {
       throw new ImportError(
-        "UNSUPPORTED_FORMAT",
+        "IMP_001",
         `Unsupported file extension: ${fileType || "(none)"}`,
       );
     }
@@ -80,7 +80,7 @@ export class ImportManager {
 
     if (!this.fileValidator.validateSize(file)) {
       throw new ImportError(
-        "FILE_TOO_LARGE",
+        "IMP_002",
         `File larger than ${FileValidator.getMaxFileSize()} bytes.`,
       );
     }

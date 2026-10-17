@@ -28,6 +28,14 @@ Date : 2026-10-13. État vérifié sur `main` au commit `62a0f05` : le lot 8 y e
   ```
 
 - **Envoi sur GitHub par le site web :** l'envoi ne garde pas toujours les chemins des dossiers (lot 32 : fichiers posés à la racine). Après chaque envoi, Claude compare `main` avec le lot, fichier par fichier, avant de continuer.
+- **Règle de décision (Noam, 2026-10-17) :** Claude peut appliquer lui-même l'option « Recommandé » sans demander, **sauf** si la question touche :
+  1. le format des données ou des fichiers (DATA_SCHEMA, WYPROJ, export slicer) ;
+  2. la sécurité (IPC, CSP, accès aux fichiers) ;
+  3. un choix visible pour l'utilisateur (interface, comportement, réglages d'impression) ;
+  4. une suppression de code ou de fonctionnalité ;
+  5. une contradiction entre deux documents de même priorité.
+
+  Dans ces cas, Claude pose la question comme avant. Dans chaque lot, le `LOTN.md` liste en haut « Décisions prises seul » : la question, l'option choisie et une ligne de justification, pour que Noam puisse les relire et les annuler.
 
 ---
 

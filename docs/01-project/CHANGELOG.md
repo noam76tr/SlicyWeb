@@ -1549,7 +1549,7 @@ Release Type:
 Model Import
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-16
@@ -1585,6 +1585,41 @@ Date:
 ## Removed
 
 - Locale key import.error.MF_NOT_AVAILABLE
+
+## Validation Result
+
+- Windows 11 (2026-10-17): npm install fflate@0.8.3 fast-xml-parser@5.11.2; npm run check:locales (240 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report 0 errors; orca-badge.3mf imported; zip-bomb.3mf, bad-xml.3mf and not-zip.3mf refused with their translated message, in npm run dev and in the built application (npm run build, npm start); package.json and package-lock.json on GitHub with the two dependencies
+
+---
+
+# VERSION 0.1.44
+
+Release Type:
+Model Import
+
+Status:
+Completed
+
+Date:
+2026-10-17
+
+## Added
+
+- ERROR_CODES_SPEC.md 2.1.0: Import Errors IMP_001 (Unsupported File Format) and IMP_002 (File Too Large); MF_004 (3MF Content Too Large, archive extraction limits)
+- PASSATION.md: decision rule (options marked "Recommended" applied without asking, except for data and file formats, security, choices visible to the user, removal of code or features, contradictions between documents of the same priority; listed in each lot under "Décisions prises seul")
+- Technical Phase 5 - Model Import closed (PHASES_IMPLEMENTATION_PLAN.md: validation result)
+
+## Changed
+
+- src/importer/ImportError.ts, ImportManager.ts, ThreeMFParser.ts: codes IMP_001, IMP_002 and MF_004 replace the reasons UNSUPPORTED_FORMAT, FILE_TOO_LARGE and MF_TOO_LARGE
+- Locale keys import.error.UNSUPPORTED_FORMAT, FILE_TOO_LARGE and MF_TOO_LARGE renamed import.error.IMP_001, IMP_002 and MF_004 (same texts, 240 keys)
+- ERROR_CODES_SPEC.md: STL_004 reserved, not used (no STL format has a version)
+- IMPORT_EXPORT_SPEC.md (Import Error Codes), SECURITY_SPEC.md (Archive Extraction Limits), DIRECTORY_PURPOSES.md: codes
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 5 Completed
+
+## Fixed
+
+- KI-018 resolved (import refusals without code in ERROR_CODES_SPEC.md)
 
 ---
 
@@ -2492,22 +2527,6 @@ Issue: The Transform Schema gives rotation x, y, z without unit (degrees or radi
 Resolve Before: Phase 6 - Transform System (technical plan)
 
 Planned Resolution: Define the unit and the order of rotation in DATA_SCHEMA.md (Transform Schema), then use them in the transform code and in the viewport.
-
-
----
-
-
-Identifier: KI-018
-
-Since: 0.1.42
-
-Affected Module: ERROR_CODES_SPEC.md, src/importer/ImportError.ts
-
-Issue: Three import refusals have no code in ERROR_CODES_SPEC.md: a file of an unsupported format (IMPORT_EXPORT_SPEC.md, Import Errors: Unsupported Format), a file larger than the size limit of FileValidator (1 GB), and a 3MF file over the archive extraction limits (SECURITY_SPEC.md, Archive Extraction Limits, since 0.1.43). The import uses the reasons UNSUPPORTED_FORMAT, FILE_TOO_LARGE and MF_TOO_LARGE. STL_004 (Unsupported STL Version) has no defined condition.
-
-Resolve Before: Phase 5 closure (technical plan)
-
-Planned Resolution: Add import codes to ERROR_CODES_SPEC.md (for example IMP_001 Unsupported Format, IMP_002 File Too Large, MF_004 Content Too Large) or decide to keep these reasons without code; define or remove the condition of STL_004.
 
 
 ---

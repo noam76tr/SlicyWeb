@@ -345,7 +345,7 @@ Decompression never writes more than the declared size of a part
 Triangles produced (objects reused by build items or components): 20 million at most
 ```
 
-A file over these limits is refused (reason MF_TOO_LARGE, IMPORT_EXPORT_SPEC.md, Import Error Codes).
+A file over these limits is refused with the code MF_004 (ERROR_CODES_SPEC.md; IMPORT_EXPORT_SPEC.md, Import Error Codes).
 
 ---
 

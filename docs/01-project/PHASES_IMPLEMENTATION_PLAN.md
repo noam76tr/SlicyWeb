@@ -1012,7 +1012,9 @@ Smooth Navigation
 
 
 
-Status: In Progress
+Status: Completed
+
+Date: 2026-10-17
 
 Decisions (ADR-029):
 
@@ -1027,7 +1029,16 @@ Progress:
 
 - STL import (CHANGELOG 0.1.42): File > Import STL, toolbar Import, drag and drop in the viewport; binary and ASCII STL parsed in a Web Worker with a progress bar; validation and error messages (STL_001 to STL_003); objects centered at Z = 0, shown in the viewport, the Object Panel and the status bar; duplicate names "cube (1)", "cube (2)"
 - 3MF import (CHANGELOG 0.1.43): File > Import 3MF, toolbar Import and drag and drop; units, build item transforms, components, Production extension (Bambu Studio, OrcaSlicer); archive extraction limits; one object per build item, layout kept; error messages (MF_001 to MF_003)
-- Remaining before closure: KI-018 decision, closure against the criteria below (Single Import, Multiple Imports, Error Handling)
+- Import error codes (CHANGELOG 0.1.44): every refusal has a code of ERROR_CODES_SPEC.md (IMP_001, IMP_002, MF_004 added; STL_004 reserved); KI-018 resolved
+
+Validation result (Windows 11):
+
+- Single Import: STL files (0.1.42) and the OrcaSlicer 3MF test file with its three objects (0.1.43) imported, centered on the build plate, in npm run dev and in the built application (npm run build, npm start)
+- Multiple Imports: several STL files imported at once, one after the other (0.1.42)
+- Error Handling: zip-bomb.3mf, bad-xml.3mf and not-zip.3mf refused with their translated message (too large, corrupted, not a valid 3MF file), in npm run dev and in the built application
+- npm run check:locales (240 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report 0 errors
+
+Objects cannot be moved yet and overlap at the center: moving objects is Phase 6 - Transform System. Open issues of the import: KI-019 (several build plates of a Bambu Studio file), KI-020 (3MF object names and metadata not kept).
 
 ---
 

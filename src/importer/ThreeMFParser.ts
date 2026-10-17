@@ -43,7 +43,7 @@
  * - MF_002 Invalid 3MF Package: not a ZIP archive, required part missing;
  * - MF_003 Corrupted 3MF File: corrupted archive, invalid XML or UTF-8,
  *   broken reference, invalid geometry or transform, unknown unit;
- * - MF_TOO_LARGE (no code, KI-018): extraction limits exceeded.
+ * - MF_004 3MF Content Too Large: extraction limits exceeded.
  *
  * Based on:
  * - IMPORT_EXPORT_SPEC.md (3MF Import, Units, Unit Conversion)
@@ -222,7 +222,7 @@ export function parse3mf(
 
   if (totalTriangles > MAX_TRIANGLES) {
     throw new ImportError(
-      "MF_TOO_LARGE",
+      "MF_004",
       `The model produces ${totalTriangles} triangles (limit ${MAX_TRIANGLES}).`,
     );
   }
@@ -302,7 +302,7 @@ function unzip(data: Uint8Array): Map<string, Uint8Array> {
 
     if (size > MAX_PART_BYTES || total > MAX_TOTAL_BYTES) {
       tooLarge ??= new ImportError(
-        "MF_TOO_LARGE",
+        "MF_004",
         `Decompressed size over the limit (part ${file.name}: ${size} bytes).`,
       );
     }
@@ -735,7 +735,7 @@ function countTriangles(
 
     if (count > MAX_TRIANGLES) {
       throw new ImportError(
-        "MF_TOO_LARGE",
+        "MF_004",
         `The model produces more than ${MAX_TRIANGLES} triangles.`,
       );
     }

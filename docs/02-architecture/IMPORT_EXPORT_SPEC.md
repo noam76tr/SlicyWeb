@@ -657,15 +657,18 @@ Codes of ERROR_CODES_SPEC.md used by the import (src/importer/StlParser.ts, Thre
 
 | Code | When |
 |---|---|
+| IMP_001 | Unsupported format: extension other than .stl and .3mf |
+| IMP_002 | File larger than the limit of FileValidator (1 GB) |
 | STL_001 | The file could not be read (read failure) |
 | STL_002 | Empty file; neither binary STL (size = 84 + 50 x triangle count) nor ASCII STL ("solid" with facets) |
 | STL_003 | Truncated binary data or triangle count not matching the size; malformed ASCII facet (not 3 vertices); no triangle; coordinate not finite |
-| STL_004 | Not used yet |
+| STL_004 | Reserved, not used: no STL format has a version |
 | MF_001 | The file could not be read (read failure) |
 | MF_002 | Empty file; not a ZIP archive; [Content_Types].xml or _rels/.rels missing; no 3D model relationship, or its part missing |
 | MF_003 | Corrupted archive; invalid XML or UTF-8; DOCTYPE; no model element; invalid number, vertex index or transform; unknown unit; object or model part not found; component cycle or nesting deeper than 32; no build item; no triangle |
+| MF_004 | 3MF content over the archive extraction limits (SECURITY_SPEC.md, Archive Extraction Limits) |
 
-Reasons without a code in ERROR_CODES_SPEC.md (KI-018): unsupported format (extension other than .stl and .3mf), file larger than the limit of FileValidator (1 GB), 3MF content over the archive extraction limits (MF_TOO_LARGE, SECURITY_SPEC.md, Archive Extraction Limits).
+Every import refusal has a code of ERROR_CODES_SPEC.md (KI-018 resolved in 0.1.44).
 
 The GUI shows a translated message for each code (import.error.<code>), never the technical message.
 

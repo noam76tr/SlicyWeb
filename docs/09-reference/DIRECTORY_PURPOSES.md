@@ -613,7 +613,7 @@ Until the project owner decides otherwise:
 | File | Role |
 |------|------|
 | `FileValidator.ts` | Validates files before import (name, size, extension) |
-| `ImportError.ts` | Import error with its code (STL_001 to STL_004, MF_001 to MF_003, and reasons without code, KI-018) |
+| `ImportError.ts` | Import error with its code of ERROR_CODES_SPEC.md (IMP_001, IMP_002, STL_001 to STL_004, MF_001 to MF_004) |
 | `ImportRunner.ts` | Shared steps of the importers: reads the file with progress, runs the parser Web Worker |
 | `ImportManager.ts` | Import workflow: validation, format detection, parsing, scene integration; errors with codes |
 | `StlParser.ts` | Parses binary and ASCII STL files with the validation of SECURITY_SPEC.md; vertices, normals, bounds, volume, surface area |
