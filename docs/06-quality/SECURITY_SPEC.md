@@ -336,11 +336,16 @@ Protection against zip bombs and model amplification (3MF):
 ```text
 Only the parts needed are decompressed: .rels, .model, [Content_Types].xml
 
+Sizes read from the central directory of the archive (correct with a data descriptor, Zip64 supported)
+
 Declared decompressed size checked before decompression:
   one part: 500 MB at most
   all parts read: 1 GB at most
 
-Decompression never writes more than the declared size of a part
+Decompression by chunks of 16 kB, stopped as soon as a part produces more than its declared size:
+  the part is refused (MF_003); the work never goes beyond the declared size
+
+Encrypted parts, unknown compression methods, duplicate names and offsets outside the file are refused (MF_003)
 
 Triangles produced (objects reused by build items or components): 20 million at most
 ```

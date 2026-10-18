@@ -762,7 +762,7 @@ Title:
 
 Decision:
 
-3MF files are parsed in the Web Worker with fflate (ZIP) and fast-xml-parser (XML), not with the 3MFLoader of three.js. Units, build item transforms, components and the Production extension are supported. Each build item becomes one object; objects of type "other" are not imported. The objects of one file keep their layout, centered on the origin at Z = 0.
+3MF files are parsed in the Web Worker with fflate (ZIP decompression; the archive is read from its central directory by ZipReader.ts and each part is decompressed by chunks, stopped at its declared size) and fast-xml-parser (XML), not with the 3MFLoader of three.js. Units, build item transforms, components and the Production extension are supported. Each build item becomes one object; objects of type "other" are not imported. The objects of one file keep their layout, centered on the origin at Z = 0.
 
 Rationale:
 

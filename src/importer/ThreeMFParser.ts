@@ -7,7 +7,7 @@
  * runs in the import Web Worker (ADR-029, ADR-030) and in tests.
  *
  * Libraries (TECH_STACK.md, 3MF Support; ADR-030):
- * - fflate: reads the ZIP archive;
+ * - fflate: decompresses the parts of the ZIP archive (ZipReader.ts);
  * - fast-xml-parser: checks that each XML part is well-formed
  *   (XMLValidator), then reads it. Each tag is handled when it is opened
  *   (updateTag) and is not kept, so a large model never builds an XML
@@ -31,7 +31,9 @@
  * Security (SECURITY_SPEC.md, 3MF Validation, 3MF Rejection Conditions,
  * Archive Extraction Limits):
  * - only the parts needed (.rels, .model, [Content_Types].xml) are
- *   decompressed, each one limited in size before decompression (zip bomb);
+ *   decompressed, each one limited in size before decompression, and the
+ *   decompression stops as soon as a part is larger than its declared
+ *   size (zip bomb, ZipReader.ts);
  * - a DOCTYPE is refused (no entity expansion), entities are not processed;
  * - the number of triangles produced is limited (an object reused by
  *   many build items or components);
@@ -54,10 +56,10 @@
  */
 
 import { XMLParser, XMLValidator } from "fast-xml-parser";
-import { unzipSync, type UnzipFileInfo } from "fflate";
 
 import { ImportError } from "./ImportError";
 import { TriangleCollector, type TriangleData } from "./StlParser";
+import { extractZipParts, readZipDirectory } from "./ZipReader";
 
 /** One object of the 3MF file (one build item), millimeters */
 export interface ThreeMFObject extends TriangleData {
@@ -152,8 +154,9 @@ export function parse3mf(
   buffer: ArrayBuffer,
   onProgress: ParseProgress = () => {},
 ): ThreeMFParseResult {
-  const parts = unzip(new Uint8Array(buffer));
-  onProgress(UNZIP_SHARE);
+  const parts = unzip(new Uint8Array(buffer), (fraction) =>
+    onProgress(UNZIP_SHARE * fraction),
+  );
 
   if (!parts.has(partKey("[Content_Types].xml"))) {
     throw new ImportError("MF_002", "Missing part [Content_Types].xml.");
@@ -268,65 +271,35 @@ export function parse3mf(
 }
 
 /**
- * Decompresses the parts needed, after checking their declared sizes.
- * fflate never writes more than the declared size of a part.
+ * Decompresses the parts needed (ZipReader.ts): sizes from the central
+ * directory, limits checked before decompression, decompression stopped
+ * as soon as a part is larger than its declared size.
  */
-function unzip(data: Uint8Array): Map<string, Uint8Array> {
-  // Local file header signature "PK\x03\x04"
-  if (
-    data.length < 4 ||
-    data[0] !== 0x50 ||
-    data[1] !== 0x4b ||
-    data[2] !== 0x03 ||
-    data[3] !== 0x04
-  ) {
-    throw new ImportError("MF_002", "The file is not a ZIP archive.");
-  }
+function unzip(
+  data: Uint8Array,
+  onProgress: ParseProgress,
+): Map<string, Uint8Array> {
+  const entries = readZipDirectory(data);
 
-  let total = 0;
-  let tooLarge: ImportError | undefined;
+  const files = extractZipParts(
+    data,
+    entries,
+    (name) => {
+      const lower = name.toLowerCase();
 
-  const wanted = (file: UnzipFileInfo): boolean => {
-    const name = file.name.toLowerCase();
-
-    if (
-      !name.endsWith(".rels") &&
-      !name.endsWith(".model") &&
-      name !== "[content_types].xml"
-    ) {
-      return false;
-    }
-
-    const size = Math.max(file.originalSize, file.size);
-    total += size;
-
-    if (size > MAX_PART_BYTES || total > MAX_TOTAL_BYTES) {
-      tooLarge ??= new ImportError(
-        "MF_004",
-        `Decompressed size over the limit (part ${file.name}: ${size} bytes).`,
+      return (
+        lower.endsWith(".rels") ||
+        lower.endsWith(".model") ||
+        lower === "[content_types].xml"
       );
-    }
-
-    return tooLarge === undefined;
-  };
-
-  let files: Record<string, Uint8Array>;
-
-  try {
-    files = unzipSync(data, { filter: wanted });
-  } catch (error) {
-    throw corrupted(
-      `Corrupted archive: ${error instanceof Error ? error.message : String(error)}.`,
-    );
-  }
-
-  if (tooLarge) {
-    throw tooLarge;
-  }
+    },
+    { maxPartBytes: MAX_PART_BYTES, maxTotalBytes: MAX_TOTAL_BYTES },
+    onProgress,
+  );
 
   const parts = new Map<string, Uint8Array>();
 
-  for (const [name, bytes] of Object.entries(files)) {
+  for (const [name, bytes] of files) {
     parts.set(partKey(name), bytes);
   }
 

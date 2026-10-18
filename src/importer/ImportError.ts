@@ -38,6 +38,17 @@ export class ImportError extends Error {
   }
 }
 
+/**
+ * The import was cancelled by the user (Cancel button): not an error,
+ * no code, no message.
+ */
+export class ImportCancelledError extends Error {
+  constructor() {
+    super("Import cancelled.");
+    this.name = "ImportCancelledError";
+  }
+}
+
 export function isImportErrorCode(value: unknown): value is ImportErrorCode {
   return (
     typeof value === "string" &&

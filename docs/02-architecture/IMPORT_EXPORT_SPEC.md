@@ -665,7 +665,7 @@ Codes of ERROR_CODES_SPEC.md used by the import (src/importer/StlParser.ts, Thre
 | STL_004 | Reserved, not used: no STL format has a version |
 | MF_001 | The file could not be read (read failure) |
 | MF_002 | Empty file; not a ZIP archive; [Content_Types].xml or _rels/.rels missing; no 3D model relationship, or its part missing |
-| MF_003 | Corrupted archive; invalid XML or UTF-8; DOCTYPE; no model element; invalid number, vertex index or transform; unknown unit; object or model part not found; component cycle or nesting deeper than 32; no build item; no triangle |
+| MF_003 | Corrupted archive (part larger than its declared size, encrypted part, unknown compression method, duplicate part); invalid XML or UTF-8; DOCTYPE; no model element; invalid number, vertex index or transform; unknown unit; object or model part not found; component cycle or nesting deeper than 32; no build item; no triangle |
 | MF_004 | 3MF content over the archive extraction limits (SECURITY_SPEC.md, Archive Extraction Limits) |
 
 Every import refusal has a code of ERROR_CODES_SPEC.md (KI-018 resolved in 0.1.44).
@@ -679,6 +679,8 @@ The GUI shows a translated message for each code (import.error.<code>), never th
 The import runs in the renderer; the file is parsed in a Web Worker (DECISIONS.md, ADR-029). Each file shows its progress (reading, then analyzing), then a short confirmation or its error message.
 
 Several files can be chosen or dropped at once; they are imported one after the other.
+
+An import waiting or in progress can be cancelled (Cancel): the reading is aborted or the parser worker is terminated at once, nothing is added to the scene, and the next file starts.
 
 An imported object is centered on the origin and placed on the build plate (lowest point at Z = 0, ADR-028, ADR-029). Objects may overlap.
 

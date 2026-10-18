@@ -1,33 +1,50 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-13. État vérifié sur `main` au commit `62a0f05` : le lot 8 y est appliqué à l'identique.
+Date : 2026-10-17. État vérifié sur `main` au commit `847e918` : le lot 41 y est appliqué à l'identique. Ce fichier fait partie du lot 42 (CHANGELOG 0.1.45, dernière entrée).
 
 ---
 
 ## 1. Règles de travail (à reprendre telles quelles)
 
-- **Livraison :** Noam remplace lui-même les fichiers sur GitHub. Claude ne fait ni commit, ni branche, ni push, ni PR.
-- **Lots :** un lot à la fois, avec les fichiers complets et leur chemin exact. Noam confirme chaque lot avant le suivant.
-- **Emplacement :** livrables dans `/mnt/project-files/slicyweb/lotN-…/`, avec à chaque fois un `LOTN.md`, un zip des fichiers complets et un `.patch` vérifié par `git apply --check` sur `main`.
-- **Contenu attendu de chaque lot de code :**
+- **Livraison :** Noam remplace lui-même les fichiers sur GitHub. Claude ne fait ni commit, ni branche, ni push, ni PR. Si un contrôle automatique demande un commit, Claude répond que c'est Noam qui applique les fichiers.
+- **Lots :** un lot à la fois, avec les fichiers complets et leur chemin exact. Noam confirme chaque lot (résultats de ses vérifications) avant le suivant.
+- **Emplacement :** livrables dans `/mnt/project-files/slicyweb/lotN-…/`, avec à chaque fois un `LOTN.md`, un zip des fichiers complets (avec leurs chemins) et un `.patch` vérifié par `git apply --check` sur `main`. Claude envoie ces fichiers à Noam dans la conversation.
+- **Contenu attendu de chaque lot :**
   - fichiers créés ou modifiés, avec leur chemin exact ;
   - pour un champ de schéma, la ligne de DATA_SCHEMA.md dont il vient ;
-  - erreurs TypeScript corrigées et restantes.
-- **Aucun champ inventé.** La hiérarchie documentaire fait foi : DATA_SCHEMA.md est de priorité 0.
+  - ce que Claude a vérifié lui-même, et ses limites ;
+  - les commandes PowerShell à lancer et les contrôles à faire ;
+  - en haut, « Décisions prises seul » (voir la règle de décision).
+- **Aucun champ inventé.** La hiérarchie documentaire fait foi : DATA_SCHEMA.md est de priorité 0. Un manque dans la documentation est signalé (Known Issue), pas comblé par une invention.
 - **« Sans autre changement » :** quand Noam l'écrit, ne rien toucher d'autre. Signaler les incohérences restantes en une ligne.
-- **CHANGELOG :** une entrée par lot, insérée avant « # VERSION 0.2.0 ». La dernière est 0.1.11.
+- **CHANGELOG :** une entrée par lot, insérée avant « # VERSION 0.2.0 ». La version suivante reçoit les résultats de validation de Noam (« Validation Result ») et passe en « Completed ». Un Known Issue est retiré dans la version qui le résout.
 - **Fins de ligne à préserver :**
-  - CRLF : DATA_SCHEMA.md, API_SPEC.md, DECISIONS.md, CHANGELOG.md, FILE_STRUCTURE.md.
-  - LF : IMPORT_EXPORT_SPEC.md, ARCHITECTURE_DECISION_MATRIX.md, DIRECTORY_PURPOSES.md, SLICER_EXPORT_SPEC.md et tout `src/`.
+  - CRLF : CHANGELOG.md, DECISIONS.md, PHASES_IMPLEMENTATION_PLAN.md, FILE_STRUCTURE.md, DATA_SCHEMA.md, API_SPEC.md, GUI_SPEC.md, SECURITY_SPEC.md, TECH_STACK.md, USER_SETTINGS_SPEC.md, ERROR_CODES_SPEC.md.
+  - LF : DIRECTORY_PURPOSES.md, DOMAINS_DEPENDENCY_MATRIX.md, ARCHITECTURE_DECISION_MATRIX.md, IMPORT_EXPORT_SPEC.md, SLICER_EXPORT_SPEC.md, PASSATION.md et tout `src/`.
+  - En cas de doute, garder les fins de ligne du fichier existant.
 - **Langue :** réponses en français.
 - **Poste de Noam :** Windows 11. Toutes les commandes et les scripts `package.json` doivent fonctionner dans PowerShell, sans commande propre à Mac ou Linux.
-- **Pas de `git status` chez Noam :** son dossier local n'est pas un dépôt git. Pour connaître les fichiers créés ou modifiés par un outil (par exemple `npx shadcn add …`), lui donner cette commande PowerShell, à lancer depuis le dossier du projet (remplacer `-30` par le nombre de minutes écoulées) :
+- **Vérifications habituelles chez Noam :**
+
+  ```powershell
+  npm run check:locales
+  npm run check:ipc
+  npm run typecheck
+  npm run lint
+  npm run dev
+  npm run build
+  npm start
+  ```
+
+- **Ne jamais lancer `npm audit fix --force`** (KI-013).
+- **Pas de `git status` chez Noam :** son dossier local n'est pas un dépôt git. Ne jamais le lui demander. Pour connaître les fichiers créés ou modifiés par un outil (par exemple `npx shadcn add …`), lui donner cette commande PowerShell, à lancer depuis le dossier du projet (remplacer `-30` par le nombre de minutes écoulées) :
 
   ```powershell
   Get-ChildItem -Path . -Exclude node_modules,dist,.git | Get-ChildItem -Recurse -File -ErrorAction SilentlyContinue | Where-Object LastWriteTime -gt (Get-Date).AddMinutes(-30) | ForEach-Object { Resolve-Path -Relative $_.FullName }
   ```
 
-- **Envoi sur GitHub par le site web :** l'envoi ne garde pas toujours les chemins des dossiers (lot 32 : fichiers posés à la racine). Après chaque envoi, Claude compare `main` avec le lot, fichier par fichier, avant de continuer.
+- **Envoi sur GitHub par le site web :** l'envoi ne garde pas toujours les chemins (lot 32 : fichiers posés à la racine ; lot 38 : fichiers manquants). Noam glisse les **dossiers** du zip (`docs`, `src`, `public`…), pas des fichiers seuls. Après chaque envoi, Claude compare `main` avec le lot, fichier par fichier, avant de continuer.
+- **Nouvelles dépendances npm :** Noam les installe lui-même (`npm install paquet@version`), puis envoie `package.json` et `package-lock.json`. Le zip ne contient pas `package.json` dans ce cas.
 - **Règle de décision (Noam, 2026-10-17) :** Claude peut appliquer lui-même l'option « Recommandé » sans demander, **sauf** si la question touche :
   1. le format des données ou des fichiers (DATA_SCHEMA, WYPROJ, export slicer) ;
   2. la sécurité (IPC, CSP, accès aux fichiers) ;
@@ -36,89 +53,200 @@ Date : 2026-10-13. État vérifié sur `main` au commit `62a0f05` : le lot 8 y e
   5. une contradiction entre deux documents de même priorité.
 
   Dans ces cas, Claude pose la question comme avant. Dans chaque lot, le `LOTN.md` liste en haut « Décisions prises seul » : la question, l'option choisie et une ligne de justification, pour que Noam puisse les relire et les annuler.
+- **Clôture de phase :** une phase passe en « Completed » avec le résultat des contrôles de Noam. Si un contrôle échoue ensuite, elle repasse en « In Progress ».
 
 ---
 
 ## 2. État actuel
 
-- **Phase 0 (Foundation) :** pas formellement close. CHANGELOG 0.1.0 est encore « Planned » et le statut de PHASES_IMPLEMENTATION_PLAN.md n'est pas mis à jour.
-- **Phase 1 (Project Bootstrap) :** le plan est approuvé (`plan-phase1-bootstrap.md`), mais les fichiers d'outillage ne sont pas encore créés : package.json, tsconfig, vite.config.ts, etc.
-- **Format WYPROJ :** documentation et code alignés sur DATA_SCHEMA.md 2.2.0 (option 1), pour le type `Project` comme pour la couche `src/project/`.
-- **Erreurs TypeScript :** `tsc --strict` est lancé sur une copie hors dépôt, faute d'outillage. On est passé de 21 erreurs à **10**, toutes hors projet :
-  - `classification_engine/ClassificationEngine.ts`
-  - `cost_engine/CostCalculator.ts`
-  - `gui/panels/RecommendationPanel.tsx`
-  - `i18n/LocalizationService.ts`
-  - `notifications/NotificationFactory.ts`
-  - `optimization_engine/ClassificationEngine.ts`
-  - `optimization_engine/OptimizationEngine.ts` (2 erreurs)
-  - `preset_engine/PresetManager.ts` (2 erreurs)
-- **Versions des documents :**
-  - DATA_SCHEMA.md 2.2.0
-  - IMPORT_EXPORT_SPEC.md 2.2.0
-  - API_SPEC.md 2.1.0, alors qu'il devrait être 3.0.0 (voir §5)
-  - SLICER_EXPORT_SPEC.md 1.0.0
-  - ARCHITECTURE_DECISION_MATRIX.md 2.1.0
-  - Format WYPROJ 2.0.0
+### Phases techniques (PHASES_IMPLEMENTATION_PLAN.md)
+
+| Phase | Contenu | État | CHANGELOG |
+|---|---|---|---|
+| 0 | Foundation | Completed (2026-10-14) | 0.1.23 |
+| 1 | Project Bootstrap | Completed (2026-10-14) | 0.1.22 |
+| 2 | Core Dependencies | Completed (2026-10-14) | 0.1.29 |
+| 3 | GUI Foundation | Completed (2026-10-15) | 0.1.35 |
+| 4 | 3D Viewport | Completed (2026-10-16) | 0.1.37 |
+| 5 | Model Import | Completed (2026-10-17) | 0.1.44 |
+| 6 | Transform System | **Prochaine** | — |
+| 7 à 16 | Printer Database, Material Database, Model Analysis, Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
+
+### Ce que fait l'application aujourd'hui
+
+- **Fenêtre :** Electron avec React ; barre de menus (9 menus de GUI_SPEC) ; barre d'outils (11 boutons) ; panneaux latéraux redimensionnables et repliables ; barre d'état ; thème sombre.
+- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 241 clés de traduction.
+- **Vue 3D :**
+  - repère en mm, X à droite, Y vers l'arrière, Z vers le haut, origine au centre du plateau (ADR-028) ;
+  - grille adaptative et axes ;
+  - caméras perspective et orthographique, 7 vues prédéfinies, Home ;
+  - pas de plateau tant qu'aucune imprimante n'est choisie (phase 7).
+- **Import :**
+  - STL (binaire et texte) et 3MF ;
+  - par File > Import, le bouton Import ou le glisser-déposer ;
+  - analyse dans un Web Worker, avec une barre de progression et un bouton Annuler ;
+  - objets centrés à Z = 0 ; un 3MF garde la disposition de ses objets ;
+  - messages d'erreur traduits, avec les codes d'ERROR_CODES_SPEC.
+- **Pas encore possible :** déplacer, tourner ou mettre à l'échelle les objets (phase 6). Les objets importés se superposent au centre.
+- **Sécurité :**
+  - liste blanche des canaux IPC dans le preload (22 canaux, `npm run check:ipc`) ;
+  - politique de sécurité du contenu (CSP) stricte dans l'application compilée, et adaptée en développement ;
+  - lecture des 3MF par le répertoire central de l'archive, limites de décompression, décompression arrêtée dès qu'une partie dépasse sa taille annoncée (bombes zip).
+
+### Outils et versions (package.json)
+
+- Electron 44, Vite 8.3 (`vite.config.mts`, vite-plugin-electron), React 18, TypeScript 6, Zod 3.25, Zustand 5, Three.js 0.186.
+- Tailwind CSS 4, shadcn/ui (Base UI, style base-nova, `rtl: true`), Lucide 1.56, react-resizable-panels 4.14.
+- Polices Inter et Noto Sans Hebrew (Fontsource).
+- fflate 0.8.3 et fast-xml-parser 5.11.2 (lecture des 3MF).
+
+### Versions des documents
+
+| Document | Version |
+|---|---|
+| DATA_SCHEMA.md | 3.2.0 |
+| Format WYPROJ | 3.0.0 (les fichiers 2.0.0 sont refusés) |
+| IMPORT_EXPORT_SPEC.md | 3.0.0 |
+| ERROR_CODES_SPEC.md | 2.1.0 |
+| ARCHITECTURE_DECISION_MATRIX.md | 2.3.0 |
+| API_SPEC.md | 2.1.0 (voir §5, points en attente) |
+| SLICER_EXPORT_SPEC.md | 1.0.0 |
+| Dernier ADR | ADR-030 ; dernier ADM : ADM-026 |
 
 ---
 
 ## 3. Lots appliqués
 
+Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux des lots 1 à 8 n'y sont plus.
+
 | Lot | Contenu | CHANGELOG |
 |---|---|---|
-| 1 | En-têtes « Based on » de 20 fichiers `src/` : les specs inexistantes (STARTUP_SPEC, CONFIG_SPEC, EVENT_SPEC, SCENE_SPEC, OBJECT_MANAGEMENT_SPEC, UTILS_SPEC, I18N_SPEC) sont remplacées par des documents existants. Seules ces lignes ont changé. | — |
-| 2 | Analyse seule, sans livraison : options de structure WYPROJ (`lot2-options-wyproj.md`) et proposition ADR-026 (`lot2-proposition-objectid-adr026.md`). | — |
-| 3 + 3c | Documentation : DATA_SCHEMA 2.1.0 (objectId, analysisId, status, Object Reference Rules 1 à 10), API_SPEC, IMPORT_EXPORT_SPEC 2.2.0 aligné sur DATA_SCHEMA, ADR-026 dans DECISIONS.md, ADM-021 dans la matrice, contrôles de scène dans SLICER_EXPORT_SPEC (Validation Rules). Le lot 3c a corrigé 3 fichiers (phrase de l'ADR-026, précision CHANGELOG, SLICER_EXPORT_SPEC). Le lot 3b, remplacé par 3c, n'a pas été appliqué. | 0.1.6 |
-| 4 | Création de `src/schemas/ProjectSchema.ts` (Zod v3) : Project Schema, Project File Schema, règles 3 à 5. Débloque la compilation d'Electron (`ProjectIPC.ts`). FILE_STRUCTURE et DIRECTORY_PURPOSES mis à jour. | 0.1.7 |
-| 5 | `null` = « pas encore choisi » pour printer, material, filament et preset (projet et scène). Note « Known Duplication » ajoutée. DATA_SCHEMA 2.2.0 et ProjectSchema.ts adaptés. | 0.1.8 |
-| 6 | `src/types/Project.ts` réécrit selon le Project Schema. `ProjectService.createProject` complété. 10 erreurs TS corrigées (ProjectService, RecoveryValidator, SessionRestorer). | 0.1.9 |
-| 7 | Couche `src/project/` : `ProjectState` est remplacé par `Project` dans les 6 fichiers. Le validateur utilise ProjectSchema. Le `metadata` de l'enveloppe se réduit à `{ application }`. Nom de fichier construit à partir de `projectName`. ProjectService passe en version `"2.0.0"` et délègue la sérialisation à la couche Project. | 0.1.10 |
-| 8 | Nom de fichier WYPROJ : NFC, lettres et marques de toutes les langues, noms réservés Windows préfixés par `_`, limite de 60 caractères. Les caractères interdits, de contrôle et RTL étaient déjà retirés au lot 7. | 0.1.11 |
+| 1 | En-têtes « Based on » de 20 fichiers `src/` : les specs inexistantes sont remplacées par des documents existants | — |
+| 2 | Analyse seule : options de structure WYPROJ et proposition ADR-026 | — |
+| 3 + 3c | DATA_SCHEMA 2.1.0 (objectId, analysisId, status, Object Reference Rules), IMPORT_EXPORT_SPEC 2.2.0, ADR-026 | 0.1.6 |
+| 4 | `src/schemas/ProjectSchema.ts` (Zod v3) | 0.1.7 |
+| 5 | `null` = « pas encore choisi » pour imprimante, matériau, filament, preset | 0.1.8 |
+| 6 | `src/types/Project.ts` selon le Project Schema | 0.1.9 |
+| 7 | Couche `src/project/` sur `Project` ; nom de fichier WYPROJ | 0.1.10 |
+| 8 | Nom de fichier WYPROJ : NFC, toutes les langues, noms réservés Windows | 0.1.11 |
+| 9 | ProjectManager seul créateur de projet | 0.1.12 |
+| 10 | Analysis / Recommendation par objet (ADR-026) | 0.1.13 |
+| 11 | Section Known Issues du CHANGELOG (KI-001 à KI-004) | 0.1.14 |
+| 12 | ADR-025 : outillage et versions | 0.1.15 |
+| 13 | Outillage de la phase 1 : package.json, tsconfig, Vite, ESLint, Prettier, Electron | 0.1.16 |
+| 14 | Compatibilité Windows 11 (PowerShell, fins de ligne Prettier) | 0.1.17 |
+| 15 | `vite.config.mts` ; KI-005 | 0.1.18 |
+| 16 | Recommendation alignée sur DATA_SCHEMA (KI-001, KI-002) | 0.1.19 |
+| 17 | Infill au niveau du profil ; preset de DecisionEngine | 0.1.20 |
+| 18 | KI-005 : erreurs TypeScript et ESLint corrigées | 0.1.21 |
+| 19 | Clôture de la phase 1 | 0.1.22 |
+| 20 | Fin de KI-006, DATA_SCHEMA 3.0.0 (catégories), clôture de la phase 0 | 0.1.23 |
+| 21 | WYPROJ 3.0.0 (ADR-027), refus des fichiers 2.0.0 ; KI-009 à KI-012 | 0.1.24 |
+| 22 | KI-003 : validation complète des analyses et recommandations au chargement | 0.1.25 |
+| 23 | KI-004 : Object Reference Rules 6 à 9 | 0.1.26 |
+| 24 | KI-009 : vitesses limitées par la vitesse du preset | 0.1.27 |
+| 25 | Phase 2, partie 1 : Tailwind CSS 4, Lucide | 0.1.28 |
+| 26 | shadcn/ui ; clôture de la phase 2 | 0.1.29 |
+| 27 | shadcn en dépendance de développement ; KI-013 (npm audit, braces) | 0.1.30 |
+| 28 | Phase 3, partie 1 : base des traductions | 0.1.31 |
+| 29 | Langue enregistrée dans les réglages | 0.1.32 |
+| 30 | Mise en page, panneaux, thème sombre, police hébraïque | 0.1.33 |
+| 31 | Barre de menus et barre d'outils | 0.1.34 |
+| 32 | Droite à gauche dans les composants shadcn ; clôture de la phase 3 | 0.1.35 |
+| 33 | Vue 3D (ADR-028) | 0.1.36 |
+| 34 | Clôture de la phase 4 ; limite d'avertissement de taille du bundle | 0.1.37 |
+| 35 | KI-016 : liste blanche des canaux IPC, `check:ipc` | 0.1.38 |
+| 36 | Politique de sécurité du contenu (CSP) | 0.1.39 |
+| 37 | Polices refusées par la CSP dans l'application compilée | 0.1.40 |
+| 38 | Phase 5 : décisions d'import (ADR-029) ; KI-014 réglé | 0.1.41 |
+| 39 | Import STL | 0.1.42 |
+| 40 | Import 3MF (ADR-030) | 0.1.43 |
+| 41 | KI-018 (codes IMP_001, IMP_002, MF_004) ; clôture de la phase 5 ; règle de décision | 0.1.44 |
+| 42 | Revue externe : lecteur ZIP (bombe à en-tête mensonger, bit 3), bouton Annuler ; PASSATION.md réécrit | 0.1.45 |
 
 ---
 
 ## 4. Décisions prises par Noam
 
-1. **Structure WYPROJ : option 1**, alignée sur DATA_SCHEMA.md (priorité 0). L'enveloppe est `{format, version, project, metadata}` et le projet est à plat.
+**Données et projets**
+
+1. **Structure WYPROJ : option 1**, alignée sur DATA_SCHEMA.md (priorité 0). L'enveloppe est `{format, version, project, metadata}` et le projet est à plat. Format 3.0.0 depuis ADR-027 ; les fichiers 2.0.0 sont refusés.
 2. **ADR-026 :** analyses et recommandations par objet, indexées par `objectId`. Rotation et échelle rendent les résultats `outdated`, pas un simple déplacement. Les contrôles de scène (volume d'impression, collisions) sont refaits avant chaque export.
-3. **Sélections non choisies :** `null`. La règle vaut aussi pour `scene.printer`, `scene.material`, `scene.filament` et `scene.preset`.
-4. **Duplication projet/scène des 4 sélections :** connue et documentée, à résoudre dans un lot ultérieur, pas maintenant.
-5. **Copies de classification dans `src/optimization_engine/` :** elles restent (documentées dans DIRECTORY_PURPOSES).
-6. **Specs manquantes :** ne pas en créer. Les en-têtes « Based on » pointent vers des documents existants (lot 1).
-7. **Outillage (à consigner dans l'ADR-025, pas encore écrit) :** Vite avec `vite-plugin-electron`, React 18, Zod dès la phase 1, en version 3.25.x (le code utilise l'API v3 : `.passthrough()`, `z.ZodIssueCode`).
-8. **Erreurs TypeScript : réponse A.** On ne corrige que les erreurs bloquantes. Les 10 erreurs hors projet viennent dans un lot séparé, après l'outillage typecheck.
-9. **Ordre des lots :** la couche Project passe avant les erreurs hors projet (fait au lot 7).
-10. **Nom de fichier :** lettres de toutes les langues acceptées (lots 7 et 8).
-11. **Création de projet :** ProjectManager doit être le seul créateur, et ProjectService lui délègue (règle Project Management de CLAUDE.md).
+3. **Sélections non choisies :** `null`, aussi pour `scene.printer`, `scene.material`, `scene.filament` et `scene.preset`.
+4. **Duplication projet/scène des 4 sélections dans DATA_SCHEMA :** connue et documentée (« Known Duplication »), source de vérité encore à choisir.
+5. **Nom de fichier WYPROJ :** lettres de toutes les langues acceptées (lots 7 et 8).
+6. **Création de projet :** ProjectManager est le seul créateur ; ProjectService lui délègue.
+7. **Copies de classification dans `src/optimization_engine/` :** elles restent (documentées dans DIRECTORY_PURPOSES).
+8. **Specs manquantes :** ne pas en créer ; les en-têtes « Based on » pointent vers des documents existants.
+
+**Outillage (ADR-025)**
+
+9. Vite avec `vite-plugin-electron`, React 18, Zod 3.25.x, TypeScript strict. Limite d'avertissement de taille du bundle : 1500 ko (choix A, Three.js dans le bundle).
+
+**Interface**
+
+10. Langue enregistrée dans les réglages et rechargée au démarrage. Police hébraïque assortie : Noto Sans Hebrew. Droite à gauche par la migration `shadcn migrate rtl`.
+
+**Vue 3D (ADR-028)**
+
+11. Repère en mm, Z vers le haut, origine au centre du plateau. Pas de plateau sans imprimante choisie. Menu View complet (projections, 7 vues, Reset View).
+
+**Dépendances entre domaines (DOMAINS_DEPENDENCY_MATRIX.md)**
+
+12. GUI → Internationalization ; GUI → Viewport (Viewport ne dépend plus de GUI) ; Import → Scene (Scene ne dépend plus d'Import) ; Service → Import (ImportService).
+
+**Sécurité**
+
+13. Liste blanche des canaux IPC et désabonnement pour `on()` (KI-016, lot 35).
+14. CSP stricte pour l'application compilée, adaptée pour `npm run dev` (lot 36). Aucun fichier compilé intégré en `data:` (lot 37).
+
+**Import (ADR-029, ADR-030)**
+
+15. Sélection : un store par domaine (`objectStore.selectedObjectId`, `printerStore`, `materialStore`, `filamentStore`, `presetStore`) ; `appStore` supprimé (KI-014).
+16. Fichiers lus dans l'interface (fenêtre de choix, glisser-déposer), analysés dans un Web Worker avec progression ; aucun chemin de fichier par l'IPC.
+17. Objets centrés sur l'origine, posés à Z = 0 ; chevauchements permis.
+18. 3MF : fflate + fast-xml-parser dans le Worker (pas le 3MFLoader de Three.js) ; unités, transformations, composants, extension Production ; limites de décompression ; la disposition du 3MF est gardée. Archive lue par le répertoire central (`ZipReader.ts`) et décompression arrêtée à la taille annoncée, après revue externe (lot 42).
+19. Bouton Annuler pour chaque import (lot 42).
+20. Codes d'erreur : IMP_001, IMP_002, MF_004 ajoutés ; STL_004 réservé (KI-018).
+
+**Méthode**
+
+21. Règle de décision (§1) : l'option « Recommandé » peut être appliquée sans demander, hors des 5 cas listés.
 
 ---
 
 ## 5. Travail restant, dans l'ordre
 
-1. **Lot 9 : création de projet unique.** `ProjectService.createProject` délègue à `ProjectManager.createProject`, qui reste le seul à construire un projet. C'est la prochaine étape demandée par Noam.
-2. **Lot Analysis / Recommendation (ADR-026).**
-   - Ajouter `analysisId`, `objectId` et `status` aux types `Analysis` et `Recommendation` ainsi qu'à leurs schémas Zod (AnalysisSchema, RecommendationSchema).
-   - Passer les stores d'un résultat unique à des résultats par objet.
-   - D'ici là, tout projet contenant des analyses est refusé au chargement.
-3. **ADR-025 :** consigner l'outillage (décision 7) dans DECISIONS.md et ARCHITECTURE_DECISION_MATRIX.md, puis mettre à jour TECH_STACK.md et FILE_STRUCTURE.md.
-4. **Phase 1, bootstrap**, selon `plan-phase1-bootstrap.md` :
-   - fichiers à créer : package.json, tsconfig(s), vite.config.ts, index.html, src/gui/main.tsx, configs ESLint et Prettier, .env.example, electron-builder.json (ce dernier éventuellement reporté) ;
-   - documents à mettre à jour : FILE_STRUCTURE (« Planned Items »), DIRECTORY_PURPOSES, README, CONTRIBUTING, PHASES_IMPLEMENTATION_PLAN.
-5. **Les 10 erreurs TypeScript hors projet**, une fois `npm run typecheck` disponible.
-6. **Points signalés, en attente d'une décision de Noam :**
-   - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (VERSIONING_POLICY).
-   - SLICER_EXPORT_SPEC.md : version restée en 1.0.0, pas de code d'erreur pour les contrôles de scène (proposés : EXP_013 hors volume, EXP_014 collision), et le CHANGELOG ne mentionne pas ce document.
-   - Duplication projet/scène des 4 sélections (décision 4) : choisir la source de vérité.
-   - `WYPROJImporter` ne vérifie pas la `version` de l'enveloppe, et `author` n'est jamais écrit dans `metadata`.
-   - Clôture formelle de la phase 0 (CHANGELOG 0.1.0, PHASES_IMPLEMENTATION_PLAN).
-   - README : liste des phases désalignée de ROADMAP 2.1.0 ; ambiguïté sur Undo/Redo (ROADMAP phase 0, plan technique phase 6).
-   - Fichiers d'emplacement mal nommés (`README.me`, `readme.me`, `readme`) ; texte en dur dans `App.tsx` (à traiter en phase 3, i18n).
+1. **Phase 6 : Transform System** (déplacement, rotation, échelle des objets).
+   - D'abord **KI-017** : l'unité (degrés ou radians) et l'ordre des rotations dans le Transform Schema de DATA_SCHEMA. C'est un format de données : il faut poser la question à Noam.
+   - KI-015 : ViewportToolbar et ViewportStatus contiennent du texte en dur, à traduire quand la phase 6 les affiche.
+2. **Phases 7 à 16**, dans l'ordre du plan technique.
+3. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
+
+   | KI | Sujet | À régler avant |
+   |---|---|---|
+   | KI-007 | Réponse de Generate Recommendation différente du Recommendation Schema | Implémentation de l'API Recommendation |
+   | KI-008 | Limites de l'imprimante et du matériau non appliquées au profil recommandé | Phase 14 |
+   | KI-013 | npm audit : 7 alertes « high » (braces, via shadcn) ; ne pas lancer `npm audit fix --force` | Phase 16 |
+   | KI-015 | Composants inutilisés avec du texte en dur | Phase qui affiche chaque composant (6, puis 7 à 10) |
+   | KI-017 | Unité et ordre des rotations | Phase 6 |
+   | KI-019 | 3MF Bambu à plusieurs plateaux : objets éloignés | Phase 14 |
+   | KI-020 | Noms d'objets et métadonnées du 3MF non gardés (aucun champ dans DATA_SCHEMA) | Phase 13 |
+
+4. **Points signalés, en attente d'une décision de Noam :**
+   - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (lié à KI-007).
+   - SLICER_EXPORT_SPEC.md : version restée en 1.0.0, pas de code d'erreur pour les contrôles de scène (proposés : EXP_013 hors volume, EXP_014 collision).
+   - Duplication projet/scène des 4 sélections dans DATA_SCHEMA (décision 4) : choisir la source de vérité.
+   - `WYPROJExporter` : le champ `author` de `metadata` n'est jamais rempli.
+   - README.md : il indique encore « Current Phase: Phase 0 » et une liste des phases qui ne suit pas ROADMAP ; ambiguïté sur Undo/Redo (ROADMAP phase 0, plan technique phase 6).
+   - Fichiers d'emplacement mal nommés (`README.me`, `readme.me`, `readme`) dans `assets/`, `data/`, `cache/`, `.github/workflows/`.
 
 ---
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `plan-phase1-bootstrap.md` : état de la phase 0, ordre de lecture, chemin court, plan de la phase 1.
-- `lot2-options-wyproj.md`, `lot2-proposition-objectid-adr026.md` : analyses ayant mené aux décisions 1 et 2.
-- `lot1-based-on/` à `lot8-filename/` : livrables de chaque lot. `lot3b-corrections/` est obsolète.
+- `lot9-create-project/` à `lot42-zip-reader-cancel/` : livrables de chaque lot (`LOTN.md`, zip, patch).
+- `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
+- `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
+- `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.
+- Les anciennes analyses (`plan-phase1-bootstrap.md`, `lot2-options-wyproj.md`, `lot2-proposition-objectid-adr026.md`) ne sont plus dans le dossier.

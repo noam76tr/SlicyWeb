@@ -2252,6 +2252,8 @@ TECH_STACK.md (3MF Support) named the 3MFLoader of the three.js examples.
 - Each build item becomes one object; the meshes of its components are merged into it. Objects of type "other" are not printed (3MF Core Specification): they are not imported (for example the modifier parts of Bambu Studio).
 - Placement: the objects of one 3MF file keep their layout; the group is centered on the origin and its lowest point is at Z = 0 (ADR-028, ADR-029).
 - Security: archive extraction limits (SECURITY_SPEC.md, Archive Extraction Limits); DOCTYPE refused, entities not processed.
+- Amendment (2026-10-17, CHANGELOG 0.1.45): the ZIP archive is read from its central directory by a reader of the project (src/importer/ZipReader.ts), and each part is decompressed by chunks with the Inflate stream of fflate, stopped as soon as it produces more than its declared size. fflate unzipSync stops writing at the declared size but still inflates all the data (a header that lies about the size keeps the worker busy for minutes); the streaming Unzip of fflate cuts a part with a data descriptor (flag bit 3, used by Bambu Studio) where the bytes of the data descriptor signature appear by chance, and its terminate() does nothing in synchronous mode.
+- An import can be cancelled by the user: the reading is aborted or the worker is terminated.
 
 ## Consequences
 

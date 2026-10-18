@@ -1621,6 +1621,42 @@ Date:
 
 - KI-018 resolved (import refusals without code in ERROR_CODES_SPEC.md)
 
+## Validation Result
+
+- Windows 11 (2026-10-17): npm run check:locales (240 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report 0 errors; a .txt file refused with "unsupported format", zip-bomb.3mf with "too large"; bambu-pa-line.3mf (8 thin lines in 2 columns), layout.3mf (3 cubes in a row, the last one raised) and cube-inch.3mf (254 mm cube) imported; files on GitHub
+
+---
+
+# VERSION 0.1.45
+
+Release Type:
+Security
+
+Status:
+In Progress
+
+Date:
+2026-10-17
+
+## Added
+
+- src/importer/ZipReader.ts: ZIP reader of the 3MF import; central directory (data descriptor, Zip64), declared sizes checked before decompression, parts decompressed by chunks of 16 kB with the Inflate stream of fflate and stopped as soon as they produce more than their declared size; encrypted parts, unknown compression methods, duplicate names and offsets outside the file refused
+- Cancel button for each import waiting or in progress (src/gui/import/ImportStatus.tsx, ImportService.cancel): the reading is aborted or the parser worker is terminated at once, nothing is added to the scene, the next file starts
+- src/importer/ImportError.ts: ImportCancelledError (cancel, not an error)
+- Locale key import.cancel (241 keys)
+- PASSATION.md rewritten: rules, current state, lots 1 to 42, decisions, remaining work
+
+## Changed
+
+- src/importer/ThreeMFParser.ts: the archive is read by ZipReader.ts instead of fflate unzipSync; progress during the decompression
+- src/importer/ImportRunner.ts, STLImporter.ts, ThreeMFImporter.ts, ImportManager.ts, src/services/ImportService.ts: cancel signal (AbortSignal)
+- DECISIONS.md (ADR-030): amendment; ARCHITECTURE_DECISION_MATRIX.md (ADM-026), TECH_STACK.md (3MF Support), SECURITY_SPEC.md (Archive Extraction Limits), IMPORT_EXPORT_SPEC.md (Import Error Codes, Import Progress And Placement), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md
+
+## Fixed
+
+- A 3MF file whose ZIP header declares a small size for a part that inflates to gigabytes was refused (MF_003) with bounded memory, but only after inflating all the data: 47 s for 3 GB, hours for larger files. It is now refused after the first chunk (0.2 s)
+- A part with a data descriptor (Bambu Studio) whose data contains the bytes of the data descriptor signature is read correctly (checked with a test file; the streaming Unzip of fflate cut it)
+
 ---
 
 # VERSION 0.2.0

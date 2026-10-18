@@ -48,6 +48,7 @@
   "import.progress.analyzing": "Analyzing {name}…",
   "import.done": "{name} imported",
   "import.dismiss": "Close",
+  "import.cancel": "Cancel",
   "import.error.STL_001": "{name}: the file could not be read.",
   "import.error.STL_002": "{name}: this is not a valid STL file.",
   "import.error.STL_003": "{name}: the STL file is corrupted.",

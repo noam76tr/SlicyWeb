@@ -34,6 +34,7 @@ export class ThreeMFImporter {
   public import(
     file: File,
     onProgress: ImportProgress = () => {},
+    signal?: AbortSignal,
   ): Promise<ThreeMFParseResult> {
     return readAndParse<ThreeMFParseResult>(
       file,
@@ -45,6 +46,7 @@ export class ThreeMFImporter {
       onProgress,
       "MF_001",
       "MF_003",
+      signal,
     );
   }
 }

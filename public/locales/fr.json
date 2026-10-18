@@ -48,6 +48,7 @@
   "import.progress.analyzing": "Analyse de {name}…",
   "import.done": "{name} importé",
   "import.dismiss": "Fermer",
+  "import.cancel": "Annuler",
   "import.error.STL_001": "{name} : le fichier n'a pas pu être lu.",
   "import.error.STL_002": "{name} : ce n'est pas un fichier STL valide.",
   "import.error.STL_003": "{name} : le fichier STL est corrompu.",

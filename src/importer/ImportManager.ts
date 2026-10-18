@@ -56,11 +56,14 @@ export class ImportManager {
   /**
    * Imports a file and registers its objects in the scene.
    * Returns the objectId of each imported object.
-   * Throws an ImportError when the file is refused.
+   * Throws an ImportError when the file is refused, and
+   * ImportCancelledError when the signal cancels the import (nothing is
+   * added to the scene).
    */
   public async importFile(
     file: File,
     onProgress: ImportProgressListener = () => {},
+    signal?: AbortSignal,
   ): Promise<string[]> {
     const fileType = this.fileValidator.getExtension(file.name);
 
@@ -90,12 +93,12 @@ export class ImportManager {
     };
 
     if (fileType === "3mf") {
-      const result = await this.threeMFImporter.import(file, progress);
+      const result = await this.threeMFImporter.import(file, progress, signal);
 
       return registerImportedObjects(file.name, fileType, result.objects);
     }
 
-    const result = await this.stlImporter.import(file, progress);
+    const result = await this.stlImporter.import(file, progress, signal);
 
     return [registerImportedObject(file.name, fileType, result)];
   }

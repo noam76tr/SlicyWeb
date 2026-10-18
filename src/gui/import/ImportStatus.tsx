@@ -6,7 +6,8 @@
  * Performance Requirements: Provide Progress Updates; GUI_SPEC.md,
  * Error Handling UI): one line per file with a progress bar, a short
  * confirmation when the import succeeds, a clear message when it
- * fails (no technical details). Errors stay until closed.
+ * fails (no technical details). Errors stay until closed. An import
+ * waiting or in progress has a Cancel button (ImportService.cancel).
  *
  * Based on:
  * - GUI_SPEC.md (Error Handling UI)
@@ -78,6 +79,16 @@ export default function ImportStatus(): JSX.Element | null {
               >
                 {text(task)}
               </p>
+
+              {running && (
+                <button
+                  type="button"
+                  className="shrink-0 rounded px-1 text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                  onClick={() => ImportService.cancel(task.taskId)}
+                >
+                  {t("import.cancel")}
+                </button>
+              )}
 
               {failed && (
                 <button

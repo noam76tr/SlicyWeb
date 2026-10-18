@@ -34,6 +34,7 @@ export class STLImporter {
   public import(
     file: File,
     onProgress: ImportProgress = () => {},
+    signal?: AbortSignal,
   ): Promise<StlParseResult> {
     return readAndParse<StlParseResult>(
       file,
@@ -45,6 +46,7 @@ export class STLImporter {
       onProgress,
       "STL_001",
       "STL_003",
+      signal,
     );
   }
 }

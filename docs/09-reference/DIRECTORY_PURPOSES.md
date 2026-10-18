@@ -443,9 +443,9 @@ Every file should be placed in the directory that matches its responsibility.
 
 | File | Role |
 |------|------|
-| `openImportDialog.ts` | Opens the system file dialog (File > Import STL, toolbar Import) and sends the chosen files to ImportService |
+| `openImportDialog.ts` | Opens the system file dialog (File > Import STL, File > Import 3MF, toolbar Import) and sends the chosen files to ImportService |
 | `ImportDropZone.tsx` | Drag and drop of files in the viewport (GUI_SPEC.md, Drag And Drop) |
-| `ImportStatus.tsx` | Progress bar, confirmation and translated error message of each import, over the viewport |
+| `ImportStatus.tsx` | Progress bar and Cancel button, confirmation and translated error message of each import, over the viewport |
 
 ---
 
@@ -614,13 +614,14 @@ Until the project owner decides otherwise:
 |------|------|
 | `FileValidator.ts` | Validates files before import (name, size, extension) |
 | `ImportError.ts` | Import error with its code of ERROR_CODES_SPEC.md (IMP_001, IMP_002, STL_001 to STL_004, MF_001 to MF_004) |
-| `ImportRunner.ts` | Shared steps of the importers: reads the file with progress, runs the parser Web Worker |
+| `ImportRunner.ts` | Shared steps of the importers: reads the file with progress, runs the parser Web Worker; cancel (AbortSignal) aborts the reading or terminates the worker |
 | `ImportManager.ts` | Import workflow: validation, format detection, parsing, scene integration; errors with codes |
 | `StlParser.ts` | Parses binary and ASCII STL files with the validation of SECURITY_SPEC.md; vertices, normals, bounds, volume, surface area |
 | `STLImporter.ts` | Reads an STL file (progress) and parses it in the Web Worker |
 | `workers/stlParser.worker.ts` | Web Worker running StlParser, with progress messages (ADR-029) |
 | `ThreeMFParser.ts` | Parses 3MF files (fflate, fast-xml-parser): units, build items, components, Production extension; archive extraction limits; one object per build item (ADR-030) |
 | `ThreeMFImporter.ts` | Reads a 3MF file (progress) and parses it in the Web Worker |
+| `ZipReader.ts` | Reads the central directory of a ZIP archive (data descriptor, Zip64) and decompresses the parts asked for, by chunks, stopped at their declared size; extraction limits (ADR-030) |
 | `workers/threeMfParser.worker.ts` | Web Worker running ThreeMFParser, with progress messages (ADR-030) |
 
 ---
@@ -990,7 +991,7 @@ Until the project owner decides otherwise:
 | `ProjectService.ts` | Project service: complete lifecycle (creation, validation, serialization) |
 | `RecommendationService.ts` | Recommendation service that delegates generation to the RecommendationEngine |
 | `StorageService.ts` | Storage service for projects, cache and user settings |
-| `ImportService.ts` | Imports the chosen files one after the other; progress and errors in the import store (ADR-029) |
+| `ImportService.ts` | Imports the chosen files one after the other; progress and errors in the import store; cancel of an import waiting or in progress (ADR-029) |
 
 ---
 

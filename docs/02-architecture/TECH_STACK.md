@@ -775,7 +775,7 @@ Primary Libraries:
 
 ```text
 
-fflate        ZIP archive
+fflate        ZIP decompression (Inflate stream)
 fast-xml-parser   XML parts
 
 ```
@@ -784,7 +784,7 @@ fast-xml-parser   XML parts
 Source:
 
 
-npm (MIT licenses), used by src/importer/ThreeMFParser.ts in the import Web Worker (ADR-030). The 3MFLoader of Three.js is not used: it needs DOMParser, which does not exist in a Web Worker.
+npm (MIT licenses), used by src/importer/ThreeMFParser.ts and src/importer/ZipReader.ts (central directory of the archive) in the import Web Worker (ADR-030). The 3MFLoader of Three.js is not used: it needs DOMParser, which does not exist in a Web Worker.
 
 
 ---

@@ -391,7 +391,7 @@ src/gui/
 ├── import/
 │   ├── openImportDialog.ts    = system file dialog for File > Import STL and the toolbar
 │   ├── ImportDropZone.tsx     = drag and drop of files in the viewport
-│   └── ImportStatus.tsx       = progress, confirmation and errors of the imports
+│   └── ImportStatus.tsx       = progress, Cancel, confirmation and errors of the imports
 ├── panels/
 │   ├── PrinterPanel.tsx
 │   ├── MaterialPanel.tsx
@@ -579,7 +579,8 @@ src/importer/
 ├── StlParser.ts               = binary and ASCII STL parser with validation (no DOM)
 ├── ThreeMFImporter.ts
 ├── ThreeMFParser.ts           = 3MF parser with fflate and fast-xml-parser (no DOM, ADR-030)
-├── ImportRunner.ts            = file reading with progress, parser worker (STL and 3MF)
+├── ZipReader.ts               = ZIP central directory, parts decompressed by chunks with limits
+├── ImportRunner.ts            = file reading with progress, parser worker, cancel (STL and 3MF)
 ├── ImportManager.ts
 ├── ImportError.ts             = import errors with their code (ERROR_CODES_SPEC.md)
 ├── FileValidator.ts
@@ -766,7 +767,7 @@ src/services/
 ├── PrinterService.ts
 ├── ProjectService.ts
 ├── RecommendationService.ts
-├── ImportService.ts           = import queue, progress and errors for the GUI (ADR-029)
+├── ImportService.ts           = import queue, progress, cancel and errors for the GUI (ADR-029)
 └── StorageService.ts
 ```
 
