@@ -66,6 +66,7 @@ SlicyWeb/
 ├── components.json            = shadcn/ui configuration (ADR-025)
 ├── tsconfig.json
 ├── vite.config.mts
+├── vitest.config.mts          = unit tests (tests/unit/), separate from vite.config.mts
 ├── electron-builder.json
 ├── eslint.config.js
 ├── prettier.config.js
@@ -535,6 +536,7 @@ src/scene/
 ├── SceneSerializer.ts
 ├── SceneValidator.ts
 ├── GeometryRegistry.ts        = triangle geometry of the objects, by objectId (ADR-029)
+├── ObjectTransform.ts         = meaning of the transform: matrix, placement on the plate, 3MF export (ADR-031)
 └── SceneIntegration.ts        = registers imported models in the scene (ADR-029, ADR-030)
 ```
 
@@ -899,6 +901,8 @@ src/utils/
 tests/
 
 ├── unit/
+│   └── scene/
+│       └── ObjectTransform.test.ts = Transform Rules (ADR-031)
 ├── integration/
 └── e2e/
 ```

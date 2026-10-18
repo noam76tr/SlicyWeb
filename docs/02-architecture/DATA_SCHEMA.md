@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.2.0
+Version: 3.3.0
 
 Status: Approved
 
@@ -1099,7 +1099,51 @@ Origin: center of the build plate, Z = 0 on the plate surface
 
 position is expressed in this coordinate system. It does not depend on the printer: the origin of the printer (PRINTER_PROFILE_SPEC.md, Build Plate Origin: Center, Front Left, Custom) is applied only when exporting to the target slicer.
 
-The unit and the order of rotation are not defined yet (CHANGELOG.md, KI-017).
+Transform Rules (DECISIONS.md, ADR-031):
+
+```text
+Local origin of an object:
+  center of the base defined at import: center of the bounding box in X and Y,
+  lowest point in Z, of the geometry as imported
+  the geometry of the object is stored relative to this point
+
+scale:
+  factors along the axes of the object (local axes), applied first
+
+rotation:
+  unit: degrees
+  sign: right-hand rule; a positive angle turns counterclockwise when seen
+        from the positive end of the axis (seen from above, +90 around Z
+        turns the X axis onto the Y axis)
+  order: around the axes of the build plate (fixed axes), first X, then Y,
+         then Z: R = Rz(z) · Ry(y) · Rx(x) (column vectors; Euler order "ZYX"
+         of Three.js)
+  pivot: the local origin of the object
+
+position:
+  place of the local origin of the object on the build plate (coordinate
+  system above); after a rotation, this point is not necessarily at the
+  bottom of the object
+
+Point on the plate = position + R · (S · point of the object), S = diag(scale)
+
+Placement on the plate:
+  after each change of rotation or scale, the object is placed back on the
+  plate: position.z is changed so that the lowest point of the object is at
+  Z = 0 (as in Bambu Studio, OrcaSlicer and PrusaSlicer)
+```
+
+Conversion at export (3MF build item, transform attribute, row vectors of the 3MF Core Specification: point of the plate = point of the object · M):
+
+```text
+m00 m01 m02 m10 m11 m12 m20 m21 m22 m30 m31 m32
+
+3 x 3 part: (R · S) transposed: row r of M is column r of (R · S)
+m30 m31 m32: position + offset of the printer origin (PRINTER_PROFILE_SPEC.md,
+             Build Plate Origin), applied only at export
+mesh: vertices of the object in its own coordinate system (relative to the
+      local origin), in millimeters
+```
 
 
 

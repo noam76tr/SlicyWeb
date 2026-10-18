@@ -2297,6 +2297,77 @@ Reason:
 
 ---
 
+# ADR-031
+
+Title: Object Transform Meaning (Rotation Unit, Order, Pivot, Scale)
+
+Status: Accepted
+
+Date: 2026-10-18
+
+## Context
+
+Phase 6 (Transform System) moves, rotates and scales objects. The Transform Schema (DATA_SCHEMA.md) gave rotation x, y, z without unit, order or pivot, and did not say how scale and rotation combine (KI-017). The values are saved in WYPROJ files and converted at export (3MF build item transform).
+
+## Decision
+
+- Rotation unit: degrees.
+- Sign: right-hand rule (a positive angle turns counterclockwise seen from the positive end of the axis).
+- Order: around the axes of the build plate, first X, then Y, then Z: R = Rz · Ry · Rx (Euler order "ZYX" of Three.js).
+- Scale: along the axes of the object, applied before the rotation.
+- Pivot and position: the local origin of the object is the center of the base defined at import (center in X and Y, lowest point in Z); position is the place of this point on the plate. After a rotation, this point is not necessarily at the bottom of the object.
+- Point on the plate = position + R · (S · point of the object).
+- After each change of rotation or scale, the object is placed back on the plate (lowest point at Z = 0), as in Bambu Studio, OrcaSlicer and PrusaSlicer.
+- Export: 3MF build item transform = (R · S) transposed, translation = position + offset of the printer origin; mesh in the coordinate system of the object (DATA_SCHEMA.md, Transform Rules).
+- The computation is in src/scene/ObjectTransform.ts (Scene Domain), used by the viewport and by the transform tools; it is checked by unit tests (Vitest, TECH_STACK.md).
+
+## Consequences
+
+Advantages:
+
+- WYPROJ files readable (degrees)
+- Same behavior as the target slicers
+- Export transform defined before the export is written
+
+Disadvantages:
+
+- The renderer converts degrees to radians
+
+## Alternatives Considered
+
+Radians
+
+Rejected
+
+Reason:
+
+- Less readable in project files; slicers show degrees
+
+Rotation around the axes of the object (Euler order "XYZ")
+
+Rejected
+
+Reason:
+
+- Rotating around Z after a tilt would not turn the object flat on the plate
+
+Scale along the axes of the plate
+
+Rejected
+
+Reason:
+
+- A rotation would change the shape of a stretched object (shear)
+
+## Related Documents
+
+- DATA_SCHEMA.md (Transform Schema, Transform Rules)
+- PRINTER_PROFILE_SPEC.md (Build Plate Origin)
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-027)
+- ADR-028
+
+---
+
 # Future Decision Template
 
 Copy and complete:

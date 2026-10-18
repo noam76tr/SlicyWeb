@@ -4,17 +4,15 @@
  *
  * Displays the objects of the scene in the viewport: one mesh per
  * object, built from its geometry (GeometryRegistry), placed with its
- * transform position and scale, hidden when the object is not visible,
- * and drawn in the accent color when it is selected.
+ * transform (scale, rotation in degrees around the plate axes X, Y, Z,
+ * position; ObjectTransform.ts, ADR-031), hidden when the object is not
+ * visible, and drawn in the accent color when it is selected.
  *
- * Rotation is not applied yet: its unit and order are not defined
- * (KI-017); imported objects have a rotation of 0.
- *
- * Domain: Viewport. Depends on the Scene Domain (geometry).
+ * Domain: Viewport. Depends on the Scene Domain (geometry, transform).
  *
  * Based on:
  * - GUI_SPEC.md (3D Viewport, Selection Visualization, Color Philosophy)
- * - DECISIONS.md (ADR-028, ADR-029)
+ * - DECISIONS.md (ADR-028, ADR-029, ADR-031)
  */
 
 import * as THREE from "three";
@@ -24,6 +22,7 @@ import {
   SELECTED_OBJECT_COLOR,
 } from "../constants/ViewportConstants";
 import { GeometryRegistry } from "../scene/GeometryRegistry";
+import { objectMatrix } from "../scene/ObjectTransform";
 
 import type { Object3D } from "../types/Object3D";
 
@@ -76,9 +75,11 @@ export class ObjectRenderer {
         this.scene.add(mesh);
       }
 
-      const { position, scale } = object.transform;
-      mesh.position.set(position.x, position.y, position.z);
-      mesh.scale.set(scale.x, scale.y, scale.z);
+      objectMatrix(object.transform).decompose(
+        mesh.position,
+        mesh.quaternion,
+        mesh.scale,
+      );
       mesh.visible = object.visible;
       mesh.material =
         object.objectId === selectedObjectId

@@ -1550,7 +1550,15 @@ Critical Modules:
 
 ## Vitest
 
+Installed since CHANGELOG 0.1.47: vitest 5.0.3 (development dependency; requires Node.js 22.12 or later and Vite 6 to 8).
 
+```text
+Configuration: vitest.config.mts (separate from vite.config.mts: the Electron plugin and the Content Security Policy are not needed by the tests)
+Tests:         tests/unit/**/*.test.ts, environment node
+Command:       npm test (vitest run)
+```
+
+The coverage target above is not measured yet.
 
 ---
 

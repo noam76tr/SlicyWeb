@@ -1661,6 +1661,7 @@ Date:
 
 - Windows 11 (2026-10-18): bombe-annonce-1ko.3mf and bombe-annonce-400mo.3mf refused ("the 3MF file is corrupted"); bit3-fausse-signature.3mf imported (one cube); Cancel works (nothing added, the next file starts); a 3MF file exported by the user imported; console: only the expected import errors, no Content Security Policy violation; files on GitHub
 - After Cancel, the line disappears without message (choice confirmed by Noam)
+- Windows 11 (2026-10-18): npm run build writes both parser workers (stlParser.worker, threeMfParser.worker) in dist/renderer/assets; npm start opens the application
 
 ---
 
@@ -1670,7 +1671,7 @@ Release Type:
 GUI Foundation
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-18
@@ -1678,6 +1679,41 @@ Date:
 ## Changed
 
 - public/locales/he.json: import.cancel "בטל" instead of "ביטול" (Noam)
+
+## Validation Result
+
+- Windows 11 (2026-10-18): files on GitHub
+
+---
+
+# VERSION 0.1.47
+
+Release Type:
+Transform System
+
+Status:
+In Progress
+
+Date:
+2026-10-18
+
+## Added
+
+- Technical Phase 6 - Transform System started
+- DECISIONS.md: ADR-031 (meaning of the transform: rotation in degrees, right-hand rule, around the plate axes X then Y then Z; scale along the object axes, applied first; pivot and position at the center of the base defined at import; object placed back on the plate after each rotation or scale; 3MF export transform); ARCHITECTURE_DECISION_MATRIX.md: ADM-027
+- DATA_SCHEMA.md 3.3.0: Transform Rules (Transform Schema); conversion at export (3MF build item transform)
+- src/scene/ObjectTransform.ts: matrix of an object, lowest point, placement on the plate, 3MF export transform
+- Vitest 5.0.3 (development dependency, TECH_STACK.md), vitest.config.mts, npm script test; tests/unit/scene/ObjectTransform.test.ts (7 tests, among them: a cube stretched to 200 % along X, then turned +90° around Z, is long along Y)
+
+## Changed
+
+- src/renderer/ObjectRenderer.ts: applies the full transform (scale, rotation, position)
+- tsconfig.json: tests/ and vitest.config.mts type-checked; npm script lint: tests/ and vitest.config.mts linted
+- TECH_STACK.md (Testing Framework, Vitest), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md (Phase 6 In Progress)
+
+## Fixed
+
+- KI-017 resolved (unit and order of rotation not defined in the Transform Schema)
 
 ---
 
@@ -2569,22 +2605,6 @@ Issue: These components are not used by the interface of Phase 3, and some of th
 Resolve Before: the phase that displays each component (Phase 6 - Transform System for ViewportToolbar and ViewportStatus; Phases 7 to 10 for the panels; KI-011 for AnalysisPanel); Renderer.ts can be removed at any time
 
 Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it.
-
-
----
-
-
-Identifier: KI-017
-
-Since: 0.1.36
-
-Affected Module: DATA_SCHEMA.md (Transform Schema), src/types/Object3D.ts (Transform)
-
-Issue: The Transform Schema gives rotation x, y, z without unit (degrees or radians) and without the order in which the three rotations are applied. ADR-028 defines the coordinate system of position only.
-
-Resolve Before: Phase 6 - Transform System (technical plan)
-
-Planned Resolution: Define the unit and the order of rotation in DATA_SCHEMA.md (Transform Schema), then use them in the transform code and in the viewport.
 
 
 ---

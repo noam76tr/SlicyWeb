@@ -1126,6 +1126,20 @@ Error Handling
 
 
 
+Status: In Progress
+
+Decisions (ADR-031, KI-017 resolved):
+
+- Rotation in degrees, right-hand rule, around the plate axes X then Y then Z (Euler order "ZYX" of Three.js)
+- Scale along the axes of the object, applied before the rotation
+- Pivot and position: center of the base defined at import
+- The object is placed back on the plate after each rotation or scale
+- 3MF export transform defined in DATA_SCHEMA.md (Transform Rules)
+
+Progress:
+
+- Transform foundation (CHANGELOG 0.1.47): src/scene/ObjectTransform.ts (matrix, placement on the plate, 3MF export transform); the viewport applies rotation and scale; unit tests with Vitest (npm test)
+
 ---
 
 

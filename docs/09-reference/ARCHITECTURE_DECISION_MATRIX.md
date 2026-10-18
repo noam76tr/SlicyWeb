@@ -178,6 +178,7 @@ Requires:
 | ADM-024 | Viewport Coordinate System And Viewport Domain Direction | Viewport | High | Approved |
 | ADM-025 | Model Import In The Renderer With A Web Worker | Import | High | Approved |
 | ADM-026 | 3MF Import With fflate And fast-xml-parser In The Web Worker | Import | High | Approved |
+| ADM-027 | Object Transform Meaning (Rotation Unit, Order, Pivot, Scale) | Scene | High | Approved |
 
 ---
 
@@ -777,6 +778,31 @@ Benefits:
 - Responsive window with large 3MF files
 - Units and layout respected
 - Archive extraction limits against zip bombs
+
+---
+
+ADM-027
+
+Title:
+
+Object Transform Meaning (Rotation Unit, Order, Pivot, Scale)
+
+Decision:
+
+Rotation in degrees, right-hand rule, around the plate axes X then Y then Z; scale along the axes of the object, applied first; pivot and position at the center of the base defined at import; the object is placed back on the plate after each rotation or scale; 3MF export transform defined in DATA_SCHEMA.md.
+
+Rationale:
+
+Readable project files; same behavior as the target slicers; export defined in advance (KI-017).
+
+Reference:
+
+ADR-031 (DECISIONS.md)
+
+Benefits:
+
+- One meaning of the transform for the viewport, the tools and the export
+- Unit tests of the computation
 
 ---
 
