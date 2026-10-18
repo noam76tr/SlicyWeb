@@ -1135,10 +1135,13 @@ Decisions (ADR-031, KI-017 resolved):
 - Pivot and position: center of the base defined at import
 - The object is placed back on the plate after each rotation or scale
 - 3MF export transform defined in DATA_SCHEMA.md (Transform Rules)
+- Transform section (GUI_SPEC.md): position X, Y editable, Z computed (the object always stands on the plate); scale in % with a lock, size in mm linked to the scale; gizmo rotation free, by 15 degrees with Shift
+- Order of the lots: Transform section of the Properties Panel, then gizmos and shortcuts G, R, S, then undo and redo; every change of transform goes through TransformService
 
 Progress:
 
 - Transform foundation (CHANGELOG 0.1.47): src/scene/ObjectTransform.ts (matrix, placement on the plate, 3MF export transform); the viewport applies rotation and scale; unit tests with Vitest (npm test)
+- Transform section of the Properties Panel (CHANGELOG 0.1.48): position, rotation, scale, size; Reset Position, Reset Rotation, Reset Scale, Center On Bed; TransformService
 
 ---
 

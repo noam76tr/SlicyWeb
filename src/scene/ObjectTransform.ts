@@ -100,6 +100,44 @@ export function lowestPoint(
   return lowest;
 }
 
+/** Bounding box of the object on the plate */
+export interface Bounds {
+  min: Vector3Mm;
+  max: Vector3Mm;
+}
+
+/**
+ * Bounding box, on the plate, of the vertices of the object.
+ * positions: x, y, z of each vertex, in the coordinate system of the object.
+ */
+export function worldBounds(
+  transform: Transform,
+  positions: ArrayLike<number>,
+): Bounds {
+  const m = objectMatrix(transform).elements;
+  const min = [Infinity, Infinity, Infinity];
+  const max = [-Infinity, -Infinity, -Infinity];
+
+  for (let i = 0; i + 2 < positions.length; i += 3) {
+    const x = positions[i];
+    const y = positions[i + 1];
+    const z = positions[i + 2];
+
+    for (let axis = 0; axis < 3; axis += 1) {
+      const value =
+        m[axis] * x + m[4 + axis] * y + m[8 + axis] * z + m[12 + axis];
+
+      if (value < min[axis]) min[axis] = value;
+      if (value > max[axis]) max[axis] = value;
+    }
+  }
+
+  return {
+    min: { x: min[0], y: min[1], z: min[2] },
+    max: { x: max[0], y: max[1], z: max[2] },
+  };
+}
+
 /**
  * Transform with the object placed back on the plate: position.z changed so
  * that the lowest point is at Z = 0 (after a change of rotation or scale).

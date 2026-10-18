@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-18. Lot 43 sur `main` au commit `c6c7588`, vérifié identique. Dernière entrée du CHANGELOG : 0.1.47 (lot 44).
+Date : 2026-10-18. Lot 44 sur `main` au commit `127133d`, vérifié identique. Dernière entrée du CHANGELOG : 0.1.48 (lot 45).
 
 ---
 
@@ -46,6 +46,7 @@ Date : 2026-10-18. Lot 43 sur `main` au commit `c6c7588`, vérifié identique. D
 
 - **Envoi sur GitHub par le site web :** l'envoi ne garde pas toujours les chemins (lot 32 : fichiers posés à la racine ; lot 38 : fichiers manquants). Noam glisse les **dossiers** du zip (`docs`, `src`, `public`…), pas des fichiers seuls. Après chaque envoi, Claude compare `main` avec le lot, fichier par fichier, avant de continuer.
 - **Nouvelles dépendances npm :** Noam les installe lui-même (`npm install paquet@version`), puis envoie `package.json` et `package-lock.json`. Le zip ne contient pas `package.json` dans ce cas.
+- **Modifier `package.json` (scripts) :** ne pas utiliser `npm pkg set` avec une valeur qui contient un espace : PowerShell coupe l'argument (lot 44). Utiliser une commande `node -e "…"` qui lit, modifie et réécrit `package.json` (guillemets doubles autour, guillemets simples dedans).
 - **Règle de décision (Noam, 2026-10-17) :** Claude peut appliquer lui-même l'option « Recommandé » sans demander, **sauf** si la question touche :
   1. le format des données ou des fichiers (DATA_SCHEMA, WYPROJ, export slicer) ;
   2. la sécurité (IPC, CSP, accès aux fichiers) ;
@@ -70,13 +71,13 @@ Date : 2026-10-18. Lot 43 sur `main` au commit `c6c7588`, vérifié identique. D
 | 3 | GUI Foundation | Completed (2026-10-15) | 0.1.35 |
 | 4 | 3D Viewport | Completed (2026-10-16) | 0.1.37 |
 | 5 | Model Import | Completed (2026-10-17) | 0.1.44 |
-| 6 | Transform System | **In Progress** (depuis le 2026-10-18) | 0.1.47 |
+| 6 | Transform System | **In Progress** (depuis le 2026-10-18) | 0.1.47, 0.1.48 |
 | 7 à 16 | Printer Database, Material Database, Model Analysis, Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
 
 - **Fenêtre :** Electron avec React ; barre de menus (9 menus de GUI_SPEC) ; barre d'outils (11 boutons) ; panneaux latéraux redimensionnables et repliables ; barre d'état ; thème sombre.
-- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 241 clés de traduction.
+- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 253 clés de traduction.
 - **Vue 3D :**
   - repère en mm, X à droite, Y vers l'arrière, Z vers le haut, origine au centre du plateau (ADR-028) ;
   - grille adaptative et axes ;
@@ -88,7 +89,7 @@ Date : 2026-10-18. Lot 43 sur `main` au commit `c6c7588`, vérifié identique. D
   - analyse dans un Web Worker, avec une barre de progression et un bouton Annuler ;
   - objets centrés à Z = 0 ; un 3MF garde la disposition de ses objets ;
   - messages d'erreur traduits, avec les codes d'ERROR_CODES_SPEC.
-- **Transformations (phase 6, en cours) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). Les outils pour déplacer, tourner ou mettre à l'échelle ne sont pas encore là : les objets importés se superposent au centre.
+- **Transformations (phase 6, en cours) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). La section Transform du panneau Propriétés permet de saisir la position X, Y, la rotation, l'échelle (%) et la taille (mm), avec Reset et Center On Bed ; l'objet reste toujours posé sur le plateau. Les poignées 3D et Annuler / Rétablir ne sont pas encore là.
 - **Sécurité :**
   - liste blanche des canaux IPC dans le preload (22 canaux, `npm run check:ipc`) ;
   - politique de sécurité du contenu (CSP) stricte dans l'application compilée, et adaptée en développement ;
@@ -167,6 +168,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 42 | Revue externe : lecteur ZIP (bombe à en-tête mensonger, bit 3), bouton Annuler ; PASSATION.md réécrit | 0.1.45 |
 | 43 | Hébreu : bouton Annuler « בטל » | 0.1.46 |
 | 44 | Phase 6 : sens de la transformation (ADR-031, KI-017), rendu de la rotation, Vitest et premiers tests | 0.1.47 |
+| 45 | Section Transform du panneau Propriétés, TransformService (commande unique) | 0.1.48 |
 
 ---
 
@@ -219,18 +221,20 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 22. Échelle sur les axes de l'objet, appliquée d'abord ; pivot et position au centre de la base défini à l'import.
 23. Après chaque rotation ou changement d'échelle, l'objet est reposé sur le plateau (point le plus bas à Z = 0).
 24. Export 3MF : matrice = (R · S) transposée, translation = position + décalage de l'origine de l'imprimante. Test automatique : un cube étiré à 200 % en X puis tourné de +90° en Z est allongé le long de Y.
+25. Section Transform : échelle en % avec cadenas (activé par défaut), tailles en mm modifiables et liées aux % ; position Z jamais modifiable (objet toujours sur le plateau) ; rotation par la poignée libre, par pas de 15° avec Maj.
+26. Ordre des lots de la phase 6 : panneau, puis poignées et raccourcis G, R, S, puis Annuler / Rétablir ; toute modification passe par une seule commande (`TransformService`).
 
 **Méthode**
 
-25. Règle de décision (§1) : l'option « Recommandé » peut être appliquée sans demander, hors des 5 cas listés.
+27. Règle de décision (§1) : l'option « Recommandé » peut être appliquée sans demander, hors des 5 cas listés.
 
 ---
 
 ## 5. Travail restant, dans l'ordre
 
 1. **Phase 6 : Transform System** (en cours).
-   - Fait : sens de la transformation (ADR-031), rendu, tests.
-   - À faire : outils Déplacer, Tourner, Échelle (barre d'outils, panneau Transform), pose sur le plateau, annuler / rétablir (Undo, Redo), clôture selon le plan.
+   - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45).
+   - À faire : poignées 3D et raccourcis G, R, S (lot 46) ; Annuler / Rétablir (lot 47) ; clôture selon le plan.
    - KI-015 : ViewportToolbar et ViewportStatus contiennent du texte en dur, à traduire quand la phase 6 les affiche.
 2. **Phases 7 à 16**, dans l'ordre du plan technique.
 3. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
@@ -256,7 +260,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot44-phase6-transform-rules/` : livrables de chaque lot (`LOTN.md`, zip, patch).
+- `lot9-create-project/` à `lot45-transform-panel/` : livrables de chaque lot (`LOTN.md`, zip, patch).
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

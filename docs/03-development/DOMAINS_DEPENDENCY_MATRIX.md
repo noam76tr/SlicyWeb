@@ -289,9 +289,12 @@ Cost Estimation Domain
 State Management Domain
 IPC Domain
 Import Domain
+Scene Domain
 ```
 
 The Service Domain triggers the import (ImportService, ADR-029); the GUI calls ImportService.
+
+The Service Domain changes the transform of the objects (TransformService, Phase 6): it uses the geometry and the meaning of the transform of the Scene Domain (GeometryRegistry, ObjectTransform, ADR-031); the GUI calls TransformService.
 
 Cannot Depend On:
 

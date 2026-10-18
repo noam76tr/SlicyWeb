@@ -11,6 +11,9 @@
  * each section (GUI_SPEC.md, Project Section to Recommendation
  * Section) come with the phases that provide their data.
  *
+ * Phase 6: the Transform section edits the transform of the selected
+ * object (TransformSection.tsx).
+ *
  * No business logic.
  *
  * Based on:
@@ -31,6 +34,7 @@ import { useTranslation } from "../hooks/useTranslation";
 
 import { getDisplayNames } from "./objectNames";
 import SidebarSection from "./SidebarSection";
+import TransformSection from "./TransformSection";
 
 export default function RightSidebar(): JSX.Element {
   const { t } = useTranslation();
@@ -96,7 +100,11 @@ export default function RightSidebar(): JSX.Element {
       </SidebarSection>
 
       <SidebarSection title={t("transform.title")}>
-        {selectedObject ? t("app.notAvailable") : noObject}
+        {selectedObject ? (
+          <TransformSection object={selectedObject} />
+        ) : (
+          noObject
+        )}
       </SidebarSection>
 
       <SidebarSection title={t("analysis.title")}>

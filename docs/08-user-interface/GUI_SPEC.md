@@ -1100,6 +1100,8 @@ Z
 
 ```
 
+The gizmo moves the object along X and Y only: the object always stands on the build plate (Position Z is computed, Transform Section).
+
 
 
 ---
@@ -1143,6 +1145,8 @@ Free
 Incremental
 
 ```
+
+Free by default; with Shift held, by steps of 15 degrees.
 
 
 
@@ -1434,6 +1438,21 @@ Scale Z
 
 ```
 
+Details (Phase 6, decisions of Noam; DATA_SCHEMA.md, Transform Rules):
+
+```text
+Position X, Y   mm, editable
+Position Z      mm, shown but not editable: computed so that the object
+                always stands on the build plate
+Rotation X Y Z  degrees, around the axes of the build plate
+Scale X Y Z     %, 100 % = imported size; a lock keeps the proportions
+                (on by default)
+Size X Y Z      mm, along the axes of the object, editable and linked to
+                the scale: changing one updates the other
+```
+
+A value is applied with Enter or when the field loses the focus; Escape restores it; a comma is accepted as decimal separator; a value that is not a number, or a scale of 0.1 % or less, is refused. Every change of transform (fields, Transform Actions, gizmos) goes through one service (TransformService), where undo and redo are recorded.
+
 
 
 ---
@@ -1465,6 +1484,18 @@ Reset Scale
 Center On Bed
 
 ```
+
+```text
+Reset Position   position X and Y back to the center of the build plate
+                 (origin of the object at X = 0, Y = 0)
+Reset Rotation   rotation 0, 0, 0
+Reset Scale      scale 100 %
+Center On Bed    the center of the bounding box of the object (as seen
+                 from above, after rotation and scale) moved to the center
+                 of the build plate
+```
+
+After each action, the object stands on the build plate.
 
 
 

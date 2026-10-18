@@ -388,6 +388,7 @@ src/gui/
 │   ├── LeftSidebar.tsx
 │   ├── RightSidebar.tsx
 │   ├── SidebarSection.tsx
+│   ├── TransformSection.tsx   = Transform section of the Properties Panel (Phase 6)
 │   └── objectNames.ts         = display names of the objects (duplicates: "cube (1)")
 ├── import/
 │   ├── openImportDialog.ts    = system file dialog for File > Import STL and the toolbar
@@ -770,6 +771,7 @@ src/services/
 ├── ProjectService.ts
 ├── RecommendationService.ts
 ├── ImportService.ts           = import queue, progress, cancel and errors for the GUI (ADR-029)
+├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
 └── StorageService.ts
 ```
 
@@ -901,8 +903,10 @@ src/utils/
 tests/
 
 ├── unit/
-│   └── scene/
-│       └── ObjectTransform.test.ts = Transform Rules (ADR-031)
+│   ├── scene/
+│   │   └── ObjectTransform.test.ts = Transform Rules (ADR-031)
+│   └── services/
+│       └── TransformService.test.ts = transform changes, object on the plate
 ├── integration/
 └── e2e/
 ```

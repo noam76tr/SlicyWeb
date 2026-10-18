@@ -432,6 +432,7 @@ Every file should be placed in the directory that matches its responsibility.
 | `LeftSidebar.tsx` | Object Panel content: list of the imported objects (icon, name, visibility, lock, selection) from the object store |
 | `RightSidebar.tsx` | Properties Panel content: the nine sections of GUI_SPEC.md (Properties Sections) with the current selection |
 | `SidebarSection.tsx` | Reusable titled section of a side panel |
+| `TransformSection.tsx` | Transform section of the Properties Panel: position X, Y (Z computed), rotation in degrees, scale in % with a lock, size in mm, Reset and Center On Bed (GUI_SPEC.md, Transform Section); calls TransformService |
 | `objectNames.ts` | Display names of the objects: source file name, "cube (1)", "cube (2)" for duplicates (IMPORT_EXPORT_SPEC.md, Duplicate Names) |
 
 ---
@@ -993,6 +994,7 @@ Until the project owner decides otherwise:
 | `ProjectService.ts` | Project service: complete lifecycle (creation, validation, serialization) |
 | `RecommendationService.ts` | Recommendation service that delegates generation to the RecommendationEngine |
 | `StorageService.ts` | Storage service for projects, cache and user settings |
+| `TransformService.ts` | The only way to change the transform of an object (fields, actions, gizmos): refuses invalid values, places the object on the plate, writes the object store; undo and redo will be recorded here |
 | `ImportService.ts` | Imports the chosen files one after the other; progress and errors in the import store; cancel of an import waiting or in progress (ADR-029) |
 
 ---
@@ -1684,6 +1686,7 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 
 | File | Tests |
 |------|-------|
+| `services/TransformService.test.ts` | Transform changes: object always on the plate, scale with and without the lock, size in mm, Center On Bed, Reset actions, refused values |
 | `scene/ObjectTransform.test.ts` | Transform Rules (ADR-031): degrees, right-hand rule, order X then Y then Z around the plate axes, scale along the object axes, placement on the plate, 3MF export transform |
 
 **Contains:**

@@ -1692,7 +1692,7 @@ Release Type:
 Transform System
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-18
@@ -1714,6 +1714,40 @@ Date:
 ## Fixed
 
 - KI-017 resolved (unit and order of rotation not defined in the Transform Schema)
+
+## Validation Result
+
+- Windows 11 (2026-10-18): npm install -D vitest@5.0.3; scripts test and lint added (npm pkg set with a value containing a space fails in PowerShell; done with node -e); npm test: 7 tests passed; npm run check:locales (241 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report 0 errors; npm run dev: nothing changed on screen; files on GitHub
+- tests/README.md and tests/unit/README.me removed on GitHub by Noam (placeholders of folders that are no longer empty)
+
+---
+
+# VERSION 0.1.48
+
+Release Type:
+Transform System
+
+Status:
+In Progress
+
+Date:
+2026-10-18
+
+## Added
+
+- Transform section of the Properties Panel (src/gui/sidebar/TransformSection.tsx): position X and Y in mm, position Z shown and computed (the object always stands on the plate), rotation X, Y, Z in degrees, scale X, Y, Z in % with a lock that keeps the proportions (on by default), size X, Y, Z in mm linked to the scale; Reset Position, Reset Rotation, Reset Scale, Center On Bed (GUI_SPEC.md, Transform Section, Transform Actions)
+- src/services/TransformService.ts: the only way to change the transform of an object; refuses values that are not finite and scales of 0.1 % or less; places the object on the plate; undo and redo will be recorded there
+- src/scene/ObjectTransform.ts: worldBounds (bounding box on the plate)
+- tests/unit/services/TransformService.test.ts (7 tests)
+- Locale keys transform.position, rotation, size, keepProportions, onPlate, resetPosition, resetRotation, resetScale, centerOnBed, unit.mm, unit.degree, unit.percent (253 keys)
+
+## Changed
+
+- src/gui/sidebar/RightSidebar.tsx: the Transform section shows TransformSection for the selected object
+- DOMAINS_DEPENDENCY_MATRIX.md: the Service Domain can depend on the Scene Domain (TransformService)
+- GUI_SPEC.md: details of the Transform section and of the Transform Actions; Move Gizmo along X and Y only; Rotate Gizmo free, by 15 degrees with Shift
+- PASSATION.md: commands with a value containing a space (npm pkg set) replaced by node -e
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md
 
 ---
 
