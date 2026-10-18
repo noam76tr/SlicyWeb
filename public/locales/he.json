@@ -48,7 +48,7 @@
   "import.progress.analyzing": "מנתח את {name}…",
   "import.done": "{name} יובא",
   "import.dismiss": "סגור",
-  "import.cancel": "ביטול",
+  "import.cancel": "בטל",
   "import.error.STL_001": "{name}: לא ניתן לקרוא את הקובץ.",
   "import.error.STL_002": "{name}: זה אינו קובץ STL תקין.",
   "import.error.STL_003": "{name}: קובץ ה־STL פגום.",

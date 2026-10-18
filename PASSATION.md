@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-17. État vérifié sur `main` au commit `847e918` : le lot 41 y est appliqué à l'identique. Ce fichier fait partie du lot 42 (CHANGELOG 0.1.45, dernière entrée).
+Date : 2026-10-18. Lot 42 sur `main` au commit `984cd05`, vérifié identique. Dernière entrée du CHANGELOG : 0.1.46 (lot 43).
 
 ---
 
@@ -163,6 +163,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 40 | Import 3MF (ADR-030) | 0.1.43 |
 | 41 | KI-018 (codes IMP_001, IMP_002, MF_004) ; clôture de la phase 5 ; règle de décision | 0.1.44 |
 | 42 | Revue externe : lecteur ZIP (bombe à en-tête mensonger, bit 3), bouton Annuler ; PASSATION.md réécrit | 0.1.45 |
+| 43 | Hébreu : bouton Annuler « בטל » | 0.1.46 |
 
 ---
 
@@ -206,7 +207,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 16. Fichiers lus dans l'interface (fenêtre de choix, glisser-déposer), analysés dans un Web Worker avec progression ; aucun chemin de fichier par l'IPC.
 17. Objets centrés sur l'origine, posés à Z = 0 ; chevauchements permis.
 18. 3MF : fflate + fast-xml-parser dans le Worker (pas le 3MFLoader de Three.js) ; unités, transformations, composants, extension Production ; limites de décompression ; la disposition du 3MF est gardée. Archive lue par le répertoire central (`ZipReader.ts`) et décompression arrêtée à la taille annoncée, après revue externe (lot 42).
-19. Bouton Annuler pour chaque import (lot 42).
+19. Bouton Annuler pour chaque import (lot 42) ; après Annuler, la ligne disparaît sans message ; en hébreu « בטל » (lot 43).
 20. Codes d'erreur : IMP_001, IMP_002, MF_004 ajoutés ; STL_004 réservé (KI-018).
 
 **Méthode**
@@ -245,7 +246,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot42-zip-reader-cancel/` : livrables de chaque lot (`LOTN.md`, zip, patch).
+- `lot9-create-project/` à `lot43-hebrew-cancel/` : livrables de chaque lot (`LOTN.md`, zip, patch).
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

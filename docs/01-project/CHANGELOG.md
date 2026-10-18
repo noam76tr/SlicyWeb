@@ -1633,7 +1633,7 @@ Release Type:
 Security
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-17
@@ -1656,6 +1656,28 @@ Date:
 
 - A 3MF file whose ZIP header declares a small size for a part that inflates to gigabytes was refused (MF_003) with bounded memory, but only after inflating all the data: 47 s for 3 GB, hours for larger files. It is now refused after the first chunk (0.2 s)
 - A part with a data descriptor (Bambu Studio) whose data contains the bytes of the data descriptor signature is read correctly (checked with a test file; the streaming Unzip of fflate cut it)
+
+## Validation Result
+
+- Windows 11 (2026-10-18): bombe-annonce-1ko.3mf and bombe-annonce-400mo.3mf refused ("the 3MF file is corrupted"); bit3-fausse-signature.3mf imported (one cube); Cancel works (nothing added, the next file starts); a 3MF file exported by the user imported; console: only the expected import errors, no Content Security Policy violation; files on GitHub
+- After Cancel, the line disappears without message (choice confirmed by Noam)
+
+---
+
+# VERSION 0.1.46
+
+Release Type:
+GUI Foundation
+
+Status:
+In Progress
+
+Date:
+2026-10-18
+
+## Changed
+
+- public/locales/he.json: import.cancel "בטל" instead of "ביטול" (Noam)
 
 ---
 
