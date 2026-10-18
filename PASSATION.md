@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-18. Lot 42 sur `main` au commit `984cd05`, vérifié identique. Dernière entrée du CHANGELOG : 0.1.46 (lot 43).
+Date : 2026-10-18. Lot 43 sur `main` au commit `c6c7588`, vérifié identique. Dernière entrée du CHANGELOG : 0.1.47 (lot 44).
 
 ---
 
@@ -31,6 +31,7 @@ Date : 2026-10-18. Lot 42 sur `main` au commit `984cd05`, vérifié identique. D
   npm run check:ipc
   npm run typecheck
   npm run lint
+  npm test
   npm run dev
   npm run build
   npm start
@@ -69,7 +70,7 @@ Date : 2026-10-18. Lot 42 sur `main` au commit `984cd05`, vérifié identique. D
 | 3 | GUI Foundation | Completed (2026-10-15) | 0.1.35 |
 | 4 | 3D Viewport | Completed (2026-10-16) | 0.1.37 |
 | 5 | Model Import | Completed (2026-10-17) | 0.1.44 |
-| 6 | Transform System | **Prochaine** | — |
+| 6 | Transform System | **In Progress** (depuis le 2026-10-18) | 0.1.47 |
 | 7 à 16 | Printer Database, Material Database, Model Analysis, Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
@@ -87,7 +88,7 @@ Date : 2026-10-18. Lot 42 sur `main` au commit `984cd05`, vérifié identique. D
   - analyse dans un Web Worker, avec une barre de progression et un bouton Annuler ;
   - objets centrés à Z = 0 ; un 3MF garde la disposition de ses objets ;
   - messages d'erreur traduits, avec les codes d'ERROR_CODES_SPEC.
-- **Pas encore possible :** déplacer, tourner ou mettre à l'échelle les objets (phase 6). Les objets importés se superposent au centre.
+- **Transformations (phase 6, en cours) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). Les outils pour déplacer, tourner ou mettre à l'échelle ne sont pas encore là : les objets importés se superposent au centre.
 - **Sécurité :**
   - liste blanche des canaux IPC dans le preload (22 canaux, `npm run check:ipc`) ;
   - politique de sécurité du contenu (CSP) stricte dans l'application compilée, et adaptée en développement ;
@@ -99,19 +100,20 @@ Date : 2026-10-18. Lot 42 sur `main` au commit `984cd05`, vérifié identique. D
 - Tailwind CSS 4, shadcn/ui (Base UI, style base-nova, `rtl: true`), Lucide 1.56, react-resizable-panels 4.14.
 - Polices Inter et Noto Sans Hebrew (Fontsource).
 - fflate 0.8.3 et fast-xml-parser 5.11.2 (lecture des 3MF).
+- Vitest 5.0.3 pour les tests unitaires (`npm test`, `vitest.config.mts`, `tests/unit/`).
 
 ### Versions des documents
 
 | Document | Version |
 |---|---|
-| DATA_SCHEMA.md | 3.2.0 |
+| DATA_SCHEMA.md | 3.3.0 (Transform Rules) |
 | Format WYPROJ | 3.0.0 (les fichiers 2.0.0 sont refusés) |
 | IMPORT_EXPORT_SPEC.md | 3.0.0 |
 | ERROR_CODES_SPEC.md | 2.1.0 |
 | ARCHITECTURE_DECISION_MATRIX.md | 2.3.0 |
 | API_SPEC.md | 2.1.0 (voir §5, points en attente) |
 | SLICER_EXPORT_SPEC.md | 1.0.0 |
-| Dernier ADR | ADR-030 ; dernier ADM : ADM-026 |
+| Dernier ADR | ADR-031 ; dernier ADM : ADM-027 |
 
 ---
 
@@ -164,6 +166,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 41 | KI-018 (codes IMP_001, IMP_002, MF_004) ; clôture de la phase 5 ; règle de décision | 0.1.44 |
 | 42 | Revue externe : lecteur ZIP (bombe à en-tête mensonger, bit 3), bouton Annuler ; PASSATION.md réécrit | 0.1.45 |
 | 43 | Hébreu : bouton Annuler « בטל » | 0.1.46 |
+| 44 | Phase 6 : sens de la transformation (ADR-031, KI-017), rendu de la rotation, Vitest et premiers tests | 0.1.47 |
 
 ---
 
@@ -210,16 +213,24 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 19. Bouton Annuler pour chaque import (lot 42) ; après Annuler, la ligne disparaît sans message ; en hébreu « בטל » (lot 43).
 20. Codes d'erreur : IMP_001, IMP_002, MF_004 ajoutés ; STL_004 réservé (KI-018).
 
+**Transformations (ADR-031)**
+
+21. Rotation en degrés, règle de la main droite, autour des axes du plateau : X, puis Y, puis Z (Euler « ZYX » de Three.js).
+22. Échelle sur les axes de l'objet, appliquée d'abord ; pivot et position au centre de la base défini à l'import.
+23. Après chaque rotation ou changement d'échelle, l'objet est reposé sur le plateau (point le plus bas à Z = 0).
+24. Export 3MF : matrice = (R · S) transposée, translation = position + décalage de l'origine de l'imprimante. Test automatique : un cube étiré à 200 % en X puis tourné de +90° en Z est allongé le long de Y.
+
 **Méthode**
 
-21. Règle de décision (§1) : l'option « Recommandé » peut être appliquée sans demander, hors des 5 cas listés.
+25. Règle de décision (§1) : l'option « Recommandé » peut être appliquée sans demander, hors des 5 cas listés.
 
 ---
 
 ## 5. Travail restant, dans l'ordre
 
-1. **Phase 6 : Transform System** (déplacement, rotation, échelle des objets).
-   - D'abord **KI-017** : l'unité (degrés ou radians) et l'ordre des rotations dans le Transform Schema de DATA_SCHEMA. C'est un format de données : il faut poser la question à Noam.
+1. **Phase 6 : Transform System** (en cours).
+   - Fait : sens de la transformation (ADR-031), rendu, tests.
+   - À faire : outils Déplacer, Tourner, Échelle (barre d'outils, panneau Transform), pose sur le plateau, annuler / rétablir (Undo, Redo), clôture selon le plan.
    - KI-015 : ViewportToolbar et ViewportStatus contiennent du texte en dur, à traduire quand la phase 6 les affiche.
 2. **Phases 7 à 16**, dans l'ordre du plan technique.
 3. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
@@ -230,7 +241,6 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    | KI-008 | Limites de l'imprimante et du matériau non appliquées au profil recommandé | Phase 14 |
    | KI-013 | npm audit : 7 alertes « high » (braces, via shadcn) ; ne pas lancer `npm audit fix --force` | Phase 16 |
    | KI-015 | Composants inutilisés avec du texte en dur | Phase qui affiche chaque composant (6, puis 7 à 10) |
-   | KI-017 | Unité et ordre des rotations | Phase 6 |
    | KI-019 | 3MF Bambu à plusieurs plateaux : objets éloignés | Phase 14 |
    | KI-020 | Noms d'objets et métadonnées du 3MF non gardés (aucun champ dans DATA_SCHEMA) | Phase 13 |
 
@@ -246,7 +256,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot43-hebrew-cancel/` : livrables de chaque lot (`LOTN.md`, zip, patch).
+- `lot9-create-project/` à `lot44-phase6-transform-rules/` : livrables de chaque lot (`LOTN.md`, zip, patch).
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

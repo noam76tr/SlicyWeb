@@ -16,9 +16,10 @@
     "typecheck": "tsc --noEmit",
     "check:locales": "node scripts/build/check-locales.mjs",
     "check:ipc": "node scripts/build/check-ipc-channels.mjs",
-    "lint": "eslint src vite.config.mts --max-warnings 0",
+    "lint": "eslint src tests vite.config.mts vitest.config.mts --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" vite.config.mts",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx}\" vite.config.mts"
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\" vite.config.mts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -54,6 +55,7 @@
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.2",
     "vite": "^8.3.4",
-    "vite-plugin-electron": "^1.1.2"
+    "vite-plugin-electron": "^1.1.2",
+    "vitest": "^5.0.3"
   }
 }
