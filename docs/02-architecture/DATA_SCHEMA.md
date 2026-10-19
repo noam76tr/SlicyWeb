@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.3.0
+Version: 3.4.0
 
 Status: Approved
 
@@ -1102,9 +1102,9 @@ position is expressed in this coordinate system. It does not depend on the print
 Transform Rules (DECISIONS.md, ADR-031):
 
 ```text
-Local origin of an object:
-  center of the base defined at import: center of the bounding box in X and Y,
-  lowest point in Z, of the geometry as imported
+Local origin of an object (3.4.0):
+  center of the object defined at import: center of the bounding box in X, Y
+  and Z of the geometry as imported
   the geometry of the object is stored relative to this point
 
 scale:
@@ -1118,19 +1118,22 @@ rotation:
   order: around the axes of the build plate (fixed axes), first X, then Y,
          then Z: R = Rz(z) · Ry(y) · Rx(x) (column vectors; Euler order "ZYX"
          of Three.js)
-  pivot: the local origin of the object
+  pivot: the local origin of the object (its center): the object turns
+         around its center
 
 position:
-  place of the local origin of the object on the build plate (coordinate
-  system above); after a rotation, this point is not necessarily at the
-  bottom of the object
+  place of the local origin (center) of the object on the build plate
+  (coordinate system above); a rotation does not change position X and Y;
+  position Z is the height of the center (half the height of an object
+  that is not turned)
 
 Point on the plate = position + R · (S · point of the object), S = diag(scale)
 
 Placement on the plate:
   after each change of rotation or scale, the object is placed back on the
   plate: position.z is changed so that the lowest point of the object is at
-  Z = 0 (as in Bambu Studio, OrcaSlicer and PrusaSlicer)
+  Z = 0 (as in Bambu Studio, OrcaSlicer and PrusaSlicer); an object is never
+  placed under the plate (sunk objects: KI-021)
 ```
 
 Conversion at export (3MF build item, transform attribute, row vectors of the 3MF Core Specification: point of the plate = point of the object · M):

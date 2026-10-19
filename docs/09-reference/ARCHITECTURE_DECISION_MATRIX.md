@@ -789,7 +789,7 @@ Object Transform Meaning (Rotation Unit, Order, Pivot, Scale)
 
 Decision:
 
-Rotation in degrees, right-hand rule, around the plate axes X then Y then Z; scale along the axes of the object, applied first; pivot and position at the center of the base defined at import; the object is placed back on the plate after each rotation or scale; 3MF export transform defined in DATA_SCHEMA.md.
+Rotation in degrees, right-hand rule, around the plate axes X then Y then Z; scale along the axes of the object, applied first; pivot and position at the center of the object defined at import (center of the bounding box; amendment of 2026-10-19, previously the center of the base); the object is placed back on the plate after each rotation or scale; 3MF export transform defined in DATA_SCHEMA.md.
 
 Rationale:
 

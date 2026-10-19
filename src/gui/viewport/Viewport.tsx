@@ -86,9 +86,14 @@ interface ViewportProps {
 
   /**
    * Applies a transform to an object (TransformService); returns false
-   * when it is refused.
+   * when it is refused. live: step of a rotation with the gizmo, not
+   * placed on the plate.
    */
-  onTransformObject: (objectId: string, transform: Transform) => boolean;
+  onTransformObject: (
+    objectId: string,
+    transform: Transform,
+    live: boolean,
+  ) => boolean;
 }
 
 export default function Viewport({
@@ -141,7 +146,8 @@ export default function Viewport({
       scene,
       cameraManager.getCamera(),
       rendererManager.getCanvas(),
-      (objectId, transform) => onTransformRef.current(objectId, transform),
+      (objectId, transform, live) =>
+        onTransformRef.current(objectId, transform, live),
       (dragging) => cameraManager.setControlsEnabled(!dragging),
     );
     gizmo.setMode(useViewportStore.getState().transformMode);
@@ -158,10 +164,14 @@ export default function Viewport({
         const object = findObject(objectId);
 
         if (object) {
-          onTransformRef.current(objectId, {
-            ...object.transform,
-            position: { ...object.transform.position, x, y },
-          });
+          onTransformRef.current(
+            objectId,
+            {
+              ...object.transform,
+              position: { ...object.transform.position, x, y },
+            },
+            false,
+          );
         }
       },
     });
@@ -251,7 +261,11 @@ export default function Viewport({
         useViewportStore.getState().requestView("reset");
       } else if (event.key === "Escape") {
         useObjectStore.getState().selectObject(null);
-      } else if (TRANSFORM_KEYS[event.code]) {
+      } else if (
+        TRANSFORM_KEYS[event.code] &&
+        useObjectStore.getState().selectedObjectId !== null
+      ) {
+        // Like the mode buttons: active only when an object is selected
         event.preventDefault();
         useViewportStore
           .getState()

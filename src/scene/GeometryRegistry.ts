@@ -8,7 +8,8 @@
  * is kept here. The viewport reads it to display the objects.
  *
  * Geometry coordinates are local to the object: millimeters, origin
- * at the center of the bottom of the object (ADR-029, placement).
+ * at the center of the bounding box of the object at import (ADR-031,
+ * DATA_SCHEMA.md 3.4.0).
  *
  * No business logic.
  *

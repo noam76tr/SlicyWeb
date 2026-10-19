@@ -6,7 +6,10 @@
  * TransformControls of Three.js:
  * - Move: along X and Y only (the object always stands on the plate);
  * - Rotate: rings X, Y, Z around the axes of the plate, free, by steps of
- *   15 degrees while Shift is held;
+ *   15 degrees while Shift is held; the object turns around its center
+ *   (local origin, ADR-031) and may go under the plate during the gesture;
+ *   on release it is placed back on the plate (only Z changes), as in
+ *   Bambu Studio and OrcaSlicer;
  * - Scale: along the axes of the object; one handle per axis (X right,
  *   Y front, Z top) and the center handle (uniform). With the lock of the
  *   scale closed (keepProportions, as in the Transform section), an axis
@@ -35,8 +38,15 @@ import { ROTATION_ORDER, rotationEuler } from "../scene/ObjectTransform";
 import type { TransformMode } from "../state/viewportStore";
 import type { Object3D, Transform } from "../types/Object3D";
 
-/** Applies a transform; returns false when it is refused */
-export type GizmoChange = (objectId: string, transform: Transform) => boolean;
+/**
+ * Applies a transform; returns false when it is refused. live: step of a
+ * rotation gesture, not placed on the plate.
+ */
+export type GizmoChange = (
+  objectId: string,
+  transform: Transform,
+  live: boolean,
+) => boolean;
 
 const RAD_TO_DEG = 180 / Math.PI;
 
@@ -174,6 +184,12 @@ export class TransformGizmo {
       const scale = this.object?.transform.scale;
       this.dragStartScale =
         dragging && scale ? new THREE.Vector3(scale.x, scale.y, scale.z) : null;
+
+      // End of a rotation: the object is placed back on the plate
+      if (!dragging && this.mode === "rotate" && this.object) {
+        this.onChange(this.object.objectId, this.object.transform, false);
+      }
+
       onDragging(dragging);
     });
 
@@ -297,7 +313,8 @@ export class TransformGizmo {
       position: {
         x: this.proxy.position.x,
         y: this.proxy.position.y,
-        // Computed by TransformService: the object stands on the plate
+        // Kept during a rotation; otherwise computed by TransformService
+        // (the object stands on the plate)
         z: object.transform.position.z,
       },
       rotation: {
@@ -309,7 +326,9 @@ export class TransformGizmo {
     };
 
     // Refused (for example a scale of 0): the gizmo goes back to the object
-    if (!this.onChange(object.objectId, transform)) {
+    const live = this.mode === "rotate" && this.controls.dragging;
+
+    if (!this.onChange(object.objectId, transform, live)) {
       this.syncProxy(object.transform);
     }
   }

@@ -23,11 +23,11 @@ import {
 } from "../../../src/scene/ObjectTransform";
 import type { Transform } from "../../../src/types/Object3D";
 
-/** Cube of 10 mm with its local origin at the center of its base */
+/** Cube of 10 mm with its local origin at its center (DATA_SCHEMA.md 3.4.0) */
 const CUBE: number[] = [];
 for (const x of [-5, 5]) {
   for (const y of [-5, 5]) {
-    for (const z of [0, 10]) {
+    for (const z of [-5, 5]) {
       CUBE.push(x, y, z);
     }
   }
@@ -100,7 +100,7 @@ describe("ObjectTransform (ADR-031)", () => {
   });
 
   it("places the object back on the plate after a rotation", () => {
-    // Turned 90° around X, the cube goes from Z = -5 to Z = 5
+    // Turned 90° around its center: lowest point at Z = -5, center placed at Z = 5
     const turned = transform({ x: 90 });
     expect(lowestPoint(turned, CUBE)).toBeCloseTo(-5, 6);
 
@@ -111,8 +111,9 @@ describe("ObjectTransform (ADR-031)", () => {
   });
 
   it("places the object back on the plate after a change of scale", () => {
+    // Stretched to 200 % along Z: from Z = -10 to 10 around its center
     const placed = placeOnPlate(transform({}, { z: 2 }, { z: 7 }), CUBE);
-    expect(placed.position.z).toBeCloseTo(0, 6);
+    expect(placed.position.z).toBeCloseTo(10, 6);
   });
 
   it("3MF transform: (R · S) transposed, position plus the printer origin offset", () => {
@@ -130,7 +131,11 @@ describe("ObjectTransform (ADR-031)", () => {
     expectClose(m, [0, 2, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0]);
 
     // p · M (3MF) equals the point given by objectMatrix
-    const t = transform({ x: 30, y: -45, z: 60 }, { x: 1.5, y: 0.5, z: 2 }, { x: 3, y: -4, z: 5 });
+    const t = transform(
+      { x: 30, y: -45, z: 60 },
+      { x: 1.5, y: 0.5, z: 2 },
+      { x: 3, y: -4, z: 5 },
+    );
     const r = toThreeMfTransform(t);
     const [x, y, z] = [7, -2, 9];
     expectClose(

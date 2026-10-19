@@ -409,8 +409,8 @@ src/gui/
 ├── menus/
 │   └── MenuBar.tsx            = the nine menus of GUI_SPEC.md
 ├── toolbars/
-│   ├── Toolbar.tsx            = the eleven toolbar buttons of GUI_SPEC.md
-│   └── TransformModeBar.tsx   = buttons Move, Rotate, Scale over the viewport (Phase 6)
+│   ├── Toolbar.tsx            = the eight toolbar buttons of GUI_SPEC.md
+│   └── TransformModeBar.tsx   = buttons Move, Rotate, Scale over the viewport, the only mode buttons (Phase 6)
 ├── components/
 │   ├── I18nProvider.tsx       = translations, language and text direction for the GUI
 │   └── ui/                    = shadcn/ui components (button, dropdown-menu, menubar, resizable)

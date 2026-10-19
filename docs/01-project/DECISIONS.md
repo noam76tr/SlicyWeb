@@ -2320,6 +2320,7 @@ Phase 6 (Transform System) moves, rotates and scales objects. The Transform Sche
 - After each change of rotation or scale, the object is placed back on the plate (lowest point at Z = 0), as in Bambu Studio, OrcaSlicer and PrusaSlicer.
 - Export: 3MF build item transform = (R · S) transposed, translation = position + offset of the printer origin; mesh in the coordinate system of the object (DATA_SCHEMA.md, Transform Rules).
 - The computation is in src/scene/ObjectTransform.ts (Scene Domain), used by the viewport and by the transform tools; it is checked by unit tests (Vitest, TECH_STACK.md).
+- Amendment (2026-10-19, CHANGELOG 0.1.51, DATA_SCHEMA.md 3.4.0, decision of Noam): the local origin of an object is the center of its bounding box at import (X, Y and Z), no longer the center of its base. The object turns around its center, and its position is the place of its center: a rotation keeps position X and Y, as in Bambu Studio and OrcaSlicer; position Z is the height of the center. With the gizmo, the object turns freely during the gesture and is placed back on the plate on release (only Z changes). The export formula is unchanged (the mesh is exported relative to the local origin). No WYPROJ file was affected: projects are not saved yet (Phase 13).
 
 ## Consequences
 

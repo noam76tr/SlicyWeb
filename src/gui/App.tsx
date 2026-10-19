@@ -69,8 +69,8 @@ export default function App(): JSX.Element {
             <Viewport
               label={t("viewport.title")}
               unavailableMessage={t("viewport.unavailable")}
-              onTransformObject={(objectId, transform) =>
-                TransformService.apply(objectId, transform)
+              onTransformObject={(objectId, transform, live) =>
+                TransformService.apply(objectId, transform, { live })
               }
             />
             <TransformModeBar />

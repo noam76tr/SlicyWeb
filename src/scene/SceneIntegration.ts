@@ -6,14 +6,15 @@
  * Scene Integration): create the scene object, generate its
  * transform and bounding box, register it.
  *
- * Placement (ADR-029): the geometry of each object is moved so that the
- * center of its bounding box is on its local Z axis and its lowest point
- * at local Z = 0.
- * - One object (STL): position (0, 0, 0), the object is centered on the
- *   build plate and placed on it (ADR-028).
+ * Placement (ADR-029, ADR-031): the geometry of each object is moved so
+ * that its local origin is the center of its bounding box (X, Y and Z):
+ * the object turns around its center, and its position is the place of
+ * its center (DATA_SCHEMA.md 3.4.0, Transform Rules).
+ * - One object (STL): position (0, 0, half the height), the object is
+ *   centered on the build plate and placed on it (ADR-028).
  * - Several objects of one file (3MF, ADR-030): the layout of the file is
  *   kept; the group is centered on the origin and its lowest point is at
- *   Z = 0; each object gets the position of its local origin.
+ *   Z = 0; each object gets the position of its center.
  *
  * The first new object becomes the selected object.
  *
@@ -102,14 +103,15 @@ export function registerImportedObjects(
     const [maxX, maxY, maxZ] = mesh.max;
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
+    const centerZ = (minZ + maxZ) / 2;
 
-    // Local origin: center on X and Y, lowest point at Z = 0
+    // Local origin: center of the bounding box
     const positions = mesh.positions;
 
     for (let i = 0; i < positions.length; i += 3) {
       positions[i] -= centerX;
       positions[i + 1] -= centerY;
-      positions[i + 2] -= minZ;
+      positions[i + 2] -= centerZ;
     }
 
     const geometry = new THREE.BufferGeometry();
@@ -120,11 +122,12 @@ export function registerImportedObjects(
 
     const object = ObjectFactory.create(crypto.randomUUID(), fileName, fileType);
 
-    // Position of the local origin in the group (ADR-028 frame)
+    // Position of the center in the group (ADR-028 frame): the group stands
+    // on the plate
     object.transform.position = {
       x: centerX - groupCenterX,
       y: centerY - groupCenterY,
-      z: minZ - groupMin[2],
+      z: centerZ - groupMin[2],
     };
 
     object.geometry = {

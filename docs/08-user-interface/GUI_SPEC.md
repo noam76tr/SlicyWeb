@@ -636,18 +636,6 @@ Redo
 
 
 
-Move
-
-
-
-Rotate
-
-
-
-Scale
-
-
-
 Reset
 
 
@@ -664,7 +652,7 @@ Generate
 
 ```
 
-Move, Rotate and Scale choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. The same three buttons are also shown over the 3D viewport, at the top on the start side (request of Noam, Phase 6).
+Move, Rotate and Scale are not in the toolbar: they are shown over the 3D viewport only, at the top on the start side (decision of Noam, Phase 6). They choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. They are active only when an object is selected, and grayed out otherwise.
 
 
 
@@ -1156,7 +1144,7 @@ Incremental
 ```
 
 Free by default; with Shift held, by steps of 15 degrees.
-The gizmo shows three rings, one per axis of the build plate; after a rotation the object is placed back on the plate.
+The gizmo shows three rings, one per axis of the build plate. As in Bambu Studio and OrcaSlicer, during the gesture the object turns freely around its center (it may go under the plate for a moment); on release it is placed back on the plate: only Position Z changes, the rotation and Position X, Y (center of the object) are kept. Rotations typed in the Transform section are placed on the plate at once.
 
 
 
@@ -1455,9 +1443,12 @@ Scale Z
 Details (Phase 6, decisions of Noam; DATA_SCHEMA.md, Transform Rules):
 
 ```text
-Position X, Y   mm, editable
-Position Z      mm, shown but not editable: computed so that the object
-                always stands on the build plate
+Position X, Y   mm, editable: place of the center of the object
+                (DATA_SCHEMA.md 3.4.0, Transform Rules)
+Position Z      mm, shown but not editable: height of the center of the
+                object, computed so that the object always stands on the
+                build plate (an object can never be placed under the
+                plate; sunk objects: KI-021)
 Rotation X Y Z  degrees, around the axes of the build plate
 Scale X Y Z     %, 100 % = imported size; a lock keeps the proportions
                 (on by default)
@@ -1844,7 +1835,7 @@ S            Scale
 
 ```
 
-G, R and S choose the mode of the gizmo. They are read by their position on the keyboard, so they work the same with an English, French or Hebrew layout. The shortcuts of the viewport (G, R, S, ESC, HOME) are not active while a text field has the focus: in a field, ESC restores the value and keeps the selection.
+G, R and S choose the mode of the gizmo, when an object is selected. They are read by their position on the keyboard, so they work the same with an English, French or Hebrew layout. The shortcuts of the viewport (G, R, S, ESC, HOME) are not active while a text field has the focus: in a field, ESC restores the value and keeps the selection.
 
 
 

@@ -1801,7 +1801,7 @@ Release Type:
 Transform System
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-19
@@ -1821,6 +1821,41 @@ Date:
 ## Fixed
 
 - Scale gizmo: with the lock closed, an axis handle changed that axis only; it now scales the three axes by the same factor, as the Transform section
+
+## Validation Result
+
+- Windows 11 (2026-10-19): npm run check:locales (253 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report 0 errors, npm test: 14 tests passed; console without error; lots 46 and 47 on GitHub
+- Scale: lock closed, uniform; lock open, one axis only; Transform section by mode; in Hebrew, the mode buttons are at the top right of the viewport; a click with a 2 px jiggle selects without moving
+- Reported, changed in 0.1.51: the mode buttons were shown twice (toolbar and viewport); the gizmo rotation kept the object on the plate during the gesture and did not turn around its center
+
+---
+
+# VERSION 0.1.51
+
+Release Type:
+Transform System
+
+Status:
+In Progress
+
+Date:
+2026-10-19
+
+## Added
+
+- tests/unit/services/TransformService.test.ts: a cube of 20 mm imported at X = 0, Y = 0, turned 90° around X: position X = 0, Y = 0 kept, Z = 10, standing on the plate (test asked by Noam); free rotation during a gesture, placed on the plate at the end (16 tests)
+- KNOWN ISSUES: KI-021 (sunk objects, partly under the plate)
+
+## Changed
+
+- DATA_SCHEMA.md 3.4.0 (Transform Rules): the local origin of an object is the center of its bounding box at import (X, Y and Z), no longer the center of its base; the object turns around its center; position is the place of its center (position Z = height of the center); decision of Noam (option B)
+- DECISIONS.md: amendment of ADR-031; ARCHITECTURE_DECISION_MATRIX.md (ADM-027); IMPORT_EXPORT_SPEC.md (Import Progress And Placement)
+- src/scene/SceneIntegration.ts: geometry stored relative to the center of the object; position of the center (a cube of 20 mm is imported at Z = 10)
+- src/renderer/TransformGizmo.ts, src/services/TransformService.ts (apply, option live): with the Rotate gizmo, the object turns freely around its center during the gesture and may go under the plate for a moment; on release it is placed back on the plate (only Z changes), as in Bambu Studio and OrcaSlicer
+- src/gui/toolbars/Toolbar.tsx: Move, Rotate, Scale removed from the toolbar (they stay over the viewport); locale keys toolbar.move, toolbar.rotate, toolbar.scale removed (250 keys)
+- src/gui/toolbars/TransformModeBar.tsx: buttons grayed out without selection; src/gui/viewport/Viewport.tsx: keys G, R, S active only with a selection
+- tests/unit/scene/ObjectTransform.test.ts: test cube with its local origin at its center
+- GUI_SPEC.md (Toolbar Buttons, Rotate Gizmo, Transform Section, Keyboard Shortcuts), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md, PASSATION.md
 
 ---
 
@@ -2744,6 +2779,22 @@ Issue: IMPORT_EXPORT_SPEC.md (3MF Import, Extracted Data; Metadata Handling) lis
 Resolve Before: Phase 13 - Project Persistence (technical plan)
 
 Planned Resolution: Decide whether the Object Schema gets a name field (and where the metadata of an imported file are stored), then read them in ThreeMFParser.ts; or remove them from IMPORT_EXPORT_SPEC.md.
+
+
+---
+
+
+Identifier: KI-021
+
+Since: 0.1.51
+
+Affected Module: src/services/TransformService.ts, DATA_SCHEMA.md (Transform Rules)
+
+Issue: An object is always placed on the build plate (lowest point at Z = 0); it cannot be sunk partly under the plate (advanced feature of the slicers, used to cut off the bottom of a model). Decision of Noam: not allowed for now.
+
+Resolve Before: Phase 15 - Advanced Features (technical plan)
+
+Planned Resolution: Decide how a sunk object is chosen (Position Z editable below its resting height, or a dedicated tool), how it is stored (Transform Rules) and exported (cut at Z = 0), then allow it in TransformService.
 
 
 ---

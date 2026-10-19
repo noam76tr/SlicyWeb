@@ -5,13 +5,14 @@
  * Meaning of the transform of an object (DATA_SCHEMA.md, Transform
  * Schema, Transform Rules; DECISIONS.md, ADR-031):
  * - the geometry is stored relative to the local origin of the object:
- *   center of the base defined at import (center of the bounding box in
- *   X and Y, lowest point in Z);
+ *   center of its bounding box at import (X, Y and Z); it is the pivot
+ *   of rotation and scale (DATA_SCHEMA.md 3.4.0);
  * - scale: factors along the axes of the object, applied first;
  * - rotation: degrees, right-hand rule, around the axes of the build
  *   plate, first X, then Y, then Z: R = Rz · Ry · Rx (Euler order "ZYX"
  *   of Three.js);
- * - position: place of the local origin on the build plate (ADR-028);
+ * - position: place of the local origin (center of the object) on the
+ *   build plate (ADR-028);
  * - point of the plate = position + R · (S · point of the object);
  * - after each change of rotation or scale, the object is placed back on
  *   the plate: its lowest point at Z = 0 (placeOnPlate).

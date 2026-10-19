@@ -682,7 +682,7 @@ Several files can be chosen or dropped at once; they are imported one after the 
 
 An import waiting or in progress can be cancelled (Cancel): the reading is aborted or the parser worker is terminated at once, nothing is added to the scene, and the next file starts.
 
-An imported object is centered on the origin and placed on the build plate (lowest point at Z = 0, ADR-028, ADR-029). Objects may overlap.
+An imported object is centered on the origin and placed on the build plate (lowest point at Z = 0, ADR-028, ADR-029). Its local origin is the center of its bounding box: its position is the place of its center (ADR-031, DATA_SCHEMA.md 3.4.0). Objects may overlap.
 
 A 3MF file gives one object per build item; its objects keep the layout of the file, the group is centered on the origin and its lowest point is at Z = 0 (ADR-030). Each object has its own transform position; the first object is selected.
 

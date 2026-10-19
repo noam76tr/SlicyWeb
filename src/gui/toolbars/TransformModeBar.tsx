@@ -3,9 +3,10 @@
  * Transform Mode Bar
  *
  * Buttons Move, Rotate, Scale over the 3D viewport (top, start side):
- * they choose the gizmo of the selected object, like the toolbar and the
- * keys G, R, S; the active tool is shown highlighted (request of Noam,
- * Phase 6).
+ * they choose the gizmo of the selected object, like the keys G, R, S;
+ * the active tool is shown highlighted. They are the only mode buttons
+ * (not in the main toolbar), active only when an object is selected and
+ * grayed out otherwise (decisions of Noam, Phase 6).
  *
  * Mounted by the GUI over the viewport: the Viewport Domain does not
  * depend on the GUI.
@@ -19,6 +20,7 @@
 
 import { Move, Rotate3d, Scaling, type LucideIcon } from "lucide-react";
 
+import { useObjectStore } from "../../state/objectStore";
 import {
   useViewportStore,
   type TransformMode,
@@ -40,6 +42,9 @@ export default function TransformModeBar(): JSX.Element {
   const { t } = useTranslation();
   const transformMode = useViewportStore((state) => state.transformMode);
   const setTransformMode = useViewportStore((state) => state.setTransformMode);
+  const hasSelection = useObjectStore(
+    (state) => state.selectedObjectId !== null,
+  );
 
   return (
     <div
@@ -55,9 +60,10 @@ export default function TransformModeBar(): JSX.Element {
             key={mode}
             type="button"
             aria-pressed={mode === transformMode}
+            disabled={!hasSelection}
             title={`${label} (${shortcut})`}
             onClick={() => setTransformMode(mode)}
-            className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-foreground hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+            className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-foreground hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring aria-pressed:bg-primary aria-pressed:text-primary-foreground disabled:pointer-events-none disabled:opacity-40"
           >
             <Icon className="size-4" aria-hidden="true" />
             <span>{label}</span>

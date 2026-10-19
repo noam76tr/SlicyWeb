@@ -11,7 +11,12 @@
  * - refuses values that are not finite and scales of 0.1 % or less;
  * - places the object on the plate (lowest point at Z = 0): the position
  *   Z is never chosen by the user (DATA_SCHEMA.md, Transform Rules;
- *   Noam, Phase 6);
+ *   Noam, Phase 6); an object can never be placed under the plate
+ *   (sunk objects: KI-021);
+ * - during a rotation with the gizmo (live: true), the object turns freely
+ *   around its center and may go under the plate for a moment; the gizmo
+ *   applies the final transform on release, placed on the plate (as in
+ *   Bambu Studio and OrcaSlicer);
  * - writes the transform in the object store, which marks the analysis
  *   and the recommendation outdated after a change of rotation or scale
  *   (Object Reference Rule 8).
@@ -36,6 +41,15 @@ import { useObjectStore } from "../state/objectStore";
 import type { Object3D, Transform } from "../types/Object3D";
 
 export type Axis = "x" | "y" | "z";
+
+export interface ApplyOptions {
+  /**
+   * Step of a gesture of the gizmo: the position Z is kept, the object is
+   * not placed on the plate (the end of the gesture is applied without
+   * this option).
+   */
+  live?: boolean;
+}
 
 /** Smallest scale factor accepted (0.1 %) */
 export const MIN_SCALE = 0.001;
@@ -104,14 +118,24 @@ export function scaleWithAxis(
 
 export const TransformService = {
   /**
-   * Applies a transform to an object, placed on the plate.
-   * Returns false when the object does not exist or a value is refused.
+   * Applies a transform to an object, placed on the plate (except a live
+   * step of a gesture). Returns false when the object does not exist or a
+   * value is refused.
    */
-  apply(objectId: string, transform: Transform): boolean {
+  apply(
+    objectId: string,
+    transform: Transform,
+    options: ApplyOptions = {},
+  ): boolean {
     const object = findObject(objectId);
 
     if (!object || !isValid(transform)) {
       return false;
+    }
+
+    if (options.live) {
+      useObjectStore.getState().updateObjectTransform(objectId, transform);
+      return true;
     }
 
     // Z is never chosen: computed so that the object stands on the plate
