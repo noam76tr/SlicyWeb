@@ -1763,7 +1763,7 @@ Release Type:
 Transform System
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-18
@@ -1786,6 +1786,41 @@ Date:
 ## Fixed
 
 - Transform section: Escape in a field restores the previous value and keeps the selection, on every engine (the restore no longer depends on the order of the blur and key events)
+
+## Validation Result
+
+- Windows 11 (2026-10-19): a click on the cube selects it and the cube can be dragged; a click in the empty space clears the selection; keys R and S, then the toolbar button Move, change the mode and the button is highlighted; a rotation keeps the object on the plate; the Scale gizmo enlarges and reduces
+- Reported, corrected in 0.1.50: the Scale gizmo ignored the lock of the scale; the mode buttons were not found; too many handles on the Scale gizmo; Transform section to adapt to the mode
+- releases/README.me, scripts/README.me, scripts/build/README.me, scripts/release/README.me removed on GitHub by Noam (misnamed placeholders)
+
+---
+
+# VERSION 0.1.50
+
+Release Type:
+Transform System
+
+Status:
+In Progress
+
+Date:
+2026-10-19
+
+## Added
+
+- src/gui/toolbars/TransformModeBar.tsx: buttons Move, Rotate, Scale over the 3D viewport (top, start side), active tool highlighted (existing keys transform.title, transform.move, transform.rotate, transform.scale; 253 keys)
+- src/state/viewportStore.ts: keepProportions, the lock of the scale shared by the Transform section and the Scale gizmo (on by default)
+
+## Changed
+
+- src/renderer/TransformGizmo.ts: Scale gizmo with one handle per axis, X on the right, Y in front, Z on top, and the center handle; plane handles removed
+- src/gui/sidebar/TransformSection.tsx: rows and actions by mode of the gizmo (Move: Position, Scale, Reset Position, Center On Bed, Reset Scale; Rotate: Rotation, Reset Rotation; Scale: Scale, Size, Reset Scale); the lock is read from the viewport store
+- src/gui/toolbars/Toolbar.tsx: active mode highlighted in the accent color of the application (primary)
+- GUI_SPEC.md (Toolbar Buttons, Scale Gizmo, Transform Section), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md, PASSATION.md
+
+## Fixed
+
+- Scale gizmo: with the lock closed, an axis handle changed that axis only; it now scales the three axes by the same factor, as the Transform section
 
 ---
 

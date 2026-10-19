@@ -15,6 +15,8 @@
  *
  * The viewport receives the function that applies a transform
  * (TransformService, Phase 6): gizmos and dragging on the plate.
+ * The buttons Move, Rotate, Scale (TransformModeBar) are shown over the
+ * viewport.
  *
  * Based on:
  * - ARCHITECTURE.md
@@ -34,6 +36,7 @@ import LeftSidebar from "./sidebar/LeftSidebar";
 import RightSidebar from "./sidebar/RightSidebar";
 import StatusBar from "./statusbar/StatusBar";
 import Toolbar from "./toolbars/Toolbar";
+import TransformModeBar from "./toolbars/TransformModeBar";
 import ImportDropZone from "./import/ImportDropZone";
 import Viewport from "./viewport/Viewport";
 
@@ -70,6 +73,7 @@ export default function App(): JSX.Element {
                 TransformService.apply(objectId, transform)
               }
             />
+            <TransformModeBar />
           </ImportDropZone>
         }
         rightTitle={t("properties.title")}

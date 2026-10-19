@@ -9,7 +9,9 @@
  *   requestId changes at each request, so that the same view can be
  *   requested twice;
  * - transformMode: gizmo shown on the selected object (Move by default;
- *   toolbar Move, Rotate, Scale and keys G, R, S, Phase 6).
+ *   toolbar Move, Rotate, Scale and keys G, R, S, Phase 6);
+ * - keepProportions: lock of the scale (on by default), the same for the
+ *   Transform section and the Scale gizmo.
  *
  * No business logic.
  *
@@ -52,6 +54,8 @@ interface ViewportState {
 
   transformMode: TransformMode;
 
+  keepProportions: boolean;
+
   setProjection: (
     projection: ViewportProjection
   ) => void;
@@ -63,6 +67,10 @@ interface ViewportState {
   setTransformMode: (
     mode: TransformMode
   ) => void;
+
+  setKeepProportions: (
+    keepProportions: boolean
+  ) => void;
 }
 
 export const useViewportStore =
@@ -72,6 +80,8 @@ export const useViewportStore =
     viewRequest: null,
 
     transformMode: "translate",
+
+    keepProportions: true,
 
     setProjection: (projection) =>
       set({ projection }),
@@ -85,5 +95,8 @@ export const useViewportStore =
       })),
 
     setTransformMode: (transformMode) =>
-      set({ transformMode })
+      set({ transformMode }),
+
+    setKeepProportions: (keepProportions) =>
+      set({ keepProportions })
   }));

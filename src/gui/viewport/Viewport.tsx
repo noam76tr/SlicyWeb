@@ -20,7 +20,9 @@
  * Objects (Phase 6): click to select, click in the empty space to clear
  * the selection, drag an object to move it on the plate
  * (ObjectInteraction); gizmo on the selected object (TransformGizmo):
- * Move, Rotate, Scale, chosen in the toolbar or with the keys G, R, S;
+ * Move, Rotate, Scale, chosen in the toolbar, the mode buttons over the
+ * viewport (GUI) or with the keys G, R, S; the lock of the scale
+ * (keepProportions) applies to the Scale gizmo as to the Transform section;
  * Escape clears the selection (GUI_SPEC.md, Keyboard Shortcuts).
  *
  * Domain: Viewport (DOMAINS_DEPENDENCY_MATRIX.md). It does not depend
@@ -50,7 +52,10 @@ import { TransformGizmo } from "../../renderer/TransformGizmo";
 import { WorkspaceHelpers } from "../../renderer/helpers/WorkspaceHelpers";
 import { useObjectStore } from "../../state/objectStore";
 import { usePrinterStore } from "../../state/printerStore";
-import { useViewportStore, type TransformMode } from "../../state/viewportStore";
+import {
+  useViewportStore,
+  type TransformMode,
+} from "../../state/viewportStore";
 
 import type { Transform } from "../../types/Object3D";
 
@@ -140,6 +145,7 @@ export default function Viewport({
       (dragging) => cameraManager.setControlsEnabled(!dragging),
     );
     gizmo.setMode(useViewportStore.getState().transformMode);
+    gizmo.setUniform(useViewportStore.getState().keepProportions);
 
     const interaction = new ObjectInteraction({
       domElement: rendererManager.getCanvas(),
@@ -186,8 +192,7 @@ export default function Viewport({
       const { objects, selectedObjectId } = useObjectStore.getState();
       objectRenderer.sync(objects, selectedObjectId);
       gizmo.attach(
-        objects.find((object) => object.objectId === selectedObjectId) ??
-          null,
+        objects.find((object) => object.objectId === selectedObjectId) ?? null,
       );
     };
     syncObjects();
@@ -202,23 +207,32 @@ export default function Viewport({
       cameraManager.setView("reset", workspace.getFramingBox());
     });
 
-    const unsubscribeViewport = useViewportStore.subscribe((state, previous) => {
-      if (state.projection !== previous.projection) {
-        cameraManager.setProjection(state.projection);
-        gizmo.setCamera(cameraManager.getCamera());
-      }
+    const unsubscribeViewport = useViewportStore.subscribe(
+      (state, previous) => {
+        if (state.projection !== previous.projection) {
+          cameraManager.setProjection(state.projection);
+          gizmo.setCamera(cameraManager.getCamera());
+        }
 
-      if (state.transformMode !== previous.transformMode) {
-        gizmo.setMode(state.transformMode);
-      }
+        if (state.transformMode !== previous.transformMode) {
+          gizmo.setMode(state.transformMode);
+        }
 
-      if (
-        state.viewRequest &&
-        state.viewRequest.requestId !== previous.viewRequest?.requestId
-      ) {
-        cameraManager.setView(state.viewRequest.view, workspace.getFramingBox());
-      }
-    });
+        if (state.keepProportions !== previous.keepProportions) {
+          gizmo.setUniform(state.keepProportions);
+        }
+
+        if (
+          state.viewRequest &&
+          state.viewRequest.requestId !== previous.viewRequest?.requestId
+        ) {
+          cameraManager.setView(
+            state.viewRequest.view,
+            workspace.getFramingBox(),
+          );
+        }
+      },
+    );
 
     const handleKeyDown = (event: KeyboardEvent): void => {
       if (
@@ -239,7 +253,9 @@ export default function Viewport({
         useObjectStore.getState().selectObject(null);
       } else if (TRANSFORM_KEYS[event.code]) {
         event.preventDefault();
-        useViewportStore.getState().setTransformMode(TRANSFORM_KEYS[event.code]);
+        useViewportStore
+          .getState()
+          .setTransformMode(TRANSFORM_KEYS[event.code]);
       }
     };
     window.addEventListener("keydown", handleKeyDown);

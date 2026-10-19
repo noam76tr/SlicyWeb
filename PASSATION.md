@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-18. Lot 45 sur `main` au commit `bc069cb`, vérifié identique. Dernière entrée du CHANGELOG : 0.1.49 (lot 46).
+Date : 2026-10-19. `main` au commit `f6a6450` (lot 45, plus 4 fichiers `README.me` supprimés par Noam). Lots 46 et 47 pas encore sur GitHub. Dernière entrée du CHANGELOG : 0.1.50 (lot 47).
 
 ---
 
@@ -71,7 +71,7 @@ Date : 2026-10-18. Lot 45 sur `main` au commit `bc069cb`, vérifié identique. D
 | 3 | GUI Foundation | Completed (2026-10-15) | 0.1.35 |
 | 4 | 3D Viewport | Completed (2026-10-16) | 0.1.37 |
 | 5 | Model Import | Completed (2026-10-17) | 0.1.44 |
-| 6 | Transform System | **In Progress** (depuis le 2026-10-18) | 0.1.47 à 0.1.49 |
+| 6 | Transform System | **In Progress** (depuis le 2026-10-18) | 0.1.47 à 0.1.50 |
 | 7 à 16 | Printer Database, Material Database, Model Analysis, Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
@@ -89,7 +89,7 @@ Date : 2026-10-18. Lot 45 sur `main` au commit `bc069cb`, vérifié identique. D
   - analyse dans un Web Worker, avec une barre de progression et un bouton Annuler ;
   - objets centrés à Z = 0 ; un 3MF garde la disposition de ses objets ;
   - messages d'erreur traduits, avec les codes d'ERROR_CODES_SPEC.
-- **Transformations (phase 6, en cours) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). La section Transform du panneau Propriétés permet de saisir la position X, Y, la rotation, l'échelle (%) et la taille (mm), avec Reset et Center On Bed ; l'objet reste toujours posé sur le plateau. Dans la vue 3D : clic pour sélectionner (un vrai clic dans le vide désélectionne), glisser un objet pour le déplacer sur le plateau (après 4 pixels), poignées Move, Rotate, Scale (touches G, R, S, boutons de la barre d'outils), Échap désélectionne. Annuler / Rétablir n'est pas encore là.
+- **Transformations (phase 6, en cours) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). La section Transform du panneau Propriétés permet de saisir la position X, Y, la rotation, l'échelle (%) et la taille (mm), avec Reset et Center On Bed ; l'objet reste toujours posé sur le plateau. Dans la vue 3D : clic pour sélectionner (un vrai clic dans le vide désélectionne), glisser un objet pour le déplacer sur le plateau (après 4 pixels), poignées Move, Rotate, Scale (touches G, R, S, boutons de la barre d'outils et boutons au-dessus de la vue 3D), Échap désélectionne. Poignée Scale : une poignée par axe (X à droite, Y devant, Z en haut) et celle du centre ; le cadenas agit pareil dans le panneau et sur la poignée. La section Transform n'affiche que les lignes du mode. Annuler / Rétablir n'est pas encore là.
 - **Sécurité :**
   - liste blanche des canaux IPC dans le preload (22 canaux, `npm run check:ipc`) ;
   - politique de sécurité du contenu (CSP) stricte dans l'application compilée, et adaptée en développement ;
@@ -170,6 +170,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 44 | Phase 6 : sens de la transformation (ADR-031, KI-017), rendu de la rotation, Vitest et premiers tests | 0.1.47 |
 | 45 | Section Transform du panneau Propriétés, TransformService (commande unique) | 0.1.48 |
 | 46 | Sélection au clic, glisser sur le plateau, poignées 3D, raccourcis G, R, S et Échap ; Échap dans un champ | 0.1.49 |
+| 47 | Corrections du lot 46 : cadenas sur la poignée Scale, boutons de mode sur la vue, 3 poignées d'échelle, panneau selon le mode | 0.1.50 |
 
 ---
 
@@ -225,6 +226,9 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 25. Section Transform : échelle en % avec cadenas (activé par défaut), tailles en mm modifiables et liées aux % ; position Z jamais modifiable (objet toujours sur le plateau) ; rotation par la poignée libre, par pas de 15° avec Maj.
 26. Ordre des lots de la phase 6 : panneau, puis poignées et raccourcis G, R, S, puis Annuler / Rétablir ; toute modification passe par une seule commande (`TransformService`).
 28. Vue 3D : on déplace un objet en le glissant, après un seuil de quelques pixels (un clic de sélection ne le décale jamais) ; poignée Move par défaut ; sélection au clic, et seul un vrai clic (sans glisser) dans le vide désélectionne.
+29. Cadenas de l'échelle : même effet dans le panneau et sur la poignée (fermé = échelle uniforme, quelle que soit la poignée).
+30. Poignée Scale : une poignée par axe, X à droite, Y **devant** (côté Y négatif, visible dans la vue par défaut), Z en haut, plus celle du centre.
+31. Section Transform selon le mode : Déplacer = Position et Échelle ; Tourner = Rotation ; Échelle = Échelle et Taille ; les boutons du bas suivent le mode.
 
 **Méthode**
 
@@ -235,8 +239,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 ## 5. Travail restant, dans l'ordre
 
 1. **Phase 6 : Transform System** (en cours).
-   - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46).
-   - À faire : Annuler / Rétablir (lot 47), branché dans `TransformService.apply` ; un glisser (souris ou poignée) = une seule entrée d'historique ; boutons Undo / Redo et Ctrl+Z / Ctrl+Y ; puis clôture selon le plan.
+   - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lot 47).
+   - À faire : Annuler / Rétablir (lot 48), branché dans `TransformService.apply` ; un glisser (souris ou poignée) = une seule entrée d'historique ; boutons Undo / Redo et Ctrl+Z / Ctrl+Y ; puis clôture selon le plan.
    - KI-015 : ViewportToolbar et ViewportStatus contiennent du texte en dur, à traduire quand la phase 6 les affiche.
 2. **Phases 7 à 16**, dans l'ordre du plan technique.
 3. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
@@ -262,7 +266,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot46-gizmos/` : livrables de chaque lot (`LOTN.md`, zip, patch).
+- `lot9-create-project/` à `lot47-gizmo-fixes/` : livrables de chaque lot (`LOTN.md`, zip, patch).
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

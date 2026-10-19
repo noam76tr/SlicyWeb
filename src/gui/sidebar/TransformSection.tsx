@@ -13,6 +13,13 @@
  *   changing one updates the other;
  * - Reset Position, Reset Rotation, Reset Scale, Center On Bed.
  *
+ * The rows follow the mode of the gizmo (decision of Noam, Phase 6):
+ * - Move: Position and Scale; Reset Position, Center On Bed, Reset Scale;
+ * - Rotate: Rotation; Reset Rotation;
+ * - Scale: Scale and Size; Reset Scale.
+ * The lock of the scale is kept in the viewport store: the Scale gizmo
+ * uses the same one.
+ *
  * A value is applied with Enter or when the field loses the focus; Escape
  * restores it. A comma is accepted as decimal separator. Every change goes
  * through TransformService (one place for undo and redo).
@@ -27,6 +34,7 @@
 
 import { Lock, LockOpen } from "lucide-react";
 import {
+  Fragment,
   useEffect,
   useRef,
   useState,
@@ -35,12 +43,44 @@ import {
 } from "react";
 
 import { TransformService, type Axis } from "../../services/TransformService";
+import {
+  useViewportStore,
+  type TransformMode,
+} from "../../state/viewportStore";
 import { Button } from "../components/ui/button";
 import { useTranslation } from "../hooks/useTranslation";
 
 import type { Object3D } from "../../types/Object3D";
 
 const AXES: Axis[] = ["x", "y", "z"];
+
+type TransformRow = "position" | "rotation" | "scale" | "size";
+
+type TransformAction =
+  | "resetPosition"
+  | "centerOnBed"
+  | "resetRotation"
+  | "resetScale";
+
+/** Rows and actions shown for each mode of the gizmo */
+const MODE_LAYOUT: Record<
+  TransformMode,
+  { rows: TransformRow[]; actions: TransformAction[] }
+> = {
+  translate: {
+    rows: ["position", "scale"],
+    actions: ["resetPosition", "centerOnBed", "resetScale"],
+  },
+  rotate: { rows: ["rotation"], actions: ["resetRotation"] },
+  scale: { rows: ["scale", "size"], actions: ["resetScale"] },
+};
+
+const ACTIONS: Record<TransformAction, (objectId: string) => boolean> = {
+  resetPosition: (objectId) => TransformService.resetPosition(objectId),
+  centerOnBed: (objectId) => TransformService.centerOnBed(objectId),
+  resetRotation: (objectId) => TransformService.resetRotation(objectId),
+  resetScale: (objectId) => TransformService.resetScale(objectId),
+};
 
 /** Value shown in a field: 2 decimals at most */
 function format(value: number): string {
@@ -174,15 +214,18 @@ export default function TransformSection({
   object: Object3D;
 }): JSX.Element {
   const { t } = useTranslation();
-  const [uniform, setUniform] = useState(true);
+  const mode = useViewportStore((state) => state.transformMode);
+  const uniform = useViewportStore((state) => state.keepProportions);
+  const setUniform = useViewportStore((state) => state.setKeepProportions);
 
   const { objectId, transform } = object;
   const size = TransformService.size(object);
+  const layout = MODE_LAYOUT[mode];
   const fieldLabel = (row: string, axis: Axis): string =>
     `${row} ${axis.toUpperCase()}`;
 
-  return (
-    <div className="space-y-3">
+  const rows: Record<TransformRow, JSX.Element> = {
+    position: (
       <Row title={t("transform.position")} unit={t("unit.mm")}>
         {AXES.map((axis) =>
           axis === "z" ? (
@@ -207,7 +250,9 @@ export default function TransformSection({
           ),
         )}
       </Row>
+    ),
 
+    rotation: (
       <Row title={t("transform.rotation")} unit={t("unit.degree")}>
         {AXES.map((axis) => (
           <NumberField
@@ -221,7 +266,9 @@ export default function TransformSection({
           />
         ))}
       </Row>
+    ),
 
+    scale: (
       <Row
         title={t("transform.scale")}
         unit={t("unit.percent")}
@@ -256,7 +303,9 @@ export default function TransformSection({
           />
         ))}
       </Row>
+    ),
 
+    size: (
       <Row title={t("transform.size")} unit={t("unit.mm")}>
         {AXES.map((axis) => (
           <NumberField
@@ -270,36 +319,32 @@ export default function TransformSection({
           />
         ))}
       </Row>
+    ),
+  };
+
+  return (
+    <div className="space-y-3">
+      {layout.rows.map((row) => (
+        <Fragment key={row}>{rows[row]}</Fragment>
+      ))}
 
       <div className="grid grid-cols-2 gap-1.5">
-        <Button
-          variant="outline"
-          size="xs"
-          onClick={() => TransformService.resetPosition(objectId)}
-        >
-          {t("transform.resetPosition")}
-        </Button>
-        <Button
-          variant="outline"
-          size="xs"
-          onClick={() => TransformService.resetRotation(objectId)}
-        >
-          {t("transform.resetRotation")}
-        </Button>
-        <Button
-          variant="outline"
-          size="xs"
-          onClick={() => TransformService.resetScale(objectId)}
-        >
-          {t("transform.resetScale")}
-        </Button>
-        <Button
-          variant="outline"
-          size="xs"
-          onClick={() => TransformService.centerOnBed(objectId)}
-        >
-          {t("transform.centerOnBed")}
-        </Button>
+        {layout.actions.map((action, index) => (
+          <Button
+            key={action}
+            variant="outline"
+            size="xs"
+            // An odd last button takes the full width
+            className={
+              index === layout.actions.length - 1 && index % 2 === 0
+                ? "col-span-2"
+                : undefined
+            }
+            onClick={() => ACTIONS[action](objectId)}
+          >
+            {t(`transform.${action}`)}
+          </Button>
+        ))}
       </div>
     </div>
   );

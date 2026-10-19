@@ -664,7 +664,7 @@ Generate
 
 ```
 
-Move, Rotate and Scale choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is shown pressed.
+Move, Rotate and Scale choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. The same three buttons are also shown over the 3D viewport, at the top on the start side (request of Noam, Phase 6).
 
 
 
@@ -1182,7 +1182,9 @@ Non Uniform
 
 ```
 
-The center handle scales uniformly; an axis handle scales along that axis of the object. After a change the object is placed back on the plate.
+One handle per axis of the object, on one side only: X on the right, Y in front, Z on top; and the center handle, which scales uniformly (decision of Noam, Phase 6).
+
+The lock of the Scale row (Transform Section) applies to the gizmo too: closed, every handle scales uniformly; open, an axis handle scales along that axis of the object only. After a change the object is placed back on the plate.
 
 
 
@@ -1464,6 +1466,14 @@ Size X Y Z      mm, along the axes of the object, editable and linked to
 ```
 
 A value is applied with Enter or when the field loses the focus; Escape restores it; a comma is accepted as decimal separator; a value that is not a number, or a scale of 0.1 % or less, is refused. Every change of transform (fields, Transform Actions, gizmos) goes through one service (TransformService), where undo and redo are recorded.
+
+The rows and the Transform Actions shown follow the mode of the gizmo (decision of Noam, Phase 6):
+
+```text
+Move     Position, Scale; Reset Position, Center On Bed, Reset Scale
+Rotate   Rotation; Reset Rotation
+Scale    Scale, Size; Reset Scale
+```
 
 
 

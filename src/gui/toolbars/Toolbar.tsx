@@ -120,7 +120,10 @@ export default function Toolbar(): JSX.Element {
       {TOOLBAR_GROUPS.map((group, index) => (
         <Fragment key={group[0].key}>
           {index > 0 && (
-            <div className="mx-1 h-6 w-px shrink-0 bg-border" aria-hidden="true" />
+            <div
+              className="mx-1 h-6 w-px shrink-0 bg-border"
+              aria-hidden="true"
+            />
           )}
 
           {group.map((button) => {
@@ -138,7 +141,7 @@ export default function Toolbar(): JSX.Element {
                 aria-disabled={disabled || undefined}
                 aria-pressed={pressed}
                 title={disabled ? `${label} (${notAvailable})` : label}
-                className="flex h-9 shrink-0 items-center gap-1.5 rounded-md px-2 text-xs hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring aria-disabled:cursor-default aria-disabled:opacity-50 aria-disabled:hover:bg-transparent aria-pressed:bg-accent aria-pressed:text-accent-foreground"
+                className="flex h-9 shrink-0 items-center gap-1.5 rounded-md px-2 text-xs hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring aria-disabled:cursor-default aria-disabled:opacity-50 aria-disabled:hover:bg-transparent aria-pressed:bg-primary aria-pressed:text-primary-foreground"
                 onClick={disabled ? undefined : button.action}
               >
                 <Icon
