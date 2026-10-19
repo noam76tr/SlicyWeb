@@ -7,6 +7,7 @@
  * transform (scale, rotation in degrees around the plate axes X, Y, Z,
  * position; ObjectTransform.ts, ADR-031), hidden when the object is not
  * visible, and drawn in the accent color when it is selected.
+ * pick() returns the object under the pointer (selection, Phase 6).
  *
  * Domain: Viewport. Depends on the Scene Domain (geometry, transform).
  *
@@ -71,6 +72,7 @@ export class ObjectRenderer {
 
         mesh = new THREE.Mesh(geometry, this.material);
         mesh.name = `object-${object.objectId}`;
+        mesh.userData.objectId = object.objectId;
         this.meshes.set(object.objectId, mesh);
         this.scene.add(mesh);
       }
@@ -93,6 +95,16 @@ export class ObjectRenderer {
         this.meshes.delete(objectId);
       }
     }
+  }
+
+  /**
+   * Visible object under the ray (nearest), or null.
+   */
+  public pick(raycaster: THREE.Raycaster): string | null {
+    const visible = [...this.meshes.values()].filter((mesh) => mesh.visible);
+    const hit = raycaster.intersectObjects(visible, false)[0];
+
+    return hit ? (hit.object.userData.objectId as string) : null;
   }
 
   public dispose(): void {

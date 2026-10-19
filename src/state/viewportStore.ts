@@ -7,12 +7,14 @@
  * - projection: perspective or orthographic camera;
  * - viewRequest: last view preset requested (View menu, Home key);
  *   requestId changes at each request, so that the same view can be
- *   requested twice.
+ *   requested twice;
+ * - transformMode: gizmo shown on the selected object (Move by default;
+ *   toolbar Move, Rotate, Scale and keys G, R, S, Phase 6).
  *
  * No business logic.
  *
  * Based on:
- * - GUI_SPEC.md (View Menu, Camera Views)
+ * - GUI_SPEC.md (View Menu, Camera Views, Object Gizmos, Keyboard Shortcuts)
  * - ARCHITECTURE.md
  */
 
@@ -35,6 +37,9 @@ export type ViewPreset =
   | "isometric"
   | "reset";
 
+/** Gizmo of the selected object (GUI_SPEC.md, Object Gizmos) */
+export type TransformMode = "translate" | "rotate" | "scale";
+
 export interface ViewRequest {
   view: ViewPreset;
   requestId: number;
@@ -45,12 +50,18 @@ interface ViewportState {
 
   viewRequest: ViewRequest | null;
 
+  transformMode: TransformMode;
+
   setProjection: (
     projection: ViewportProjection
   ) => void;
 
   requestView: (
     view: ViewPreset
+  ) => void;
+
+  setTransformMode: (
+    mode: TransformMode
   ) => void;
 }
 
@@ -59,6 +70,8 @@ export const useViewportStore =
     projection: "perspective",
 
     viewRequest: null,
+
+    transformMode: "translate",
 
     setProjection: (projection) =>
       set({ projection }),
@@ -69,5 +82,8 @@ export const useViewportStore =
           view,
           requestId: (state.viewRequest?.requestId ?? 0) + 1
         }
-      }))
+      })),
+
+    setTransformMode: (transformMode) =>
+      set({ transformMode })
   }));

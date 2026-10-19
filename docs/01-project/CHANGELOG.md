@@ -1728,7 +1728,7 @@ Release Type:
 Transform System
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-18
@@ -1748,6 +1748,44 @@ Date:
 - GUI_SPEC.md: details of the Transform section and of the Transform Actions; Move Gizmo along X and Y only; Rotate Gizmo free, by 15 degrees with Shift
 - PASSATION.md: commands with a value containing a space (npm pkg set) replaced by node -e
 - FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md
+
+## Validation Result
+
+- Windows 11 (2026-10-18): npm run check:locales (253 keys), npm run typecheck and npm run lint report 0 errors, npm test: 14 tests passed; files on GitHub
+- A rotation changes position Z by itself (the object stays on the plate); the lock keeps the proportions; a size in mm updates the scale; Hebrew unit "מ״מ" approved; console: only the React DevTools message
+- Reported: a value typed in Position X without Enter, then Escape, stayed in the field (fixed in 0.1.49)
+
+---
+
+# VERSION 0.1.49
+
+Release Type:
+Transform System
+
+Status:
+In Progress
+
+Date:
+2026-10-18
+
+## Added
+
+- src/renderer/ObjectInteraction.ts: left mouse in the viewport; a click on an object selects it, a click in the empty space clears the selection; pressing on an object and dragging moves it on the build plate (X, Y); the move starts after 4 pixels (DRAG_THRESHOLD_PX), so a selection click never moves the object and a drag in the empty space keeps the selection
+- src/renderer/TransformGizmo.ts: Move (X, Y), Rotate (rings X, Y, Z of the plate, by 15 degrees with Shift) and Scale (one axis or uniform) gizmos of the selected object, with TransformControls of Three.js; each change goes through TransformService
+- Shortcuts G, R, S (mode of the gizmo, read by key position, so they work with any keyboard layout) and ESC (clears the selection) in the viewport; not active while a text field has the focus
+- Toolbar Move, Rotate, Scale: choose the mode of the gizmo; the active button is shown pressed
+- Edit > Deselect All active
+- src/state/viewportStore.ts: transformMode (Move by default); src/constants/ViewportConstants.ts: ROTATION_SNAP_DEGREES, DRAG_THRESHOLD_PX
+
+## Changed
+
+- src/renderer/ObjectRenderer.ts: object under the pointer (pick); src/renderer/CameraManager.ts: the camera controls are turned off while a gizmo is dragged
+- src/gui/viewport/Viewport.tsx: gizmo, selection and drag; the change callback is given by App.tsx (the Viewport Domain does not depend on the Service Domain)
+- GUI_SPEC.md (Toolbar Buttons, Viewport Controls, Rotate Gizmo, Scale Gizmo, Keyboard Shortcuts), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md, PASSATION.md
+
+## Fixed
+
+- Transform section: Escape in a field restores the previous value and keeps the selection, on every engine (the restore no longer depends on the order of the blur and key events)
 
 ---
 

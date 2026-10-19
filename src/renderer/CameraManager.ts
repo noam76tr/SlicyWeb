@@ -137,6 +137,16 @@ export class CameraManager {
   }
 
   /**
+   * Enables or disables the camera controls (disabled while a gizmo
+   * is dragged).
+   */
+  public setControlsEnabled(enabled: boolean): void {
+    if (this.controls) {
+      this.controls.enabled = enabled;
+    }
+  }
+
+  /**
    * Applies the camera movement in progress (damping).
    * Called at each frame.
    */

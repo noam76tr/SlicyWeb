@@ -60,3 +60,13 @@ export const CAMERA_FAR_MM = 50000;
 
 /** Margin applied when a view frames the workspace */
 export const VIEW_FRAMING_MARGIN = 1.15;
+
+/** Rotation step of the gizmo while Shift is held, in degrees (Phase 6) */
+export const ROTATION_SNAP_DEGREES = 15;
+
+/**
+ * Pointer travel, in pixels, before a press becomes a drag: a click that
+ * selects never moves the object, and only a real click (no drag) in the
+ * empty space clears the selection (Phase 6, decision of Noam).
+ */
+export const DRAG_THRESHOLD_PX = 4;

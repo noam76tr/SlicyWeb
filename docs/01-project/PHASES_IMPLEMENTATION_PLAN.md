@@ -1137,11 +1137,13 @@ Decisions (ADR-031, KI-017 resolved):
 - 3MF export transform defined in DATA_SCHEMA.md (Transform Rules)
 - Transform section (GUI_SPEC.md): position X, Y editable, Z computed (the object always stands on the plate); scale in % with a lock, size in mm linked to the scale; gizmo rotation free, by 15 degrees with Shift
 - Order of the lots: Transform section of the Properties Panel, then gizmos and shortcuts G, R, S, then undo and redo; every change of transform goes through TransformService
+- Viewport (lot 46): an object is moved by dragging it, after a threshold of a few pixels so that a selection click never moves it; Move gizmo by default; selection by click, and only a real click (no drag) in the empty space clears the selection
 
 Progress:
 
 - Transform foundation (CHANGELOG 0.1.47): src/scene/ObjectTransform.ts (matrix, placement on the plate, 3MF export transform); the viewport applies rotation and scale; unit tests with Vitest (npm test)
 - Transform section of the Properties Panel (CHANGELOG 0.1.48): position, rotation, scale, size; Reset Position, Reset Rotation, Reset Scale, Center On Bed; TransformService
+- Gizmos and selection in the viewport (CHANGELOG 0.1.49): click to select, drag on the plate, Move, Rotate and Scale gizmos, shortcuts G, R, S and ESC, toolbar Move, Rotate, Scale, Edit > Deselect All
 
 ---
 

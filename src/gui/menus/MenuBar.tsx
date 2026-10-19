@@ -13,6 +13,7 @@
  *   view presets and Reset View (viewport store);
  * - File > Import STL and File > Import 3MF (Phase 5): system file
  *   dialog, import (openImportDialog, ImportService);
+ * - Edit > Deselect All (Phase 6): clears the object selection;
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -29,6 +30,7 @@
 import { Fragment } from "react";
 
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import { useObjectStore } from "../../state/objectStore";
 import {
   useViewportStore,
   type ViewPreset,
@@ -120,7 +122,11 @@ const MENUS: MenuDefinition[] = [
       [{ key: "edit.duplicate" }, { key: "edit.delete", shortcut: "Del" }],
       [
         { key: "edit.selectAll", shortcut: "Ctrl+A" },
-        { key: "edit.deselectAll", shortcut: "Esc" },
+        {
+          key: "edit.deselectAll",
+          shortcut: "Esc",
+          action: () => useObjectStore.getState().selectObject(null),
+        },
       ],
       [{ key: "edit.preferences" }],
     ],

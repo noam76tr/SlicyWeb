@@ -664,6 +664,8 @@ Generate
 
 ```
 
+Move, Rotate and Scale choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is shown pressed.
+
 
 
 ---
@@ -980,6 +982,13 @@ Right Mouse = Rotate Camera
 
 ```
 
+Left mouse (objects):
+
+- a click on an object selects it; a click in the empty space clears the selection;
+- pressing on an object and dragging moves it on the build plate (X, Y), as in Bambu Studio and OrcaSlicer;
+- the move starts only after 4 pixels: a selection click never moves the object, and a drag that starts in the empty space keeps the selection;
+- a press on a handle of the gizmo is left to the gizmo.
+
 
 
 ---
@@ -1147,6 +1156,7 @@ Incremental
 ```
 
 Free by default; with Shift held, by steps of 15 degrees.
+The gizmo shows three rings, one per axis of the build plate; after a rotation the object is placed back on the plate.
 
 
 
@@ -1171,6 +1181,8 @@ Uniform
 Non Uniform
 
 ```
+
+The center handle scales uniformly; an axis handle scales along that axis of the object. After a change the object is placed back on the plate.
 
 
 
@@ -1821,6 +1833,8 @@ R            Rotate
 S            Scale
 
 ```
+
+G, R and S choose the mode of the gizmo. They are read by their position on the keyboard, so they work the same with an English, French or Hebrew layout. The shortcuts of the viewport (G, R, S, ESC, HOME) are not active while a text field has the focus: in a field, ESC restores the value and keeps the selection.
 
 
 

@@ -13,6 +13,9 @@
  *
  * Texts come from the translation dictionaries (useTranslation).
  *
+ * The viewport receives the function that applies a transform
+ * (TransformService, Phase 6): gizmos and dragging on the plate.
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - GUI_SPEC.md
@@ -21,6 +24,8 @@
 
 import { useEffect } from "react";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
+
+import { TransformService } from "../services/TransformService";
 
 import MainLayout from "./MainLayout";
 import { useTranslation } from "./hooks/useTranslation";
@@ -61,6 +66,9 @@ export default function App(): JSX.Element {
             <Viewport
               label={t("viewport.title")}
               unavailableMessage={t("viewport.unavailable")}
+              onTransformObject={(objectId, transform) =>
+                TransformService.apply(objectId, transform)
+              }
             />
           </ImportDropZone>
         }

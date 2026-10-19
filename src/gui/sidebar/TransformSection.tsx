@@ -72,7 +72,10 @@ function NumberField({
 }: NumberFieldProps): JSX.Element {
   const [text, setText] = useState(format(value));
   const [editing, setEditing] = useState(false);
-  const cancelled = useRef(false);
+
+  // Set by Enter and Escape, which handle the value themselves: the blur
+  // that follows must not apply it again (or apply a cancelled value)
+  const handled = useRef(false);
 
   useEffect(() => {
     if (!editing) {
@@ -82,14 +85,6 @@ function NumberField({
 
   const commit = (): void => {
     setEditing(false);
-
-    // Escape: the field loses the focus without applying the value
-    if (cancelled.current) {
-      cancelled.current = false;
-      setText(format(value));
-      return;
-    }
-
     const number = parse(text);
 
     if (
@@ -102,11 +97,27 @@ function NumberField({
     }
   };
 
+  const onBlur = (): void => {
+    if (handled.current) {
+      handled.current = false;
+      return;
+    }
+
+    commit();
+  };
+
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
     if (event.key === "Enter") {
+      event.preventDefault();
+      commit();
+      handled.current = true;
       event.currentTarget.blur();
     } else if (event.key === "Escape") {
-      cancelled.current = true;
+      // The value typed is dropped at once, whatever happens next
+      event.preventDefault();
+      setText(format(value));
+      setEditing(false);
+      handled.current = true;
       event.currentTarget.blur();
     }
   };
@@ -123,9 +134,12 @@ function NumberField({
         aria-label={label}
         readOnly={readOnly}
         value={text}
-        onFocus={() => setEditing(true)}
+        onFocus={() => {
+          handled.current = false;
+          setEditing(true);
+        }}
         onChange={(event) => setText(event.target.value)}
-        onBlur={commit}
+        onBlur={onBlur}
         onKeyDown={onKeyDown}
         className="h-6 w-full min-w-0 rounded border border-input bg-background px-1.5 text-xs text-foreground tabular-nums outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 read-only:bg-muted read-only:text-muted-foreground"
       />

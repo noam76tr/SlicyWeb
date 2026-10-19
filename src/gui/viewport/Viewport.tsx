@@ -17,8 +17,15 @@
  * The canvas follows the size of its container (ResizeObserver):
  * window resize, side panels resized or collapsed.
  *
+ * Objects (Phase 6): click to select, click in the empty space to clear
+ * the selection, drag an object to move it on the plate
+ * (ObjectInteraction); gizmo on the selected object (TransformGizmo):
+ * Move, Rotate, Scale, chosen in the toolbar or with the keys G, R, S;
+ * Escape clears the selection (GUI_SPEC.md, Keyboard Shortcuts).
+ *
  * Domain: Viewport (DOMAINS_DEPENDENCY_MATRIX.md). It does not depend
- * on the GUI: the GUI mounts it and passes its translated label.
+ * on the GUI: the GUI mounts it and passes its translated label, and the
+ * function that applies a transform (TransformService).
  *
  * No business logic.
  * No AI logic.
@@ -28,20 +35,31 @@
  * - ARCHITECTURE.md
  * - GUI_SPEC.md (3D Viewport, Viewport Controls, Camera Views)
  * - FILE_STRUCTURE.md
- * - DECISIONS.md (ADR-027)
+ * - DECISIONS.md (ADR-027, ADR-031)
  */
 
 import { useEffect, useRef, useState } from "react";
 
 import { CameraManager } from "../../renderer/CameraManager";
 import { LightingManager } from "../../renderer/LightingManager";
+import { ObjectInteraction } from "../../renderer/ObjectInteraction";
 import { ObjectRenderer } from "../../renderer/ObjectRenderer";
 import { RendererManager } from "../../renderer/RendererManager";
 import { SceneRenderer } from "../../renderer/SceneRenderer";
+import { TransformGizmo } from "../../renderer/TransformGizmo";
 import { WorkspaceHelpers } from "../../renderer/helpers/WorkspaceHelpers";
 import { useObjectStore } from "../../state/objectStore";
 import { usePrinterStore } from "../../state/printerStore";
-import { useViewportStore } from "../../state/viewportStore";
+import { useViewportStore, type TransformMode } from "../../state/viewportStore";
+
+import type { Transform } from "../../types/Object3D";
+
+/** Keys of the gizmos (GUI_SPEC.md, Keyboard Shortcuts: G, R, S), by key position */
+const TRANSFORM_KEYS: Record<string, TransformMode> = {
+  KeyG: "translate",
+  KeyR: "rotate",
+  KeyS: "scale",
+};
 
 /** Keys typed in a text field must not move the camera */
 function isEditableTarget(target: EventTarget | null): boolean {
@@ -60,14 +78,25 @@ interface ViewportProps {
 
   /** Message shown when 3D rendering cannot start, already translated */
   unavailableMessage: string;
+
+  /**
+   * Applies a transform to an object (TransformService); returns false
+   * when it is refused.
+   */
+  onTransformObject: (objectId: string, transform: Transform) => boolean;
 }
 
 export default function Viewport({
   label,
   unavailableMessage,
+  onTransformObject,
 }: ViewportProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [unavailable, setUnavailable] = useState(false);
+
+  // Latest callback, read by the event handlers created once
+  const onTransformRef = useRef(onTransformObject);
+  onTransformRef.current = onTransformObject;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -96,6 +125,41 @@ export default function Viewport({
 
     cameraManager.attachControls(rendererManager.getCanvas());
 
+    const findObject = (objectId: string) =>
+      useObjectStore
+        .getState()
+        .objects.find((object) => object.objectId === objectId);
+
+    // Gizmo first: it receives the presses on its handles before the
+    // object interaction
+    const gizmo = new TransformGizmo(
+      scene,
+      cameraManager.getCamera(),
+      rendererManager.getCanvas(),
+      (objectId, transform) => onTransformRef.current(objectId, transform),
+      (dragging) => cameraManager.setControlsEnabled(!dragging),
+    );
+    gizmo.setMode(useViewportStore.getState().transformMode);
+
+    const interaction = new ObjectInteraction({
+      domElement: rendererManager.getCanvas(),
+      getCamera: () => cameraManager.getCamera(),
+      pick: (raycaster) => objectRenderer.pick(raycaster),
+      isGizmoActive: () => gizmo.isDragging(),
+      getObject: findObject,
+      select: (objectId) => useObjectStore.getState().selectObject(objectId),
+      onMove: (objectId, x, y) => {
+        const object = findObject(objectId);
+
+        if (object) {
+          onTransformRef.current(objectId, {
+            ...object.transform,
+            position: { ...object.transform.position, x, y },
+          });
+        }
+      },
+    });
+
     // Printer build plate (none until a printer is selected)
     workspace.setBuildVolume(
       usePrinterStore.getState().selectedPrinter?.buildVolume ?? null,
@@ -121,6 +185,10 @@ export default function Viewport({
     const syncObjects = (): void => {
       const { objects, selectedObjectId } = useObjectStore.getState();
       objectRenderer.sync(objects, selectedObjectId);
+      gizmo.attach(
+        objects.find((object) => object.objectId === selectedObjectId) ??
+          null,
+      );
     };
     syncObjects();
     const unsubscribeObjects = useObjectStore.subscribe(syncObjects);
@@ -137,6 +205,11 @@ export default function Viewport({
     const unsubscribeViewport = useViewportStore.subscribe((state, previous) => {
       if (state.projection !== previous.projection) {
         cameraManager.setProjection(state.projection);
+        gizmo.setCamera(cameraManager.getCamera());
+      }
+
+      if (state.transformMode !== previous.transformMode) {
+        gizmo.setMode(state.transformMode);
       }
 
       if (
@@ -149,15 +222,24 @@ export default function Viewport({
 
     const handleKeyDown = (event: KeyboardEvent): void => {
       if (
-        event.key === "Home" &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        !event.metaKey &&
-        !event.shiftKey &&
-        !isEditableTarget(event.target)
+        event.defaultPrevented ||
+        event.ctrlKey ||
+        event.altKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        isEditableTarget(event.target)
       ) {
+        return;
+      }
+
+      if (event.key === "Home") {
         event.preventDefault();
         useViewportStore.getState().requestView("reset");
+      } else if (event.key === "Escape") {
+        useObjectStore.getState().selectObject(null);
+      } else if (TRANSFORM_KEYS[event.code]) {
+        event.preventDefault();
+        useViewportStore.getState().setTransformMode(TRANSFORM_KEYS[event.code]);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -168,6 +250,8 @@ export default function Viewport({
       unsubscribePrinter();
       unsubscribeObjects();
       resizeObserver.disconnect();
+      interaction.dispose();
+      gizmo.dispose();
       sceneRenderer.stop();
       objectRenderer.dispose();
       workspace.dispose();
