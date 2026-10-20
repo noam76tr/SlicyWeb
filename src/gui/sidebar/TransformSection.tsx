@@ -20,6 +20,14 @@
  * The lock of the scale is kept in the viewport store: the Scale gizmo
  * uses the same one.
  *
+ * Several objects selected (group, decisions of Noam, Phase 6): the
+ * fields act like the gizmo on the group. Position: center of the group;
+ * Rotation: relative turn of the group around its center (the field goes
+ * back to 0); Scale: 100 % = size of the group, always uniform (the lock
+ * is closed and cannot be opened); Size: size of the group. Reset
+ * Position and Center On Bed move the center of the group to the center of
+ * the plate; Reset Rotation and Reset Scale reset each object.
+ *
  * A value is applied with Enter or when the field loses the focus; Escape
  * restores it. A comma is accepted as decimal separator. Every change goes
  * through TransformService (one place for undo and redo).
@@ -75,12 +83,84 @@ const MODE_LAYOUT: Record<
   scale: { rows: ["scale", "size"], actions: ["resetScale"] },
 };
 
-const ACTIONS: Record<TransformAction, (objectId: string) => boolean> = {
-  resetPosition: (objectId) => TransformService.resetPosition(objectId),
-  centerOnBed: (objectId) => TransformService.centerOnBed(objectId),
-  resetRotation: (objectId) => TransformService.resetRotation(objectId),
-  resetScale: (objectId) => TransformService.resetScale(objectId),
-};
+type Vector = Record<Axis, number>;
+
+/**
+ * Values shown and actions of the section, for one object or a group
+ * (the same rows and fields for both).
+ */
+interface PanelModel {
+  position: Vector;
+  rotation: Vector;
+  /** % */
+  scale: Vector;
+  /** mm */
+  size: Vector;
+  /** Group: always uniform, the lock cannot be opened */
+  lockForced: boolean;
+  setPosition: (axis: "x" | "y", value: number) => boolean;
+  setRotation: (axis: Axis, degrees: number) => boolean;
+  setScale: (axis: Axis, percent: number, uniform: boolean) => boolean;
+  setSize: (axis: Axis, millimeters: number, uniform: boolean) => boolean;
+  actions: Record<TransformAction, () => boolean>;
+}
+
+function objectModel(object: Object3D): PanelModel {
+  const { objectId, transform } = object;
+
+  return {
+    position: transform.position,
+    rotation: transform.rotation,
+    scale: {
+      x: transform.scale.x * 100,
+      y: transform.scale.y * 100,
+      z: transform.scale.z * 100,
+    },
+    size: TransformService.size(object),
+    lockForced: false,
+    setPosition: (axis, value) =>
+      TransformService.setPosition(objectId, axis, value),
+    setRotation: (axis, degrees) =>
+      TransformService.setRotation(objectId, axis, degrees),
+    setScale: (axis, percent, uniform) =>
+      TransformService.setScale(objectId, axis, percent / 100, uniform),
+    setSize: (axis, millimeters, uniform) =>
+      TransformService.setSize(objectId, axis, millimeters, uniform),
+    actions: {
+      resetPosition: () => TransformService.resetPosition(objectId),
+      centerOnBed: () => TransformService.centerOnBed(objectId),
+      resetRotation: () => TransformService.resetRotation(objectId),
+      resetScale: () => TransformService.resetScale(objectId),
+    },
+  };
+}
+
+function groupModel(objectIds: string[]): PanelModel {
+  const info = TransformService.groupInfo(objectIds);
+  const zero = { x: 0, y: 0, z: 0 };
+
+  return {
+    position: info ? info.center : zero,
+    rotation: zero,
+    scale: { x: 100, y: 100, z: 100 },
+    size: info ? info.size : zero,
+    lockForced: true,
+    setPosition: (axis, value) =>
+      TransformService.moveGroup(objectIds, axis, value),
+    setRotation: (axis, degrees) =>
+      TransformService.rotateGroup(objectIds, axis, degrees),
+    setScale: (_axis, percent) =>
+      TransformService.scaleGroup(objectIds, percent / 100),
+    setSize: (axis, millimeters) =>
+      TransformService.setGroupSize(objectIds, axis, millimeters),
+    actions: {
+      resetPosition: () => TransformService.centerGroupOnBed(objectIds),
+      centerOnBed: () => TransformService.centerGroupOnBed(objectIds),
+      resetRotation: () => TransformService.resetGroupRotation(objectIds),
+      resetScale: () => TransformService.resetGroupScale(objectIds),
+    },
+  };
+}
 
 /** Value shown in a field: 2 decimals at most */
 function format(value: number): string {
@@ -209,17 +289,21 @@ function Row({ title, unit, children, extra }: RowProps): JSX.Element {
 }
 
 export default function TransformSection({
-  object,
+  objects,
 }: {
-  object: Object3D;
+  /** Selected objects: one object, or a group */
+  objects: Object3D[];
 }): JSX.Element {
   const { t } = useTranslation();
   const mode = useViewportStore((state) => state.transformMode);
-  const uniform = useViewportStore((state) => state.keepProportions);
+  const keepProportions = useViewportStore((state) => state.keepProportions);
   const setUniform = useViewportStore((state) => state.setKeepProportions);
 
-  const { objectId, transform } = object;
-  const size = TransformService.size(object);
+  const model =
+    objects.length === 1
+      ? objectModel(objects[0])
+      : groupModel(objects.map((object) => object.objectId));
+  const uniform = model.lockForced || keepProportions;
   const layout = MODE_LAYOUT[mode];
   const fieldLabel = (row: string, axis: Axis): string =>
     `${row} ${axis.toUpperCase()}`;
@@ -232,7 +316,7 @@ export default function TransformSection({
             <NumberField
               key={axis}
               axis={axis}
-              value={transform.position.z}
+              value={model.position.z}
               label={fieldLabel(t("transform.position"), axis)}
               readOnly
               title={t("transform.onPlate")}
@@ -241,11 +325,9 @@ export default function TransformSection({
             <NumberField
               key={axis}
               axis={axis}
-              value={transform.position[axis]}
+              value={model.position[axis]}
               label={fieldLabel(t("transform.position"), axis)}
-              onCommit={(value) =>
-                TransformService.setPosition(objectId, axis, value)
-              }
+              onCommit={(value) => model.setPosition(axis, value)}
             />
           ),
         )}
@@ -258,11 +340,9 @@ export default function TransformSection({
           <NumberField
             key={axis}
             axis={axis}
-            value={transform.rotation[axis]}
+            value={model.rotation[axis]}
             label={fieldLabel(t("transform.rotation"), axis)}
-            onCommit={(value) =>
-              TransformService.setRotation(objectId, axis, value)
-            }
+            onCommit={(value) => model.setRotation(axis, value)}
           />
         ))}
       </Row>
@@ -278,8 +358,9 @@ export default function TransformSection({
             aria-pressed={uniform}
             aria-label={t("transform.keepProportions")}
             title={t("transform.keepProportions")}
-            onClick={() => setUniform(!uniform)}
-            className={`rounded p-0.5 hover:bg-muted ${
+            disabled={model.lockForced}
+            onClick={() => setUniform(!keepProportions)}
+            className={`rounded p-0.5 hover:bg-muted disabled:pointer-events-none disabled:opacity-60 ${
               uniform ? "text-primary" : "text-muted-foreground"
             }`}
           >
@@ -295,11 +376,9 @@ export default function TransformSection({
           <NumberField
             key={axis}
             axis={axis}
-            value={transform.scale[axis] * 100}
+            value={model.scale[axis]}
             label={fieldLabel(t("transform.scale"), axis)}
-            onCommit={(value) =>
-              TransformService.setScale(objectId, axis, value / 100, uniform)
-            }
+            onCommit={(value) => model.setScale(axis, value, uniform)}
           />
         ))}
       </Row>
@@ -311,11 +390,9 @@ export default function TransformSection({
           <NumberField
             key={axis}
             axis={axis}
-            value={size[axis]}
+            value={model.size[axis]}
             label={fieldLabel(t("transform.size"), axis)}
-            onCommit={(value) =>
-              TransformService.setSize(objectId, axis, value, uniform)
-            }
+            onCommit={(value) => model.setSize(axis, value, uniform)}
           />
         ))}
       </Row>
@@ -340,7 +417,7 @@ export default function TransformSection({
                 ? "col-span-2"
                 : undefined
             }
-            onClick={() => ACTIONS[action](objectId)}
+            onClick={() => model.actions[action]()}
           >
             {t(`transform.${action}`)}
           </Button>

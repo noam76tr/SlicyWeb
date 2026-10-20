@@ -17,11 +17,12 @@
  * The canvas follows the size of its container (ResizeObserver):
  * window resize, side panels resized or collapsed.
  *
- * Objects (Phase 6): click to select, click in the empty space to clear
- * the selection, drag an object to move it on the plate
- * (ObjectInteraction); gizmo on the selected object (TransformGizmo):
- * Move, Rotate, Scale, chosen in the toolbar, the mode buttons over the
- * viewport (GUI) or with the keys G, R, S; the lock of the scale
+ * Objects (Phase 6): click to select, Ctrl+click to add or remove an
+ * object, click in the empty space to clear the selection, drag an object
+ * (or the group it belongs to) to move it on the plate
+ * (ObjectInteraction); gizmo on the selected object or at the center of
+ * the group (TransformGizmo): Move, Rotate, Scale, chosen with the mode
+ * buttons over the viewport (GUI) or the keys G, R, S; the lock of the scale
  * (keepProportions) applies to the Scale gizmo as to the Transform section;
  * Escape clears the selection (GUI_SPEC.md, Keyboard Shortcuts).
  *
@@ -50,6 +51,12 @@ import { RendererManager } from "../../renderer/RendererManager";
 import { SceneRenderer } from "../../renderer/SceneRenderer";
 import { TransformGizmo } from "../../renderer/TransformGizmo";
 import { WorkspaceHelpers } from "../../renderer/helpers/WorkspaceHelpers";
+import { GeometryRegistry } from "../../scene/GeometryRegistry";
+import {
+  boundsCenter,
+  groupBounds,
+  type Vector3Mm,
+} from "../../scene/ObjectTransform";
 import { useObjectStore } from "../../state/objectStore";
 import { usePrinterStore } from "../../state/printerStore";
 import {
@@ -57,7 +64,7 @@ import {
   type TransformMode,
 } from "../../state/viewportStore";
 
-import type { Transform } from "../../types/Object3D";
+import type { Object3D, Transform } from "../../types/Object3D";
 
 /** Keys of the gizmos (GUI_SPEC.md, Keyboard Shortcuts: G, R, S), by key position */
 const TRANSFORM_KEYS: Record<string, TransformMode> = {
@@ -65,6 +72,20 @@ const TRANSFORM_KEYS: Record<string, TransformMode> = {
   KeyR: "rotate",
   KeyS: "scale",
 };
+
+/** Center of the bounding box of a group of objects, on the plate */
+function groupCenter(objects: Object3D[]): Vector3Mm | null {
+  const bounds = groupBounds(
+    objects.flatMap((object) => {
+      const positions = GeometryRegistry.get(object.objectId)?.getAttribute(
+        "position",
+      )?.array;
+      return positions ? [{ transform: object.transform, positions }] : [];
+    }),
+  );
+
+  return bounds ? boundsCenter(bounds) : null;
+}
 
 /** Keys typed in a text field must not move the camera */
 function isEditableTarget(target: EventTarget | null): boolean {
@@ -85,35 +106,35 @@ interface ViewportProps {
   unavailableMessage: string;
 
   /**
-   * Applies a transform to an object (TransformService); returns false
-   * when it is refused. live: step of a rotation with the gizmo, not
-   * placed on the plate.
+   * Applies transforms to one object or a group, by objectId
+   * (TransformService); returns false when they are refused. live: step
+   * of a rotation with the gizmo, not placed on the plate.
    */
-  onTransformObject: (
-    objectId: string,
-    transform: Transform,
+  onTransformObjects: (
+    transforms: Record<string, Transform>,
     live: boolean,
   ) => boolean;
 
   /**
-   * Start and end of a gesture on an object (drag on the plate, gizmo):
-   * its changes make one action of the history (TransformService).
+   * Start and end of a gesture on one object or a group (drag on the
+   * plate, gizmo): its changes make one action of the history
+   * (TransformService).
    */
-  onTransformGesture: (objectId: string, phase: "start" | "end") => void;
+  onTransformGesture: (objectIds: string[], phase: "start" | "end") => void;
 }
 
 export default function Viewport({
   label,
   unavailableMessage,
-  onTransformObject,
+  onTransformObjects,
   onTransformGesture,
 }: ViewportProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [unavailable, setUnavailable] = useState(false);
 
   // Latest callback, read by the event handlers created once
-  const onTransformRef = useRef(onTransformObject);
-  onTransformRef.current = onTransformObject;
+  const onTransformRef = useRef(onTransformObjects);
+  onTransformRef.current = onTransformObjects;
   const onGestureRef = useRef(onTransformGesture);
   onGestureRef.current = onTransformGesture;
 
@@ -155,10 +176,9 @@ export default function Viewport({
       scene,
       cameraManager.getCamera(),
       rendererManager.getCanvas(),
-      (objectId, transform, live) =>
-        onTransformRef.current(objectId, transform, live),
+      (transforms, live) => onTransformRef.current(transforms, live),
       (dragging) => cameraManager.setControlsEnabled(!dragging),
-      (objectId, phase) => onGestureRef.current(objectId, phase),
+      (objectIds, phase) => onGestureRef.current(objectIds, phase),
     );
     gizmo.setMode(useViewportStore.getState().transformMode);
     gizmo.setUniform(useViewportStore.getState().keepProportions);
@@ -169,21 +189,13 @@ export default function Viewport({
       pick: (raycaster) => objectRenderer.pick(raycaster),
       isGizmoActive: () => gizmo.isDragging(),
       getObject: findObject,
+      getSelection: () => useObjectStore.getState().selectedObjectIds,
       select: (objectId) => useObjectStore.getState().selectObject(objectId),
-      onGesture: (objectId, phase) => onGestureRef.current(objectId, phase),
-      onMove: (objectId, x, y) => {
-        const object = findObject(objectId);
-
-        if (object) {
-          onTransformRef.current(
-            objectId,
-            {
-              ...object.transform,
-              position: { ...object.transform.position, x, y },
-            },
-            false,
-          );
-        }
+      toggle: (objectId) =>
+        useObjectStore.getState().toggleObjectSelection(objectId),
+      onGesture: (objectIds, phase) => onGestureRef.current(objectIds, phase),
+      onMove: (transforms) => {
+        onTransformRef.current(transforms, false);
       },
     });
 
@@ -210,10 +222,15 @@ export default function Viewport({
 
     // Objects of the scene (imported models)
     const syncObjects = (): void => {
-      const { objects, selectedObjectId } = useObjectStore.getState();
-      objectRenderer.sync(objects, selectedObjectId);
+      const { objects, selectedObjectIds } = useObjectStore.getState();
+      objectRenderer.sync(objects, selectedObjectIds);
+
+      const selected = objects.filter((object) =>
+        selectedObjectIds.includes(object.objectId),
+      );
       gizmo.attach(
-        objects.find((object) => object.objectId === selectedObjectId) ?? null,
+        selected,
+        selected.length > 1 ? groupCenter(selected) : null,
       );
     };
     syncObjects();

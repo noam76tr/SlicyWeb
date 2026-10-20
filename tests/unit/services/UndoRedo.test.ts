@@ -108,7 +108,7 @@ describe("Undo and redo", () => {
   });
 
   it("records a gesture (drag, gizmo) as one action", () => {
-    TransformService.beginGesture(ID);
+    TransformService.beginGesture([ID]);
     for (const x of [5, 10, 15, 20]) {
       TransformService.apply(ID, {
         ...cube().transform,
@@ -132,7 +132,7 @@ describe("Undo and redo", () => {
   });
 
   it("records nothing when nothing changes", () => {
-    TransformService.beginGesture(ID);
+    TransformService.beginGesture([ID]);
     TransformService.endGesture();
     TransformService.setPosition(ID, "x", 0);
     expect(undoCount()).toBe(0);

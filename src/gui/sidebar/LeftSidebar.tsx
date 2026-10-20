@@ -6,7 +6,9 @@
  * icon, object name, visibility toggle, lock toggle, selection state.
  *
  * Objects and selection come from the object store
- * (src/state/objectStore.ts). Clicking an object selects it.
+ * (src/state/objectStore.ts). Clicking an object selects it (clicking the
+ * only selected object clears the selection); Ctrl+click (Cmd+click) adds
+ * it to the selection or removes it (Phase 6, decision of Noam).
  * The visibility and lock toggles show the state of the object;
  * changing them is not available yet (no store action exists).
  *
@@ -28,8 +30,11 @@ import { getDisplayNames } from "./objectNames";
 export default function LeftSidebar(): JSX.Element {
   const { t } = useTranslation();
   const objects = useObjectStore((state) => state.objects);
-  const selectedObjectId = useObjectStore((state) => state.selectedObjectId);
+  const selectedObjectIds = useObjectStore((state) => state.selectedObjectIds);
   const selectObject = useObjectStore((state) => state.selectObject);
+  const toggleObjectSelection = useObjectStore(
+    (state) => state.toggleObjectSelection,
+  );
   const names = useMemo(() => getDisplayNames(objects), [objects]);
 
   if (objects.length === 0) {
@@ -45,7 +50,7 @@ export default function LeftSidebar(): JSX.Element {
   return (
     <ul className="py-1" aria-label={t("objects.title")}>
       {objects.map((object) => {
-        const selected = object.objectId === selectedObjectId;
+        const selected = selectedObjectIds.includes(object.objectId);
 
         return (
           <li
@@ -58,8 +63,14 @@ export default function LeftSidebar(): JSX.Element {
               type="button"
               className="flex min-w-0 flex-1 items-center gap-2 text-start"
               aria-pressed={selected}
-              onClick={() => {
-                selectObject(selected ? null : object.objectId);
+              onClick={(event) => {
+                if (event.ctrlKey || event.metaKey) {
+                  toggleObjectSelection(object.objectId);
+                } else if (selected && selectedObjectIds.length === 1) {
+                  selectObject(null);
+                } else {
+                  selectObject(object.objectId);
+                }
               }}
             >
               <Box className="size-4 shrink-0" aria-hidden="true" />

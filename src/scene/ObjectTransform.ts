@@ -19,6 +19,10 @@
  *
  * Export to 3MF (build item transform, row vectors): toThreeMfTransform.
  *
+ * Group of objects (Phase 6, several objects selected): the group turns
+ * and scales around its center, the center of the bounding box of its
+ * objects (groupBounds, rotateAroundPoint, scaleAroundPoint).
+ *
  * Pure functions, no state. Used by the viewport (ObjectRenderer) and by
  * the transform tools of Phase 6.
  *
@@ -38,6 +42,13 @@ import type { Transform } from "../types/Object3D";
 export const ROTATION_ORDER = "ZYX";
 
 const DEG_TO_RAD = Math.PI / 180;
+
+const RAD_TO_DEG = 180 / Math.PI;
+
+/** Rotation stored with 6 decimals (avoids 44.99999999 after a snap) */
+export function roundDegrees(radians: number): number {
+  return Math.round(radians * RAD_TO_DEG * 1e6) / 1e6;
+}
 
 /** 3D vector of millimeters */
 export interface Vector3Mm {
@@ -185,4 +196,103 @@ export function toThreeMfTransform(
     e[13] + originOffset.y,
     e[14] + originOffset.z,
   ];
+}
+
+/** Bounding box, on the plate, of several objects (empty: null) */
+export function groupBounds(
+  items: { transform: Transform; positions: ArrayLike<number> }[],
+): Bounds | null {
+  let bounds: Bounds | null = null;
+
+  for (const item of items) {
+    const { min, max } = worldBounds(item.transform, item.positions);
+
+    if (!Number.isFinite(min.x)) {
+      continue;
+    }
+
+    bounds = bounds
+      ? {
+          min: {
+            x: Math.min(bounds.min.x, min.x),
+            y: Math.min(bounds.min.y, min.y),
+            z: Math.min(bounds.min.z, min.z),
+          },
+          max: {
+            x: Math.max(bounds.max.x, max.x),
+            y: Math.max(bounds.max.y, max.y),
+            z: Math.max(bounds.max.z, max.z),
+          },
+        }
+      : { min, max };
+  }
+
+  return bounds;
+}
+
+/** Center of a bounding box */
+export function boundsCenter(bounds: Bounds): Vector3Mm {
+  return {
+    x: (bounds.min.x + bounds.max.x) / 2,
+    y: (bounds.min.y + bounds.max.y) / 2,
+    z: (bounds.min.z + bounds.max.z) / 2,
+  };
+}
+
+/**
+ * Transform of an object turned with its group: rotation (quaternion,
+ * around the axes of the plate) around a point of the plate. The rotation
+ * of the object becomes rotation · R (stored in degrees, order "ZYX").
+ */
+export function rotateAroundPoint(
+  transform: Transform,
+  rotation: THREE.Quaternion,
+  point: Vector3Mm,
+): Transform {
+  const pivot = new THREE.Vector3(point.x, point.y, point.z);
+  const position = new THREE.Vector3(
+    transform.position.x,
+    transform.position.y,
+    transform.position.z,
+  )
+    .sub(pivot)
+    .applyQuaternion(rotation)
+    .add(pivot);
+
+  const quaternion = rotation
+    .clone()
+    .multiply(new THREE.Quaternion().setFromEuler(rotationEuler(transform)));
+  const euler = new THREE.Euler().setFromQuaternion(quaternion, ROTATION_ORDER);
+
+  return {
+    position: { x: position.x, y: position.y, z: position.z },
+    rotation: {
+      x: roundDegrees(euler.x),
+      y: roundDegrees(euler.y),
+      z: roundDegrees(euler.z),
+    },
+    scale: { ...transform.scale },
+  };
+}
+
+/**
+ * Transform of an object scaled with its group: uniform factor around a
+ * point of the plate (the distances to the point are scaled too).
+ */
+export function scaleAroundPoint(
+  transform: Transform,
+  factor: number,
+  point: Vector3Mm,
+): Transform {
+  const { position, scale } = transform;
+
+  return {
+    position: {
+      x: point.x + (position.x - point.x) * factor,
+      y: point.y + (position.y - point.y) * factor,
+      z: point.z + (position.z - point.z) * factor,
+    },
+    rotation: { ...transform.rotation },
+    scale: { x: scale.x * factor, y: scale.y * factor, z: scale.z * factor },
+  };
 }

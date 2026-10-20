@@ -110,6 +110,7 @@
   "panel.expand": "הרחב חלונית",
   "object.title": "אובייקט",
   "object.noSelection": "לא נבחר אובייקט",
+  "object.multipleSelected": "{count} אובייקטים נבחרו",
   "transform.title": "טרנספורמציה",
   "transform.move": "הזזה",
   "transform.rotate": "סיבוב",

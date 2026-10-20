@@ -13,7 +13,8 @@
  *   view presets and Reset View (viewport store);
  * - File > Import STL and File > Import 3MF (Phase 5): system file
  *   dialog, import (openImportDialog, ImportService);
- * - Edit > Deselect All (Phase 6): clears the object selection;
+ * - Edit > Select All, Edit > Deselect All (Phase 6): selects all the
+ *   objects, clears the object selection;
  * - Edit > Undo, Edit > Redo (Phase 6): last change of transform
  *   (TransformService), disabled while their history is empty;
  * - the other items are visible and disabled until the phase that
@@ -142,7 +143,11 @@ const MENUS: MenuDefinition[] = [
       ],
       [{ key: "edit.duplicate" }, { key: "edit.delete", shortcut: "Del" }],
       [
-        { key: "edit.selectAll", shortcut: "Ctrl+A" },
+        {
+          key: "edit.selectAll",
+          shortcut: "Ctrl+A",
+          action: () => useObjectStore.getState().selectAllObjects(),
+        },
         {
           key: "edit.deselectAll",
           shortcut: "Esc",

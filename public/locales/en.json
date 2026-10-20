@@ -110,6 +110,7 @@
   "panel.expand": "Expand panel",
   "object.title": "Object",
   "object.noSelection": "No object selected",
+  "object.multipleSelected": "{count} objects selected",
   "transform.title": "Transform",
   "transform.move": "Move",
   "transform.rotate": "Rotate",

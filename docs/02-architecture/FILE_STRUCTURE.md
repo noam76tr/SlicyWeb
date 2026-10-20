@@ -416,6 +416,7 @@ src/gui/
 │   └── ui/                    = shadcn/ui components (button, dropdown-menu, menubar, resizable)
 ├── themes/
 ├── hooks/
+│   ├── useSelectAllShortcut.ts = Ctrl+A (Phase 6)
 │   ├── useTranslation.ts      = access to translations from GUI components
 │   └── useUndoRedoShortcuts.ts = Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z (Phase 6)
 └── styles/
@@ -912,6 +913,7 @@ tests/
 │   ├── scene/
 │   │   └── ObjectTransform.test.ts = Transform Rules (ADR-031)
 │   └── services/
+│       ├── GroupTransform.test.ts = several objects selected (Phase 6)
 │       ├── TransformService.test.ts = transform changes, object on the plate
 │       └── UndoRedo.test.ts = undo and redo of the transform changes
 ├── integration/

@@ -626,6 +626,8 @@ Single Undo Action
 
 ```
 
+Phase 6: a change of a group of selected objects (fields, gizmo, drag on the plate) is one action; undo and redo select the group again.
+
 
 
 ---

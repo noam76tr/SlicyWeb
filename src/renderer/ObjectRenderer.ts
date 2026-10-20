@@ -49,10 +49,12 @@ export class ObjectRenderer {
   }
 
   /**
-   * Brings the meshes in line with the objects of the scene.
+   * Brings the meshes in line with the objects of the scene; the selected
+   * objects (one or several) are shown in the accent color.
    */
-  public sync(objects: Object3D[], selectedObjectId: string | null): void {
+  public sync(objects: Object3D[], selectedObjectIds: string[]): void {
     const present = new Set<string>();
+    const selected = new Set(selectedObjectIds);
 
     for (const object of objects) {
       const geometry = GeometryRegistry.get(object.objectId);
@@ -83,10 +85,9 @@ export class ObjectRenderer {
         mesh.scale,
       );
       mesh.visible = object.visible;
-      mesh.material =
-        object.objectId === selectedObjectId
-          ? this.selectedMaterial
-          : this.material;
+      mesh.material = selected.has(object.objectId)
+        ? this.selectedMaterial
+        : this.material;
     }
 
     for (const [objectId, mesh] of this.meshes) {

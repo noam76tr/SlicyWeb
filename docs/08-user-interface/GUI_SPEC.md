@@ -800,6 +800,14 @@ SHIFT + Click
 
 ```
 
+Phase 6 (decisions of Noam):
+
+- CTRL + Click (CMD + Click on macOS) on an object, in the 3D viewport or in the Object Panel, adds it to the selection or removes it; CTRL + A selects all the objects; a click in the empty space clears the selection; a click (without CTRL) on an object selects this object only.
+- SHIFT + Click and the selection with a rectangle are not available yet (KI-022).
+- Several objects selected form a group: the selected objects are shown in the accent color, the gizmo is placed at the center of the group (center of the bounding box of the objects), and dragging one of them moves the whole group.
+- The group moves, turns (around its center) and scales (always uniformly, around its center); after a rotation or a scale, each object is placed back on the plate. A change of the group is one action of the undo history.
+- The Object section shows the number of objects selected; the Transform section acts on the group (Transform Section).
+
 
 
 ---
@@ -1176,6 +1184,8 @@ One handle per axis of the object, on one side only: X on the right, Y in front,
 
 The lock of the Scale row (Transform Section) applies to the gizmo too: closed, every handle scales uniformly; open, an axis handle scales along that axis of the object only. After a change the object is placed back on the plate.
 
+Several objects selected: the gizmo is in the axes of the build plate, at the center of the group, and always scales the group uniformly (Multi Selection).
+
 
 
 ---
@@ -1466,6 +1476,23 @@ The rows and the Transform Actions shown follow the mode of the gizmo (decision 
 Move     Position, Scale; Reset Position, Center On Bed, Reset Scale
 Rotate   Rotation; Reset Rotation
 Scale    Scale, Size; Reset Scale
+```
+
+Several objects selected (group, decision of Noam, Phase 6): the fields act like the gizmo on the group.
+
+```text
+Position X, Y   center of the group; a value moves the whole group
+Position Z      height of the center of the group, not editable
+Rotation X Y Z  0: a value turns the group around its center, around this
+                axis of the build plate, then the field goes back to 0
+Scale X Y Z     100 %: a value scales the group uniformly around its
+                center, then the field goes back to 100 %; the lock is
+                closed and cannot be opened
+Size X Y Z      size of the group (bounding box); a value scales the group
+                uniformly
+Reset Position, Center On Bed   center of the group at the center of the
+                                build plate
+Reset Rotation, Reset Scale     rotation 0 or scale 100 % for each object
 ```
 
 
@@ -1789,7 +1816,11 @@ DELETE       Delete Object
 
 ```text
 
-CTRL + A     Select All
+CTRL + A     Select All (not in a text field)
+
+
+
+CTRL + Click Add or remove an object (Multi Selection)
 
 
 

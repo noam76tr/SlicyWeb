@@ -7,7 +7,10 @@
  * - click on an object: selects it;
  * - click in the empty space: clears the selection;
  * - press on an object and drag: the object follows the pointer on the
- *   build plate (X, Y), as in Bambu Studio and OrcaSlicer.
+ *   build plate (X, Y), as in Bambu Studio and OrcaSlicer; pressing on an
+ *   object of a group (several objects selected) moves the whole group;
+ * - Ctrl+click (Cmd+click) on an object: adds it to the selection or
+ *   removes it (decision of Noam, Phase 6); Ctrl+drag does nothing.
  *
  * A press becomes a drag only after DRAG_THRESHOLD_PX pixels: a click
  * that selects never moves the object, and only a real click (no drag) in
@@ -30,7 +33,7 @@ import * as THREE from "three";
 
 import { DRAG_THRESHOLD_PX } from "../constants/ViewportConstants";
 
-import type { Object3D } from "../types/Object3D";
+import type { Object3D, Transform } from "../types/Object3D";
 
 export interface ObjectInteractionOptions {
   domElement: HTMLElement;
@@ -40,11 +43,16 @@ export interface ObjectInteractionOptions {
   /** True while a handle of the gizmo is pressed or dragged */
   isGizmoActive: () => boolean;
   getObject: (objectId: string) => Object3D | undefined;
+  /** Selected objects */
+  getSelection: () => string[];
+  /** Selects this object only; null clears the selection */
   select: (objectId: string | null) => void;
-  /** Moves an object to X, Y on the plate */
-  onMove: (objectId: string, x: number, y: number) => void;
+  /** Ctrl+click: adds the object to the selection, or removes it */
+  toggle: (objectId: string) => void;
+  /** Moves objects on the plate: their new transforms, by objectId */
+  onMove: (transforms: Record<string, Transform>) => void;
   /** Start and end of a drag: one action of the history (undo, redo) */
-  onGesture: (objectId: string, phase: "start" | "end") => void;
+  onGesture: (objectIds: string[], phase: "start" | "end") => void;
 }
 
 /** Plane of the build plate, Z = 0 */
@@ -60,11 +68,15 @@ export class ObjectInteraction {
     startX: number;
     startY: number;
     objectId: string | null;
+    /** Ctrl (Cmd) held: the click adds or removes the object */
+    toggle: boolean;
     /** The pointer went beyond the threshold: not a click */
     moved: boolean;
     dragging: boolean;
-    /** Object position minus the point of the plate under the pointer */
-    offset: THREE.Vector2 | null;
+    /** Point of the plate under the pointer at the start of the drag */
+    startPoint: THREE.Vector3 | null;
+    /** Transforms of the objects dragged at the start of the drag */
+    startTransforms: Record<string, Transform>;
   } | null = null;
 
   private readonly onPointerDown = (event: PointerEvent): void => {
@@ -77,9 +89,11 @@ export class ObjectInteraction {
       startX: event.clientX,
       startY: event.clientY,
       objectId: this.pickAt(event),
+      toggle: event.ctrlKey || event.metaKey,
       moved: false,
       dragging: false,
-      offset: null,
+      startPoint: null,
+      startTransforms: {},
     };
   };
 
@@ -107,38 +121,66 @@ export class ObjectInteraction {
 
       press.moved = true;
 
-      // Drag that started in the empty space: nothing to move
-      if (!press.objectId) {
+      // Drag that started in the empty space, or with Ctrl: nothing to move
+      if (!press.objectId || press.toggle) {
         return;
       }
 
-      // Start dragging the object pressed: selected, then moved
-      const object = this.options.getObject(press.objectId);
+      // The object pressed and, when it is part of a group, the whole
+      // group; an object that is not selected becomes the selection
+      const selection = this.options.getSelection();
+      const objectIds = selection.includes(press.objectId)
+        ? selection
+        : [press.objectId];
       const start = this.plateAt(press.startX, press.startY);
+      const startTransforms: Record<string, Transform> = {};
 
-      if (!object || !start) {
+      for (const objectId of objectIds) {
+        const object = this.options.getObject(objectId);
+
+        if (object) {
+          startTransforms[objectId] = object.transform;
+        }
+      }
+
+      if (!start || !startTransforms[press.objectId]) {
         this.press = null;
         return;
       }
 
       press.dragging = true;
-      this.options.onGesture(press.objectId, "start");
-      press.offset = new THREE.Vector2(
-        object.transform.position.x - start.x,
-        object.transform.position.y - start.y,
-      );
-      this.options.select(press.objectId);
+      press.startPoint = start;
+      press.startTransforms = startTransforms;
+
+      if (!selection.includes(press.objectId)) {
+        this.options.select(press.objectId);
+      }
+
+      this.options.onGesture(Object.keys(startTransforms), "start");
       this.options.domElement.setPointerCapture(event.pointerId);
     }
 
     const point = this.plateAt(event.clientX, event.clientY);
 
-    if (point && press.objectId && press.offset) {
-      this.options.onMove(
-        press.objectId,
-        point.x + press.offset.x,
-        point.y + press.offset.y,
-      );
+    if (point && press.startPoint) {
+      const dx = point.x - press.startPoint.x;
+      const dy = point.y - press.startPoint.y;
+      const transforms: Record<string, Transform> = {};
+
+      for (const [objectId, transform] of Object.entries(
+        press.startTransforms,
+      )) {
+        transforms[objectId] = {
+          ...transform,
+          position: {
+            ...transform.position,
+            x: transform.position.x + dx,
+            y: transform.position.y + dy,
+          },
+        };
+      }
+
+      this.options.onMove(transforms);
     }
   };
 
@@ -154,15 +196,23 @@ export class ObjectInteraction {
     if (press.dragging) {
       this.options.domElement.releasePointerCapture(event.pointerId);
 
-      if (press.objectId) {
-        this.options.onGesture(press.objectId, "end");
-      }
+      this.options.onGesture(Object.keys(press.startTransforms), "end");
 
       return;
     }
 
-    // A real click (no drag): select the object, or clear the selection
-    if (!press.moved) {
+    if (press.moved) {
+      return;
+    }
+
+    // A real click (no drag). Ctrl: add or remove the object (Ctrl+click
+    // in the empty space keeps the selection); otherwise select the object
+    // only, or clear the selection
+    if (press.toggle) {
+      if (press.objectId) {
+        this.options.toggle(press.objectId);
+      }
+    } else {
       this.options.select(press.objectId);
     }
   };

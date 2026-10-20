@@ -1861,7 +1861,7 @@ Date:
 
 - Windows 11 (2026-10-20): npm run check:locales (250 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 16 tests passed (ObjectTransform 7, TransformService 9); files on GitHub
 - External review: transform formulas and 3MF export matrix checked, correct
-- Not reported: the manual controls (free rotation then placement on release, Position Z = half the height, mode buttons grayed out without selection); asked again with lot 49
+- Windows 11 (2026-10-20, reported with lot 49): free rotation with the gizmo then placement on release, Position Z = half the height, mode buttons grayed out without selection: OK
 
 ---
 
@@ -1871,7 +1871,7 @@ Release Type:
 Transform System
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-20
@@ -1890,6 +1890,43 @@ Date:
 - src/renderer/TransformGizmo.ts, src/renderer/ObjectInteraction.ts, src/gui/viewport/Viewport.tsx, src/gui/App.tsx: start and end of a gesture sent to TransformService
 - UNDO_REDO_SPEC.md 2.1.0: 50 actions (decision of Noam, previously 100); implementation status of Phase 6 (transforms only); selection on undo; shortcuts in a text field; history entry of Phase 6
 - GUI_SPEC.md (Edit Menu, Toolbar Buttons, Keyboard Shortcuts: CTRL + SHIFT + Z), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md (src/transform/HistoryManager.ts and UndoRedoManager.ts marked not used), PHASES_IMPLEMENTATION_PLAN.md, PASSATION.md
+
+## Validation Result
+
+- Windows 11 (2026-10-20): npm run check:locales (250 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 23 tests passed (ObjectTransform 7, UndoRedo 7, TransformService 9; the message "Undo or redo: object not found" is expected); files on GitHub
+- History size kept at 50 actions (Noam)
+- Not reported: the manual controls of undo and redo; asked again with lot 50
+
+---
+
+# VERSION 0.1.53
+
+Release Type:
+Transform System
+
+Status:
+In Progress
+
+Date:
+2026-10-20
+
+## Added
+
+- Selection of several objects (GUI_SPEC.md, Multi Selection; decisions of Noam): Ctrl+click (Cmd+click) on an object, in the 3D viewport or in the Object Panel, adds it to the selection or removes it; Ctrl+A and Edit > Select All select all the objects; a click in the empty space clears the selection
+- src/state/objectStore.ts: selectedObjectIds (selectedObjectId is the last object added), selectObjects, toggleObjectSelection, selectAllObjects
+- Group of objects: moved, turned around its center and scaled uniformly around its center, with the gizmo (at the center of the group) or by dragging one of its objects; each object placed back on the plate after a rotation or a scale; one undo action per change of the group
+- Transform section with several objects: acts like the gizmo on the group (Position = center of the group; Rotation relative, back to 0; Scale 100 % = size of the group, lock closed; Size = size of the group); Reset Position and Center On Bed center the group; Reset Rotation and Reset Scale reset each object
+- src/scene/ObjectTransform.ts: groupBounds, boundsCenter, rotateAroundPoint, scaleAroundPoint; src/services/TransformService.ts: applyMany, groupInfo, moveGroup, centerGroupOnBed, rotateGroup, scaleGroup, setGroupSize, resetGroupRotation, resetGroupScale; beginGesture takes several objects
+- src/gui/hooks/useSelectAllShortcut.ts (Ctrl+A, not in a text field)
+- Locale key object.multipleSelected ("{count} objects selected"; 251 keys)
+- tests/unit/services/GroupTransform.test.ts (10 tests; 33 tests in total)
+- KNOWN ISSUES: KI-022 (selection with a rectangle and Shift+click)
+
+## Changed
+
+- src/renderer/TransformGizmo.ts, src/renderer/ObjectInteraction.ts, src/renderer/ObjectRenderer.ts, src/gui/viewport/Viewport.tsx, src/gui/App.tsx: one object or a group (transforms by objectId)
+- src/gui/sidebar/LeftSidebar.tsx, RightSidebar.tsx, TransformSection.tsx, src/gui/statusbar/StatusBar.tsx, src/gui/menus/MenuBar.tsx: several objects selected
+- GUI_SPEC.md (Multi Selection, Scale Gizmo, Transform Section, Keyboard Shortcuts), UNDO_REDO_SPEC.md (Multiple Object Transformations), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md, PASSATION.md
 
 ---
 
@@ -2829,6 +2866,22 @@ Issue: An object is always placed on the build plate (lowest point at Z = 0); it
 Resolve Before: Phase 15 - Advanced Features (technical plan)
 
 Planned Resolution: Decide how a sunk object is chosen (Position Z editable below its resting height, or a dedicated tool), how it is stored (Transform Rules) and exported (cut at Z = 0), then allow it in TransformService.
+
+
+---
+
+
+Identifier: KI-022
+
+Since: 0.1.53
+
+Affected Module: src/renderer/ObjectInteraction.ts, src/gui/sidebar/LeftSidebar.tsx
+
+Issue: GUI_SPEC.md (Multi Selection) lists SHIFT + Click; selection with a rectangle drawn in the 3D viewport is also expected in the slicers. Phase 6 provides Ctrl+click and Ctrl+A only (decision of Noam).
+
+Resolve Before: Phase 15 - Advanced Features (technical plan)
+
+Planned Resolution: Define SHIFT + Click (range in the Object Panel; in the viewport, same as Ctrl+click or not) and the rectangle (which mouse button, objects fully or partly inside), then add them to ObjectInteraction and the Object Panel.
 
 
 ---

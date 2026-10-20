@@ -18,6 +18,7 @@
  * The buttons Move, Rotate, Scale (TransformModeBar) are shown over the
  * viewport. Undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z
  * (useUndoRedoShortcuts), toolbar and Edit menu (TransformService).
+ * Ctrl+A selects all the objects (useSelectAllShortcut).
  *
  * Based on:
  * - ARCHITECTURE.md
@@ -32,6 +33,7 @@ import { TransformService } from "../services/TransformService";
 
 import MainLayout from "./MainLayout";
 import { useTranslation } from "./hooks/useTranslation";
+import { useSelectAllShortcut } from "./hooks/useSelectAllShortcut";
 import { useUndoRedoShortcuts } from "./hooks/useUndoRedoShortcuts";
 import MenuBar from "./menus/MenuBar";
 import LeftSidebar from "./sidebar/LeftSidebar";
@@ -45,6 +47,7 @@ import Viewport from "./viewport/Viewport";
 export default function App(): JSX.Element {
   const { t, direction } = useTranslation();
   useUndoRedoShortcuts();
+  useSelectAllShortcut();
 
   useEffect(() => {
     document.title = "SlicyWeb";
@@ -72,12 +75,12 @@ export default function App(): JSX.Element {
             <Viewport
               label={t("viewport.title")}
               unavailableMessage={t("viewport.unavailable")}
-              onTransformObject={(objectId, transform, live) =>
-                TransformService.apply(objectId, transform, { live })
+              onTransformObjects={(transforms, live) =>
+                TransformService.applyMany(transforms, { live })
               }
-              onTransformGesture={(objectId, phase) =>
+              onTransformGesture={(objectIds, phase) =>
                 phase === "start"
-                  ? TransformService.beginGesture(objectId)
+                  ? TransformService.beginGesture(objectIds)
                   : TransformService.endGesture()
               }
             />

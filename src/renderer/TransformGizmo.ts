@@ -15,10 +15,16 @@
  *   scale closed (keepProportions, as in the Transform section), an axis
  *   handle also scales uniformly.
  *
- * The gizmo moves a proxy placed at the local origin of the object (center
- * of the base, ADR-031), never the mesh: each change is sent to onChange,
+ * The gizmo moves a proxy placed at the local origin of the object (its
+ * center, ADR-031), never the mesh: each change is sent to onChange,
  * which applies it through TransformService (the only way to change a
  * transform); the store then updates the mesh and the proxy.
+ *
+ * Several objects selected (group, decisions of Noam, Phase 6): the proxy
+ * is placed at the center of the group (center of its bounding box), in
+ * the axes of the plate; the drag of a handle moves, turns (around the
+ * center of the group, free during the gesture, each object placed back
+ * on the plate on release) or scales the group, always uniformly.
  *
  * Domain: Viewport. The change callback is given by the GUI (the Viewport
  * Domain does not depend on the Service Domain).
@@ -33,22 +39,27 @@ import * as THREE from "three";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
 
 import { ROTATION_SNAP_DEGREES } from "../constants/ViewportConstants";
-import { ROTATION_ORDER, rotationEuler } from "../scene/ObjectTransform";
+import {
+  ROTATION_ORDER,
+  rotateAroundPoint,
+  rotationEuler,
+  roundDegrees,
+  scaleAroundPoint,
+  type Vector3Mm,
+} from "../scene/ObjectTransform";
 
 import type { TransformMode } from "../state/viewportStore";
 import type { Object3D, Transform } from "../types/Object3D";
 
 /**
- * Applies a transform; returns false when it is refused. live: step of a
- * rotation gesture, not placed on the plate.
+ * Applies transforms (one object or a group), by objectId; returns false
+ * when they are refused. live: step of a rotation gesture, not placed on
+ * the plate.
  */
 export type GizmoChange = (
-  objectId: string,
-  transform: Transform,
+  transforms: Record<string, Transform>,
   live: boolean,
 ) => boolean;
-
-const RAD_TO_DEG = 180 / Math.PI;
 
 type AxisName = "X" | "Y" | "Z";
 
@@ -123,16 +134,21 @@ function keepScaleHandles(group: THREE.Object3D): void {
   }
 }
 
-/** Rotation stored with 6 decimals (avoids 44.99999999 after a snap) */
-function roundDegrees(radians: number): number {
-  return Math.round(radians * RAD_TO_DEG * 1e6) / 1e6;
-}
-
 /**
  * Start and end of a drag of a handle: its changes make one action of
  * the history (undo, redo).
  */
-export type GizmoGesture = (objectId: string, phase: "start" | "end") => void;
+export type GizmoGesture = (
+  objectIds: string[],
+  phase: "start" | "end",
+) => void;
+
+/** State saved when the drag of a handle starts */
+interface DragStart {
+  transforms: Record<string, Transform>;
+  /** Proxy position (center of the object or of the group) */
+  pivot: THREE.Vector3;
+}
 
 export class TransformGizmo {
   private readonly controls: TransformControls;
@@ -141,15 +157,18 @@ export class TransformGizmo {
 
   private readonly scene: THREE.Scene;
 
-  private object: Object3D | null = null;
+  /** Objects under the gizmo: one object, or a group */
+  private objects: Object3D[] = [];
+
+  /** Center of the group (several objects) */
+  private groupCenter: Vector3Mm | null = null;
 
   private mode: TransformMode = "translate";
 
   /** Lock of the scale (keepProportions of the viewport store) */
   private uniform = true;
 
-  /** Scale of the object when the drag of a handle started */
-  private dragStartScale: THREE.Vector3 | null = null;
+  private dragStart: DragStart | null = null;
 
   private readonly onChange: GizmoChange;
 
@@ -191,21 +210,35 @@ export class TransformGizmo {
 
     this.controls.addEventListener("dragging-changed", (event) => {
       const dragging = Boolean(event.value);
-      const scale = this.object?.transform.scale;
-      this.dragStartScale =
-        dragging && scale ? new THREE.Vector3(scale.x, scale.y, scale.z) : null;
+      const objectIds = this.objects.map((object) => object.objectId);
 
-      if (dragging && this.object) {
-        this.onGesture(this.object.objectId, "start");
+      if (dragging && objectIds.length > 0) {
+        this.dragStart = {
+          transforms: Object.fromEntries(
+            this.objects.map((object) => [object.objectId, object.transform]),
+          ),
+          pivot: this.proxy.position.clone(),
+        };
+        this.onGesture(objectIds, "start");
       }
 
-      if (!dragging && this.object) {
-        // End of a rotation: the object is placed back on the plate
+      if (!dragging && objectIds.length > 0) {
+        // End of a rotation: the objects are placed back on the plate
         if (this.mode === "rotate") {
-          this.onChange(this.object.objectId, this.object.transform, false);
+          this.onChange(
+            Object.fromEntries(
+              this.objects.map((object) => [object.objectId, object.transform]),
+            ),
+            false,
+          );
         }
 
-        this.onGesture(this.object.objectId, "end");
+        this.onGesture(objectIds, "end");
+      }
+
+      if (!dragging) {
+        this.dragStart = null;
+        this.syncProxy();
       }
 
       onDragging(dragging);
@@ -248,18 +281,23 @@ export class TransformGizmo {
   }
 
   /**
-   * Shows the gizmo on an object (null: hidden). Called after each change
-   * of the object store.
+   * Shows the gizmo on the selected objects (none: hidden); groupCenter is
+   * the center of the group when several objects are selected. Called
+   * after each change of the object store.
    */
-  public attach(object: Object3D | null): void {
-    this.object = object;
+  public attach(objects: Object3D[], groupCenter: Vector3Mm | null): void {
+    this.objects = objects;
+    this.groupCenter = groupCenter;
 
-    if (!object) {
+    if (objects.length === 0) {
       this.controls.detach();
       return;
     }
 
-    this.syncProxy(object.transform);
+    // During a drag the proxy follows the pointer, not the store
+    if (!this.controls.dragging) {
+      this.syncProxy();
+    }
 
     if (this.controls.object !== this.proxy) {
       this.controls.attach(this.proxy);
@@ -275,53 +313,128 @@ export class TransformGizmo {
     this.controls.dispose();
   }
 
-  private syncProxy(transform: Transform): void {
-    const { position, scale } = transform;
+  private isGroup(): boolean {
+    return this.objects.length > 1;
+  }
 
-    this.proxy.position.set(position.x, position.y, position.z);
-    this.proxy.quaternion.setFromEuler(rotationEuler(transform));
-    this.proxy.scale.set(scale.x, scale.y, scale.z);
+  /**
+   * Proxy on the object (its transform), or at the center of the group in
+   * the axes of the plate (rotation 0, scale 1)
+   */
+  private syncProxy(): void {
+    if (this.isGroup()) {
+      const center = this.groupCenter ?? { x: 0, y: 0, z: 0 };
+      this.proxy.position.set(center.x, center.y, center.z);
+      this.proxy.quaternion.identity();
+      this.proxy.scale.set(1, 1, 1);
+    } else if (this.objects.length === 1) {
+      const transform = this.objects[0].transform;
+      const { position, scale } = transform;
+      this.proxy.position.set(position.x, position.y, position.z);
+      this.proxy.quaternion.setFromEuler(rotationEuler(transform));
+      this.proxy.scale.set(scale.x, scale.y, scale.z);
+    }
+
     this.proxy.updateMatrixWorld();
   }
 
   /**
-   * Scale given by the gizmo. Lock closed: the factor of the axis handle
-   * dragged is applied to the three axes, from the scale at the start of
-   * the drag (TransformControls changes one axis only).
+   * Factor of the axis handle dragged (the center handle changes the three
+   * axes by the same factor); from the scale at the start of the drag.
    */
-  private scaleOfProxy(): Transform["scale"] {
+  private scaleFactor(startScale: THREE.Vector3): number {
+    const axis = this.controls.axis;
+    const index = axis === "Y" ? 1 : axis === "Z" ? 2 : 0;
+
+    return (
+      this.proxy.scale.getComponent(index) / startScale.getComponent(index)
+    );
+  }
+
+  /**
+   * Scale of one object given by the gizmo. Lock closed: the factor of the
+   * axis handle dragged is applied to the three axes (TransformControls
+   * changes one axis only).
+   */
+  private scaleOfProxy(start: Transform): Transform["scale"] {
     const { x, y, z } = this.proxy.scale;
     const axis = this.controls.axis;
-    const start = this.dragStartScale;
 
     if (
       this.mode !== "scale" ||
       !this.uniform ||
-      !start ||
       (axis !== "X" && axis !== "Y" && axis !== "Z")
     ) {
       return { x, y, z };
     }
 
-    const index = AXIS_INDEX[axis];
-    const factor =
-      this.proxy.scale.getComponent(index) / start.getComponent(index);
+    const factor = this.scaleFactor(
+      new THREE.Vector3(start.scale.x, start.scale.y, start.scale.z),
+    );
 
     return {
-      x: start.x * factor,
-      y: start.y * factor,
-      z: start.z * factor,
+      x: start.scale.x * factor,
+      y: start.scale.y * factor,
+      z: start.scale.z * factor,
     };
   }
 
-  /** Sends the transform of the proxy to onChange */
-  private applyProxy(): void {
-    const object = this.object;
+  /** Transforms of the group, from the move of the proxy since the start */
+  private groupTransforms(start: DragStart): Record<string, Transform> {
+    const pivot: Vector3Mm = {
+      x: start.pivot.x,
+      y: start.pivot.y,
+      z: start.pivot.z,
+    };
+    const result: Record<string, Transform> = {};
 
-    if (!object) {
+    for (const [objectId, transform] of Object.entries(start.transforms)) {
+      if (this.mode === "translate") {
+        result[objectId] = {
+          ...transform,
+          position: {
+            x: transform.position.x + this.proxy.position.x - pivot.x,
+            y: transform.position.y + this.proxy.position.y - pivot.y,
+            z: transform.position.z,
+          },
+        };
+      } else if (this.mode === "rotate") {
+        result[objectId] = rotateAroundPoint(
+          transform,
+          this.proxy.quaternion,
+          pivot,
+        );
+      } else {
+        // A group is always scaled uniformly (decision of Noam)
+        result[objectId] = scaleAroundPoint(
+          transform,
+          this.scaleFactor(new THREE.Vector3(1, 1, 1)),
+          pivot,
+        );
+      }
+    }
+
+    return result;
+  }
+
+  /** Sends the transforms given by the proxy to onChange */
+  private applyProxy(): void {
+    const start = this.dragStart;
+
+    if (this.objects.length === 0 || !start) {
       return;
     }
 
+    const live = this.mode === "rotate" && this.controls.dragging;
+
+    if (this.isGroup()) {
+      this.onChange(this.groupTransforms(start), live);
+      return;
+    }
+
+    const object = this.objects[0];
+    const startTransform =
+      start.transforms[object.objectId] ?? object.transform;
     const euler = new THREE.Euler().setFromQuaternion(
       this.proxy.quaternion,
       ROTATION_ORDER,
@@ -340,14 +453,12 @@ export class TransformGizmo {
         y: roundDegrees(euler.y),
         z: roundDegrees(euler.z),
       },
-      scale: this.scaleOfProxy(),
+      scale: this.scaleOfProxy(startTransform),
     };
 
     // Refused (for example a scale of 0): the gizmo goes back to the object
-    const live = this.mode === "rotate" && this.controls.dragging;
-
-    if (!this.onChange(object.objectId, transform, live)) {
-      this.syncProxy(object.transform);
+    if (!this.onChange({ [object.objectId]: transform }, live)) {
+      this.syncProxy();
     }
   }
 }

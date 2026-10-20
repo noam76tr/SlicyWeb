@@ -61,6 +61,15 @@ export default function RightSidebar(): JSX.Element {
     selectedObject ? state.analysis[selectedObject.objectId] : undefined,
   );
 
+  // Several objects selected: the Transform section acts on the group
+  const selectedObjectIds = useObjectStore((state) => state.selectedObjectIds);
+  const selectedObjects = useMemo(
+    () =>
+      objects.filter((object) => selectedObjectIds.includes(object.objectId)),
+    [objects, selectedObjectIds],
+  );
+  const group = selectedObjects.length > 1;
+
   const recommendation = useRecommendationStore((state) =>
     selectedObject
       ? state.recommendations[selectedObject.objectId]
@@ -96,12 +105,16 @@ export default function RightSidebar(): JSX.Element {
       </SidebarSection>
 
       <SidebarSection title={t("object.title")}>
-        {selectedObject ? selectedName : noObject}
+        {group
+          ? t("object.multipleSelected", { count: selectedObjects.length })
+          : selectedObject
+            ? selectedName
+            : noObject}
       </SidebarSection>
 
       <SidebarSection title={t("transform.title")}>
-        {selectedObject ? (
-          <TransformSection object={selectedObject} />
+        {selectedObjects.length > 0 ? (
+          <TransformSection objects={selectedObjects} />
         ) : (
           noObject
         )}

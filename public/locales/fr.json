@@ -110,6 +110,7 @@
   "panel.expand": "Déplier le panneau",
   "object.title": "Objet",
   "object.noSelection": "Aucun objet sélectionné",
+  "object.multipleSelected": "{count} objets sélectionnés",
   "transform.title": "Transformation",
   "transform.move": "Déplacer",
   "transform.rotate": "Pivoter",

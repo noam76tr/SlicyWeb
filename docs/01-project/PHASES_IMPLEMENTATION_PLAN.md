@@ -1141,6 +1141,7 @@ Decisions (ADR-031, KI-017 resolved):
 - Lot 47: the lock of the scale acts the same in the panel and on the Scale gizmo; buttons Move, Rotate, Scale over the viewport; Scale gizmo with one handle per axis (X right, Y front, Z top) and the center handle; Transform section rows by mode (Move: Position, Scale; Rotate: Rotation; Scale: Scale, Size), with the actions of the mode
 - Lot 48: position = center of the object (option B); gizmo rotation free during the gesture, object placed back on the plate on release (only Z changes); mode buttons only over the viewport, active only with a selection; no object under the plate (sunk objects: KI-021)
 - Lot 49, undo and redo (UNDO_REDO_SPEC.md): transform changes only; 50 actions; the object of the action undone or redone is selected; in a text field, Ctrl+Z undoes the typing only
+- Lot 50, several objects: Ctrl+click (viewport and Object Panel), Ctrl+A, click in the empty space clears the selection; the group moves, turns and scales (uniformly) around its center, each object placed back on the plate; one undo action per change of the group; the Transform section acts like the gizmo on the group; Shift+click and rectangle selection later (KI-022)
 
 Progress:
 
@@ -1150,6 +1151,7 @@ Progress:
 - Corrections after the tests of Noam (CHANGELOG 0.1.50): lock on the Scale gizmo, mode buttons over the viewport, three scale handles, Transform section by mode
 - Rotation around the center (CHANGELOG 0.1.51): local origin at the center of the object, free rotation during the gesture and placement on release; mode buttons only over the viewport, grayed out without selection; sunk objects for later (KI-021)
 - Undo and redo (CHANGELOG 0.1.52): history of the transform changes, one action per gesture, toolbar, Edit menu, Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z
+- Several objects (CHANGELOG 0.1.53): selection, group transforms, Transform section of a group
 
 ---
 

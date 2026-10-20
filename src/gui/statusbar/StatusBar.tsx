@@ -62,9 +62,16 @@ export default function StatusBar(): JSX.Element {
     ) ?? null,
   );
 
-  const selectedName = selectedObject
-    ? (names.get(selectedObject.objectId) ?? selectedObject.fileName)
-    : "";
+  const selectedCount = useObjectStore(
+    (state) => state.selectedObjectIds.length,
+  );
+
+  const selectedName =
+    selectedCount > 1
+      ? t("object.multipleSelected", { count: selectedCount })
+      : selectedObject
+        ? (names.get(selectedObject.objectId) ?? selectedObject.fileName)
+        : "";
 
   const analysis = useAnalysisStore((state) =>
     selectedObject ? state.analysis[selectedObject.objectId] : undefined,
