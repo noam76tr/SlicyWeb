@@ -2,7 +2,7 @@
 
 # UNDO REDO SPECIFICATION
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -185,9 +185,11 @@ Default:
 
 ```text
 
-100 Actions
+50 Actions
 
 ```
+
+Decision of Noam (Phase 6, 2026-10-20): 50 actions, previously 100. Beyond it, the oldest action is dropped (src/constants/HistoryConstants.ts, MAX_HISTORY_SIZE). The history is emptied when a project is closed or opened (Phase 13).
 
 
 
@@ -229,6 +231,16 @@ Be Reversible
 Be Deterministic
 
 ```
+
+
+
+---
+
+
+
+# Implementation Status
+
+Phase 6 (Transform System, decision of Noam, 2026-10-20): only the transform actions are undoable (MOVE, ROTATE, SCALE): fields of the Transform section, Reset and Center On Bed, gizmos, drag on the plate. TransformService (src/services/TransformService.ts) records each change; a gesture (drag on the plate, drag of a handle of a gizmo) is recorded as one action. The other categories come with their phase (import, delete, duplicate, printer, material, settings).
 
 
 
@@ -347,6 +359,8 @@ Reason:
 Selection Changes Are Temporary
 
 ```
+
+When an action is undone or redone, its object is selected, so that the change is visible (decision of Noam, Phase 6).
 
 
 
@@ -1082,6 +1096,8 @@ when appropriate.
 
 ```
 
+Phase 6 (src/state/historyStore.ts): before and after hold the transform of each object changed, by objectId. The history is kept in memory only; it is not saved in WYPROJ files.
+
 
 
 ---
@@ -1297,6 +1313,8 @@ Ctrl + Y
 
 
 Supported.
+
+In a text field, the shortcuts undo or redo the typing in the field; the history of the application is not touched (decision of Noam, Phase 6). The letter is read from the key typed (Z of an AZERTY keyboard), or from the key position when the layout has no Latin letters (Hebrew).
 
 
 

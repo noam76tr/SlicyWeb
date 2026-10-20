@@ -404,6 +404,8 @@ Preferences
 
 ```
 
+Undo and Redo (Phase 6) undo and redo the last change of transform; they are disabled while their history is empty (UNDO_REDO_SPEC.md).
+
 
 
 ---
@@ -652,7 +654,7 @@ Generate
 
 ```
 
-Move, Rotate and Scale are not in the toolbar: they are shown over the 3D viewport only, at the top on the start side (decision of Noam, Phase 6). They choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. They are active only when an object is selected, and grayed out otherwise.
+Undo and Redo (Phase 6) undo and redo the last change of transform, disabled while their history is empty (UNDO_REDO_SPEC.md). Move, Rotate and Scale are not in the toolbar: they are shown over the 3D viewport only, at the top on the start side (decision of Noam, Phase 6). They choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. They are active only when an object is selected, and grayed out otherwise.
 
 
 
@@ -1764,6 +1766,10 @@ CTRL + Z     Undo
 
 
 CTRL + Y     Redo
+
+
+
+CTRL + SHIFT + Z  Redo (UNDO_REDO_SPEC.md)
 
 
 

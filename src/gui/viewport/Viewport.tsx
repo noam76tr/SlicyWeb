@@ -94,12 +94,19 @@ interface ViewportProps {
     transform: Transform,
     live: boolean,
   ) => boolean;
+
+  /**
+   * Start and end of a gesture on an object (drag on the plate, gizmo):
+   * its changes make one action of the history (TransformService).
+   */
+  onTransformGesture: (objectId: string, phase: "start" | "end") => void;
 }
 
 export default function Viewport({
   label,
   unavailableMessage,
   onTransformObject,
+  onTransformGesture,
 }: ViewportProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [unavailable, setUnavailable] = useState(false);
@@ -107,6 +114,8 @@ export default function Viewport({
   // Latest callback, read by the event handlers created once
   const onTransformRef = useRef(onTransformObject);
   onTransformRef.current = onTransformObject;
+  const onGestureRef = useRef(onTransformGesture);
+  onGestureRef.current = onTransformGesture;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -149,6 +158,7 @@ export default function Viewport({
       (objectId, transform, live) =>
         onTransformRef.current(objectId, transform, live),
       (dragging) => cameraManager.setControlsEnabled(!dragging),
+      (objectId, phase) => onGestureRef.current(objectId, phase),
     );
     gizmo.setMode(useViewportStore.getState().transformMode);
     gizmo.setUniform(useViewportStore.getState().keepProportions);
@@ -160,6 +170,7 @@ export default function Viewport({
       isGizmoActive: () => gizmo.isDragging(),
       getObject: findObject,
       select: (objectId) => useObjectStore.getState().selectObject(objectId),
+      onGesture: (objectId, phase) => onGestureRef.current(objectId, phase),
       onMove: (objectId, x, y) => {
         const object = findObject(objectId);
 

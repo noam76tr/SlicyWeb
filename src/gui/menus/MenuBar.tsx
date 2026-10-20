@@ -14,6 +14,8 @@
  * - File > Import STL and File > Import 3MF (Phase 5): system file
  *   dialog, import (openImportDialog, ImportService);
  * - Edit > Deselect All (Phase 6): clears the object selection;
+ * - Edit > Undo, Edit > Redo (Phase 6): last change of transform
+ *   (TransformService), disabled while their history is empty;
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -30,6 +32,8 @@
 import { Fragment } from "react";
 
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import { TransformService } from "../../services/TransformService";
+import { useHistoryStore } from "../../state/historyStore";
 import { useObjectStore } from "../../state/objectStore";
 import {
   useViewportStore,
@@ -62,6 +66,9 @@ interface MenuItemDefinition {
 
   /** Action of the item; an item without action is disabled */
   action?: () => void;
+
+  /** History read to enable the item (Undo, Redo) */
+  history?: "undo" | "redo";
 }
 
 interface MenuDefinition {
@@ -116,8 +123,22 @@ const MENUS: MenuDefinition[] = [
     key: "menu.edit",
     groups: [
       [
-        { key: "edit.undo", shortcut: "Ctrl+Z" },
-        { key: "edit.redo", shortcut: "Ctrl+Y" },
+        {
+          key: "edit.undo",
+          shortcut: "Ctrl+Z",
+          history: "undo",
+          action: () => {
+            TransformService.undo();
+          },
+        },
+        {
+          key: "edit.redo",
+          shortcut: "Ctrl+Y",
+          history: "redo",
+          action: () => {
+            TransformService.redo();
+          },
+        },
       ],
       [{ key: "edit.duplicate" }, { key: "edit.delete", shortcut: "Del" }],
       [
@@ -205,6 +226,13 @@ export default function MenuBar(): JSX.Element {
   const { t, language, languages, setLanguage } = useTranslation();
   const projection = useViewportStore((state) => state.projection);
   const setProjection = useViewportStore((state) => state.setProjection);
+  const canUndo = useHistoryStore((state) => state.undoStack.length > 0);
+  const canRedo = useHistoryStore((state) => state.redoStack.length > 0);
+
+  const isDisabled = (item: MenuItemDefinition): boolean =>
+    !item.action ||
+    (item.history === "undo" && !canUndo) ||
+    (item.history === "redo" && !canRedo);
 
   const renderMenu = (
     menu: MenuDefinition,
@@ -223,7 +251,7 @@ export default function MenuBar(): JSX.Element {
             {group.map((item) => (
               <MenubarItem
                 key={item.key}
-                disabled={!item.action}
+                disabled={isDisabled(item)}
                 onClick={item.action}
               >
                 {t(item.key)}

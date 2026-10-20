@@ -16,7 +16,8 @@
  *
  * Moves are sent to onMove, which applies them through TransformService
  * (given by the GUI: the Viewport Domain does not depend on the Service
- * Domain).
+ * Domain); onGesture marks the start and the end of a drag, recorded as
+ * one action of the history.
  *
  * Domain: Viewport.
  *
@@ -42,6 +43,8 @@ export interface ObjectInteractionOptions {
   select: (objectId: string | null) => void;
   /** Moves an object to X, Y on the plate */
   onMove: (objectId: string, x: number, y: number) => void;
+  /** Start and end of a drag: one action of the history (undo, redo) */
+  onGesture: (objectId: string, phase: "start" | "end") => void;
 }
 
 /** Plane of the build plate, Z = 0 */
@@ -119,6 +122,7 @@ export class ObjectInteraction {
       }
 
       press.dragging = true;
+      this.options.onGesture(press.objectId, "start");
       press.offset = new THREE.Vector2(
         object.transform.position.x - start.x,
         object.transform.position.y - start.y,
@@ -149,6 +153,11 @@ export class ObjectInteraction {
 
     if (press.dragging) {
       this.options.domElement.releasePointerCapture(event.pointerId);
+
+      if (press.objectId) {
+        this.options.onGesture(press.objectId, "end");
+      }
+
       return;
     }
 

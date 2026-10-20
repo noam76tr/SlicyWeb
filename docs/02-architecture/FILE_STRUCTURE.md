@@ -416,7 +416,8 @@ src/gui/
 │   └── ui/                    = shadcn/ui components (button, dropdown-menu, menubar, resizable)
 ├── themes/
 ├── hooks/
-│   └── useTranslation.ts      = access to translations from GUI components
+│   ├── useTranslation.ts      = access to translations from GUI components
+│   └── useUndoRedoShortcuts.ts = Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z (Phase 6)
 └── styles/
     └── global.css             = Tailwind CSS 4 entry point (ADR-025)
 ```
@@ -794,6 +795,7 @@ src/state/
 ├── analysisStore.ts
 ├── recommendationStore.ts
 ├── importStore.ts             = imports in progress and their result
+├── historyStore.ts            = undo and redo stacks (Phase 6)
 └── viewportStore.ts           = projection and view presets of the viewport
 ```
 
@@ -882,6 +884,7 @@ src/constants
 ├── MaterialConstants.ts
 ├── PresetConstants.ts
 ├── PrinterConstants.ts
+├── HistoryConstants.ts        = MAX_HISTORY_SIZE (undo and redo)
 └── ViewportConstants.ts       = coordinate system, colors and camera of the viewport (ADR-028)
 ```
 ---
@@ -909,7 +912,8 @@ tests/
 │   ├── scene/
 │   │   └── ObjectTransform.test.ts = Transform Rules (ADR-031)
 │   └── services/
-│       └── TransformService.test.ts = transform changes, object on the plate
+│       ├── TransformService.test.ts = transform changes, object on the plate
+│       └── UndoRedo.test.ts = undo and redo of the transform changes
 ├── integration/
 └── e2e/
 ```

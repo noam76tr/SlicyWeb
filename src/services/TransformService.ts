@@ -4,8 +4,14 @@
  *
  * The only way to change the transform of an object (Phase 6): the
  * Transform section of the Properties Panel, the Reset and Center On Bed
- * actions, and later the gizmos all call apply(). Undo and redo
- * (Phase 6) will record the changes in this single place.
+ * actions, the gizmos and the drag on the plate all call apply().
+ *
+ * Undo and redo (UNDO_REDO_SPEC.md; decisions of Noam, Phase 6): each
+ * change applied is recorded in the history (historyStore), one action per
+ * change; a gesture (drag on the plate, gizmo), between beginGesture() and
+ * endGesture(), is recorded as one action. undo() and redo() restore the
+ * transforms of the action and select its object. Selection changes are
+ * not recorded.
  *
  * apply():
  * - refuses values that are not finite and scales of 0.1 % or less;
@@ -36,6 +42,11 @@
 
 import { GeometryRegistry } from "../scene/GeometryRegistry";
 import { placeOnPlate, worldBounds } from "../scene/ObjectTransform";
+import {
+  useHistoryStore,
+  type HistoryActionType,
+  type HistoryEntry,
+} from "../state/historyStore";
 import { useObjectStore } from "../state/objectStore";
 
 import type { Object3D, Transform } from "../types/Object3D";
@@ -93,6 +104,77 @@ function isValid(transform: Transform): boolean {
   );
 }
 
+function sameVector(
+  a: Transform["position"],
+  b: Transform["position"],
+): boolean {
+  return a.x === b.x && a.y === b.y && a.z === b.z;
+}
+
+function sameTransform(a: Transform, b: Transform): boolean {
+  return (
+    sameVector(a.position, b.position) &&
+    sameVector(a.rotation, b.rotation) &&
+    sameVector(a.scale, b.scale)
+  );
+}
+
+/** Action type of a change (UNDO_REDO_SPEC.md, Action Types) */
+function actionType(before: Transform, after: Transform): HistoryActionType {
+  if (!sameVector(before.rotation, after.rotation)) {
+    return "ROTATE";
+  }
+
+  return sameVector(before.scale, after.scale) ? "MOVE" : "SCALE";
+}
+
+/** Records the change of one object, unless nothing changed */
+function record(objectId: string, before: Transform, after: Transform): void {
+  if (sameTransform(before, after)) {
+    return;
+  }
+
+  useHistoryStore.getState().record({
+    actionId: crypto.randomUUID(),
+    type: actionType(before, after),
+    timestamp: new Date().toISOString(),
+    before: { [objectId]: before },
+    after: { [objectId]: after },
+  });
+}
+
+/** Gesture in progress: one action for all its changes */
+let gesture: { objectId: string; before: Transform } | null = null;
+
+/**
+ * Writes the transforms of a history entry (before or after). Restoration
+ * fails when an object no longer exists: nothing is changed, the error is
+ * logged (UNDO_REDO_SPEC.md, Error Handling).
+ */
+function restore(transforms: Record<string, Transform>): boolean {
+  const store = useObjectStore.getState();
+  const objectIds = Object.keys(transforms);
+
+  if (
+    objectIds.length === 0 ||
+    !objectIds.every((id) =>
+      store.objects.some((object) => object.objectId === id),
+    )
+  ) {
+    console.error("Undo or redo: object not found, history action skipped.");
+    return false;
+  }
+
+  for (const objectId of objectIds) {
+    store.updateObjectTransform(objectId, transforms[objectId]);
+  }
+
+  // The object changed is shown selected (decision of Noam, Phase 6)
+  store.selectObject(objectIds[0]);
+
+  return true;
+}
+
 /**
  * New scale after one axis is set to a factor. With the lock (uniform),
  * the three factors keep their proportions.
@@ -148,7 +230,78 @@ export const TransformService = {
 
     useObjectStore.getState().updateObjectTransform(objectId, placed);
 
+    // Inside a gesture, recorded once at its end
+    if (gesture?.objectId !== objectId) {
+      record(objectId, object.transform, placed);
+    }
+
     return true;
+  },
+
+  /**
+   * Start of a gesture on an object (drag on the plate, gizmo): its
+   * changes are recorded as one action at endGesture().
+   */
+  beginGesture(objectId: string): void {
+    const object = findObject(objectId);
+    gesture = object ? { objectId, before: object.transform } : null;
+  },
+
+  /** End of the gesture: one action, unless nothing changed */
+  endGesture(): void {
+    const current = gesture;
+    gesture = null;
+
+    if (!current) {
+      return;
+    }
+
+    const object = findObject(current.objectId);
+
+    if (object) {
+      record(current.objectId, current.before, object.transform);
+    }
+  },
+
+  /** Undoes the last action; returns false when there is none */
+  undo(): boolean {
+    const history = useHistoryStore.getState();
+    const entry = history.takeUndo();
+
+    if (!entry) {
+      return false;
+    }
+
+    if (!restore(entry.before)) {
+      // Not restored: the action is dropped, the scene is kept
+      return false;
+    }
+
+    history.pushRedo(entry);
+    return true;
+  },
+
+  /** Redoes the last action undone; returns false when there is none */
+  redo(): boolean {
+    const history = useHistoryStore.getState();
+    const entry: HistoryEntry | null = history.takeRedo();
+
+    if (!entry) {
+      return false;
+    }
+
+    if (!restore(entry.after)) {
+      return false;
+    }
+
+    history.pushUndo(entry);
+    return true;
+  },
+
+  /** Empties the history (project closed or opened, Phase 13) */
+  clearHistory(): void {
+    gesture = null;
+    useHistoryStore.getState().clear();
   },
 
   /** Position X or Y, in millimeters (Z is always computed) */

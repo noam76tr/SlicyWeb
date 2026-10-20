@@ -16,7 +16,8 @@
  * The viewport receives the function that applies a transform
  * (TransformService, Phase 6): gizmos and dragging on the plate.
  * The buttons Move, Rotate, Scale (TransformModeBar) are shown over the
- * viewport.
+ * viewport. Undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z
+ * (useUndoRedoShortcuts), toolbar and Edit menu (TransformService).
  *
  * Based on:
  * - ARCHITECTURE.md
@@ -31,6 +32,7 @@ import { TransformService } from "../services/TransformService";
 
 import MainLayout from "./MainLayout";
 import { useTranslation } from "./hooks/useTranslation";
+import { useUndoRedoShortcuts } from "./hooks/useUndoRedoShortcuts";
 import MenuBar from "./menus/MenuBar";
 import LeftSidebar from "./sidebar/LeftSidebar";
 import RightSidebar from "./sidebar/RightSidebar";
@@ -42,6 +44,7 @@ import Viewport from "./viewport/Viewport";
 
 export default function App(): JSX.Element {
   const { t, direction } = useTranslation();
+  useUndoRedoShortcuts();
 
   useEffect(() => {
     document.title = "SlicyWeb";
@@ -71,6 +74,11 @@ export default function App(): JSX.Element {
               unavailableMessage={t("viewport.unavailable")}
               onTransformObject={(objectId, transform, live) =>
                 TransformService.apply(objectId, transform, { live })
+              }
+              onTransformGesture={(objectId, phase) =>
+                phase === "start"
+                  ? TransformService.beginGesture(objectId)
+                  : TransformService.endGesture()
               }
             />
             <TransformModeBar />

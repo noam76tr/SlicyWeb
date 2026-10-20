@@ -1836,7 +1836,7 @@ Release Type:
 Transform System
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-19
@@ -1856,6 +1856,40 @@ Date:
 - src/gui/toolbars/TransformModeBar.tsx: buttons grayed out without selection; src/gui/viewport/Viewport.tsx: keys G, R, S active only with a selection
 - tests/unit/scene/ObjectTransform.test.ts: test cube with its local origin at its center
 - GUI_SPEC.md (Toolbar Buttons, Rotate Gizmo, Transform Section, Keyboard Shortcuts), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md, PASSATION.md
+
+## Validation Result
+
+- Windows 11 (2026-10-20): npm run check:locales (250 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 16 tests passed (ObjectTransform 7, TransformService 9); files on GitHub
+- External review: transform formulas and 3MF export matrix checked, correct
+- Not reported: the manual controls (free rotation then placement on release, Position Z = half the height, mode buttons grayed out without selection); asked again with lot 49
+
+---
+
+# VERSION 0.1.52
+
+Release Type:
+Transform System
+
+Status:
+In Progress
+
+Date:
+2026-10-20
+
+## Added
+
+- Undo and redo of the transform changes (UNDO_REDO_SPEC.md; decisions of Noam): fields of the Transform section, Reset and Center On Bed, gizmos, drag on the plate; a gesture (drag on the plate, drag of a handle of a gizmo) is one action; the object of the action undone or redone is selected; selection changes are not recorded
+- src/state/historyStore.ts (undo and redo stacks, History Entry Schema), src/constants/HistoryConstants.ts (MAX_HISTORY_SIZE = 50)
+- src/services/TransformService.ts: each change recorded; beginGesture, endGesture, undo, redo, clearHistory (project closed or opened, Phase 13)
+- Toolbar Undo and Redo, Edit > Undo and Edit > Redo: active, disabled while their history is empty
+- src/gui/hooks/useUndoRedoShortcuts.ts: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z (Cmd on macOS); in a text field, the shortcuts undo the typing only
+- tests/unit/services/UndoRedo.test.ts (7 tests; 23 tests in total)
+
+## Changed
+
+- src/renderer/TransformGizmo.ts, src/renderer/ObjectInteraction.ts, src/gui/viewport/Viewport.tsx, src/gui/App.tsx: start and end of a gesture sent to TransformService
+- UNDO_REDO_SPEC.md 2.1.0: 50 actions (decision of Noam, previously 100); implementation status of Phase 6 (transforms only); selection on undo; shortcuts in a text field; history entry of Phase 6
+- GUI_SPEC.md (Edit Menu, Toolbar Buttons, Keyboard Shortcuts: CTRL + SHIFT + Z), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md (src/transform/HistoryManager.ts and UndoRedoManager.ts marked not used), PHASES_IMPLEMENTATION_PLAN.md, PASSATION.md
 
 ---
 

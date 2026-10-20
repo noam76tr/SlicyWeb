@@ -128,6 +128,12 @@ function roundDegrees(radians: number): number {
   return Math.round(radians * RAD_TO_DEG * 1e6) / 1e6;
 }
 
+/**
+ * Start and end of a drag of a handle: its changes make one action of
+ * the history (undo, redo).
+ */
+export type GizmoGesture = (objectId: string, phase: "start" | "end") => void;
+
 export class TransformGizmo {
   private readonly controls: TransformControls;
 
@@ -147,6 +153,8 @@ export class TransformGizmo {
 
   private readonly onChange: GizmoChange;
 
+  private readonly onGesture: GizmoGesture;
+
   private readonly onKey = (event: KeyboardEvent): void => {
     this.controls.setRotationSnap(
       event.shiftKey ? THREE.MathUtils.degToRad(ROTATION_SNAP_DEGREES) : null,
@@ -159,9 +167,11 @@ export class TransformGizmo {
     domElement: HTMLElement,
     onChange: GizmoChange,
     onDragging: (dragging: boolean) => void,
+    onGesture: GizmoGesture,
   ) {
     this.scene = scene;
     this.onChange = onChange;
+    this.onGesture = onGesture;
     this.proxy.name = "transform-gizmo-proxy";
     scene.add(this.proxy);
 
@@ -185,9 +195,17 @@ export class TransformGizmo {
       this.dragStartScale =
         dragging && scale ? new THREE.Vector3(scale.x, scale.y, scale.z) : null;
 
-      // End of a rotation: the object is placed back on the plate
-      if (!dragging && this.mode === "rotate" && this.object) {
-        this.onChange(this.object.objectId, this.object.transform, false);
+      if (dragging && this.object) {
+        this.onGesture(this.object.objectId, "start");
+      }
+
+      if (!dragging && this.object) {
+        // End of a rotation: the object is placed back on the plate
+        if (this.mode === "rotate") {
+          this.onChange(this.object.objectId, this.object.transform, false);
+        }
+
+        this.onGesture(this.object.objectId, "end");
       }
 
       onDragging(dragging);

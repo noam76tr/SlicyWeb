@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-19. Lot 47 sur `main` au commit `a638758`, vérifié identique. Dernière entrée du CHANGELOG : 0.1.51 (lot 48).
+Date : 2026-10-20. Lot 48 sur `main` au commit `0f3203f`, vérifié identique. Dernière entrée du CHANGELOG : 0.1.52 (lot 49).
 
 ---
 
@@ -71,7 +71,7 @@ Date : 2026-10-19. Lot 47 sur `main` au commit `a638758`, vérifié identique. D
 | 3 | GUI Foundation | Completed (2026-10-15) | 0.1.35 |
 | 4 | 3D Viewport | Completed (2026-10-16) | 0.1.37 |
 | 5 | Model Import | Completed (2026-10-17) | 0.1.44 |
-| 6 | Transform System | **In Progress** (depuis le 2026-10-18) | 0.1.47 à 0.1.51 |
+| 6 | Transform System | **In Progress** (depuis le 2026-10-18) | 0.1.47 à 0.1.52 |
 | 7 à 16 | Printer Database, Material Database, Model Analysis, Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
@@ -89,7 +89,7 @@ Date : 2026-10-19. Lot 47 sur `main` au commit `a638758`, vérifié identique. D
   - analyse dans un Web Worker, avec une barre de progression et un bouton Annuler ;
   - objets centrés à Z = 0 ; un 3MF garde la disposition de ses objets ;
   - messages d'erreur traduits, avec les codes d'ERROR_CODES_SPEC.
-- **Transformations (phase 6, en cours) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). La section Transform du panneau Propriétés permet de saisir la position X, Y, la rotation, l'échelle (%) et la taille (mm), avec Reset et Center On Bed ; l'objet reste toujours posé sur le plateau. Dans la vue 3D : clic pour sélectionner (un vrai clic dans le vide désélectionne), glisser un objet pour le déplacer sur le plateau (après 4 pixels), poignées Move, Rotate, Scale (touches G, R, S et boutons au-dessus de la vue 3D, grisés sans sélection), Échap désélectionne. La position d'un objet est celle de son **centre** (DATA_SCHEMA 3.4.0) : il tourne autour de son centre ; avec la poignée, il tourne librement pendant le geste et se repose sur le plateau au relâchement. Poignée Scale : une poignée par axe (X à droite, Y devant, Z en haut) et celle du centre ; le cadenas agit pareil dans le panneau et sur la poignée. La section Transform n'affiche que les lignes du mode. Annuler / Rétablir n'est pas encore là.
+- **Transformations (phase 6, en cours) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). La section Transform du panneau Propriétés permet de saisir la position X, Y, la rotation, l'échelle (%) et la taille (mm), avec Reset et Center On Bed ; l'objet reste toujours posé sur le plateau. Dans la vue 3D : clic pour sélectionner (un vrai clic dans le vide désélectionne), glisser un objet pour le déplacer sur le plateau (après 4 pixels), poignées Move, Rotate, Scale (touches G, R, S et boutons au-dessus de la vue 3D, grisés sans sélection), Échap désélectionne. La position d'un objet est celle de son **centre** (DATA_SCHEMA 3.4.0) : il tourne autour de son centre ; avec la poignée, il tourne librement pendant le geste et se repose sur le plateau au relâchement. Poignée Scale : une poignée par axe (X à droite, Y devant, Z en haut) et celle du centre ; le cadenas agit pareil dans le panneau et sur la poignée. La section Transform n'affiche que les lignes du mode. Annuler / Rétablir (lot 49) : transformations seulement, un geste = une étape, 50 étapes, barre d'outils, menu Édition, Ctrl+Z, Ctrl+Y, Ctrl+Maj+Z ; l'objet concerné est sélectionné.
 - **Sécurité :**
   - liste blanche des canaux IPC dans le preload (22 canaux, `npm run check:ipc`) ;
   - politique de sécurité du contenu (CSP) stricte dans l'application compilée, et adaptée en développement ;
@@ -114,6 +114,7 @@ Date : 2026-10-19. Lot 47 sur `main` au commit `a638758`, vérifié identique. D
 | ARCHITECTURE_DECISION_MATRIX.md | 2.3.0 |
 | API_SPEC.md | 2.1.0 (voir §5, points en attente) |
 | SLICER_EXPORT_SPEC.md | 1.0.0 |
+| UNDO_REDO_SPEC.md | 2.1.0 (50 étapes ; phase 6 : transformations seulement) |
 | Dernier ADR | ADR-031 ; dernier ADM : ADM-027 |
 
 ---
@@ -172,6 +173,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 46 | Sélection au clic, glisser sur le plateau, poignées 3D, raccourcis G, R, S et Échap ; Échap dans un champ | 0.1.49 |
 | 47 | Corrections du lot 46 : cadenas sur la poignée Scale, boutons de mode sur la vue, 3 poignées d'échelle, panneau selon le mode | 0.1.50 |
 | 48 | Position = centre de l'objet (DATA_SCHEMA 3.4.0, amendement d'ADR-031), rotation libre pendant le geste ; boutons de mode seulement sur la vue ; KI-021 | 0.1.51 |
+| 49 | Annuler / Rétablir des transformations (UNDO_REDO_SPEC 2.1.0) | 0.1.52 |
 
 ---
 
@@ -234,6 +236,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 33. Option B : l'origine locale d'un objet est le **centre** de sa boîte à l'import ; la position est celle du centre (Z = hauteur du centre). Test demandé : cube de 20 mm en X = 0, Y = 0, tourné de 90° autour de X → X = 0, Y = 0, Z = 10, posé.
 34. Rotation à la poignée comme Bambu Studio / OrcaSlicer : libre autour du centre pendant le geste (peut passer sous le plateau un instant), reposée sur le plateau au relâchement (seul Z change).
 35. Pas d'objet sous le plateau pour l'instant (« objet enfoncé » : KI-021).
+36. Annuler / Rétablir : seulement les transformations (l'import et la suppression plus tard) ; 50 étapes (UNDO_REDO_SPEC disait 100), historique vidé à la fermeture ou l'ouverture d'un projet ; l'objet de l'étape annulée est sélectionné, une sélection seule n'est pas une étape ; Ctrl+Z dans un champ annule seulement la frappe.
 
 **Méthode**
 
@@ -244,8 +247,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 ## 5. Travail restant, dans l'ordre
 
 1. **Phase 6 : Transform System** (en cours).
-   - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48).
-   - À faire : Annuler / Rétablir (lot 49), branché dans `TransformService.apply` ; un glisser (souris ou poignée) = une seule entrée d'historique ; boutons Undo / Redo et Ctrl+Z / Ctrl+Y ; puis clôture selon le plan.
+   - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49).
+   - À faire : clôture selon le plan, avec les résultats de Noam. Le critère « Multiple Objects Supported » du plan suppose la sélection multiple (GUI_SPEC, Multi Selection), pas encore faite : à décider avec Noam (lot de plus ou report).
    - KI-015 : ViewportToolbar et ViewportStatus contiennent du texte en dur, à traduire quand la phase 6 les affiche.
 2. **Phases 7 à 16**, dans l'ordre du plan technique.
 3. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
@@ -266,13 +269,14 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    - Duplication projet/scène des 4 sélections dans DATA_SCHEMA (décision 4) : choisir la source de vérité.
    - `WYPROJExporter` : le champ `author` de `metadata` n'est jamais rempli.
    - README.md : il indique encore « Current Phase: Phase 0 » et une liste des phases qui ne suit pas ROADMAP ; ambiguïté sur Undo/Redo (ROADMAP phase 0, plan technique phase 6).
+   - `src/transform/HistoryManager.ts` et `UndoRedoManager.ts` : modèles jamais utilisés (Annuler / Rétablir est dans `historyStore` et `TransformService`) ; les supprimer demande l'accord de Noam.
    - Fichiers d'emplacement mal nommés (`README.me`, `readme.me`, `readme`) dans `assets/`, `data/`, `cache/`, `.github/workflows/`.
 
 ---
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot48-center-rotation/` : livrables de chaque lot (`LOTN.md`, zip, patch).
+- `lot9-create-project/` à `lot49-undo-redo/` : livrables de chaque lot (`LOTN.md`, zip, patch).
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.
