@@ -910,6 +910,8 @@ src/utils/
 tests/
 
 ├── unit/
+│   ├── renderer/
+│   │   └── ObjectRenderer.test.ts = selection rectangle (Phase 6)
 │   ├── scene/
 │   │   └── ObjectTransform.test.ts = Transform Rules (ADR-031)
 │   └── services/

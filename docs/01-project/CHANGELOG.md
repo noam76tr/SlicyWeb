@@ -1905,7 +1905,7 @@ Release Type:
 Transform System
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-20
@@ -1927,6 +1927,42 @@ Date:
 - src/renderer/TransformGizmo.ts, src/renderer/ObjectInteraction.ts, src/renderer/ObjectRenderer.ts, src/gui/viewport/Viewport.tsx, src/gui/App.tsx: one object or a group (transforms by objectId)
 - src/gui/sidebar/LeftSidebar.tsx, RightSidebar.tsx, TransformSection.tsx, src/gui/statusbar/StatusBar.tsx, src/gui/menus/MenuBar.tsx: several objects selected
 - GUI_SPEC.md (Multi Selection, Scale Gizmo, Transform Section, Keyboard Shortcuts), UNDO_REDO_SPEC.md (Multiple Object Transformations), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md, PASSATION.md
+
+## Validation Result
+
+- Windows 11 (2026-10-20): npm run check:locales (251 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 33 tests passed; Ctrl+click and Ctrl+A OK; console without error
+- Requested next (Noam): selection with a rectangle in the 3D viewport, Shift+click in the Object Panel (0.1.54)
+- Not reported: the manual controls of the group transforms and of undo and redo; asked again with lot 51
+
+---
+
+# VERSION 0.1.54
+
+Release Type:
+Transform System
+
+Status:
+In Progress
+
+Date:
+2026-10-20
+
+## Added
+
+- Selection rectangle in the 3D viewport, as in the Windows File Explorer (decision of Noam): left button pressed in the empty space and dragged (after the threshold of 4 pixels); on release, the objects touched by the rectangle are selected; Ctrl + rectangle adds them to the selection; a press on an object still moves it
+- src/renderer/ObjectRenderer.ts: objectsInRect (outline of the box of each object, seen from the camera, overlapping the rectangle)
+- Object Panel: Shift+click selects the range from the last object clicked; Ctrl+Shift+click adds the range
+- tests/unit/renderer/ObjectRenderer.test.ts (4 tests; 37 tests in total)
+
+## Changed
+
+- src/renderer/ObjectInteraction.ts, src/gui/viewport/Viewport.tsx: a drag in the empty space draws a selection rectangle; a rectangle without Ctrl replaces the selection, so a rectangle that touches nothing clears it (before: a drag in the empty space kept the selection)
+- src/gui/sidebar/LeftSidebar.tsx: Shift+click
+- GUI_SPEC.md (Multi Selection, Viewport Controls, Keyboard Shortcuts), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md, PASSATION.md
+
+## Fixed
+
+- KI-022 resolved (selection with a rectangle and Shift+click)
 
 ---
 
@@ -2866,22 +2902,6 @@ Issue: An object is always placed on the build plate (lowest point at Z = 0); it
 Resolve Before: Phase 15 - Advanced Features (technical plan)
 
 Planned Resolution: Decide how a sunk object is chosen (Position Z editable below its resting height, or a dedicated tool), how it is stored (Transform Rules) and exported (cut at Z = 0), then allow it in TransformService.
-
-
----
-
-
-Identifier: KI-022
-
-Since: 0.1.53
-
-Affected Module: src/renderer/ObjectInteraction.ts, src/gui/sidebar/LeftSidebar.tsx
-
-Issue: GUI_SPEC.md (Multi Selection) lists SHIFT + Click; selection with a rectangle drawn in the 3D viewport is also expected in the slicers. Phase 6 provides Ctrl+click and Ctrl+A only (decision of Noam).
-
-Resolve Before: Phase 15 - Advanced Features (technical plan)
-
-Planned Resolution: Define SHIFT + Click (range in the Object Panel; in the viewport, same as Ctrl+click or not) and the rectangle (which mouse button, objects fully or partly inside), then add them to ObjectInteraction and the Object Panel.
 
 
 ---

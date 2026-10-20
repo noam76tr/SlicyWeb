@@ -18,7 +18,8 @@
  * window resize, side panels resized or collapsed.
  *
  * Objects (Phase 6): click to select, Ctrl+click to add or remove an
- * object, click in the empty space to clear the selection, drag an object
+ * object, click in the empty space to clear the selection, drag in the
+ * empty space to select with a rectangle (Ctrl: added), drag an object
  * (or the group it belongs to) to move it on the plate
  * (ObjectInteraction); gizmo on the selected object or at the center of
  * the group (TransformGizmo): Move, Rotate, Scale, chosen with the mode
@@ -196,6 +197,24 @@ export default function Viewport({
       onGesture: (objectIds, phase) => onGestureRef.current(objectIds, phase),
       onMove: (transforms) => {
         onTransformRef.current(transforms, false);
+      },
+      selectInRect: (rect, add) => {
+        const store = useObjectStore.getState();
+        const touched = objectRenderer.objectsInRect(
+          cameraManager.getCamera(),
+          rect,
+        );
+
+        store.selectObjects(
+          add
+            ? [
+                ...store.selectedObjectIds,
+                ...touched.filter(
+                  (id) => !store.selectedObjectIds.includes(id),
+                ),
+              ]
+            : touched,
+        );
       },
     });
 

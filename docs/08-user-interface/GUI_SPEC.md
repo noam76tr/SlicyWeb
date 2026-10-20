@@ -803,7 +803,8 @@ SHIFT + Click
 Phase 6 (decisions of Noam):
 
 - CTRL + Click (CMD + Click on macOS) on an object, in the 3D viewport or in the Object Panel, adds it to the selection or removes it; CTRL + A selects all the objects; a click in the empty space clears the selection; a click (without CTRL) on an object selects this object only.
-- SHIFT + Click and the selection with a rectangle are not available yet (KI-022).
+- Selection rectangle, as in the Windows File Explorer: pressing the left button in the empty space of the 3D viewport and dragging draws a rectangle; on release, the objects touched by the rectangle are selected (an object is touched when the outline of its box, seen from the camera, overlaps the rectangle); with CTRL, they are added to the selection instead of replacing it. A rectangle that touches nothing clears the selection (without CTRL). The rectangle starts after the same threshold of 4 pixels, so a click in the empty space still clears the selection; a press on an object moves it (no rectangle).
+- In the Object Panel, SHIFT + Click selects the range from the last object clicked to this one; CTRL + SHIFT + Click adds the range (as in the Windows File Explorer). In the 3D viewport, SHIFT + Click has no special meaning.
 - Several objects selected form a group: the selected objects are shown in the accent color, the gizmo is placed at the center of the group (center of the bounding box of the objects), and dragging one of them moves the whole group.
 - The group moves, turns (around its center) and scales (always uniformly, around its center); after a rotation or a scale, each object is placed back on the plate. A change of the group is one action of the undo history.
 - The Object section shows the number of objects selected; the Transform section acts on the group (Transform Section).
@@ -984,7 +985,8 @@ Left mouse (objects):
 
 - a click on an object selects it; a click in the empty space clears the selection;
 - pressing on an object and dragging moves it on the build plate (X, Y), as in Bambu Studio and OrcaSlicer;
-- the move starts only after 4 pixels: a selection click never moves the object, and a drag that starts in the empty space keeps the selection;
+- the move starts only after 4 pixels: a selection click never moves the object;
+- a drag that starts in the empty space draws a selection rectangle (Multi Selection);
 - a press on a handle of the gizmo is left to the gizmo.
 
 
@@ -1821,6 +1823,10 @@ CTRL + A     Select All (not in a text field)
 
 
 CTRL + Click Add or remove an object (Multi Selection)
+
+
+
+SHIFT + Click  Select a range in the Object Panel (Multi Selection)
 
 
 

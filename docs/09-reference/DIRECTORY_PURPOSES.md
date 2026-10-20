@@ -475,8 +475,8 @@ Every file should be placed in the directory that matches its responsibility.
 | `LightingManager.ts` | Manages lighting (ambient and directional light) |
 | `Renderer.ts` | WebGL renderer; not used, duplicates RendererManager (KI-015) |
 | `RendererManager.ts` | WebGL renderer and scene of the viewport, drawn with the camera of CameraManager; background color of GUI_SPEC.md |
-| `ObjectRenderer.ts` | One mesh per scene object (GeometryRegistry): transform (ObjectTransform.ts), visibility, selected object in the accent color; object under the pointer (pick) |
-| `ObjectInteraction.ts` | Left mouse in the viewport: click to select or clear the selection, drag an object on the build plate after a threshold of 4 pixels (GUI_SPEC.md, Viewport Controls) Ctrl+click adds or removes an object; dragging an object of a group moves the group; |
+| `ObjectRenderer.ts` | One mesh per scene object (GeometryRegistry): transform (ObjectTransform.ts), visibility, selected object in the accent color; object under the pointer (pick) objects touched by a selection rectangle (objectsInRect); |
+| `ObjectInteraction.ts` | Left mouse in the viewport: click to select or clear the selection, drag an object on the build plate after a threshold of 4 pixels (GUI_SPEC.md, Viewport Controls) Ctrl+click adds or removes an object; dragging an object of a group moves the group; drag in the empty space: selection rectangle (Ctrl adds); |
 | `TransformGizmo.ts` | Move, Rotate and Scale gizmos of the selected object (Three.js TransformControls); Rotate: free rotation around the center during the gesture, placed on the plate on release; Scale: one handle per axis (X right, Y front, Z top) and the center, uniform when the lock is closed; each change goes to TransformService through a callback given by the GUI several objects: gizmo at the center of the group; |
 | `SceneRenderer.ts` | Render loop (frame callback, then drawing) and scene objects |
 | `helpers/WorkspaceHelpers.ts` | Grid with adaptive spacing, axes (X red, Y green, Z blue) and build plate of the selected printer |
@@ -1693,6 +1693,7 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 
 | File | Tests |
 |------|-------|
+| `renderer/ObjectRenderer.test.ts` | Selection rectangle: objects touched (not only inside), turned objects, hidden objects |
 | `services/GroupTransform.test.ts` | Several objects: Ctrl+click and Ctrl+A selection; group moved, turned and scaled around its center, objects on the plate; one undo per change of the group |
 | `services/UndoRedo.test.ts` | Undo and redo: one action per change and per gesture, redo cleared by a new action, 50 actions at most, object selected, object removed |
 | `services/TransformService.test.ts` | Transform changes: object always on the plate, scale with and without the lock, size in mm, Center On Bed, Reset actions, refused values |

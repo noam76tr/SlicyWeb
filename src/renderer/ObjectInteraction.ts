@@ -10,11 +10,16 @@
  *   build plate (X, Y), as in Bambu Studio and OrcaSlicer; pressing on an
  *   object of a group (several objects selected) moves the whole group;
  * - Ctrl+click (Cmd+click) on an object: adds it to the selection or
- *   removes it (decision of Noam, Phase 6); Ctrl+drag does nothing.
+ *   removes it (decision of Noam, Phase 6); Ctrl+drag on an object does
+ *   nothing;
+ * - press in the empty space and drag: a selection rectangle, as in the
+ *   Windows File Explorer; on release, the objects touched by the
+ *   rectangle are selected (with Ctrl: added to the selection).
  *
- * A press becomes a drag only after DRAG_THRESHOLD_PX pixels: a click
- * that selects never moves the object, and only a real click (no drag) in
- * the empty space clears the selection (decision of Noam, Phase 6).
+ * A press becomes a drag (or a rectangle) only after DRAG_THRESHOLD_PX
+ * pixels: a click that selects never moves the object, and a real click
+ * (no drag) in the empty space clears the selection (decision of Noam,
+ * Phase 6).
  * Presses on a handle of the gizmo are left to the gizmo.
  *
  * Moves are sent to onMove, which applies them through TransformService
@@ -32,6 +37,8 @@
 import * as THREE from "three";
 
 import { DRAG_THRESHOLD_PX } from "../constants/ViewportConstants";
+
+import type { ScreenRect } from "./ObjectRenderer";
 
 import type { Object3D, Transform } from "../types/Object3D";
 
@@ -53,6 +60,11 @@ export interface ObjectInteractionOptions {
   onMove: (transforms: Record<string, Transform>) => void;
   /** Start and end of a drag: one action of the history (undo, redo) */
   onGesture: (objectIds: string[], phase: "start" | "end") => void;
+  /**
+   * Selection rectangle released (normalized device coordinates): selects
+   * the objects it touches, added to the selection when add is true
+   */
+  selectInRect: (rect: ScreenRect, add: boolean) => void;
 }
 
 /** Plane of the build plate, Z = 0 */
@@ -77,7 +89,12 @@ export class ObjectInteraction {
     startPoint: THREE.Vector3 | null;
     /** Transforms of the objects dragged at the start of the drag */
     startTransforms: Record<string, Transform>;
+    /** Selection rectangle in progress (press in the empty space) */
+    selecting: boolean;
   } | null = null;
+
+  /** Selection rectangle shown over the canvas */
+  private readonly box: HTMLDivElement;
 
   private readonly onPointerDown = (event: PointerEvent): void => {
     if (event.button !== 0 || this.options.isGizmoActive()) {
@@ -94,6 +111,7 @@ export class ObjectInteraction {
       dragging: false,
       startPoint: null,
       startTransforms: {},
+      selecting: false,
     };
   };
 
@@ -109,6 +127,11 @@ export class ObjectInteraction {
       return;
     }
 
+    if (press.selecting) {
+      this.drawBox(press.startX, press.startY, event.clientX, event.clientY);
+      return;
+    }
+
     if (!press.dragging) {
       const distance = Math.hypot(
         event.clientX - press.startX,
@@ -121,8 +144,16 @@ export class ObjectInteraction {
 
       press.moved = true;
 
-      // Drag that started in the empty space, or with Ctrl: nothing to move
-      if (!press.objectId || press.toggle) {
+      // Drag that started in the empty space: selection rectangle
+      if (!press.objectId) {
+        press.selecting = true;
+        this.options.domElement.setPointerCapture(event.pointerId);
+        this.drawBox(press.startX, press.startY, event.clientX, event.clientY);
+        return;
+      }
+
+      // Ctrl+drag on an object: nothing to move
+      if (press.toggle) {
         return;
       }
 
@@ -193,6 +224,25 @@ export class ObjectInteraction {
 
     this.press = null;
 
+    if (press.selecting) {
+      this.box.style.display = "none";
+      this.options.domElement.releasePointerCapture(event.pointerId);
+
+      if (event.type !== "pointercancel") {
+        this.options.selectInRect(
+          this.screenRect(
+            press.startX,
+            press.startY,
+            event.clientX,
+            event.clientY,
+          ),
+          press.toggle,
+        );
+      }
+
+      return;
+    }
+
     if (press.dragging) {
       this.options.domElement.releasePointerCapture(event.pointerId);
 
@@ -221,6 +271,14 @@ export class ObjectInteraction {
     this.options = options;
 
     const element = options.domElement;
+
+    this.box = element.ownerDocument.createElement("div");
+    this.box.className =
+      "pointer-events-none absolute rounded-sm border border-primary bg-primary/15";
+    this.box.style.display = "none";
+    this.box.dataset.role = "selection-rectangle";
+    element.parentElement?.appendChild(this.box);
+
     element.addEventListener("pointerdown", this.onPointerDown);
     element.addEventListener("pointermove", this.onPointerMove);
     element.addEventListener("pointerup", this.onPointerUp);
@@ -233,6 +291,44 @@ export class ObjectInteraction {
     element.removeEventListener("pointermove", this.onPointerMove);
     element.removeEventListener("pointerup", this.onPointerUp);
     element.removeEventListener("pointercancel", this.onPointerUp);
+    this.box.remove();
+  }
+
+  /** Shows the selection rectangle between two pointer positions */
+  private drawBox(x1: number, y1: number, x2: number, y2: number): void {
+    const parent = this.box.parentElement;
+
+    if (!parent) {
+      return;
+    }
+
+    const origin = parent.getBoundingClientRect();
+    Object.assign(this.box.style, {
+      display: "block",
+      left: `${Math.min(x1, x2) - origin.left}px`,
+      top: `${Math.min(y1, y2) - origin.top}px`,
+      width: `${Math.abs(x2 - x1)}px`,
+      height: `${Math.abs(y2 - y1)}px`,
+    });
+  }
+
+  /** Rectangle between two pointer positions, in normalized coordinates */
+  private screenRect(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+  ): ScreenRect {
+    const rect = this.options.domElement.getBoundingClientRect();
+    const toX = (x: number): number => ((x - rect.left) / rect.width) * 2 - 1;
+    const toY = (y: number): number => -((y - rect.top) / rect.height) * 2 + 1;
+
+    return {
+      minX: Math.min(toX(x1), toX(x2)),
+      maxX: Math.max(toX(x1), toX(x2)),
+      minY: Math.min(toY(y1), toY(y2)),
+      maxY: Math.max(toY(y1), toY(y2)),
+    };
   }
 
   private setRay(clientX: number, clientY: number): void {
