@@ -381,9 +381,7 @@ src/gui/
 ├── App.tsx
 ├── MainLayout.tsx
 ├── viewport/
-│   ├── Viewport.tsx
-│   ├── ViewportToolbar.tsx
-│   └── ViewportStatus.tsx
+│   └── Viewport.tsx
 ├── sidebar/
 │   ├── LeftSidebar.tsx
 │   ├── RightSidebar.tsx
@@ -567,12 +565,6 @@ src/object_manager/
 ```text
 src/transform/
 
-├── MoveTool.ts
-├── RotateTool.ts
-├── ScaleTool.ts
-├── TransformManager.ts
-├── HistoryManager.ts
-├── UndoRedoManager.ts
 └── TransformValidator.ts
 ```
 

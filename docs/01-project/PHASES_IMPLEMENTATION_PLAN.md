@@ -1126,7 +1126,9 @@ Error Handling
 
 
 
-Status: In Progress
+Status: Completed
+
+Date: 2026-10-21
 
 Decisions (ADR-031, KI-017 resolved):
 
@@ -1144,6 +1146,7 @@ Decisions (ADR-031, KI-017 resolved):
 - Lot 50, several objects: Ctrl+click (viewport and Object Panel), Ctrl+A, click in the empty space clears the selection; the group moves, turns and scales (uniformly) around its center, each object placed back on the plate; one undo action per change of the group; the Transform section acts like the gizmo on the group; Shift+click and rectangle selection later (KI-022)
 - Lot 51: selection rectangle in the 3D viewport as in the Windows File Explorer (objects touched, Ctrl adds, same threshold, a press on an object moves it); Shift+click range in the Object Panel; KI-022 resolved
 - Lot 52: Ctrl+Z in a field of the Transform section (bug found in the manual controls of lot 51): typing not applied yet is undone first, otherwise the undo of the application, at once; no extra action when the field is left
+- Lot 53: closure of the phase; files never used removed (src/gui/viewport/ViewportToolbar.tsx and ViewportStatus.tsx; in src/transform/, all but TransformValidator.ts)
 
 Progress:
 
@@ -1156,6 +1159,15 @@ Progress:
 - Several objects (CHANGELOG 0.1.53): selection, group transforms, Transform section of a group
 - Selection rectangle and Shift+click (CHANGELOG 0.1.54)
 - Undo in a field of the Transform section (CHANGELOG 0.1.55)
+
+Validation result (Windows 11, manual controls of Noam for lots 49 to 52, 2026-10-21; all passed, control 16 of lot 51 fixed in lot 52):
+
+- Undo Works, Redo Works, Multi-Step History Works: undo and redo of the fields, of Reset and Center On Bed, of the gizmos and of a drag on the plate, one action per gesture; toolbar, Edit menu, Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z; Ctrl+Z in a field of Position, Rotation and Scale (lot 52, CHANGELOG 0.1.55)
+- Accurate Transforms: position, rotation and scale from the Transform section and from the gizmos, object always on the plate (CHANGELOG 0.1.48 to 0.1.51)
+- Multiple Objects Supported: Ctrl+click, Ctrl+A, selection rectangle, Shift+click in the Object Panel; group moved, turned and scaled around its center
+- On Windows with lot 50 (CHANGELOG 0.1.53): npm run check:locales (251 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint with no errors, npm test 33 tests passed; 41 unit tests (Vitest) since lot 52
+
+Open issues after the closure: KI-021 (sunk objects, Phase 15). Undo and redo cover the transforms only; import and deletion are recorded in a later phase (UNDO_REDO_SPEC.md).
 
 ---
 

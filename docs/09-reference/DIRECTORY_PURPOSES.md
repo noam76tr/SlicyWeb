@@ -366,7 +366,6 @@ Every file should be placed in the directory that matches its responsibility.
 
 - Viewport Rendering Components
 - Viewport Controls
-- Viewport Status Display
 - Workspace Interaction Tools
 
 **Files:**
@@ -374,8 +373,6 @@ Every file should be placed in the directory that matches its responsibility.
 | File | Role |
 |------|------|
 | `Viewport.tsx` | 3D viewport (Viewport Domain, ADR-028): creates the renderer, camera, lights, grid, axes and build plate; follows the size of its container, the View menu (viewport store), the selected printer and the Home key |
-| `ViewportStatus.tsx` | Viewport status bar displaying objects, camera and FPS |
-| `ViewportToolbar.tsx` | Viewport toolbar for transformation operations |
 
 ---
 
@@ -579,27 +576,17 @@ Until the project owner decides otherwise:
 
 **Purpose:** Transformation Tools
 
-**Role:** 3D object transformations: move, rotate, scale, history and undo/redo.
+**Role:** Validation of the transforms of 3D objects. The transforms themselves (move, rotate, scale, undo and redo) are applied by TransformService (src/services/) and recorded in historyStore (src/state/), Phase 6.
 
 **Contains:**
 
-- Move
-- Rotate
-- Scale
 - Transform Validation
-- Undo/Redo History
 
 **Files:**
 
 | File | Role |
 |------|------|
-| `HistoryManager.ts` | Manages the operation history with timestamps; not used (undo and redo: historyStore and TransformService, Phase 6) |
-| `MoveTool.ts` | Move transformation for 3D objects |
-| `RotateTool.ts` | Rotation transformation for 3D objects |
-| `ScaleTool.ts` | Scale transformation for 3D objects |
-| `TransformManager.ts` | Orchestrates all transformation operations |
 | `TransformValidator.ts` | Validates transformations (position, rotation, scale) |
-| `UndoRedoManager.ts` | Manages undo/redo with two state stacks; not used (undo and redo: historyStore and TransformService, Phase 6) |
 
 ---
 

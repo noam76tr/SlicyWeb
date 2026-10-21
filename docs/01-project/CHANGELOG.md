@@ -1978,7 +1978,7 @@ Release Type:
 Transform System
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-21
@@ -1996,6 +1996,38 @@ Date:
 
 - Control 16 of lot 51 (src/gui/sidebar/TransformSection.tsx): after a value was applied in a field (Scale X = 50 %) with the focus still in a field, Ctrl+Z used the undo history of the browser: the field showed 100 but the object did not change, and leaving the field applied 100 as a new action. Rule of Noam: typing not applied yet -> Ctrl+Z undoes the typing (the field shows the applied value again, no action); nothing pending -> Ctrl+Z is the undo of the application, the object changes at once and the field shows the new value; Ctrl+Y and Ctrl+Shift+Z redo when nothing is pending. Leaving the field afterwards adds no action
 - The fields now follow the value while they have the focus and nothing is typed (before: only when they did not have the focus)
+
+## Validation Result
+
+- Windows 11 (2026-10-21): files on GitHub (11 files, identical to lot 52); Ctrl+Z in a field: typing not applied yet undone alone, a value already applied undone in the application with the object; checked in Position, Rotation and Scale (Noam)
+
+---
+
+# VERSION 0.1.56
+
+Release Type:
+Transform System
+
+Status:
+In Progress
+
+Date:
+2026-10-21
+
+## Added
+
+- Technical Phase 6 - Transform System closed (PHASES_IMPLEMENTATION_PLAN.md: validation result, from the manual controls of Noam for lots 49 to 52)
+
+## Changed
+
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 6 Completed
+- PASSATION.md: Phase 6 Completed; next: automatic tests with Playwright (requested by Noam), then Phase 7
+- KNOWN ISSUES: KI-015 updated (ViewportToolbar and ViewportStatus removed; the panels of Phases 7 to 10 and Renderer.ts remain)
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: removed files; src/transform/ keeps TransformValidator.ts only
+
+## Removed
+
+- Files never used, replaced by the code of Phase 6 (decision of Noam): src/gui/viewport/ViewportToolbar.tsx and ViewportStatus.tsx (hardcoded English text, KI-015; replaced by the mode buttons over the viewport and the status bar); src/transform/HistoryManager.ts, UndoRedoManager.ts, TransformManager.ts, MoveTool.ts, RotateTool.ts, ScaleTool.ts (replaced by TransformService and historyStore)
 
 ---
 
@@ -2880,11 +2912,11 @@ Identifier: KI-015
 
 Since: 0.1.35
 
-Affected Module: src/gui/panels/ (PrinterPanel, MaterialPanel, FilamentPanel, PresetPanel, AnalysisPanel, RecommendationPanel), src/gui/viewport/ (ViewportToolbar, ViewportStatus), src/renderer/Renderer.ts
+Affected Module: src/gui/panels/ (PrinterPanel, MaterialPanel, FilamentPanel, PresetPanel, AnalysisPanel, RecommendationPanel), src/renderer/Renderer.ts
 
 Issue: These components are not used by the interface of Phase 3, and some of them contain hardcoded English text, against the Internationalization Rule (CLAUDE.md). The Properties Panel (src/gui/sidebar/RightSidebar.tsx) is used instead of the panels. Since 0.1.36, Viewport.tsx is used (3D viewport); src/renderer/Renderer.ts is no longer used and duplicates RendererManager.
 
-Resolve Before: the phase that displays each component (Phase 6 - Transform System for ViewportToolbar and ViewportStatus; Phases 7 to 10 for the panels; KI-011 for AnalysisPanel); Renderer.ts can be removed at any time
+Resolve Before: the phase that displays each component (Phases 7 to 10 for the panels; KI-011 for AnalysisPanel); Renderer.ts can be removed at any time. ViewportToolbar and ViewportStatus removed in 0.1.56 (replaced by the mode buttons over the viewport and the status bar)
 
 Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it.
 

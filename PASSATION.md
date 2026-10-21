@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-21. Lot 51 sur `main` (commit 89ca777), contrôlé par Noam ; lot 52 pas encore sur GitHub. Dernière entrée du CHANGELOG : 0.1.55 (lot 52).
+Date : 2026-10-21. Lot 52 sur `main` (commit 04ba0f3), vérifié identique et contrôlé par Noam ; les 8 fichiers inutilisés supprimés par Noam sur `main` (jusqu'au commit dc73b83) ; documentation du lot 53 pas encore sur GitHub. Dernière entrée du CHANGELOG : 0.1.56 (lot 53).
 
 ---
 
@@ -71,7 +71,7 @@ Date : 2026-10-21. Lot 51 sur `main` (commit 89ca777), contrôlé par Noam ; lot
 | 3 | GUI Foundation | Completed (2026-10-15) | 0.1.35 |
 | 4 | 3D Viewport | Completed (2026-10-16) | 0.1.37 |
 | 5 | Model Import | Completed (2026-10-17) | 0.1.44 |
-| 6 | Transform System | **In Progress** (depuis le 2026-10-18) | 0.1.47 à 0.1.54 |
+| 6 | Transform System | Completed (2026-10-21) | 0.1.47 à 0.1.56 |
 | 7 à 16 | Printer Database, Material Database, Model Analysis, Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
@@ -89,7 +89,7 @@ Date : 2026-10-21. Lot 51 sur `main` (commit 89ca777), contrôlé par Noam ; lot
   - analyse dans un Web Worker, avec une barre de progression et un bouton Annuler ;
   - objets centrés à Z = 0 ; un 3MF garde la disposition de ses objets ;
   - messages d'erreur traduits, avec les codes d'ERROR_CODES_SPEC.
-- **Transformations (phase 6, en cours) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). La section Transform du panneau Propriétés permet de saisir la position X, Y, la rotation, l'échelle (%) et la taille (mm), avec Reset et Center On Bed ; l'objet reste toujours posé sur le plateau. Dans la vue 3D : clic pour sélectionner (un vrai clic dans le vide désélectionne), glisser un objet pour le déplacer sur le plateau (après 4 pixels), poignées Move, Rotate, Scale (touches G, R, S et boutons au-dessus de la vue 3D, grisés sans sélection), Échap désélectionne. La position d'un objet est celle de son **centre** (DATA_SCHEMA 3.4.0) : il tourne autour de son centre ; avec la poignée, il tourne librement pendant le geste et se repose sur le plateau au relâchement. Poignée Scale : une poignée par axe (X à droite, Y devant, Z en haut) et celle du centre ; le cadenas agit pareil dans le panneau et sur la poignée. La section Transform n'affiche que les lignes du mode. Annuler / Rétablir (lot 49) : transformations seulement, un geste = une étape, 50 étapes, barre d'outils, menu Édition, Ctrl+Z, Ctrl+Y, Ctrl+Maj+Z ; l'objet concerné est sélectionné ; dans un champ de la section Transform, Ctrl+Z annule d'abord la frappe non validée, sinon il annule dans l'application (lot 52). Plusieurs objets (lot 50) : Ctrl+clic (vue 3D et panneau Objets), Ctrl+A ; le groupe se déplace, tourne et change d'échelle (uniforme) autour de son centre ; le panneau Transform agit comme la poignée sur le groupe. Rectangle de sélection dans la vue 3D, Maj+clic dans le panneau Objets (lot 51).
+- **Transformations (phase 6) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). La section Transform du panneau Propriétés permet de saisir la position X, Y, la rotation, l'échelle (%) et la taille (mm), avec Reset et Center On Bed ; l'objet reste toujours posé sur le plateau. Dans la vue 3D : clic pour sélectionner (un vrai clic dans le vide désélectionne), glisser un objet pour le déplacer sur le plateau (après 4 pixels), poignées Move, Rotate, Scale (touches G, R, S et boutons au-dessus de la vue 3D, grisés sans sélection), Échap désélectionne. La position d'un objet est celle de son **centre** (DATA_SCHEMA 3.4.0) : il tourne autour de son centre ; avec la poignée, il tourne librement pendant le geste et se repose sur le plateau au relâchement. Poignée Scale : une poignée par axe (X à droite, Y devant, Z en haut) et celle du centre ; le cadenas agit pareil dans le panneau et sur la poignée. La section Transform n'affiche que les lignes du mode. Annuler / Rétablir (lot 49) : transformations seulement, un geste = une étape, 50 étapes, barre d'outils, menu Édition, Ctrl+Z, Ctrl+Y, Ctrl+Maj+Z ; l'objet concerné est sélectionné ; dans un champ de la section Transform, Ctrl+Z annule d'abord la frappe non validée, sinon il annule dans l'application (lot 52). Plusieurs objets (lot 50) : Ctrl+clic (vue 3D et panneau Objets), Ctrl+A ; le groupe se déplace, tourne et change d'échelle (uniforme) autour de son centre ; le panneau Transform agit comme la poignée sur le groupe. Rectangle de sélection dans la vue 3D, Maj+clic dans le panneau Objets (lot 51).
 - **Sécurité :**
   - liste blanche des canaux IPC dans le preload (22 canaux, `npm run check:ipc`) ;
   - politique de sécurité du contenu (CSP) stricte dans l'application compilée, et adaptée en développement ;
@@ -177,6 +177,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 50 | Sélection de plusieurs objets, transformations de groupe ; KI-022 | 0.1.53 |
 | 51 | Rectangle de sélection, Maj+clic dans le panneau Objets ; KI-022 réglé | 0.1.54 |
 | 52 | Bug 16 : Ctrl+Z dans un champ de la section Transform | 0.1.55 |
+| 53 | Clôture de la phase 6 ; 8 fichiers jamais utilisés supprimés (KI-015 pour la vue 3D) | 0.1.56 |
 
 ---
 
@@ -247,6 +248,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 41. Rectangle de sélection comme l'Explorateur Windows : bouton gauche dans le vide de la vue 3D, puis glisser ; au relâchement, les objets touchés sont sélectionnés ; Ctrl + rectangle ajoute ; même seuil (un clic dans le vide désélectionne) ; commencer sur un objet le déplace. Maj+clic dans le panneau Objets : plage depuis le dernier objet cliqué.
 42. Un rectangle qui ne touche aucun objet désélectionne (accepté au contrôle du lot 51).
 43. Ctrl+Z dans un champ de la section Transform (bug 16) : frappe pas encore validée → Ctrl+Z annule la frappe ; rien en attente → Annuler de l'application, l'objet change tout de suite et le champ se met à jour ; quitter le champ ensuite ne crée pas d'étape.
+44. Fichiers jamais utilisés supprimés à la clôture de la phase 6 : `src/gui/viewport/ViewportToolbar.tsx`, `ViewportStatus.tsx` et, dans `src/transform/`, tout sauf `TransformValidator.ts` (HistoryManager, UndoRedoManager, TransformManager, MoveTool, RotateTool, ScaleTool).
 
 **Méthode**
 
@@ -256,38 +258,36 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 5. Travail restant, dans l'ordre
 
-1. **Phase 6 : Transform System** (en cours).
+1. **Phase 6 : Transform System** : close le 2026-10-21 (lot 53).
    - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49) ; plusieurs objets (lot 50) ; rectangle et Maj+clic (lot 51) ; Ctrl+Z dans un champ (lot 52).
-   - Contrôles manuels des lots 49, 50 et 51 : A, B, C et D réussis, sauf le contrôle 16 (corrigé au lot 52).
-   - À faire : contrôle du lot 52 par Noam, puis clôture de la phase 6, puis tests automatiques Playwright (demandés par Noam).
-   - KI-015 : ViewportToolbar et ViewportStatus contiennent du texte en dur, à traduire quand la phase 6 les affiche.
-2. **Phases 7 à 16**, dans l'ordre du plan technique.
-3. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
+   - Contrôles manuels des lots 49 à 52 : tous réussis (le contrôle 16 du lot 51 a été corrigé au lot 52).
+2. **Tests automatiques avec Playwright** (demandés par Noam) : prochain lot.
+3. **Phases 7 à 16**, dans l'ordre du plan technique.
+4. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
    | KI | Sujet | À régler avant |
    |---|---|---|
    | KI-007 | Réponse de Generate Recommendation différente du Recommendation Schema | Implémentation de l'API Recommendation |
    | KI-008 | Limites de l'imprimante et du matériau non appliquées au profil recommandé | Phase 14 |
    | KI-013 | npm audit : 7 alertes « high » (braces, via shadcn) ; ne pas lancer `npm audit fix --force` | Phase 16 |
-   | KI-015 | Composants inutilisés avec du texte en dur | Phase qui affiche chaque composant (6, puis 7 à 10) |
+   | KI-015 | Panneaux inutilisés avec du texte en dur ; `Renderer.ts` inutilisé | Phase qui affiche chaque panneau (7 à 10) |
    | KI-019 | 3MF Bambu à plusieurs plateaux : objets éloignés | Phase 14 |
    | KI-020 | Noms d'objets et métadonnées du 3MF non gardés (aucun champ dans DATA_SCHEMA) | Phase 13 |
    | KI-021 | Objet enfoncé sous le plateau, non permis pour l'instant | Phase 15 |
 
-4. **Points signalés, en attente d'une décision de Noam :**
+5. **Points signalés, en attente d'une décision de Noam :**
    - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (lié à KI-007).
    - SLICER_EXPORT_SPEC.md : version restée en 1.0.0, pas de code d'erreur pour les contrôles de scène (proposés : EXP_013 hors volume, EXP_014 collision).
    - Duplication projet/scène des 4 sélections dans DATA_SCHEMA (décision 4) : choisir la source de vérité.
    - `WYPROJExporter` : le champ `author` de `metadata` n'est jamais rempli.
    - README.md : il indique encore « Current Phase: Phase 0 » et une liste des phases qui ne suit pas ROADMAP ; ambiguïté sur Undo/Redo (ROADMAP phase 0, plan technique phase 6).
-   - `src/transform/HistoryManager.ts` et `UndoRedoManager.ts` : modèles jamais utilisés (Annuler / Rétablir est dans `historyStore` et `TransformService`) ; les supprimer demande l'accord de Noam.
    - Fichiers d'emplacement mal nommés (`README.me`, `readme.me`, `readme`) dans `assets/`, `data/`, `cache/`, `.github/workflows/`.
 
 ---
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot51-rectangle-selection/` : livrables de chaque lot (`LOTN.md`, zip, patch).
+- `lot9-create-project/` à `lot53-cloture-phase6/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8, 52 et 53 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.
