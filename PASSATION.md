@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-20. Lot 49 sur `main` au commit `742dab2`, vérifié identique ; lots 50 et 51 pas encore sur GitHub. Dernière entrée du CHANGELOG : 0.1.54 (lot 51).
+Date : 2026-10-21. Lots 50 et 51 sur `main` (commits 478ef0f et 89ca777). Dernière entrée du CHANGELOG : 0.1.54 (lot 51).
 
 ---
 
