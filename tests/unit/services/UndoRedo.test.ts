@@ -5,7 +5,8 @@
  * History of the transform changes (UNDO_REDO_SPEC.md; decisions of Noam,
  * Phase 6): one action per change, one action per gesture, redo cleared
  * by a new action, 50 actions at most, the object changed is selected,
- * a failed restoration keeps the scene.
+ * a failed restoration keeps the scene; Ctrl+Z in a field with nothing
+ * pending, then leaving the field, adds no action.
  *
  * Based on:
  * - UNDO_REDO_SPEC.md
@@ -164,6 +165,19 @@ describe("Undo and redo", () => {
     }
     // The 5 oldest actions are dropped: back to X = 5, not 0
     expect(cube().transform.position.x).toBe(5);
+  });
+
+  it("adds no action when a field is left after an undo", () => {
+    // Scale X typed 50 % and applied, then Ctrl+Z in the field (nothing
+    // pending): undo of the application; the field shows 100 again
+    TransformService.setScale(ID, "x", 0.5, true);
+    expect(TransformService.undo()).toBe(true);
+    expect(cube().transform.scale.x).toBe(1);
+
+    // Leaving the field applies the value shown: same value, no action
+    TransformService.setScale(ID, "x", 1, true);
+    expect(undoCount()).toBe(0);
+    expect(redoCount()).toBe(1);
   });
 
   it("keeps the scene when the object no longer exists", () => {

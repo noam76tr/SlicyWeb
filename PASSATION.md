@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-21. Lots 50 et 51 sur `main` (commits 478ef0f et 89ca777). Dernière entrée du CHANGELOG : 0.1.54 (lot 51).
+Date : 2026-10-21. Lot 51 sur `main` (commit 89ca777), contrôlé par Noam ; lot 52 pas encore sur GitHub. Dernière entrée du CHANGELOG : 0.1.55 (lot 52).
 
 ---
 
@@ -89,7 +89,7 @@ Date : 2026-10-21. Lots 50 et 51 sur `main` (commits 478ef0f et 89ca777). Derni�
   - analyse dans un Web Worker, avec une barre de progression et un bouton Annuler ;
   - objets centrés à Z = 0 ; un 3MF garde la disposition de ses objets ;
   - messages d'erreur traduits, avec les codes d'ERROR_CODES_SPEC.
-- **Transformations (phase 6, en cours) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). La section Transform du panneau Propriétés permet de saisir la position X, Y, la rotation, l'échelle (%) et la taille (mm), avec Reset et Center On Bed ; l'objet reste toujours posé sur le plateau. Dans la vue 3D : clic pour sélectionner (un vrai clic dans le vide désélectionne), glisser un objet pour le déplacer sur le plateau (après 4 pixels), poignées Move, Rotate, Scale (touches G, R, S et boutons au-dessus de la vue 3D, grisés sans sélection), Échap désélectionne. La position d'un objet est celle de son **centre** (DATA_SCHEMA 3.4.0) : il tourne autour de son centre ; avec la poignée, il tourne librement pendant le geste et se repose sur le plateau au relâchement. Poignée Scale : une poignée par axe (X à droite, Y devant, Z en haut) et celle du centre ; le cadenas agit pareil dans le panneau et sur la poignée. La section Transform n'affiche que les lignes du mode. Annuler / Rétablir (lot 49) : transformations seulement, un geste = une étape, 50 étapes, barre d'outils, menu Édition, Ctrl+Z, Ctrl+Y, Ctrl+Maj+Z ; l'objet concerné est sélectionné. Plusieurs objets (lot 50) : Ctrl+clic (vue 3D et panneau Objets), Ctrl+A ; le groupe se déplace, tourne et change d'échelle (uniforme) autour de son centre ; le panneau Transform agit comme la poignée sur le groupe. Rectangle de sélection dans la vue 3D, Maj+clic dans le panneau Objets (lot 51).
+- **Transformations (phase 6, en cours) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). La section Transform du panneau Propriétés permet de saisir la position X, Y, la rotation, l'échelle (%) et la taille (mm), avec Reset et Center On Bed ; l'objet reste toujours posé sur le plateau. Dans la vue 3D : clic pour sélectionner (un vrai clic dans le vide désélectionne), glisser un objet pour le déplacer sur le plateau (après 4 pixels), poignées Move, Rotate, Scale (touches G, R, S et boutons au-dessus de la vue 3D, grisés sans sélection), Échap désélectionne. La position d'un objet est celle de son **centre** (DATA_SCHEMA 3.4.0) : il tourne autour de son centre ; avec la poignée, il tourne librement pendant le geste et se repose sur le plateau au relâchement. Poignée Scale : une poignée par axe (X à droite, Y devant, Z en haut) et celle du centre ; le cadenas agit pareil dans le panneau et sur la poignée. La section Transform n'affiche que les lignes du mode. Annuler / Rétablir (lot 49) : transformations seulement, un geste = une étape, 50 étapes, barre d'outils, menu Édition, Ctrl+Z, Ctrl+Y, Ctrl+Maj+Z ; l'objet concerné est sélectionné ; dans un champ de la section Transform, Ctrl+Z annule d'abord la frappe non validée, sinon il annule dans l'application (lot 52). Plusieurs objets (lot 50) : Ctrl+clic (vue 3D et panneau Objets), Ctrl+A ; le groupe se déplace, tourne et change d'échelle (uniforme) autour de son centre ; le panneau Transform agit comme la poignée sur le groupe. Rectangle de sélection dans la vue 3D, Maj+clic dans le panneau Objets (lot 51).
 - **Sécurité :**
   - liste blanche des canaux IPC dans le preload (22 canaux, `npm run check:ipc`) ;
   - politique de sécurité du contenu (CSP) stricte dans l'application compilée, et adaptée en développement ;
@@ -114,7 +114,7 @@ Date : 2026-10-21. Lots 50 et 51 sur `main` (commits 478ef0f et 89ca777). Derni�
 | ARCHITECTURE_DECISION_MATRIX.md | 2.3.0 |
 | API_SPEC.md | 2.1.0 (voir §5, points en attente) |
 | SLICER_EXPORT_SPEC.md | 1.0.0 |
-| UNDO_REDO_SPEC.md | 2.1.0 (50 étapes ; phase 6 : transformations seulement) |
+| UNDO_REDO_SPEC.md | 2.2.0 (50 étapes ; phase 6 : transformations seulement ; Ctrl+Z dans un champ) |
 | Dernier ADR | ADR-031 ; dernier ADM : ADM-027 |
 
 ---
@@ -176,6 +176,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 49 | Annuler / Rétablir des transformations (UNDO_REDO_SPEC 2.1.0) | 0.1.52 |
 | 50 | Sélection de plusieurs objets, transformations de groupe ; KI-022 | 0.1.53 |
 | 51 | Rectangle de sélection, Maj+clic dans le panneau Objets ; KI-022 réglé | 0.1.54 |
+| 52 | Bug 16 : Ctrl+Z dans un champ de la section Transform | 0.1.55 |
 
 ---
 
@@ -238,12 +239,14 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 33. Option B : l'origine locale d'un objet est le **centre** de sa boîte à l'import ; la position est celle du centre (Z = hauteur du centre). Test demandé : cube de 20 mm en X = 0, Y = 0, tourné de 90° autour de X → X = 0, Y = 0, Z = 10, posé.
 34. Rotation à la poignée comme Bambu Studio / OrcaSlicer : libre autour du centre pendant le geste (peut passer sous le plateau un instant), reposée sur le plateau au relâchement (seul Z change).
 35. Pas d'objet sous le plateau pour l'instant (« objet enfoncé » : KI-021).
-36. Annuler / Rétablir : seulement les transformations (l'import et la suppression plus tard) ; 50 étapes (UNDO_REDO_SPEC disait 100), historique vidé à la fermeture ou l'ouverture d'un projet ; l'objet de l'étape annulée est sélectionné, une sélection seule n'est pas une étape ; Ctrl+Z dans un champ annule seulement la frappe.
+36. Annuler / Rétablir : seulement les transformations (l'import et la suppression plus tard) ; 50 étapes (UNDO_REDO_SPEC disait 100), historique vidé à la fermeture ou l'ouverture d'un projet ; l'objet de l'étape annulée est sélectionné, une sélection seule n'est pas une étape ; Ctrl+Z dans un champ annule seulement la frappe (précisé par la décision 43).
 37. Historique gardé à 50 étapes.
 38. Sélection multiple (lot 50) : Ctrl+clic ajoute ou retire (vue 3D et panneau Objets), Ctrl+A tout, clic dans le vide désélectionne ; groupe déplacé, tourné et mis à l'échelle autour de son centre, chaque objet reposé au relâchement ; une étape d'annulation par modification du groupe. Pas de rectangle ni de Maj+clic (KI-022).
 39. Échelle d'un groupe : toujours uniforme.
 40. Panneau Transform d'un groupe : agit comme la poignée (position = centre, rotation relative qui revient à 0, échelle 100 % = taille du groupe, taille = emprise du groupe). Pour tourner une pièce sur elle-même, on la sélectionne seule.
 41. Rectangle de sélection comme l'Explorateur Windows : bouton gauche dans le vide de la vue 3D, puis glisser ; au relâchement, les objets touchés sont sélectionnés ; Ctrl + rectangle ajoute ; même seuil (un clic dans le vide désélectionne) ; commencer sur un objet le déplace. Maj+clic dans le panneau Objets : plage depuis le dernier objet cliqué.
+42. Un rectangle qui ne touche aucun objet désélectionne (accepté au contrôle du lot 51).
+43. Ctrl+Z dans un champ de la section Transform (bug 16) : frappe pas encore validée → Ctrl+Z annule la frappe ; rien en attente → Annuler de l'application, l'objet change tout de suite et le champ se met à jour ; quitter le champ ensuite ne crée pas d'étape.
 
 **Méthode**
 
@@ -254,8 +257,9 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 ## 5. Travail restant, dans l'ordre
 
 1. **Phase 6 : Transform System** (en cours).
-   - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49) ; plusieurs objets (lot 50) ; rectangle et Maj+clic (lot 51).
-   - À faire : clôture de la phase 6 avec les résultats de Noam (contrôles manuels des lots 49, 50 et 51).
+   - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49) ; plusieurs objets (lot 50) ; rectangle et Maj+clic (lot 51) ; Ctrl+Z dans un champ (lot 52).
+   - Contrôles manuels des lots 49, 50 et 51 : A, B, C et D réussis, sauf le contrôle 16 (corrigé au lot 52).
+   - À faire : contrôle du lot 52 par Noam, puis clôture de la phase 6, puis tests automatiques Playwright (demandés par Noam).
    - KI-015 : ViewportToolbar et ViewportStatus contiennent du texte en dur, à traduire quand la phase 6 les affiche.
 2. **Phases 7 à 16**, dans l'ordre du plan technique.
 3. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :

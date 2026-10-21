@@ -1143,6 +1143,7 @@ Decisions (ADR-031, KI-017 resolved):
 - Lot 49, undo and redo (UNDO_REDO_SPEC.md): transform changes only; 50 actions; the object of the action undone or redone is selected; in a text field, Ctrl+Z undoes the typing only
 - Lot 50, several objects: Ctrl+click (viewport and Object Panel), Ctrl+A, click in the empty space clears the selection; the group moves, turns and scales (uniformly) around its center, each object placed back on the plate; one undo action per change of the group; the Transform section acts like the gizmo on the group; Shift+click and rectangle selection later (KI-022)
 - Lot 51: selection rectangle in the 3D viewport as in the Windows File Explorer (objects touched, Ctrl adds, same threshold, a press on an object moves it); Shift+click range in the Object Panel; KI-022 resolved
+- Lot 52: Ctrl+Z in a field of the Transform section (bug found in the manual controls of lot 51): typing not applied yet is undone first, otherwise the undo of the application, at once; no extra action when the field is left
 
 Progress:
 
@@ -1154,6 +1155,7 @@ Progress:
 - Undo and redo (CHANGELOG 0.1.52): history of the transform changes, one action per gesture, toolbar, Edit menu, Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z
 - Several objects (CHANGELOG 0.1.53): selection, group transforms, Transform section of a group
 - Selection rectangle and Shift+click (CHANGELOG 0.1.54)
+- Undo in a field of the Transform section (CHANGELOG 0.1.55)
 
 ---
 

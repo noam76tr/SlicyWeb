@@ -1470,7 +1470,7 @@ Size X Y Z      mm, along the axes of the object, editable and linked to
                 the scale: changing one updates the other
 ```
 
-A value is applied with Enter or when the field loses the focus; Escape restores it; a comma is accepted as decimal separator; a value that is not a number, or a scale of 0.1 % or less, is refused. Every change of transform (fields, Transform Actions, gizmos) goes through one service (TransformService), where undo and redo are recorded.
+A value is applied with Enter or when the field loses the focus; Escape restores it; Ctrl+Z undoes the typing not applied yet, and otherwise undoes in the application (UNDO_REDO_SPEC.md, Keyboard Shortcuts); a comma is accepted as decimal separator; a value that is not a number, or a scale of 0.1 % or less, is refused. Every change of transform (fields, Transform Actions, gizmos) goes through one service (TransformService), where undo and redo are recorded.
 
 The rows and the Transform Actions shown follow the mode of the gizmo (decision of Noam, Phase 6):
 

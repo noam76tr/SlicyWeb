@@ -910,6 +910,9 @@ src/utils/
 tests/
 
 ├── unit/
+│   ├── gui/
+│   │   └── hooks/
+│   │       └── UndoRedoShortcuts.test.ts = keys of undo and redo (Phase 6)
 │   ├── renderer/
 │   │   └── ObjectRenderer.test.ts = selection rectangle (Phase 6)
 │   ├── scene/

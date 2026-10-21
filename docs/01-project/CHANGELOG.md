@@ -1942,7 +1942,7 @@ Release Type:
 Transform System
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-20
@@ -1963,6 +1963,39 @@ Date:
 ## Fixed
 
 - KI-022 resolved (selection with a rectangle and Shift+click)
+
+## Validation Result
+
+- Windows 11 (2026-10-21): files on GitHub (27 files checked); manual controls A, B, C passed (undo and redo, group transforms, selection rectangle and Shift+click); D passed except control 16 (fixed in 0.1.55)
+- A rectangle that touches nothing clears the selection: accepted (Noam)
+- Requested next (Noam): fix of control 16, then the closure of Phase 6, then automatic tests with Playwright
+
+---
+
+# VERSION 0.1.55
+
+Release Type:
+Transform System
+
+Status:
+In Progress
+
+Date:
+2026-10-21
+
+## Added
+
+- tests/unit/gui/hooks/UndoRedoShortcuts.test.ts (3 tests); tests/unit/services/UndoRedo.test.ts: no action when a field is left after an undo (41 tests in total)
+- src/gui/hooks/useUndoRedoShortcuts.ts: undoRedoCommand (keys of undo and redo, shared by the window and the fields)
+
+## Changed
+
+- UNDO_REDO_SPEC.md 2.2.0 (Keyboard Shortcuts): Ctrl+Z in a field of the Transform section; GUI_SPEC.md (Transform Section), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md, PASSATION.md
+
+## Fixed
+
+- Control 16 of lot 51 (src/gui/sidebar/TransformSection.tsx): after a value was applied in a field (Scale X = 50 %) with the focus still in a field, Ctrl+Z used the undo history of the browser: the field showed 100 but the object did not change, and leaving the field applied 100 as a new action. Rule of Noam: typing not applied yet -> Ctrl+Z undoes the typing (the field shows the applied value again, no action); nothing pending -> Ctrl+Z is the undo of the application, the object changes at once and the field shows the new value; Ctrl+Y and Ctrl+Shift+Z redo when nothing is pending. Leaving the field afterwards adds no action
+- The fields now follow the value while they have the focus and nothing is typed (before: only when they did not have the focus)
 
 ---
 

@@ -32,6 +32,12 @@
  * restores it. A comma is accepted as decimal separator. Every change goes
  * through TransformService (one place for undo and redo).
  *
+ * Ctrl+Z in a field (decision of Noam, Phase 6): typing not applied yet is
+ * undone (the field shows the applied value again, no history action);
+ * with nothing pending, Ctrl+Z is the undo of the application, at once,
+ * and the field shows the new value. Ctrl+Y and Ctrl+Shift+Z: the redo of
+ * the application when nothing is pending, nothing otherwise.
+ *
  * No business logic.
  *
  * Based on:
@@ -57,6 +63,7 @@ import {
 } from "../../state/viewportStore";
 import { Button } from "../components/ui/button";
 import { useTranslation } from "../hooks/useTranslation";
+import { undoRedoCommand } from "../hooks/useUndoRedoShortcuts";
 
 import type { Object3D } from "../../types/Object3D";
 
@@ -65,10 +72,7 @@ const AXES: Axis[] = ["x", "y", "z"];
 type TransformRow = "position" | "rotation" | "scale" | "size";
 
 type TransformAction =
-  | "resetPosition"
-  | "centerOnBed"
-  | "resetRotation"
-  | "resetScale";
+  "resetPosition" | "centerOnBed" | "resetRotation" | "resetScale";
 
 /** Rows and actions shown for each mode of the gizmo */
 const MODE_LAYOUT: Record<
@@ -191,20 +195,24 @@ function NumberField({
   onCommit,
 }: NumberFieldProps): JSX.Element {
   const [text, setText] = useState(format(value));
-  const [editing, setEditing] = useState(false);
+  // Typed since the value was last applied or shown
+  const [dirty, setDirty] = useState(false);
 
   // Set by Enter and Escape, which handle the value themselves: the blur
   // that follows must not apply it again (or apply a cancelled value)
   const handled = useRef(false);
 
   useEffect(() => {
-    if (!editing) {
+    if (!dirty) {
       setText(format(value));
     }
-  }, [value, editing]);
+  }, [value, dirty]);
+
+  // Typing not applied yet
+  const pending = dirty && text !== format(value);
 
   const commit = (): void => {
-    setEditing(false);
+    setDirty(false);
     const number = parse(text);
 
     if (
@@ -227,7 +235,29 @@ function NumberField({
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
-    if (event.key === "Enter") {
+    const command = undoRedoCommand(event);
+
+    if (command) {
+      // The history of the browser is never used: it would mix the typing
+      // with values already applied
+      event.preventDefault();
+
+      if (pending) {
+        if (command === "undo") {
+          setText(format(value));
+          setDirty(false);
+        }
+        return;
+      }
+
+      setDirty(false);
+
+      if (command === "undo") {
+        TransformService.undo();
+      } else {
+        TransformService.redo();
+      }
+    } else if (event.key === "Enter") {
       event.preventDefault();
       commit();
       handled.current = true;
@@ -236,7 +266,7 @@ function NumberField({
       // The value typed is dropped at once, whatever happens next
       event.preventDefault();
       setText(format(value));
-      setEditing(false);
+      setDirty(false);
       handled.current = true;
       event.currentTarget.blur();
     }
@@ -256,9 +286,11 @@ function NumberField({
         value={text}
         onFocus={() => {
           handled.current = false;
-          setEditing(true);
         }}
-        onChange={(event) => setText(event.target.value)}
+        onChange={(event) => {
+          setText(event.target.value);
+          setDirty(true);
+        }}
         onBlur={onBlur}
         onKeyDown={onKeyDown}
         className="h-6 w-full min-w-0 rounded border border-input bg-background px-1.5 text-xs text-foreground tabular-nums outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 read-only:bg-muted read-only:text-muted-foreground"

@@ -354,7 +354,7 @@ Every file should be placed in the directory that matches its responsibility.
 | `components/I18nProvider.tsx` | Loads the dictionary of the current language and provides it to the GUI; sets `lang` and `dir` (right-to-left for Hebrew) on the document |
 | `hooks/useTranslation.ts` | Hook giving GUI components the translated texts, the current language and the language change |
 | `hooks/useSelectAllShortcut.ts` | Keyboard shortcut Ctrl+A: selects all the objects; not in a text field |
-| `hooks/useUndoRedoShortcuts.ts` | Keyboard shortcuts Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z (undo, redo through TransformService); not in a text field (UNDO_REDO_SPEC.md) |
+| `hooks/useUndoRedoShortcuts.ts` | Keyboard shortcuts Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z (undo, redo through TransformService); not in a text field, where the fields of the Transform section use the same keys (`undoRedoCommand`, UNDO_REDO_SPEC.md) |
 
 ---
 
@@ -1693,9 +1693,10 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 
 | File | Tests |
 |------|-------|
+| `gui/hooks/UndoRedoShortcuts.test.ts` | Keys of undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z, Cmd, AZERTY letter, Hebrew layout (key position), Alt and other keys ignored |
 | `renderer/ObjectRenderer.test.ts` | Selection rectangle: objects touched (not only inside), turned objects, hidden objects |
 | `services/GroupTransform.test.ts` | Several objects: Ctrl+click and Ctrl+A selection; group moved, turned and scaled around its center, objects on the plate; one undo per change of the group |
-| `services/UndoRedo.test.ts` | Undo and redo: one action per change and per gesture, redo cleared by a new action, 50 actions at most, object selected, object removed |
+| `services/UndoRedo.test.ts` | Undo and redo: one action per change and per gesture, redo cleared by a new action, 50 actions at most, object selected, object removed, no action when a field is left after an undo |
 | `services/TransformService.test.ts` | Transform changes: object always on the plate, scale with and without the lock, size in mm, Center On Bed, Reset actions, refused values |
 | `scene/ObjectTransform.test.ts` | Transform Rules (ADR-031): degrees, right-hand rule, order X then Y then Z around the plate axes, scale along the object axes, placement on the plate, 3MF export transform |
 

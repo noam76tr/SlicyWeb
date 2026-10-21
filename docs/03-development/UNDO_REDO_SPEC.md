@@ -2,7 +2,7 @@
 
 # UNDO REDO SPECIFICATION
 
-Version: 2.1.0
+Version: 2.2.0
 
 Status: Approved
 
@@ -1316,7 +1316,7 @@ Ctrl + Y
 
 Supported.
 
-In a text field, the shortcuts undo or redo the typing in the field; the history of the application is not touched (decision of Noam, Phase 6). The letter is read from the key typed (Z of an AZERTY keyboard), or from the key position when the layout has no Latin letters (Hebrew).
+In a field of the Transform section (decisions of Noam, Phase 6): while typing is not applied yet (Enter, or the field losing the focus), Ctrl+Z undoes the typing: the field shows the applied value again and the history of the application is not touched; with nothing pending (value already applied), Ctrl+Z is the undo of the application: the object changes at once and the field shows the new value. Ctrl+Y and Ctrl+Shift+Z redo in the application when nothing is pending, and do nothing otherwise. Leaving the field after an undo adds no action. The undo history of the browser is never used in these fields. In other text fields, the shortcuts keep their usual meaning (undo the typing). The letter is read from the key typed (Z of an AZERTY keyboard), or from the key position when the layout has no Latin letters (Hebrew).
 
 
 
