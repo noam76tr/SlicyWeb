@@ -67,6 +67,7 @@ SlicyWeb/
 ├── tsconfig.json
 ├── vite.config.mts
 ├── vitest.config.mts          = unit tests (tests/unit/), separate from vite.config.mts
+├── playwright.config.mts      = end-to-end tests (tests/e2e/) on the built application
 ├── electron-builder.json
 ├── eslint.config.js
 ├── prettier.config.js
@@ -915,6 +916,10 @@ tests/
 │       └── UndoRedo.test.ts = undo and redo of the transform changes
 ├── integration/
 └── e2e/
+    ├── fixtures.ts = starts the built application, test files
+    ├── app.spec.ts = main window, languages
+    ├── import.spec.ts = STL and 3MF import, refused files
+    └── transform.spec.ts = transforms, undo and redo, several objects (Phase 6)
 ```
 
 ---

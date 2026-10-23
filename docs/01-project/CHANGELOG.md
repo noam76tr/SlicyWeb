@@ -2009,7 +2009,7 @@ Release Type:
 Transform System
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-21
@@ -2028,6 +2028,34 @@ Date:
 ## Removed
 
 - Files never used, replaced by the code of Phase 6 (decision of Noam): src/gui/viewport/ViewportToolbar.tsx and ViewportStatus.tsx (hardcoded English text, KI-015; replaced by the mode buttons over the viewport and the status bar); src/transform/HistoryManager.ts, UndoRedoManager.ts, TransformManager.ts, MoveTool.ts, RotateTool.ts, ScaleTool.ts (replaced by TransformService and historyStore)
+
+## Validation Result
+
+- Windows 11 (2026-10-21): files on GitHub (d11cd96); the 8 files removed on main and in the local folder; npm run check:locales (251 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 41 tests passed (6 files), npm run build OK
+
+---
+
+# VERSION 0.1.57
+
+Release Type:
+Tooling
+
+Status:
+In Progress
+
+Date:
+2026-10-21
+
+## Added
+
+- End-to-end tests with Playwright (requested by Noam; TECH_STACK.md, Playwright; TEST_PLAN.md, End-To-End Testing): @playwright/test 1.64.1 (development dependency), playwright.config.mts, npm script test:e2e (vite build, then playwright test); the tests start the built Electron application, in a new user data folder for each test (the settings of the user are not changed)
+- tests/e2e/fixtures.ts; tests/e2e/app.spec.ts (3 tests: main window, language kept after a restart, Hebrew from right to left); tests/e2e/import.spec.ts (5 tests: STL, several files, 3MF, unsupported and corrupted files); tests/e2e/transform.spec.ts (8 tests: fields, undo and redo, Ctrl+Z in a field, modes G, R, S and Escape, Ctrl+A, Shift+click, selection rectangle, group); 16 tests in total
+- The test of Ctrl+Z in a field fails with the code before 0.1.55 (control 16 of lot 51)
+
+## Changed
+
+- tsconfig.json: playwright.config.mts type-checked; npm script lint: playwright.config.mts linted; .gitignore: test-results/ and playwright-report/
+- TECH_STACK.md (End-To-End Testing, Playwright), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
 
 ---
 

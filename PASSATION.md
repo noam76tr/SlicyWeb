@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-21. Lot 52 sur `main` (commit 04ba0f3), vérifié identique et contrôlé par Noam ; les 8 fichiers inutilisés supprimés par Noam sur `main` (jusqu'au commit dc73b83) ; documentation du lot 53 pas encore sur GitHub. Dernière entrée du CHANGELOG : 0.1.56 (lot 53).
+Date : 2026-10-21. Lot 53 sur `main` (commit d11cd96), contrôlé par Noam ; lot 54 pas encore sur GitHub. Dernière entrée du CHANGELOG : 0.1.57 (lot 54).
 
 ---
 
@@ -32,6 +32,7 @@ Date : 2026-10-21. Lot 52 sur `main` (commit 04ba0f3), vérifié identique et co
   npm run typecheck
   npm run lint
   npm test
+  npm run test:e2e
   npm run dev
   npm run build
   npm start
@@ -102,6 +103,7 @@ Date : 2026-10-21. Lot 52 sur `main` (commit 04ba0f3), vérifié identique et co
 - Polices Inter et Noto Sans Hebrew (Fontsource).
 - fflate 0.8.3 et fast-xml-parser 5.11.2 (lecture des 3MF).
 - Vitest 5.0.3 pour les tests unitaires (`npm test`, `vitest.config.mts`, `tests/unit/`).
+- Playwright 1.64.1 (`@playwright/test`) pour les tests de bout en bout (`npm run test:e2e`, `playwright.config.mts`, `tests/e2e/`) : l'application Electron compilée est lancée pour chaque test, dans un dossier de réglages temporaire ; aucun navigateur à télécharger.
 
 ### Versions des documents
 
@@ -178,6 +180,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 51 | Rectangle de sélection, Maj+clic dans le panneau Objets ; KI-022 réglé | 0.1.54 |
 | 52 | Bug 16 : Ctrl+Z dans un champ de la section Transform | 0.1.55 |
 | 53 | Clôture de la phase 6 ; 8 fichiers jamais utilisés supprimés (KI-015 pour la vue 3D) | 0.1.56 |
+| 54 | Tests de bout en bout avec Playwright (16 tests) | 0.1.57 |
 
 ---
 
@@ -261,7 +264,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 1. **Phase 6 : Transform System** : close le 2026-10-21 (lot 53).
    - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49) ; plusieurs objets (lot 50) ; rectangle et Maj+clic (lot 51) ; Ctrl+Z dans un champ (lot 52).
    - Contrôles manuels des lots 49 à 52 : tous réussis (le contrôle 16 du lot 51 a été corrigé au lot 52).
-2. **Tests automatiques avec Playwright** (demandés par Noam) : prochain lot.
+2. **Tests automatiques avec Playwright** (lot 54) : 16 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
 3. **Phases 7 à 16**, dans l'ordre du plan technique.
 4. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
@@ -287,7 +290,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot53-cloture-phase6/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8, 52 et 53 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot54-playwright/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 54 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

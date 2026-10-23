@@ -71,6 +71,7 @@ Every file should be placed in the directory that matches its responsibility.
 | `tsconfig.json` | TypeScript configuration, strict mode |
 | `vite.config.mts` | Builds the renderer (dist/renderer/), the Electron main process and the preload bridge (dist/electron/) |
 | `vitest.config.mts` | Unit tests of tests/unit/ (npm test), separate from vite.config.mts |
+| `playwright.config.mts` | End-to-end tests of tests/e2e/ (npm run test:e2e), on the built Electron application |
 | `index.html` | Renderer HTML page, loads src/gui/main.tsx |
 | `eslint.config.js` | ESLint configuration |
 | `prettier.config.js` | Prettier configuration |
@@ -1727,6 +1728,15 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 - Application Flow Tests
 - Complete Scenario Tests
 - UI Interaction Tests
+
+Run with Playwright (`npm run test:e2e`: builds the application, then starts it for each test in a new user data folder; playwright.config.mts):
+
+| File | Tests |
+|------|-------|
+| `fixtures.ts` | Starts the built application (dist/electron/main.js) in a new user data folder; writes the test files (STL cube); imports with the Import button |
+| `app.spec.ts` | Main window without console error, 9 menus, toolbar, no Node.js in the window; language changed and kept after a restart; Hebrew from right to left |
+| `import.spec.ts` | STL import centered and standing on the plate; several files, same names numbered; 3MF import; unsupported and corrupted files refused with their message |
+| `transform.spec.ts` | Fields of the Transform section; undo and redo (toolbar, Ctrl+Z and Ctrl+Y in a field, no extra action); modes G, R, S, Escape; Ctrl+A, Shift+click, selection rectangle, group moved |
 
 ---
 

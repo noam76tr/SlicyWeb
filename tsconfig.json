@@ -21,5 +21,11 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["src", "tests", "vite.config.mts", "vitest.config.mts"]
+  "include": [
+    "src",
+    "tests",
+    "vite.config.mts",
+    "vitest.config.mts",
+    "playwright.config.mts"
+  ]
 }

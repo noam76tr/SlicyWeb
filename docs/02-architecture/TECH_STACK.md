@@ -1616,11 +1616,28 @@ Accessibility Verification
 
 
 
-# Future End-To-End Testing
+# End-To-End Testing
 
 
 
 ## Playwright
+
+
+
+Installed since CHANGELOG 0.1.57: @playwright/test 1.64.1 (development dependency). The tests start the built Electron application (Playwright Electron support); no browser is downloaded.
+
+
+
+```text
+Configuration: playwright.config.mts (one worker: the tests use the keyboard and the mouse)
+Tests:         tests/e2e/**/*.spec.ts; tests/e2e/fixtures.ts starts the application in a new user data folder for each test
+Command:       npm run test:e2e (vite build, then playwright test)
+Results:       test-results/ (screenshot and trace of a failed test; not in the repository)
+```
+
+
+
+On Linux, the application is started without the Chromium sandbox and with the software renderer (SwiftShader), for machines without a graphics card.
 
 
 
