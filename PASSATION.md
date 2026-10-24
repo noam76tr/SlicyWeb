@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-23. Lot 53 sur `main` (commit d11cd96) ; lot 54 contrôlé par Noam mais pas encore sur GitHub ; lot 55 construit sur le lot 54. Dernière entrée du CHANGELOG : 0.1.58 (lot 55).
+Date : 2026-10-24. Lot 55 sur `main` (commit 72ab053), vérifié identique. Lot 56 : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.58 (lot 55).
 
 ---
 
@@ -45,6 +45,7 @@ Date : 2026-10-23. Lot 53 sur `main` (commit d11cd96) ; lot 54 contrôlé par No
   Get-ChildItem -Path . -Exclude node_modules,dist,.git | Get-ChildItem -Recurse -File -ErrorAction SilentlyContinue | Where-Object LastWriteTime -gt (Get-Date).AddMinutes(-30) | ForEach-Object { Resolve-Path -Relative $_.FullName }
   ```
 
+- **Ligne 3 (Date) de ce fichier (Noam, 2026-10-24) :** écrire « Lot X : à envoyer sur GitHub » pour le lot livré, sans affirmer l'état de GitHub avant l'envoi de Noam ; seul un lot déjà comparé avec `main` est noté « sur `main` (commit …) ».
 - **Envoi sur GitHub par le site web :** l'envoi ne garde pas toujours les chemins (lot 32 : fichiers posés à la racine ; lot 38 : fichiers manquants). Noam glisse les **dossiers** du zip (`docs`, `src`, `public`…), pas des fichiers seuls. Après chaque envoi, Claude compare `main` avec le lot, fichier par fichier, avant de continuer.
 - **Nouvelles dépendances npm :** Noam les installe lui-même (`npm install paquet@version`), puis envoie `package.json` et `package-lock.json`. Le zip ne contient pas `package.json` dans ce cas.
 - **Modifier `package.json` (scripts) :** ne pas utiliser `npm pkg set` avec une valeur qui contient un espace : PowerShell coupe l'argument (lot 44). Utiliser une commande `node -e "…"` qui lit, modifie et réécrit `package.json` (guillemets doubles autour, guillemets simples dedans).
@@ -182,6 +183,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 53 | Clôture de la phase 6 ; 8 fichiers jamais utilisés supprimés (KI-015 pour la vue 3D) | 0.1.56 |
 | 54 | Tests de bout en bout avec Playwright (16 tests) | 0.1.57 |
 | 55 | Messages d'import qui bloquaient les clics dans la vue 3D ; rectangle testé depuis le haut (17 tests e2e) | 0.1.58 |
+| 56 | Phase 7 : inventaire, sources des profils d'imprimantes et licences, 8 décisions (`lot56-phase7-analyse/PHASE7-ANALYSE.md`) | — |
 
 ---
 
@@ -267,8 +269,9 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49) ; plusieurs objets (lot 50) ; rectangle et Maj+clic (lot 51) ; Ctrl+Z dans un champ (lot 52).
    - Contrôles manuels des lots 49 à 52 : tous réussis (le contrôle 16 du lot 51 a été corrigé au lot 52).
 2. **Tests automatiques avec Playwright** (lots 54 et 55) : 17 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
-3. **Phases 7 à 16**, dans l'ordre du plan technique.
-4. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
+3. **Phase 7 : Printer Database** : inventaire et décisions D1 à D8 dans `lot56-phase7-analyse/PHASE7-ANALYSE.md`, en attente des réponses de Noam ; aucun code avant.
+4. **Phases 8 à 16**, dans l'ordre du plan technique.
+5. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
    | KI | Sujet | À régler avant |
    |---|---|---|
@@ -280,7 +283,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    | KI-020 | Noms d'objets et métadonnées du 3MF non gardés (aucun champ dans DATA_SCHEMA) | Phase 13 |
    | KI-021 | Objet enfoncé sous le plateau, non permis pour l'instant | Phase 15 |
 
-5. **Points signalés, en attente d'une décision de Noam :**
+6. **Points signalés, en attente d'une décision de Noam :**
    - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (lié à KI-007).
    - SLICER_EXPORT_SPEC.md : version restée en 1.0.0, pas de code d'erreur pour les contrôles de scène (proposés : EXP_013 hors volume, EXP_014 collision).
    - Duplication projet/scène des 4 sélections dans DATA_SCHEMA (décision 4) : choisir la source de vérité.
@@ -292,7 +295,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot55-messages-clics/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 55 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot56-phase7-analyse/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 56 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

@@ -2070,7 +2070,7 @@ Release Type:
 Bug Fix
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-23
@@ -2084,6 +2084,10 @@ Date:
 - tests/e2e/transform.spec.ts: the selection rectangle is tested from the top corner of the view, under the import message, and from the bottom corner (the test from the top corner fails without the fix)
 - tests/e2e/import.spec.ts: the error message is closed with its Close button (17 end-to-end tests in total)
 - GUI_SPEC.md (Error Handling UI), DIRECTORY_PURPOSES.md, PASSATION.md
+
+## Validation Result
+
+- Windows 11 (2026-10-24): files on GitHub (72ab053, identical to the lot); npm run check:locales (251 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 41 tests passed; npm run test:e2e: 17 tests passed (31.0 s); a click under an import error reaches the 3D viewport, the error closes with its Close button; Cancel still works on a large file (Noam)
 
 ---
 
