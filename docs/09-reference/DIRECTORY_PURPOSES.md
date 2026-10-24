@@ -1735,8 +1735,8 @@ Run with Playwright (`npm run test:e2e`: builds the application, then starts it 
 |------|-------|
 | `fixtures.ts` | Starts the built application (dist/electron/main.js) in a new user data folder; writes the test files (STL cube); imports with the Import button |
 | `app.spec.ts` | Main window without console error, 9 menus, toolbar, no Node.js in the window; language changed and kept after a restart; Hebrew from right to left |
-| `import.spec.ts` | STL import centered and standing on the plate; several files, same names numbered; 3MF import; unsupported and corrupted files refused with their message |
-| `transform.spec.ts` | Fields of the Transform section; undo and redo (toolbar, Ctrl+Z and Ctrl+Y in a field, no extra action); modes G, R, S, Escape; Ctrl+A, Shift+click, selection rectangle, group moved |
+| `import.spec.ts` | STL import centered and standing on the plate; several files, same names numbered; 3MF import; unsupported and corrupted files refused with their message, error closed with its Close button |
+| `transform.spec.ts` | Fields of the Transform section; undo and redo (toolbar, Ctrl+Z and Ctrl+Y in a field, no extra action); modes G, R, S, Escape; Ctrl+A, Shift+click, selection rectangle from the top corner (under the import messages) and the bottom corner, group moved |
 
 ---
 

@@ -221,35 +221,56 @@ test.describe("several objects", () => {
     await expect.poll(() => selectedNames(window)).toEqual(["a.stl", "b.stl"]);
   });
 
-  test("selects with a rectangle and deselects with a click in the empty space", async ({
-    window,
-  }) => {
-    const viewport = window.getByRole("img", { name: en["viewport.title"] });
-    const box = await viewport.boundingBox();
-    if (!box) {
-      throw new Error("3D viewport not shown");
-    }
+  for (const start of ["top", "bottom"] as const) {
+    test(`selects with a rectangle from the ${start} corner and deselects with a click in the empty space`, async ({
+      window,
+    }) => {
+      const viewport = window.getByRole("img", { name: en["viewport.title"] });
+      const box = await viewport.boundingBox();
+      if (!box) {
+        throw new Error("3D viewport not shown");
+      }
 
-    // A click in the empty space (bottom corner: the import messages are
-    // shown at the top)
-    const corner = { x: box.x + box.width - 20, y: box.y + box.height - 20 };
-    await window.mouse.click(corner.x, corner.y);
-    await expect.poll(() => selectedNames(window)).toEqual([]);
+      // Top: under the import messages, shown at the top of the view
+      // (lot 55: a message must not stop the clicks under it)
+      const corner = {
+        x: box.x + box.width - 20,
+        y: start === "top" ? box.y + 20 : box.y + box.height - 20,
+      };
+      const end = {
+        x: box.x + 20,
+        y: start === "top" ? box.y + box.height - 20 : box.y + 80,
+      };
 
-    // Rectangle over the whole view, from the empty corner
-    await window.mouse.move(corner.x, corner.y);
-    await window.mouse.down();
-    await window.mouse.move(box.x + 20, box.y + 80, {
-      steps: 10,
+      if (start === "top") {
+        const message = await window
+          .getByRole("status")
+          .filter({ hasText: "a.stl" })
+          .boundingBox();
+        expect(message).not.toBeNull();
+        expect(corner.x).toBeGreaterThan(message!.x);
+        expect(corner.x).toBeLessThan(message!.x + message!.width);
+        expect(corner.y).toBeGreaterThan(message!.y);
+        expect(corner.y).toBeLessThan(message!.y + message!.height);
+      }
+
+      // A click in the empty space clears the selection
+      await window.mouse.click(corner.x, corner.y);
+      await expect.poll(() => selectedNames(window)).toEqual([]);
+
+      // Rectangle over the whole view, from the empty corner
+      await window.mouse.move(corner.x, corner.y);
+      await window.mouse.down();
+      await window.mouse.move(end.x, end.y, { steps: 10 });
+      await window.mouse.up();
+      await expect
+        .poll(() => selectedNames(window))
+        .toEqual(["a.stl", "b.stl", "c.stl"]);
+
+      await window.mouse.click(corner.x, corner.y);
+      await expect.poll(() => selectedNames(window)).toEqual([]);
     });
-    await window.mouse.up();
-    await expect
-      .poll(() => selectedNames(window))
-      .toEqual(["a.stl", "b.stl", "c.stl"]);
-
-    await window.mouse.click(corner.x, corner.y);
-    await expect.poll(() => selectedNames(window)).toEqual([]);
-  });
+  }
 
   test("moves the group with the Transform section, one action", async ({
     window,

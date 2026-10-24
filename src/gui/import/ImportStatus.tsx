@@ -9,6 +9,10 @@
  * fails (no technical details). Errors stay until closed. An import
  * waiting or in progress has a Cancel button (ImportService.cancel).
  *
+ * The messages never stop the clicks in the viewport under them (bug
+ * found by Noam, lot 54): only the Cancel and Close buttons receive the
+ * pointer.
+ *
  * Based on:
  * - GUI_SPEC.md (Error Handling UI)
  * - IMPORT_EXPORT_SPEC.md (Import Errors, Performance Requirements)
@@ -56,7 +60,7 @@ export default function ImportStatus(): JSX.Element | null {
 
   return (
     <ul
-      className="absolute end-3 top-3 flex w-80 max-w-[calc(100%-1.5rem)] flex-col gap-2"
+      className="pointer-events-none absolute end-3 top-3 flex w-80 max-w-[calc(100%-1.5rem)] flex-col gap-2"
       aria-live="polite"
     >
       {tasks.map((task) => {
@@ -83,7 +87,7 @@ export default function ImportStatus(): JSX.Element | null {
               {running && (
                 <button
                   type="button"
-                  className="shrink-0 rounded px-1 text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                  className="pointer-events-auto shrink-0 rounded px-1 text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
                   onClick={() => ImportService.cancel(task.taskId)}
                 >
                   {t("import.cancel")}
@@ -93,7 +97,7 @@ export default function ImportStatus(): JSX.Element | null {
               {failed && (
                 <button
                   type="button"
-                  className="shrink-0 text-muted-foreground hover:text-foreground"
+                  className="pointer-events-auto shrink-0 text-muted-foreground hover:text-foreground"
                   aria-label={t("import.dismiss")}
                   title={t("import.dismiss")}
                   onClick={() => ImportService.dismiss(task.taskId)}

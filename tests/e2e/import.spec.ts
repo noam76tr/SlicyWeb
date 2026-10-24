@@ -6,7 +6,8 @@
  * ADR-029, ADR-030): files chosen in the file dialog of the Import
  * button, STL and 3MF, shown in the Object Panel and the status bar,
  * centered and standing on the plate; refused files give their
- * translated message (ERROR_CODES_SPEC.md).
+ * translated message (ERROR_CODES_SPEC.md), closed with their Close
+ * button.
  *
  * Based on:
  * - TEST_PLAN.md (End-To-End Testing, Import Module)
@@ -110,10 +111,16 @@ test("refuses an unsupported file with its message", async ({
 }) => {
   await importFiles(window, [files("notes.txt", "not a model")]);
 
-  await expect(
-    window.getByText(en["import.error.IMP_001"].replace("{name}", "notes.txt")),
-  ).toBeVisible();
+  const message = window.getByRole("alert").filter({
+    hasText: en["import.error.IMP_001"].replace("{name}", "notes.txt"),
+  });
+  await expect(message).toBeVisible();
   await expectObjectCount(window, 0);
+
+  // The error stays until closed; its Close button still receives the
+  // click (the messages let the other clicks through, lot 55)
+  await message.getByRole("button", { name: en["import.dismiss"] }).click();
+  await expect(message).toHaveCount(0);
 });
 
 test("refuses a corrupted STL file", async ({ window, files }) => {

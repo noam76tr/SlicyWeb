@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-21. Lot 53 sur `main` (commit d11cd96), contrôlé par Noam ; lot 54 pas encore sur GitHub. Dernière entrée du CHANGELOG : 0.1.57 (lot 54).
+Date : 2026-10-23. Lot 53 sur `main` (commit d11cd96) ; lot 54 contrôlé par Noam mais pas encore sur GitHub ; lot 55 construit sur le lot 54. Dernière entrée du CHANGELOG : 0.1.58 (lot 55).
 
 ---
 
@@ -181,6 +181,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 52 | Bug 16 : Ctrl+Z dans un champ de la section Transform | 0.1.55 |
 | 53 | Clôture de la phase 6 ; 8 fichiers jamais utilisés supprimés (KI-015 pour la vue 3D) | 0.1.56 |
 | 54 | Tests de bout en bout avec Playwright (16 tests) | 0.1.57 |
+| 55 | Messages d'import qui bloquaient les clics dans la vue 3D ; rectangle testé depuis le haut (17 tests e2e) | 0.1.58 |
 
 ---
 
@@ -252,6 +253,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 42. Un rectangle qui ne touche aucun objet désélectionne (accepté au contrôle du lot 51).
 43. Ctrl+Z dans un champ de la section Transform (bug 16) : frappe pas encore validée → Ctrl+Z annule la frappe ; rien en attente → Annuler de l'application, l'objet change tout de suite et le champ se met à jour ; quitter le champ ensuite ne crée pas d'étape.
 44. Fichiers jamais utilisés supprimés à la clôture de la phase 6 : `src/gui/viewport/ViewportToolbar.tsx`, `ViewportStatus.tsx` et, dans `src/transform/`, tout sauf `TransformValidator.ts` (HistoryManager, UndoRedoManager, TransformManager, MoveTool, RotateTool, ScaleTool).
+45. Un message d'information (import) ne doit jamais empêcher de cliquer en dessous : seuls ses boutons Annuler et Fermer reçoivent la souris (lot 55).
 
 **Méthode**
 
@@ -264,7 +266,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 1. **Phase 6 : Transform System** : close le 2026-10-21 (lot 53).
    - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49) ; plusieurs objets (lot 50) ; rectangle et Maj+clic (lot 51) ; Ctrl+Z dans un champ (lot 52).
    - Contrôles manuels des lots 49 à 52 : tous réussis (le contrôle 16 du lot 51 a été corrigé au lot 52).
-2. **Tests automatiques avec Playwright** (lot 54) : 16 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
+2. **Tests automatiques avec Playwright** (lots 54 et 55) : 17 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
 3. **Phases 7 à 16**, dans l'ordre du plan technique.
 4. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
@@ -290,7 +292,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot54-playwright/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 54 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot55-messages-clics/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 55 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

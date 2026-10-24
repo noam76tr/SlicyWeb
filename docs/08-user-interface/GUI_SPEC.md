@@ -2029,6 +2029,10 @@ No technical stack traces visible to user.
 
 
 
+The import messages shown over the 3D viewport (progress, confirmation, error) never stop the clicks in the viewport under them: only their Cancel and Close buttons receive the pointer (decision of Noam, lot 55).
+
+
+
 ---
 
 

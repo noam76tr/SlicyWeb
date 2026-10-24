@@ -2041,7 +2041,7 @@ Release Type:
 Tooling
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-21
@@ -2056,6 +2056,34 @@ Date:
 
 - tsconfig.json: playwright.config.mts type-checked; npm script lint: playwright.config.mts linted; .gitignore: test-results/ and playwright-report/
 - TECH_STACK.md (End-To-End Testing, Playwright), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
+
+## Validation Result
+
+- Windows 11 (2026-10-23): npm install -D @playwright/test@1.64.1 and the node -e command run; package.json and package-lock.json sent (same scripts and versions as the lot); npm run check:locales (251 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 41 tests passed; npm run test:e2e: 16 tests passed (29.8 s)
+- Bug reported (Noam): the message "... imported" over the 3D viewport stops the clicks under it (fixed in 0.1.58)
+
+---
+
+# VERSION 0.1.58
+
+Release Type:
+Bug Fix
+
+Status:
+In Progress
+
+Date:
+2026-10-23
+
+## Fixed
+
+- src/gui/import/ImportStatus.tsx: the import messages over the 3D viewport (progress, confirmation, error) stopped the clicks in the viewport under them for 3 seconds after an import, and until closed for an error (bug found by Noam in 0.1.57). The messages now let the pointer through; only their Cancel and Close buttons receive it
+
+## Changed
+
+- tests/e2e/transform.spec.ts: the selection rectangle is tested from the top corner of the view, under the import message, and from the bottom corner (the test from the top corner fails without the fix)
+- tests/e2e/import.spec.ts: the error message is closed with its Close button (17 end-to-end tests in total)
+- GUI_SPEC.md (Error Handling UI), DIRECTORY_PURPOSES.md, PASSATION.md
 
 ---
 
