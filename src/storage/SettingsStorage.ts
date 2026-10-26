@@ -8,12 +8,16 @@
  *
  * File content (DATA_SCHEMA.md, User Preferences Schema):
  *
- *   { "preferences": { "theme": "dark", "language": "en", "units": "metric" } }
+ *   { "preferences": { "theme": "dark", "language": "en", "units": "metric",
+ *     "printer": { "defaultPrinter": null, "autoloadLastPrinter": true } } }
  *
  * Rules:
  * - Missing or unreadable file: default preferences.
- * - Invalid field: that field takes its default value, the valid
- *   fields are kept (USER_SETTINGS_SPEC.md, Backward Compatibility).
+ * - Invalid or missing field: that field takes its default value, the
+ *   valid fields are kept (USER_SETTINGS_SPEC.md, Backward
+ *   Compatibility). A settings.json written before 3.5.0 (no printer)
+ *   keeps its theme, language and units, with the default printer.
+ *   The fields of printer are read one by one, in the same way.
  * - Other top-level entries of the file are kept when writing.
  * - Writing goes through a temporary file, then a rename, so that
  *   an interrupted write never leaves a truncated settings.json.
@@ -33,6 +37,7 @@ import type { ZodType } from "zod";
 
 import {
   DEFAULT_USER_PREFERENCES,
+  PrinterPreferencesSchema,
   UserPreferencesSchema,
 } from "../schemas/UserPreferencesSchema";
 
@@ -54,7 +59,7 @@ export class SettingsStorage {
     const stored = this.readFile().preferences;
 
     if (typeof stored !== "object" || stored === null) {
-      return { ...DEFAULT_USER_PREFERENCES };
+      return { ...DEFAULT_USER_PREFERENCES, printer: readPrinter(undefined) };
     }
 
     const entries = stored as Record<string, unknown>;
@@ -68,6 +73,7 @@ export class SettingsStorage {
         DEFAULT_USER_PREFERENCES.language,
       ),
       units: readField(shape.units, entries.units, DEFAULT_USER_PREFERENCES.units),
+      printer: readPrinter(entries.printer),
     };
   }
 
@@ -100,7 +106,10 @@ export class SettingsStorage {
    * Writes the default preferences
    */
   public reset(): UserPreferences {
-    return this.save({ ...DEFAULT_USER_PREFERENCES });
+    return this.save({
+      ...DEFAULT_USER_PREFERENCES,
+      printer: { ...DEFAULT_USER_PREFERENCES.printer },
+    });
   }
 
   private readFile(): SettingsFile {
@@ -129,6 +138,30 @@ export class SettingsStorage {
 
     return {};
   }
+}
+
+function readPrinter(value: unknown): UserPreferences["printer"] {
+  const fallback = DEFAULT_USER_PREFERENCES.printer;
+
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return { ...fallback };
+  }
+
+  const entries = value as Record<string, unknown>;
+  const shape = PrinterPreferencesSchema.shape;
+
+  return {
+    defaultPrinter: readField(
+      shape.defaultPrinter,
+      entries.defaultPrinter,
+      fallback.defaultPrinter,
+    ),
+    autoloadLastPrinter: readField(
+      shape.autoloadLastPrinter,
+      entries.autoloadLastPrinter,
+      fallback.autoloadLastPrinter,
+    ),
+  };
 }
 
 function readField<T>(

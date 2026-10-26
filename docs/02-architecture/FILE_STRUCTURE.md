@@ -861,6 +861,7 @@ src/events/
 src/storage/
 
 ├── CacheStorage.ts
+├── PrinterProfileStorage.ts
 ├── ProjectStorage.ts
 ├── SettingsStorage.ts
 └── StorageManager.ts
@@ -903,13 +904,19 @@ src/utils/
 tests/
 
 ├── unit/
+│   ├── electron/
+│   │   └── PrinterIPC.test.ts = printer:* channels (Phase 7)
 │   ├── gui/
 │   │   └── hooks/
 │   │       └── UndoRedoShortcuts.test.ts = keys of undo and redo (Phase 6)
+│   ├── printer_database/
+│   │   └── PrinterLoading.test.ts = printer profile files, PrinterSchema (Phase 7)
 │   ├── renderer/
 │   │   └── ObjectRenderer.test.ts = selection rectangle (Phase 6)
 │   ├── scene/
 │   │   └── ObjectTransform.test.ts = Transform Rules (ADR-031)
+│   ├── storage/
+│   │   └── SettingsStorage.test.ts = settings.json, printer settings (Phase 7)
 │   └── services/
 │       ├── GroupTransform.test.ts = several objects selected (Phase 6)
 │       ├── TransformService.test.ts = transform changes, object on the plate
@@ -919,6 +926,7 @@ tests/
     ├── fixtures.ts = starts the built application, test files
     ├── app.spec.ts = main window, languages
     ├── import.spec.ts = STL and 3MF import, refused files
+    ├── printer.spec.ts = printers served by the main process (Phase 7)
     └── transform.spec.ts = transforms, undo and redo, several objects (Phase 6)
 ```
 

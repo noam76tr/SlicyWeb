@@ -215,7 +215,7 @@ User preferences (DATA_SCHEMA.md, User Preferences Schema), stored in settings.j
 | Channel | Payload | Response data |
 |---|---|---|
 | `settings:get` | none | `{ settings }` |
-| `settings:update` | partial preferences (`theme`, `language`, `units`); unknown fields refused | `{ settings }` |
+| `settings:update` | partial preferences (`theme`, `language`, `units`, `printer` with both of its fields); unknown fields refused | `{ settings }` |
 | `settings:reset` | none | `{ settings }` (default preferences) |
 | `settings:theme` | `{ theme }`: dark, light or system | `{ settings }` |
 | `settings:language` | `{ language }`: en, fr or he | `{ settings }` |
@@ -223,6 +223,23 @@ User preferences (DATA_SCHEMA.md, User Preferences Schema), stored in settings.j
 `settings` is always the complete stored preferences after the operation. Payloads are validated by src/schemas/UserPreferencesSchema.ts; an invalid payload returns `success: false` with the validation errors and changes nothing.
 
 The renderer reads the saved language at start (`settings:get`) and saves each language change (`settings:language`) through src/gui/components/I18nProvider.tsx.
+
+---
+
+## PrinterIPC Channels
+
+Printers (DATA_SCHEMA.md, Printer Schema), loaded at start by the main process (DECISIONS.md, ADR-032, D4): PrinterService reads the profile files of data/printers/ (Official) and of the printers/ folder of the user data folder (Local Custom), validates them (Repository Data Schema envelope, PrinterSchema) and keeps the valid ones. The renderer reads no profile file.
+
+| Channel | Payload | Response data |
+|---|---|---|
+| `printer:getAll` | none | `{ printers }` |
+| `printer:get` | `{ printerId }` | `{ printer }`; unknown id: `success: false`, error `PRN_001 Printer Not Found` |
+| `printer:count` | none | `{ count }` |
+| `printer:add` | a printer (PrinterSchema) | not available yet: `success: false`, nothing changed (printers entered by the user, Phase 7) |
+| `printer:update` | a printer (PrinterSchema) | not available yet: `success: false`, nothing changed |
+| `printer:remove` | `{ printerId }` | not available yet: `success: false`, nothing changed |
+
+A value of motion or thermal of a printer may be null (unknown, never 0). An invalid payload returns `success: false` with the validation errors. A refused profile file (PRN_002) is left out of the printers and reported in the log of the main process.
 
 ---
 

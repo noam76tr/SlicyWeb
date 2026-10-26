@@ -22,10 +22,22 @@ export type Language =
   | "fr"
   | "he";
 
+/**
+ * Printer of the user preferences (DATA_SCHEMA.md 3.5.0, ADR-032):
+ * id of the last printer selected, or null when none was selected.
+ */
+export interface PrinterPreferences {
+  defaultPrinter: string | null;
+
+  autoloadLastPrinter: boolean;
+}
+
 export interface UserPreferences {
   theme: Theme;
 
   language: Language;
 
   units: string;
+
+  printer: PrinterPreferences;
 }

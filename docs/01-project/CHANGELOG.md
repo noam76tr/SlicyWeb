@@ -2097,7 +2097,7 @@ Release Type:
 Architecture Decision
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-24
@@ -2113,6 +2113,38 @@ Date:
 - PRINTER_PROFILE_SPEC.md 2.0.0: aligned with DATA_SCHEMA.md (flat Printer Schema, names of DATA_SCHEMA.md, null for unknown values, Repository Data Schema envelope); sections without a field in DATA_SCHEMA.md marked future; sources Official and Local Custom
 - USER_SETTINGS_SPEC.md (Printer Settings): defaultPrinter null when no printer was selected
 - PHASES_IMPLEMENTATION_PLAN.md: Phase 7 In Progress, its decisions and the order of the lots 57 to 63; PASSATION.md
+
+## Validation Result
+
+- Windows 11 (2026-10-26): lots 56 and 57 on GitHub (0ac47d9, identical to the lot; DATA_SCHEMA.md 3.5.0, PRINTER_PROFILE_SPEC.md 2.0.0, ADR-032, KI-023, KI-024 checked by Noam); npm run check:locales (251 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 41 tests passed
+
+---
+
+# VERSION 0.1.60
+
+Release Type:
+Feature
+
+Status:
+In Progress
+
+Date:
+2026-10-26
+
+## Added
+
+- Printer profiles loaded by the main process at start (ADR-032, D4): src/storage/PrinterProfileStorage.ts reads the *.json files of data/printers/ (Official) and of the printers/ folder of the user data folder (Local Custom), and nothing else (subfolders and links not followed, 1 MB at most per file); PrinterManager validates each file (Repository Data Schema envelope, PrinterSchema, source of its folder, id not already loaded) and refuses an invalid file with PRN_002 without stopping the others
+- printer:getAll, printer:get (PRN_001 for an unknown id) and printer:count serve the loaded printers (API_SPEC.md, PrinterIPC Channels)
+- User preferences: printer (defaultPrinter null, autoloadLastPrinter true; DATA_SCHEMA.md 3.5.0) in UserPreferencesSchema and settings.json; a settings.json without printer keeps its theme, language and units
+- Tests: tests/unit/printer_database/PrinterLoading.test.ts, tests/unit/storage/SettingsStorage.test.ts, tests/unit/electron/PrinterIPC.test.ts (59 unit tests in total); tests/e2e/printer.spec.ts (19 end-to-end tests in total)
+
+## Changed
+
+- src/schemas/PrinterSchema.ts: null (unknown) for the values of motion and thermal, unknown fields refused, id, brand and model not empty, at least one nozzle; PrinterProfileFileSchema (printer profile file)
+- src/types/Printer.ts: number or null for the values of motion and thermal
+- src/printer_database/PrinterValidator.ts: validation with PrinterSchema (a missing field is refused instead of a crash); validateThermal accepts null
+- printer:add, printer:update and printer:remove: payload validated, then refused (success false, nothing changed) until the printers entered by the user (lot 61); before, they answered success without doing anything
+- API_SPEC.md (PrinterIPC Channels, settings:update), ERROR_CODES_SPEC.md (PRN_001, PRN_002), SECURITY_SPEC.md (Printer Profile Files), USER_SETTINGS_SPEC.md (Backward Compatibility), PRINTER_PROFILE_SPEC.md (loading), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
 
 ---
 

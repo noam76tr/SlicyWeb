@@ -17,13 +17,20 @@
  * - API_SPEC.md
  * - PRINTER_PROFILE_SPEC.md
  * - DATA_SCHEMA.md (IPC Payload Schema)
+ * - DECISIONS.md (ADR-032, D4)
+ *
+ * The printers are loaded by the main process at start (PrinterService,
+ * data/printers/ and the printers of the user). printer:getAll,
+ * printer:get and printer:count serve them. printer:add, printer:update
+ * and printer:remove validate their payload, then refuse: the printers
+ * entered by the user come with Phase 7 lot 61.
  */
 
 import { ipcMain } from "electron";
 import { z } from "zod";
 
-import type { Printer } from "../../types/Printer";
 import { PrinterSchema } from "../../schemas/PrinterSchema";
+import type { PrinterService } from "../../services/PrinterService";
 
 // Zod schemas for IPC payloads
 const IPCResponseSchema = z.object({
@@ -40,7 +47,13 @@ const PrinterIdSchema = z.object({
 
 type IPCResponse = z.infer<typeof IPCResponseSchema>;
 
+const NOT_AVAILABLE =
+  "Printers entered by the user are not available yet";
+
 export class PrinterIPC {
+  public constructor(
+    private readonly printerService: PrinterService,
+  ) {}
   private createResponse(
     channel: string,
     requestId: string,
@@ -65,9 +78,7 @@ export class PrinterIPC {
         requestId: string,
       ) => {
         try {
-          // Get all printers (delegated to PrinterService)
-          // TODO: Call PrinterService.getAllPrinters()
-          const printers: Printer[] = [];
+          const printers = this.printerService.getPrinters();
 
           const response = this.createResponse(
             "printer:getAll",
@@ -102,15 +113,13 @@ export class PrinterIPC {
           // Validate incoming payload
           const { printerId } = PrinterIdSchema.parse(payload);
 
-          // Get printer (delegated to PrinterService)
-          // TODO: Call PrinterService.getPrinter(printerId)
-          
-          const response = this.createResponse(
-            "printer:get",
-            requestId,
-            true,
-            { printerId },
-          );
+          const printer = this.printerService.getPrinter(printerId);
+
+          const response = printer
+            ? this.createResponse("printer:get", requestId, true, { printer })
+            : this.createResponse("printer:get", requestId, false, undefined, [
+                "PRN_001 Printer Not Found",
+              ]);
 
           return IPCResponseSchema.parse(response);
         } catch (error) {
@@ -136,16 +145,14 @@ export class PrinterIPC {
       ) => {
         try {
           // Validate incoming payload
-          const printer = PrinterSchema.parse(payload);
+          PrinterSchema.parse(payload);
 
-          // Add printer (delegated to PrinterService)
-          // TODO: Call PrinterService.addPrinter(printer)
-          
           const response = this.createResponse(
             "printer:add",
             requestId,
-            true,
-            { printer },
+            false,
+            undefined,
+            [NOT_AVAILABLE],
           );
 
           return IPCResponseSchema.parse(response);
@@ -172,16 +179,14 @@ export class PrinterIPC {
       ) => {
         try {
           // Validate incoming payload
-          const printer = PrinterSchema.parse(payload);
+          PrinterSchema.parse(payload);
 
-          // Update printer (delegated to PrinterService)
-          // TODO: Call PrinterService.updatePrinter(printer)
-          
           const response = this.createResponse(
             "printer:update",
             requestId,
-            true,
-            { printer },
+            false,
+            undefined,
+            [NOT_AVAILABLE],
           );
 
           return IPCResponseSchema.parse(response);
@@ -208,16 +213,14 @@ export class PrinterIPC {
       ) => {
         try {
           // Validate incoming payload
-          const { printerId } = PrinterIdSchema.parse(payload);
+          PrinterIdSchema.parse(payload);
 
-          // Remove printer (delegated to PrinterService)
-          // TODO: Call PrinterService.removePrinter(printerId)
-          
           const response = this.createResponse(
             "printer:remove",
             requestId,
-            true,
-            { printerId },
+            false,
+            undefined,
+            [NOT_AVAILABLE],
           );
 
           return IPCResponseSchema.parse(response);
@@ -242,9 +245,7 @@ export class PrinterIPC {
         requestId: string,
       ) => {
         try {
-          // Count printers (delegated to PrinterService)
-          // TODO: Call PrinterService.getPrinterCount()
-          const count = 0;
+          const count = this.printerService.getPrinterCount();
 
           const response = this.createResponse(
             "printer:count",

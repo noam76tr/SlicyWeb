@@ -237,6 +237,10 @@ Printer Not Found
 
 
 
+No loaded printer has this id (printer:get).
+
+
+
 ---
 
 
@@ -250,6 +254,10 @@ Printer Not Found
 Invalid Printer Profile
 
 ```
+
+
+
+Printer profile file refused at loading: larger than 1 MB, not readable, invalid JSON, not a valid Repository Data Schema envelope or printer (PrinterSchema), source other than the source of its folder, or id already loaded. The other files are loaded.
 
 
 

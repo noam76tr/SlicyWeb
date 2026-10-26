@@ -6,15 +6,30 @@
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
  * - PRINTER_PROFILE_SPEC.md
+ * - DECISIONS.md (ADR-032, D4): the main process loads the profiles
+ *   (loadProfiles) and serves them through the printer:* IPC channels.
  */
 
 import type { Printer } from "../types/Printer";
 
-import { PrinterManager } from "../printer_database/PrinterManager";
+import {
+  PrinterManager,
+  type PrinterLoadResult,
+  type PrinterProfileFolder,
+} from "../printer_database/PrinterManager";
 
 export class PrinterService {
-  private readonly printerManager =
-    new PrinterManager();
+  public constructor(
+    private readonly printerManager = new PrinterManager(),
+  ) {}
+
+  public loadProfiles(
+    folders: PrinterProfileFolder[]
+  ): PrinterLoadResult {
+    return this.printerManager.loadProfiles(
+      folders
+    );
+  }
 
   public addPrinter(
     printer: Printer

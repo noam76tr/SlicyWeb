@@ -8,12 +8,14 @@
  * - GUI_SPEC.md
  * - API_SPEC.md (IPC Layer)
  * - USER_SETTINGS_SPEC.md (Storage Location)
+ * - DECISIONS.md (ADR-032, D4: printer profiles loaded by the main process)
  */
 
 import { app, BrowserWindow } from "electron";
 
 import path from "node:path";
 
+import { PrinterService } from "../services/PrinterService";
 import { StorageService } from "../services/StorageService";
 import { SettingsStorage } from "../storage/SettingsStorage";
 import { StorageManager } from "../storage/StorageManager";
@@ -26,6 +28,30 @@ import { StorageIPC } from "./ipc/StorageIPC";
 
 let mainWindow: BrowserWindow | null = null;
 
+/**
+ * Printer profiles: the offline list shipped with the application
+ * (data/printers/, Official, read only) then the printers of the user
+ * (<user data folder>/printers/, Local Custom). No other folder is read.
+ * The main process runs from dist/electron/; the location of data/ in the
+ * installed application is decided with the packaging (Phase 16).
+ */
+function loadPrinters(printerService: PrinterService): void {
+  const result = printerService.loadProfiles([
+    {
+      folder: path.join(__dirname, "../../data/printers"),
+      source: "Official",
+    },
+    {
+      folder: path.join(app.getPath("userData"), "printers"),
+      source: "Local Custom",
+    },
+  ]);
+
+  for (const { code, source, fileName, reason } of result.rejected) {
+    console.warn(`${code} ${source} printer profile refused: ${fileName} (${reason})`);
+  }
+}
+
 function registerIPCHandlers(): void {
   const projectIPC = new ProjectIPC();
   projectIPC.register();
@@ -33,7 +59,10 @@ function registerIPCHandlers(): void {
   const importIPC = new ImportIPC();
   importIPC.register();
 
-  const printerIPC = new PrinterIPC();
+  const printerService = new PrinterService();
+  loadPrinters(printerService);
+
+  const printerIPC = new PrinterIPC(printerService);
   printerIPC.register();
 
   // User preferences: settings.json in the user data folder

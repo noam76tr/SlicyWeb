@@ -168,6 +168,23 @@ A repository or remote source is untrusted until validation succeeds.
 
 ---
 
+# Printer Profile Files
+
+The main process reads the printer profile files (DECISIONS.md, ADR-032, D4):
+
+```text
+Only two folders: data/printers/ of the application (Official, read only)
+and printers/ of the user data folder (Local Custom)
+The folders are fixed by the main process, never given by the renderer
+Only the *.json files directly in these folders; subfolders and links are not followed
+At most 1 MB per file
+Each file is validated (Repository Data Schema envelope, PrinterSchema) before use
+A refused file (PRN_002) never stops the loading of the other files
+Results name a file by its name only, never by its path
+```
+
+---
+
 # Zero Trust Rule
 
 All external data is considered untrusted.

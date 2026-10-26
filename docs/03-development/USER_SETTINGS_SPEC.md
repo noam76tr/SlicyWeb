@@ -463,6 +463,8 @@ The language choice is saved at each change and restored at the next start.
 
 Old settings must migrate automatically.
 
+A settings.json without printer (written before DATA_SCHEMA.md 3.5.0) loads without error: theme, language and units are kept, printer takes its default value (defaultPrinter null, autoloadLastPrinter true). An invalid field takes its default value; the other fields are kept.
+
 
 
 ---

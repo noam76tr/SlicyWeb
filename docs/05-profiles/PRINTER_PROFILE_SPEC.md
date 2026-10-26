@@ -36,6 +36,7 @@ DATA_SCHEMA.md (priority 0) is the source of truth for the fields of a printer (
 - A profile file is a Repository Data Schema envelope (id, type "printer", version of the profile, source, data, validated); data is the printer.
 - The sections of this document without a field in DATA_SCHEMA.md (nested structure of Profile Structure, bedShape, bedSurface, origin, kinematics, filamentDiameter, heatedChamber, sensors, features, limits, power, multiMaterial, remote, source, profileVersion, verified) are future: they are not part of a profile until DATA_SCHEMA.md defines them. Until then, the build plate is rectangular, with its origin at the center (ADR-028).
 - Sources: the profiles of SlicyWeb are written from the pages of the manufacturers, never copied from a profile file of a slicer (ADR-032). Source types used: Official (the SlicyWeb repository noam76tr/slicyweb-profiles, and its offline fallback copy in data/printers/) and Local Custom (printers entered by the user). Community sources are not used.
+- Loading (ADR-032, D4): the main process loads the files of data/printers/ (source Official) and of the printers/ folder of the user data folder (source Local Custom); a file whose source is not the one of its folder, or whose id is already loaded, is refused (PRN_002). A printer of the user never replaces an Official printer.
 
 
 
