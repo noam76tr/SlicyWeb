@@ -2091,6 +2091,31 @@ Date:
 
 ---
 
+# VERSION 0.1.59
+
+Release Type:
+Architecture Decision
+
+Status:
+In Progress
+
+Date:
+2026-10-24
+
+## Added
+
+- ADR-032 (DECISIONS.md) and ADM-028 (ARCHITECTURE_DECISION_MATRIX.md 2.4.0): sources of the printer profiles (written by SlicyWeb from the pages of the manufacturers, never copied from a profile file of a slicer), licences, profile files as Repository Data Schema envelopes, loading by the main process, list of printers from the public SlicyWeb repository noam76tr/slicyweb-profiles (all rights reserved, no token in the application), data/printers/ as the offline fallback list (decisions D1 to D8 of Noam, analysis of lot 56)
+- DATA_SCHEMA.md 3.5.0: null = unknown for the values of motion and thermal of a printer; User Preferences Schema: printer.defaultPrinter (id or null) and printer.autoloadLastPrinter (USER_SETTINGS_SPEC.md)
+- KNOWN ISSUES: KI-023 (legal review of the printer profiles and of the licences before the public release), KI-024 (web version of SlicyWeb, to decide)
+
+## Changed
+
+- PRINTER_PROFILE_SPEC.md 2.0.0: aligned with DATA_SCHEMA.md (flat Printer Schema, names of DATA_SCHEMA.md, null for unknown values, Repository Data Schema envelope); sections without a field in DATA_SCHEMA.md marked future; sources Official and Local Custom
+- USER_SETTINGS_SPEC.md (Printer Settings): defaultPrinter null when no printer was selected
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 7 In Progress, its decisions and the order of the lots 57 to 63; PASSATION.md
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -3027,6 +3052,38 @@ Issue: An object is always placed on the build plate (lowest point at Z = 0); it
 Resolve Before: Phase 15 - Advanced Features (technical plan)
 
 Planned Resolution: Decide how a sunk object is chosen (Position Z editable below its resting height, or a dedicated tool), how it is stored (Transform Rules) and exported (cut at Z = 0), then allow it in TransformService.
+
+
+---
+
+
+Identifier: KI-023
+
+Since: 0.1.59
+
+Affected Module: data/printers/, noam76tr/slicyweb-profiles (ADR-032)
+
+Issue: The printer profiles of SlicyWeb are written from the pages of the manufacturers and no profile file of a slicer is copied (the slicer profiles are under AGPL-3.0 or LGPL-3.0, or without licence). No legal review has confirmed this approach (copyright of the pages, database right in Europe, licence of the data of the profile repository, all rights reserved).
+
+Resolve Before: Phase 16 - Production Release (technical plan)
+
+Planned Resolution: Legal review of the printer profiles, of SOURCES.md and of the licences before the public release.
+
+
+---
+
+
+Identifier: KI-024
+
+Since: 0.1.59
+
+Affected Module: Architecture (Electron main process, printer:* IPC, CSP, RepositorySync)
+
+Issue: The final product could also be an online web site, not only the Electron application. The architecture assumes Electron: the main process downloads and validates the profiles, reads and writes the files of the user, and the CSP of the window allows no network address. A web version has no main process.
+
+Resolve Before: Lot 62 (synchronization of the printer profiles), and before Phase 16 - Production Release for the rest
+
+Planned Resolution: Decide whether a web version is a target. If yes: an ADR on the profiles (served by the server of the site, or read by the browser from raw.githubusercontent.com with connect-src and CORS, same Printer Schema validation and SHA-256 check), the cache (IndexedDB), the files of the user (file input and download instead of the file system), the settings, the CSP and the hosting; the GUI keeps using the same API (window.api), with a web implementation instead of the IPC.
 
 
 ---

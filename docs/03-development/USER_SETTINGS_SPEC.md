@@ -276,7 +276,7 @@ System
 
   "printer": {
 
-    "defaultPrinter": "",
+    "defaultPrinter": null,
 
     "autoloadLastPrinter": true
 
@@ -285,6 +285,10 @@ System
 }
 
 ```
+
+
+
+defaultPrinter: id of the last printer selected, or null (none selected yet). With autoloadLastPrinter true, this printer is selected again at startup (Phase 7, ADR-032; DATA_SCHEMA.md, User Preferences Schema).
 
 
 

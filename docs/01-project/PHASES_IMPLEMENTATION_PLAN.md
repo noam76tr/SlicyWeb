@@ -1269,6 +1269,30 @@ Multiple Objects Supported
 
 # PRINTER DATABASE
 
+Status: In Progress
+
+Decisions (ADR-032, decisions D1 to D8 of Noam, 2026-10-24):
+
+- Profiles written by SlicyWeb from the pages of the manufacturers, never copied from a profile file of a slicer; printers entered by the user (Local Custom)
+- Profile files: Repository Data Schema envelopes; the list of printers comes from noam76tr/slicyweb-profiles (public, all rights reserved, no token in the application); data/printers/ keeps only the offline fallback list; sources in SOURCES.md
+- Loading and validation in the main process, printer:* IPC channels
+- Unknown values of motion and thermal: null (DATA_SCHEMA.md 3.5.0)
+- First printers: Bambu Lab X1 Carbon, P1S, A1, A1 mini; Prusa MK4S, CORE One, MINI+; Creality K1C, Ender-3 V3 SE; Elegoo Neptune 4 Pro
+- Last printer kept in the user settings (printer.defaultPrinter, autoloadLastPrinter)
+- Updates from the SlicyWeb repository noam76tr/slicyweb-profiles (main process, allowed address, integrity check, local cache, offline use)
+
+Order of the lots:
+
+- Lot 57: ADR-032, DATA_SCHEMA.md 3.5.0, PRINTER_PROFILE_SPEC.md 2.0.0, USER_SETTINGS_SPEC.md (documentation)
+- Lot 58: loading in the main process, Printer Schema with null, printer:* IPC channels, local RepositorySync
+- Lot 59: the 10 printer profiles and SOURCES.md
+- Lot 60: Printer section and selector, build plate on selection, last printer kept
+- Lot 61: printers entered by the user
+- Lot 62: synchronization from noam76tr/slicyweb-profiles
+- Lot 63: closure of Phase 7
+
+To decide: web version of SlicyWeb (KI-024)
+
 ---
 
 ## Objectives

@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-24. Lot 55 sur `main` (commit 72ab053), vérifié identique. Lot 56 : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.58 (lot 55).
+Date : 2026-10-25. Lot 55 sur `main` (commit 72ab053), vérifié identique. Lots 56 et 57 : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.59 (lot 57).
 
 ---
 
@@ -184,6 +184,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 54 | Tests de bout en bout avec Playwright (16 tests) | 0.1.57 |
 | 55 | Messages d'import qui bloquaient les clics dans la vue 3D ; rectangle testé depuis le haut (17 tests e2e) | 0.1.58 |
 | 56 | Phase 7 : inventaire, sources des profils d'imprimantes et licences, 8 décisions (`lot56-phase7-analyse/PHASE7-ANALYSE.md`) | — |
+| 57 | Phase 7, documentation : ADR-032, DATA_SCHEMA 3.5.0, PRINTER_PROFILE_SPEC 2.0.0, KI-023 | 0.1.59 |
 
 ---
 
@@ -256,6 +257,15 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 43. Ctrl+Z dans un champ de la section Transform (bug 16) : frappe pas encore validée → Ctrl+Z annule la frappe ; rien en attente → Annuler de l'application, l'objet change tout de suite et le champ se met à jour ; quitter le champ ensuite ne crée pas d'étape.
 44. Fichiers jamais utilisés supprimés à la clôture de la phase 6 : `src/gui/viewport/ViewportToolbar.tsx`, `ViewportStatus.tsx` et, dans `src/transform/`, tout sauf `TransformValidator.ts` (HistoryManager, UndoRedoManager, TransformManager, MoveTool, RotateTool, ScaleTool).
 45. Un message d'information (import) ne doit jamais empêcher de cliquer en dessous : seuls ses boutons Annuler et Fermer reçoivent la souris (lot 55).
+46. **Phase 7, profils d'imprimantes (ADR-032, D1) :** écrits par SlicyWeb à partir des pages des fabricants, publiés dans le dépôt public `noam76tr/slicyweb-profiles`, d'où vient la liste ; `data/printers/` n'en garde qu'une copie de secours hors ligne. Plus les imprimantes saisies par l'utilisateur. Aucun fichier de profil d'un slicer copié.
+47. **Licences (D2) :** les chiffres viennent des pages des fabricants, **jamais** recopiés depuis les fichiers de profils des slicers, même si les valeurs sont identiques. Sources dans `data/printers/SOURCES.md`. Avis juridique avant la diffusion (KI-023).
+48. **Format (D3) :** enveloppe Repository Data Schema, Printer Schema plat inchangé ; PRINTER_PROFILE_SPEC aligné sur DATA_SCHEMA.
+49. **Chargement (D4) :** par le processus principal, validation PrinterSchema, canaux `printer:*`.
+50. **Mises à jour (D5) :** depuis le dépôt de SlicyWeb `noam76tr/slicyweb-profiles` (jamais les dépôts des slicers) ; processus principal seulement, adresse autorisée (tag fixe), PrinterSchema, SHA-256 (`index.json`), cache local, hors ligne avec les profils présents. Dépôt public, lu sans authentification, aucun jeton GitHub dans l'application ; le dépôt du code pourra devenir privé. Licence des données : tous droits réservés (comme LICENSE.md). Lots 57 à 61 en local, 62 synchronisation, 63 clôture.
+51. **Valeurs inconnues (D6) :** `null`, jamais 0 ; le code qui les utilise (recommandation, KI-008, export) traite `null` explicitement.
+52. **Premières imprimantes (D7) :** Bambu Lab X1 Carbon, P1S, A1, A1 mini ; Prusa MK4S, CORE One, MINI+ ; Creality K1C, Ender-3 V3 SE ; Elegoo Neptune 4 Pro.
+53. **Dernière imprimante (D8) :** retenue dans les réglages (`printer.defaultPrinter`, `autoloadLastPrinter`), jusqu'à la phase 13.
+54. **Version site web (à décider, KI-024) :** le produit pourrait aussi être un site en ligne. À décider avant le lot 62 : pas de processus principal, donc profils servis par le serveur du site ou lus par le navigateur (CSP connect-src, CORS), cache IndexedDB, fichiers par envoi et téléchargement. L'interface garde la même API (`window.api`).
 
 **Méthode**
 
@@ -269,7 +279,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49) ; plusieurs objets (lot 50) ; rectangle et Maj+clic (lot 51) ; Ctrl+Z dans un champ (lot 52).
    - Contrôles manuels des lots 49 à 52 : tous réussis (le contrôle 16 du lot 51 a été corrigé au lot 52).
 2. **Tests automatiques avec Playwright** (lots 54 et 55) : 17 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
-3. **Phase 7 : Printer Database** : inventaire et décisions D1 à D8 dans `lot56-phase7-analyse/PHASE7-ANALYSE.md`, en attente des réponses de Noam ; aucun code avant.
+3. **Phase 7 : Printer Database** (In Progress, ADR-032) : lot 58 chargement par le processus principal ; 59 les 10 profils et SOURCES.md ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue ; 61 imprimantes saisies par l'utilisateur ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (dépôt à créer par Noam avant ce lot) ; 63 clôture.
 4. **Phases 8 à 16**, dans l'ordre du plan technique.
 5. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
@@ -295,7 +305,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot56-phase7-analyse/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 56 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot57-phase7-docs/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 57 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

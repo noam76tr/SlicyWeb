@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.4.0
+Version: 3.5.0
 
 Status: Approved
 
@@ -579,6 +579,9 @@ unknown
 ```
 
 
+Unknown values (3.5.0, ADR-032): each value of motion is a number, or null when the manufacturer does not publish it. null means unknown, never 0; code that uses these values (recommendation, limits, export) handles null explicitly.
+
+
 ---
 
 
@@ -603,6 +606,9 @@ unknown
 }
 
 ```
+
+
+Unknown values (3.5.0, ADR-032): each value of thermal is a number, or null when the manufacturer does not publish it (maxChamberTemp is null when no chamber temperature is published). null means unknown, never 0.
 
 
 ---
@@ -1897,13 +1903,24 @@ critical
 
    "language": "en",
 
-   "units": "metric"
+   "units": "metric",
+
+   "printer": {
+
+     "defaultPrinter": null,
+
+     "autoloadLastPrinter": true
+
+   }
 
  }
 
 }
 
 ```
+
+
+printer (3.5.0, ADR-032, USER_SETTINGS_SPEC.md Printer Settings): defaultPrinter is the id of the last printer selected, or null when none was selected (null = not chosen yet, as for the selections of the Project Schema); when autoloadLastPrinter is true, this printer is selected again at startup. A defaultPrinter that is no longer in the printer database is ignored (no printer selected).
 
 
 ---

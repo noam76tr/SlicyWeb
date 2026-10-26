@@ -2,7 +2,7 @@
 
 # ARCHITECTURE DECISION MATRIX
 
-Version: 2.3.0
+Version: 2.4.0
 
 Status: Approved
 
@@ -179,6 +179,7 @@ Requires:
 | ADM-025 | Model Import In The Renderer With A Web Worker | Import | High | Approved |
 | ADM-026 | 3MF Import With fflate And fast-xml-parser In The Web Worker | Import | High | Approved |
 | ADM-027 | Object Transform Meaning (Rotation Unit, Order, Pivot, Scale) | Scene | High | Approved |
+| ADM-028 | Printer Profile Sources, Licences and Profile Repository | Printer Database | High | Approved |
 
 ---
 
@@ -803,6 +804,31 @@ Benefits:
 
 - One meaning of the transform for the viewport, the tools and the export
 - Unit tests of the computation
+
+---
+
+ADM-028
+
+Title:
+
+Printer Profile Sources, Licences and Profile Repository
+
+Decision:
+
+Printer profiles written by SlicyWeb from the pages of the manufacturers (never copied from slicer profile files), published as Repository Data Schema envelopes in the public SlicyWeb repository noam76tr/slicyweb-profiles (all rights reserved, read without authentication, no token in the application), with an offline fallback copy in data/printers/, plus printers entered by the user; loaded and validated by the main process; unknown values null; updates from that repository only (main process, allowed address, integrity check, local cache, offline use). Web version: to decide (KI-024).
+
+Rationale:
+
+The profiles of the target slicers are under AGPL or LGPL, or without licence, and SlicyWeb is proprietary; Local First.
+
+Reference:
+
+ADR-032 (DECISIONS.md)
+
+Benefits:
+
+- No licence constraint from the slicers
+- One profile format, checked against its source
 
 ---
 

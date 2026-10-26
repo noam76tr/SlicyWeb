@@ -2369,6 +2369,80 @@ Reason:
 
 ---
 
+# ADR-032
+
+Title: Printer Profile Sources, Licences and Profile Repository
+
+Status: Accepted
+
+Date: 2026-10-24
+
+## Context
+
+Phase 7 (Printer Database) needs printer profiles. No profile exists in the project (data/printers/ is empty). The profiles of the target slicers are under AGPL-3.0 (Bambu Studio, OrcaSlicer, PrusaSlicer), LGPL-3.0 or later (Cura), or without a stated licence (current Prusa profiles), while SlicyWeb is proprietary (LICENSE.md). Their formats differ and change with each slicer version. Analysis: lot 56 (PHASE7-ANALYSE.md), decisions D1 to D8 of Noam.
+
+## Decision
+
+- Sources (D1): the printer profiles are written by SlicyWeb from the specification pages of the manufacturers, and published in the SlicyWeb repository noam76tr/slicyweb-profiles (one JSON file per printer), the source of the list of printers. The application ships a copy in data/printers/, used only as the offline fallback list (no network, or no valid download yet). The user can also enter their own printers (Local Custom, PRINTER_PROFILE_SPEC.md), kept in the user data folder (printers/).
+- Licences (D2): no profile file of a slicer (AGPL, LGPL or without licence) is copied into SlicyWeb. The numbers of a profile come from the page of the manufacturer, never from a profile file of a slicer, even when the values are the same. The page and the date of verification of each profile are listed in data/printers/SOURCES.md. Legal review before the public release: KI-023.
+- File format (D3): each profile file is a Repository Data Schema envelope (DATA_SCHEMA.md): type "printer", version of the profile, source, data = the printer (Printer Schema, flat). The files are written with validated false; the loader sets validated only after the Printer Schema validation. PRINTER_PROFILE_SPEC.md follows DATA_SCHEMA.md (priority 0); its sections without a field in DATA_SCHEMA.md are future.
+- Loading (D4): the main process reads data/printers/ (read only) and the printers of the user, validates them with the Printer Schema and serves them through the printer:* IPC channels (PrinterService, PrinterManager, PrinterRepository). The renderer reads no profile file.
+- Unknown values (D6): a value of motion or thermal not published by the manufacturer is null (DATA_SCHEMA.md 3.5.0). Code that uses these values (recommendation, KI-008, export) handles null explicitly, never as 0.
+- First printers (D7): Bambu Lab X1 Carbon, P1S, A1, A1 mini; Prusa MK4S, CORE One, MINI+; Creality K1C, Ender-3 V3 SE; Elegoo Neptune 4 Pro.
+- Open question (to decide, KI-024): a web version of SlicyWeb (online site) in addition to the Electron application. It has no main process: the profiles would be served by the server of the site (synchronized from noam76tr/slicyweb-profiles) or read by the browser from the allowed address (connect-src of the CSP, CORS), with the same validation and integrity check; the cache would be in the browser (IndexedDB). The printer:* channels stay the only access of the GUI to the profiles, so that a web version replaces the transport, not the GUI.
+- Last printer (D8): kept in the user settings (printer.defaultPrinter, printer.autoloadLastPrinter; DATA_SCHEMA.md 3.5.0, USER_SETTINGS_SPEC.md) until projects keep it (Phase 13).
+- Updates (D5): the list of printers is updated from a GitHub repository of SlicyWeb, noam76tr/slicyweb-profiles (the same profiles, written from the pages of the manufacturers), never from the repositories of the slicers. Download by the main process only, from an allowed address (raw.githubusercontent.com/noam76tr/slicyweb-profiles/, a fixed tag), Printer Schema validation, integrity check (SHA-256 of each file listed in index.json), local cache, offline use with the profiles already present. The repository is public, so that the application reads it without authentication: no GitHub token in the application. The code repository of SlicyWeb may become private later; this does not change the profile repository. Licence of the data of the repository: all rights reserved (same rule as LICENSE.md), readable by everyone, no reuse without the written agreement of the owner. Order: Phase 7 local first (lots 57 to 61), synchronization in lot 62, closure of Phase 7 in lot 63.
+
+## Consequences
+
+Advantages:
+
+- No licence constraint from the slicers on SlicyWeb
+- Works offline (Local First); one format, the one of DATA_SCHEMA.md
+- Each number has a source that can be checked
+
+Disadvantages:
+
+- Each profile is written and checked by hand
+- Fewer printers than in the slicers at first
+
+## Alternatives Considered
+
+Profiles copied from the slicers into the project
+
+Rejected
+
+Reason:
+
+- AGPL or LGPL files mixed with a proprietary application; formats that change
+
+Profiles downloaded from the repositories of the slicers
+
+Rejected
+
+Reason:
+
+- Licence of the converted profiles uncertain; three formats to convert; dependence on the slicer projects
+
+Profiles read from the slicer installed by the user
+
+Postponed
+
+Reason:
+
+- Possible later as Import Profile (Phase 15), after the legal review
+
+## Related Documents
+
+- DATA_SCHEMA.md (Printer Schema, Repository Data Schema, User Preferences Schema)
+- PRINTER_PROFILE_SPEC.md
+- USER_SETTINGS_SPEC.md (Printer Settings)
+- SECURITY_SPEC.md (RepositorySync and Remote Source Security)
+- SLICER_EXPORT_SPEC.md (Printer Profiles In The Target Slicer)
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-028)
+
+---
+
 # Future Decision Template
 
 Copy and complete:
