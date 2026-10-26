@@ -1,0 +1,46 @@
+{
+  "id": "creality_ender3_v3_se",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "creality_ender3_v3_se",
+    "brand": "Creality",
+    "model": "Ender-3 V3 SE",
+    "series": "Ender-3 V3",
+    "manufacturer": "Creality",
+    "firmware": "Marlin",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 220,
+      "y": 220,
+      "z": 250
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": 250,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 2500,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 260,
+      "maxBedTemp": 100,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": true,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": ["PLA", "PETG", "TPU"],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

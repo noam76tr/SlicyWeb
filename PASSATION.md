@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-26. Lots 56 et 57 sur `main` (commit 0ac47d9), vérifiés identiques. Lot 58 : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.60 (lot 58).
+Date : 2026-10-26. Lot 58 sur `main` (commit 4d0023d), vérifié identique. Lot 59 : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.61 (lot 59).
 
 ---
 
@@ -186,6 +186,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 56 | Phase 7 : inventaire, sources des profils d'imprimantes et licences, 8 décisions (`lot56-phase7-analyse/PHASE7-ANALYSE.md`) | — |
 | 57 | Phase 7, documentation : ADR-032, DATA_SCHEMA 3.5.0, PRINTER_PROFILE_SPEC 2.0.0, KI-023 | 0.1.59 |
 | 58 | Phase 7 : profils lus par le processus principal, canaux `printer:getAll`, `get`, `count`, réglages `printer` | 0.1.60 |
+| 59 | Phase 7 : les 10 profils de `data/printers/` et `SOURCES.md` (pages des fabricants lues le 2026-10-26) | 0.1.61 |
 
 ---
 
@@ -272,6 +273,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 57. **Réglages :** un `settings.json` sans `printer` se charge sans erreur, langue gardée (test unitaire et test de bout en bout).
 58. **Lot 59 (Noam) :** une valeur non publiée par le fabricant = `null`, jamais devinée ni reprise d'un slicer ; URL de la fiche et date de vérification de chaque imprimante dans `SOURCES.md`.
 59. **Rappel à faire en livrant le lot 61 :** créer `noam76tr/slicyweb-profiles` (public, tous droits réservés) et trancher KI-024 avant le lot 62.
+60. **Profils (lot 59) :** règles de `data/printers/SOURCES.md` : ventilateur à true seulement s'il est nommé par une page du fabricant ; type d'extrudeur `unknown` s'il n'est pas écrit (les 4 Bambu Lab) ; « vitesse max de la tête » donne maxPrintSpeed et maxTravelSpeed, « vitesse d'impression » seulement maxPrintSpeed ; deux températures de plateau selon la tension → la plus basse ; matériaux du fabricant tels qu'écrits (sans les « non recommandés » ni ceux qui demandent une option) ; `supportedFilaments` vide (phase 9) ; `firmware` et `releaseDate` vides sauf s'ils sont écrits.
+61. **Prusa CORE One+ au lieu du CORE One (lot 59, à confirmer par Noam) :** Prusa ne publie plus de fiche technique du CORE One, seulement celle du CORE One+ (Gen 2). Marques : `Prusa` (fabricant `Prusa Research`), modèles `MK4S`, `CORE One+`, `MINI+`.
 
 **Méthode**
 
@@ -285,7 +288,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49) ; plusieurs objets (lot 50) ; rectangle et Maj+clic (lot 51) ; Ctrl+Z dans un champ (lot 52).
    - Contrôles manuels des lots 49 à 52 : tous réussis (le contrôle 16 du lot 51 a été corrigé au lot 52).
 2. **Tests automatiques avec Playwright** (lots 54, 55 et 58) : 19 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
-3. **Phase 7 : Printer Database** (In Progress, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue ; 61 imprimantes saisies par l'utilisateur ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (dépôt à créer par Noam avant ce lot) ; 63 clôture.
+3. **Phase 7 : Printer Database** (In Progress, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue ; 61 imprimantes saisies par l'utilisateur ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (dépôt à créer par Noam avant ce lot) ; 63 clôture.
 4. **Phases 8 à 16**, dans l'ordre du plan technique.
 5. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
@@ -313,7 +316,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot58-chargement-imprimantes/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 58 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot59-profils-imprimantes/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 59 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

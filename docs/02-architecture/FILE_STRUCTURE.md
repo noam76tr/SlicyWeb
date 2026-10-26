@@ -85,7 +85,7 @@ data/
 │   ├── filaments/
 │   ├── materials/
 │   ├── presets/
-│   ├── printers/
+│   ├── printers/                       = profils d'imprimantes Official (un fichier JSON par imprimante, SOURCES.md)
 │   └── templates/
 
 docs/
@@ -910,7 +910,8 @@ tests/
 │   │   └── hooks/
 │   │       └── UndoRedoShortcuts.test.ts = keys of undo and redo (Phase 6)
 │   ├── printer_database/
-│   │   └── PrinterLoading.test.ts = printer profile files, PrinterSchema (Phase 7)
+│   │   ├── PrinterLoading.test.ts = printer profile files, PrinterSchema (Phase 7)
+│   │   └── PrinterProfiles.test.ts = the profiles of data/printers/ (Phase 7)
 │   ├── renderer/
 │   │   └── ObjectRenderer.test.ts = selection rectangle (Phase 6)
 │   ├── scene/

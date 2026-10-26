@@ -2126,7 +2126,7 @@ Release Type:
 Feature
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-26
@@ -2145,6 +2145,34 @@ Date:
 - src/printer_database/PrinterValidator.ts: validation with PrinterSchema (a missing field is refused instead of a crash); validateThermal accepts null
 - printer:add, printer:update and printer:remove: payload validated, then refused (success false, nothing changed) until the printers entered by the user (lot 61); before, they answered success without doing anything
 - API_SPEC.md (PrinterIPC Channels, settings:update), ERROR_CODES_SPEC.md (PRN_001, PRN_002), SECURITY_SPEC.md (Printer Profile Files), USER_SETTINGS_SPEC.md (Backward Compatibility), PRINTER_PROFILE_SPEC.md (loading), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
+
+## Validation Result
+
+- Windows 11 (2026-10-26): lot 58 on GitHub (4d0023d, identical to the lot); npm run check:locales (251 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 58 tests passed, 1 skipped (link test: no right to create a link on Windows); npm run test:e2e: 19 tests passed; manual check: a damaged abime.json in %APPDATA%\SlicyWeb\printers is refused with "PRN_002 Local Custom printer profile refused: abime.json (Invalid JSON)" and the application starts normally (Noam)
+
+---
+
+# VERSION 0.1.61
+
+Release Type:
+Feature
+
+Status:
+In Progress
+
+Date:
+2026-10-26
+
+## Added
+
+- data/printers/: the 10 first printer profiles (ADR-032, D7), written from the pages of the manufacturers: Bambu Lab X1 Carbon, P1S, A1, A1 mini; Prusa MK4S, CORE One+, MINI+; Creality K1C, Ender-3 V3 SE; Elegoo Neptune 4 Pro. A value not published by the manufacturer is null; no value is copied from a slicer profile
+- data/printers/SOURCES.md: for each printer, the pages of the manufacturer read and the date of verification (2026-10-26), the values taken from each page, the null values, and the rules used (fans, extruder, nozzles, speeds, bed temperature, materials)
+- tests/unit/printer_database/PrinterProfiles.test.ts: each profile passes the schema, file name = id, source Official, listed in SOURCES.md, all loaded (72 unit tests in total)
+
+## Changed
+
+- tests/e2e/printer.spec.ts: the 10 printers of data/printers/ are served by printer:getAll with the printer of the user
+- DIRECTORY_PURPOSES.md (data/printers/), FILE_STRUCTURE.md, PASSATION.md
 
 ---
 

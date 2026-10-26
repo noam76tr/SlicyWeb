@@ -1,0 +1,55 @@
+{
+  "id": "prusa_mk4s",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "prusa_mk4s",
+    "brand": "Prusa",
+    "model": "MK4S",
+    "series": "MK4",
+    "manufacturer": "Prusa Research",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 250,
+      "y": 210,
+      "z": 220
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": null,
+      "maxTravelSpeed": null,
+      "maxAcceleration": null,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 290,
+      "maxBedTemp": 120,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": true,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": [
+      "PLA",
+      "PETG",
+      "Flex",
+      "PVA",
+      "PC",
+      "PP",
+      "CPE",
+      "PVB"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

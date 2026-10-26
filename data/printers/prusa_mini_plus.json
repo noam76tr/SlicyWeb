@@ -1,0 +1,61 @@
+{
+  "id": "prusa_mini_plus",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "prusa_mini_plus",
+    "brand": "Prusa",
+    "model": "MINI+",
+    "series": "MINI",
+    "manufacturer": "Prusa Research",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 180,
+      "y": 180,
+      "z": 180
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": null,
+      "maxTravelSpeed": null,
+      "maxAcceleration": null,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 280,
+      "maxBedTemp": 100,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": true,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "bowden",
+      "count": 1
+    },
+    "supportedMaterials": [
+      "PLA",
+      "PETG",
+      "ASA",
+      "ABS",
+      "PC",
+      "CPE",
+      "PVA",
+      "BVOH",
+      "PVB",
+      "HIPS",
+      "PP",
+      "Flex",
+      "nGen",
+      "PA"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

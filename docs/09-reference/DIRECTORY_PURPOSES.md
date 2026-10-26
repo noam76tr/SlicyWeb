@@ -1307,6 +1307,8 @@ No other store keeps a copy of a selection.
 - Manufacturer Profiles
 - Printer Configurations
 
+One file per printer, `<id>.json`: a Repository Data Schema envelope (type printer, source Official) whose data is the printer (Printer Schema). Read only, loaded by the main process (ADR-032, D4); the offline fallback list of the SlicyWeb profile repository. `SOURCES.md` gives, for each printer, the pages of the manufacturer and the date of verification; no value is copied from a slicer profile, and a value not published is null.
+
 ---
 
 ## data/materials/
@@ -1684,6 +1686,7 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 |------|-------|
 | `electron/PrinterIPC.test.ts` | printer:getAll, printer:get (PRN_001), printer:count; invalid payload refused; printer:add, update and remove change nothing yet |
 | `gui/hooks/UndoRedoShortcuts.test.ts` | Keys of undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z, Cmd, AZERTY letter, Hebrew layout (key position), Alt and other keys ignored |
+| `printer_database/PrinterProfiles.test.ts` | The 10 profiles of data/printers/: schema, file name = id, source Official, listed in SOURCES.md, all loaded |
 | `printer_database/PrinterLoading.test.ts` | PrinterSchema (null kept, unknown field refused, no crash); profile files of both folders; missing folder; other files and subfolders ignored; damaged, invalid, too large, wrong source and duplicate files refused with PRN_002; links not followed; no path in the results |
 | `renderer/ObjectRenderer.test.ts` | Selection rectangle: objects touched (not only inside), turned objects, hidden objects |
 | `services/GroupTransform.test.ts` | Several objects: Ctrl+click and Ctrl+A selection; group moved, turned and scaled around its center, objects on the plate; one undo per change of the group |
@@ -1740,7 +1743,7 @@ Run with Playwright (`npm run test:e2e`: builds the application, then starts it 
 | `fixtures.ts` | Starts the built application (dist/electron/main.js) in a new user data folder; writes the test files (STL cube); imports with the Import button |
 | `app.spec.ts` | Main window without console error, 9 menus, toolbar, no Node.js in the window; language changed and kept after a restart; Hebrew from right to left |
 | `import.spec.ts` | STL import centered and standing on the plate; several files, same names numbered; 3MF import; unsupported and corrupted files refused with their message, error closed with its Close button |
-| `printer.spec.ts` | Printer of the user served by printer:getAll and printer:get, damaged file refused without error in the window, PRN_001; settings.json without printer keeps the language |
+| `printer.spec.ts` | The 10 printers of data/printers/ and the printer of the user served by printer:getAll; printer:get, damaged file refused without error in the window, PRN_001; settings.json without printer keeps the language |
 | `transform.spec.ts` | Fields of the Transform section; undo and redo (toolbar, Ctrl+Z and Ctrl+Y in a field, no extra action); modes G, R, S, Escape; Ctrl+A, Shift+click, selection rectangle from the top corner (under the import messages) and the bottom corner, group moved |
 
 ---
