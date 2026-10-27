@@ -107,6 +107,13 @@ interface ViewportProps {
   unavailableMessage: string;
 
   /**
+   * Size of the build plate of the selected printer, already translated
+   * (GUI_SPEC.md, Plate Display: Build Width, Build Depth); null when no
+   * printer is selected.
+   */
+  plateLabel: string | null;
+
+  /**
    * Applies transforms to one object or a group, by objectId
    * (TransformService); returns false when they are refused. live: step
    * of a rotation with the gizmo, not placed on the plate.
@@ -127,6 +134,7 @@ interface ViewportProps {
 export default function Viewport({
   label,
   unavailableMessage,
+  plateLabel,
   onTransformObjects,
   onTransformGesture,
 }: ViewportProps): JSX.Element {
@@ -346,6 +354,11 @@ export default function Viewport({
       aria-label={label}
       className="relative flex h-full w-full items-center justify-center overflow-hidden bg-viewport"
     >
+      {plateLabel && !unavailable && (
+        <p className="pointer-events-none absolute start-3 bottom-3 rounded bg-card/80 px-2 py-0.5 text-xs text-muted-foreground tabular-nums">
+          {plateLabel}
+        </p>
+      )}
       {unavailable && (
         <p className="px-4 text-center text-sm text-muted-foreground">
           {unavailableMessage}

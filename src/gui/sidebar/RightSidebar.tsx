@@ -14,6 +14,9 @@
  * Phase 6: the Transform section edits the transform of the selected
  * object (TransformSection.tsx).
  *
+ * Phase 7: the Printer section chooses the printer and shows its build
+ * volume, nozzle and limits (PrinterSection.tsx).
+ *
  * No business logic.
  *
  * Based on:
@@ -28,18 +31,17 @@ import { useFilamentStore } from "../../state/filamentStore";
 import { useMaterialStore } from "../../state/materialStore";
 import { useObjectStore } from "../../state/objectStore";
 import { usePresetStore } from "../../state/presetStore";
-import { usePrinterStore } from "../../state/printerStore";
 import { useRecommendationStore } from "../../state/recommendationStore";
 import { useTranslation } from "../hooks/useTranslation";
 
 import { getDisplayNames } from "./objectNames";
+import PrinterSection from "./PrinterSection";
 import SidebarSection from "./SidebarSection";
 import TransformSection from "./TransformSection";
 
 export default function RightSidebar(): JSX.Element {
   const { t } = useTranslation();
 
-  const printer = usePrinterStore((state) => state.selectedPrinter);
   const material = useMaterialStore((state) => state.selectedMaterial);
   const filament = useFilamentStore((state) => state.selectedFilament);
   const preset = usePresetStore((state) => state.selectedPreset);
@@ -85,9 +87,7 @@ export default function RightSidebar(): JSX.Element {
       </SidebarSection>
 
       <SidebarSection title={t("printer.title")}>
-        {printer
-          ? `${printer.brand} ${printer.model}`
-          : t("printer.noSelection")}
+        <PrinterSection />
       </SidebarSection>
 
       <SidebarSection title={t("material.title")}>

@@ -2158,7 +2158,7 @@ Release Type:
 Feature
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-26
@@ -2173,6 +2173,43 @@ Date:
 
 - tests/e2e/printer.spec.ts: the 10 printers of data/printers/ are served by printer:getAll with the printer of the user
 - DIRECTORY_PURPOSES.md (data/printers/), FILE_STRUCTURE.md, PASSATION.md
+
+## Validation Result
+
+- Windows 11 (2026-10-27): lot 59 on GitHub (4280ee9, identical to the lot); npm run check:locales (251 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 71 tests passed, 1 skipped (link test: no right to create a link on Windows); npm run test:e2e: 19 tests passed (Noam)
+
+---
+
+# VERSION 0.1.62
+
+Release Type:
+Feature
+
+Status:
+In Progress
+
+Date:
+2026-10-27
+
+## Added
+
+- Printer section of the Properties Panel (GUI_SPEC.md, Printer Section, Printer Selector): src/gui/sidebar/PrinterSection.tsx; selector with "No printer" first, then the printers grouped by brand (brands and models in alphabetical order); Brand, Model, Build Volume, Nozzle, Nozzles and Printer Limits of the selected printer; a value not published by the manufacturer (null) is shown as "Not published"
+- src/services/PrinterSelectionService.ts: at start, the printers served by printer:getAll are checked with PrinterSchema and put in the printer store; the last printer (printer.defaultPrinter) is chosen again when autoloadLastPrinter is true and the printer is still loaded; a choice is saved with settings:update (autoloadLastPrinter kept as saved)
+- Plate Display (GUI_SPEC.md): "Plate: X × Y mm" of the selected printer at the bottom of the 3D viewport; the build plate and the status bar follow the printer chosen
+- Printer > Select Printer: gives the focus to the printer selector when the menu closes
+- Translations (en, fr, he): 15 keys of the Printer section and of the plate (266 keys)
+- Tests: tests/unit/services/PrinterSelection.test.ts (82 unit tests in total); tests/e2e/printer.spec.ts, Printer section: printer chosen, limits, plate, status bar, menu, printer chosen again at the next start, "No printer" (20 end-to-end tests in total)
+
+## Changed
+
+- src/gui/sidebar/RightSidebar.tsx: the Printer section shows PrinterSection instead of the name of the printer only
+- src/gui/menus/MenuBar.tsx: an item can give the focus to an element of the window when its menu closes (focusId)
+- GUI_SPEC.md (Printer Menu, Printer Section, Printer Selector, Plate Display), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
+- KNOWN ISSUES: KI-015 updated (PrinterPanel removed; the panels of Phases 8 to 10 and Renderer.ts remain)
+
+## Removed
+
+- src/gui/panels/PrinterPanel.tsx: never used, hardcoded English text (KI-015); replaced by the Printer section of the Properties Panel (decision of Noam)
 
 ---
 
@@ -3057,11 +3094,11 @@ Identifier: KI-015
 
 Since: 0.1.35
 
-Affected Module: src/gui/panels/ (PrinterPanel, MaterialPanel, FilamentPanel, PresetPanel, AnalysisPanel, RecommendationPanel), src/renderer/Renderer.ts
+Affected Module: src/gui/panels/ (MaterialPanel, FilamentPanel, PresetPanel, AnalysisPanel, RecommendationPanel), src/renderer/Renderer.ts
 
 Issue: These components are not used by the interface of Phase 3, and some of them contain hardcoded English text, against the Internationalization Rule (CLAUDE.md). The Properties Panel (src/gui/sidebar/RightSidebar.tsx) is used instead of the panels. Since 0.1.36, Viewport.tsx is used (3D viewport); src/renderer/Renderer.ts is no longer used and duplicates RendererManager.
 
-Resolve Before: the phase that displays each component (Phases 7 to 10 for the panels; KI-011 for AnalysisPanel); Renderer.ts can be removed at any time. ViewportToolbar and ViewportStatus removed in 0.1.56 (replaced by the mode buttons over the viewport and the status bar)
+Resolve Before: the phase that displays each component (Phases 7 to 10 for the panels; KI-011 for AnalysisPanel); Renderer.ts can be removed at any time. ViewportToolbar and ViewportStatus removed in 0.1.56 (replaced by the mode buttons over the viewport and the status bar); PrinterPanel removed in 0.1.62 (replaced by the Printer section of the Properties Panel)
 
 Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it.
 

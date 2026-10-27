@@ -20,6 +20,9 @@
  * (useUndoRedoShortcuts), toolbar and Edit menu (TransformService).
  * Ctrl+A selects all the objects (useSelectAllShortcut).
  *
+ * At start, the printers loaded by the main process are read, and the
+ * last printer is selected again (PrinterSelectionService, Phase 7).
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - GUI_SPEC.md
@@ -29,7 +32,9 @@
 import { useEffect } from "react";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 
+import { PrinterSelectionService } from "../services/PrinterSelectionService";
 import { TransformService } from "../services/TransformService";
+import { usePrinterStore } from "../state/printerStore";
 
 import MainLayout from "./MainLayout";
 import { useTranslation } from "./hooks/useTranslation";
@@ -46,11 +51,15 @@ import Viewport from "./viewport/Viewport";
 
 export default function App(): JSX.Element {
   const { t, direction } = useTranslation();
+  const buildVolume = usePrinterStore(
+    (state) => state.selectedPrinter?.buildVolume ?? null,
+  );
   useUndoRedoShortcuts();
   useSelectAllShortcut();
 
   useEffect(() => {
     document.title = "SlicyWeb";
+    void PrinterSelectionService.load();
   }, []);
 
   const header = (
@@ -75,6 +84,11 @@ export default function App(): JSX.Element {
             <Viewport
               label={t("viewport.title")}
               unavailableMessage={t("viewport.unavailable")}
+              plateLabel={
+                buildVolume
+                  ? t("viewport.plate", { x: buildVolume.x, y: buildVolume.y })
+                  : null
+              }
               onTransformObjects={(transforms, live) =>
                 TransformService.applyMany(transforms, { live })
               }

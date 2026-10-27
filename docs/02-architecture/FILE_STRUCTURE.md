@@ -387,6 +387,7 @@ src/gui/
 │   ├── LeftSidebar.tsx
 │   ├── RightSidebar.tsx
 │   ├── SidebarSection.tsx
+│   ├── PrinterSection.tsx     = Printer section of the Properties Panel (Phase 7)
 │   ├── TransformSection.tsx   = Transform section of the Properties Panel (Phase 6)
 │   └── objectNames.ts         = display names of the objects (duplicates: "cube (1)")
 ├── import/
@@ -394,7 +395,6 @@ src/gui/
 │   ├── ImportDropZone.tsx     = drag and drop of files in the viewport
 │   └── ImportStatus.tsx       = progress, Cancel, confirmation and errors of the imports
 ├── panels/
-│   ├── PrinterPanel.tsx
 │   ├── MaterialPanel.tsx
 │   ├── FilamentPanel.tsx
 │   ├── PresetPanel.tsx
@@ -770,6 +770,7 @@ src/services/
 ├── RecommendationService.ts
 ├── ImportService.ts           = import queue, progress, cancel and errors for the GUI (ADR-029)
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
+├── PrinterSelectionService.ts = printers of the window, last printer (Phase 7)
 └── StorageService.ts
 ```
 
@@ -920,6 +921,7 @@ tests/
 │   │   └── SettingsStorage.test.ts = settings.json, printer settings (Phase 7)
 │   └── services/
 │       ├── GroupTransform.test.ts = several objects selected (Phase 6)
+│       ├── PrinterSelection.test.ts = printers of the window, last printer (Phase 7)
 │       ├── TransformService.test.ts = transform changes, object on the plate
 │       └── UndoRedo.test.ts = undo and redo of the transform changes
 ├── integration/
@@ -927,7 +929,7 @@ tests/
     ├── fixtures.ts = starts the built application, test files
     ├── app.spec.ts = main window, languages
     ├── import.spec.ts = STL and 3MF import, refused files
-    ├── printer.spec.ts = printers served by the main process (Phase 7)
+    ├── printer.spec.ts = printers served by the main process, Printer section (Phase 7)
     └── transform.spec.ts = transforms, undo and redo, several objects (Phase 6)
 ```
 

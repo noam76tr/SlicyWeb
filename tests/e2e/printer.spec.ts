@@ -7,12 +7,17 @@
  * data/printers/ and the printers of the user; a damaged profile file is
  * refused without stopping the application; a settings.json written
  * before the printer settings (DATA_SCHEMA.md 3.5.0) keeps the language
- * of the user.
+ * of the user. The Printer section (Phase 7): a printer chosen in the
+ * selector shows its limits ("Not published" for null), the size of the
+ * plate in the viewport and in the status bar; it is chosen again at the
+ * next start; "No printer" clears it; Printer > Select Printer moves the
+ * focus to the selector.
  *
  * The printer of these tests is test data, not a real printer.
  *
  * Based on:
- * - TEST_PLAN.md (End-To-End Testing)
+ * - TEST_PLAN.md (End-To-End Testing: Printer Loads, Plate Updates)
+ * - GUI_SPEC.md (Printer Section, Printer Selector, Plate Display)
  * - API_SPEC.md (PrinterIPC Channels)
  * - USER_SETTINGS_SPEC.md (Backward Compatibility)
  */
@@ -20,6 +25,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import en from "../../public/locales/en.json";
 import fr from "../../public/locales/fr.json";
 
 import { expect, test } from "./fixtures";
@@ -128,4 +134,59 @@ test("keeps the language of a settings.json without printer", async ({
     printer: { defaultPrinter: null, autoloadLastPrinter: true },
   });
   expect(errors).toEqual([]);
+});
+
+test("chooses a printer, shows its plate and keeps it", async ({ launch }) => {
+  const first = await launch();
+  const page = first.window;
+  const selector = page.getByLabel(en["printer.selector"]);
+
+  await expect(selector).toHaveValue("");
+  await expect(page.getByText(en["printer.noSelection"])).toBeVisible();
+
+  await selector.selectOption({ label: "X1 Carbon" });
+
+  const section = page.locator("dl").filter({ hasText: en["printer.brand"] });
+  await expect(section).toContainText("Bambu Lab");
+  await expect(section).toContainText("256 × 256 × 256 mm");
+  await expect(
+    page.locator("div").filter({ hasText: en["printer.maxJerk"] }).last(),
+  ).toContainText(en["printer.notPublished"]);
+  await expect(
+    page.getByText(
+      en["viewport.plate"].replace("{x}", "256").replace("{y}", "256"),
+    ),
+  ).toBeVisible();
+  await expect(page.locator("footer")).toContainText("Bambu Lab X1 Carbon");
+
+  // Printer > Select Printer moves the focus to the selector
+  await page
+    .getByRole("menubar")
+    .getByRole("menuitem", { name: en["menu.printer"] })
+    .click();
+  await page.getByRole("menuitem", { name: en["printer.select"] }).click();
+  await expect(selector).toBeFocused();
+  expect(first.errors).toEqual([]);
+  await first.app.close();
+
+  // Next start: the last printer is chosen again
+  const second = await launch();
+  const again = second.window.getByLabel(en["printer.selector"]);
+  await expect(again).toHaveValue("bambu_x1c");
+  await expect(second.window.locator("footer")).toContainText(
+    "Bambu Lab X1 Carbon",
+  );
+
+  await again.selectOption("");
+  await expect(
+    second.window.getByText(en["printer.noSelection"]),
+  ).toBeVisible();
+  await expect(second.window.getByText(/^Plate:/)).toHaveCount(0);
+  const settings = (await second.window.evaluate(() =>
+    window.slicyWeb.invoke("settings:get"),
+  )) as Response;
+  expect(settings.data.settings).toMatchObject({
+    printer: { defaultPrinter: null, autoloadLastPrinter: true },
+  });
+  expect(second.errors).toEqual([]);
 });

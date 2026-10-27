@@ -498,6 +498,8 @@ Export Profile
 
 ```
 
+Select Printer (Phase 7) moves the focus to the Printer Selector of the Properties Panel, when the menu closes. The other items stay disabled until the phase that provides their action.
+
 
 
 ---
@@ -905,6 +907,8 @@ Boundary Limits
 
 ```
 
+Phase 7: Build Width and Build Depth of the selected printer are shown at the bottom of the 3D viewport, on the start side: "Plate: X × Y mm". The build plate and the status bar follow the printer chosen; nothing is shown when no printer is selected.
+
 
 
 ---
@@ -1296,6 +1300,12 @@ Printer Limits
 
 ```
 
+Details (Phase 7; DATA_SCHEMA.md 3.5.0, Printer Schema):
+
+- Build Volume: X × Y × Z in mm; Nozzle: the default nozzle, then the list of the nozzles of the printer.
+- Printer Limits: max print speed, max travel speed, max acceleration, max jerk, max nozzle temperature, max bed temperature, max chamber temperature. A value not published by the manufacturer (null) is shown as "Not published", never as 0.
+- No printer selected: "No printer selected" under the selector.
+
 
 
 ---
@@ -1349,6 +1359,10 @@ Prusa
  └─ XL
 
 ```
+
+Phase 7: a list of the window (select), with "No printer" first, then one group per brand; brands and models in alphabetical order. The printers are those loaded by the main process (printer:getAll; ADR-032).
+
+The printer chosen is saved as the last printer (User Preferences, printer.defaultPrinter). At the next start, it is chosen again when autoloadLastPrinter is true and the printer is still loaded; otherwise no printer is selected. "No printer" clears the choice.
 
 
 

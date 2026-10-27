@@ -17,6 +17,9 @@
  *   objects, clears the object selection;
  * - Edit > Undo, Edit > Redo (Phase 6): last change of transform
  *   (TransformService), disabled while their history is empty;
+ * - Printer > Select Printer (Phase 7): moves the focus to the printer
+ *   selector of the Properties Panel (PrinterSection), when the menu
+ *   closes (otherwise the menu gives the focus back to its title);
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -30,7 +33,7 @@
  * - CLAUDE.md (Internationalization Rule)
  */
 
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
 import { TransformService } from "../../services/TransformService";
@@ -52,11 +55,9 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from "../components/ui/menubar";
-import {
-  LANGUAGE_NAME_KEYS,
-  useTranslation,
-} from "../hooks/useTranslation";
+import { LANGUAGE_NAME_KEYS, useTranslation } from "../hooks/useTranslation";
 import { IMPORT_ACCEPT, openImportDialog } from "../import/openImportDialog";
+import { PRINTER_SELECTOR_ID } from "../sidebar/PrinterSection";
 
 interface MenuItemDefinition {
   /** Dictionary key of the item label */
@@ -67,6 +68,9 @@ interface MenuItemDefinition {
 
   /** Action of the item; an item without action is disabled */
   action?: () => void;
+
+  /** Id of the element that gets the focus when the menu closes */
+  focusId?: string;
 
   /** History read to enable the item (Undo, Redo) */
   history?: "undo" | "redo";
@@ -160,7 +164,13 @@ const MENUS: MenuDefinition[] = [
   {
     key: "menu.printer",
     groups: [
-      [{ key: "printer.select" }, { key: "printer.manage" }],
+      [
+        {
+          key: "printer.select",
+          focusId: PRINTER_SELECTOR_ID,
+        },
+        { key: "printer.manage" },
+      ],
       [
         { key: "printer.refreshProfiles" },
         { key: "printer.importProfile" },
@@ -233,9 +243,17 @@ export default function MenuBar(): JSX.Element {
   const setProjection = useViewportStore((state) => state.setProjection);
   const canUndo = useHistoryStore((state) => state.undoStack.length > 0);
   const canRedo = useHistoryStore((state) => state.redoStack.length > 0);
+  const focusTarget = useRef<string | null>(null);
+
+  /** Element of focusId of the item chosen, otherwise the menu title */
+  const finalFocus = (): HTMLElement | boolean => {
+    const id = focusTarget.current;
+    focusTarget.current = null;
+    return (id && document.getElementById(id)) || true;
+  };
 
   const isDisabled = (item: MenuItemDefinition): boolean =>
-    !item.action ||
+    (!item.action && !item.focusId) ||
     (item.history === "undo" && !canUndo) ||
     (item.history === "redo" && !canRedo);
 
@@ -246,7 +264,7 @@ export default function MenuBar(): JSX.Element {
     <MenubarMenu key={menu.key}>
       <MenubarTrigger>{t(menu.key)}</MenubarTrigger>
 
-      <MenubarContent>
+      <MenubarContent finalFocus={finalFocus}>
         {header}
 
         {menu.groups.map((group, index) => (
@@ -257,7 +275,10 @@ export default function MenuBar(): JSX.Element {
               <MenubarItem
                 key={item.key}
                 disabled={isDisabled(item)}
-                onClick={item.action}
+                onClick={() => {
+                  focusTarget.current = item.focusId ?? null;
+                  item.action?.();
+                }}
               >
                 {t(item.key)}
                 {item.shortcut && (
