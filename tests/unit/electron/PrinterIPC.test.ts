@@ -7,12 +7,11 @@
  * process; an unknown printer returns PRN_001; an invalid payload is
  * refused without throwing; printer:add, printer:update and
  * printer:remove change the printers of the user (Phase 7 lot 61) and
- * never an Official printer (PRN_005); printer:refresh checks the
- * profile repository (Phase 7 lot 62).
+ * never an Official printer (PRN_005).
  *
  * Based on:
  * - API_SPEC.md (PrinterIPC Channels)
- * - ERROR_CODES_SPEC.md (PRN_001, PRN_005, PRN_006, SYNC_001, SYNC_002)
+ * - ERROR_CODES_SPEC.md (PRN_001, PRN_005, PRN_006)
  * - TEST_PLAN.md
  */
 
@@ -93,11 +92,7 @@ describe("Printer IPC", () => {
   it("returns the loaded printers and their count", async () => {
     expect(await invoke("printer:getAll")).toMatchObject({
       success: true,
-      data: {
-        printers: [printer],
-        userPrinterIds: [],
-        profiles: { origin: "application", tag: null, checkedAt: null },
-      },
+      data: { printers: [printer], userPrinterIds: [] },
       errors: [],
     });
     expect(await invoke("printer:count")).toMatchObject({
@@ -189,51 +184,5 @@ describe("Printer IPC", () => {
       errors: ["PRN_006 Printer Already Exists"],
     });
     expect(service.getPrinters()).toEqual([printer]);
-  });
-
-  it("checks the profile repository (printer:refresh)", async () => {
-    const profiles = { origin: "repository", tag: "v1.0.0", checkedAt: null };
-    const check = vi
-      .fn()
-      .mockResolvedValueOnce({ status: "updated", profiles })
-      .mockResolvedValueOnce({
-        status: "failed",
-        profiles,
-        code: "SYNC_002",
-        reason: "main/index.json: HTTP 404",
-      });
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
-    handlers.clear();
-    new PrinterIPC(service, {
-      check,
-      status: () => profiles,
-    } as never).register();
-
-    expect(await invoke("printer:refresh", { force: true })).toMatchObject({
-      success: true,
-      data: { status: "updated", profiles },
-    });
-    expect(check).toHaveBeenLastCalledWith(true);
-    expect(await invoke("printer:refresh")).toMatchObject({
-      success: false,
-      data: { status: "failed", profiles },
-      errors: ["SYNC_002 Remote Source Unavailable"],
-    });
-    expect(check).toHaveBeenLastCalledWith(false);
-    expect(await invoke("printer:getAll")).toMatchObject({
-      data: { profiles },
-    });
-    expect(await invoke("printer:refresh", { force: "yes" })).toMatchObject({
-      success: false,
-    });
-    expect(check).toHaveBeenCalledTimes(2);
-    warn.mockRestore();
-  });
-
-  it("answers SYNC_001 without a profile synchronization", async () => {
-    expect(await invoke("printer:refresh", { force: true })).toMatchObject({
-      success: false,
-      errors: ["SYNC_001 Repository Synchronization Failed"],
-    });
   });
 });

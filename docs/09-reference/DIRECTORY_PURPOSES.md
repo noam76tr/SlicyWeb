@@ -899,7 +899,7 @@ Until the project owner decides otherwise:
 | `GitHubRepository.ts` | Access to remote repositories (GitHub) |
 | `MaterialRepositorySync.ts` | Synchronizes material profiles with a remote repository |
 | `PresetRepositorySync.ts` | Synchronizes preset profiles with a remote repository |
-| `PrinterRepositorySync.ts` | Downloads the printer profiles of the SlicyWeb profile repository (noam76tr/slicyweb-profiles): index.json on main, then each file at the tag of the index; HTTPS under the allowed address only, no redirection, 15 s and 1 MB per file, 20 MB in all; SHA-256, Repository Data Schema envelope, PrinterSchema, source Official, id of the index; all or nothing (SYNC_002, SYNC_003, SYNC_004). No Electron or Node.js module (fetch and Web Crypto; KI-024, option B) |
+| `PrinterRepositorySync.ts` | Synchronizes printer profiles with the local printer repository |
 
 ---
 
@@ -923,8 +923,7 @@ Until the project owner decides otherwise:
 | File | Role |
 |------|------|
 | `CacheStorage.ts` | Generic cache storage using a Map |
-| `PrinterProfileCache.ts` | Cache of the downloaded printer profiles in cache/printers/ of the user data folder: profile files and index.json (folder replaced at once), cache.json (Cache Schema), sync.json (last check, RepositorySync Result Schema); validated again before use (CACHE_001 when it fails); main process only |
-| `PrinterProfileStorage.ts` | Reads the *.json printer profile files of a folder (1 MB at most, links and subfolders not followed; index.json is not a profile); writes (temporary file, then renamed) and deletes a file of the printers of the user, by file name only; main process only |
+| `PrinterProfileStorage.ts` | Reads the *.json printer profile files of a folder (1 MB at most, links and subfolders not followed); writes (temporary file, then renamed) and deletes a file of the printers of the user, by file name only; main process only |
 | `ProjectStorage.ts` | Project-specific storage |
 | `SettingsStorage.ts` | Reads and writes the user preferences in settings.json (user data folder), printer settings included; main process only |
 | `StorageManager.ts` | Orchestrates storage (projects, cache and user settings) |
@@ -1004,8 +1003,7 @@ Until the project owner decides otherwise:
 | `RecommendationService.ts` | Recommendation service that delegates generation to the RecommendationEngine |
 | `StorageService.ts` | Storage service for projects, cache and user settings |
 | `TransformService.ts` | The only way to change the transform of an object (fields, actions, gizmos): refuses invalid values, places the object on the plate (except the live steps of a rotation with the gizmo), writes the object store; records each change for undo and redo (a gesture is one action), undo(), redo() groups of objects (moveGroup, rotateGroup, scaleGroup, setGroupSize, groupInfo); |
-| `PrinterSelectionService.ts` | Printers of the window: reads printer:getAll (checked with PrinterSchema), sorted by brand and model, in the printer store; chooses the last printer again (settings, printer.defaultPrinter, when autoloadLastPrinter is true and the printer is still loaded); select() saves the choice (settings:update); add(), update(), remove(): printers of the user (printer:add, printer:update, printer:remove), then the printers are read again and the selected printer follows; refresh(): checks the profile repository (printer:refresh) in the background at start and with Printer > Refresh Profiles, origin and tag of the profiles and message in the printer store, printers read again after an update. Outside Electron: nothing |
-| `ProfileSyncService.ts` | Check of the SlicyWeb profile repository: at most once every 24 hours unless forced, one check at a time; new index.json kept in the cache, then the printers loaded again; failure keeps the profiles in use; each check saved; a cache lost after a successful check is rebuilt at once; profiles older than those of the application (tag vX.Y.Z) are never kept. No Electron or Node.js module: the cache is a ProfileCacheStore |
+| `PrinterSelectionService.ts` | Printers of the window: reads printer:getAll (checked with PrinterSchema), sorted by brand and model, in the printer store; chooses the last printer again (settings, printer.defaultPrinter, when autoloadLastPrinter is true and the printer is still loaded); select() saves the choice (settings:update); add(), update(), remove(): printers of the user (printer:add, printer:update, printer:remove), then the printers are read again and the selected printer follows. Outside Electron: nothing |
 | `ImportService.ts` | Imports the chosen files one after the other; progress and errors in the import store; cancel of an import waiting or in progress (ADR-029) |
 
 ---
@@ -1186,7 +1184,6 @@ No other store keeps a copy of a selection.
 | `FilamentSchema.ts` | Zod schema for runtime validation of filament data |
 | `MaterialSchema.ts` | Zod schema for runtime validation of material data |
 | `PrintPresetSchema.ts` | Zod schema for runtime validation of print preset data |
-| `ProfileRepositorySchema.ts` | Zod schemas of index.json of the profile repository (Profile Repository Index Schema: tag vX.Y.Z, file names, ids, SHA-256; compareTags orders two tags), of cache.json (Cache Schema) and of the last check (RepositorySync Result Schema) |
 | `PrinterSchema.ts` | Zod schemas of a printer (null for an unknown value of motion or thermal) and of a printer profile file (Repository Data Schema envelope) |
 | `ProjectSchema.ts` | Zod schemas for runtime validation of the project (Project Schema) and of the WYPROJ file container (Project File Schema), including Object Reference Rules 3 to 5 (ADR-026) |
 | `RecommendationSchema.ts` | Zod schema for runtime validation of recommendation data |
@@ -1222,7 +1219,6 @@ No other store keeps a copy of a selection.
 | `Optimization.ts` | Types for optimization results (scores, reductions) |
 | `PrintPreset.ts` | Types for print presets (quality, speed and support parameters) |
 | `Printer.ts` | Types for printers (brand, model, systems) |
-| `ProfileSync.ts` | Types of the synchronization of the printer profiles: origin and tag of the profiles in use, date of the last check, ProfileCacheStore contract of the cache |
 | `Project.ts` | Types for projects (metadata, scene, objects, WYPROJ format) |
 | `Recommendation.ts` | Types for print recommendations (profile, optimization, warnings) |
 | `Scene.ts` | Types for the 3D scene (objects, printer, material, filament, preset) |
@@ -1326,7 +1322,7 @@ No other store keeps a copy of a selection.
 - Manufacturer Profiles
 - Printer Configurations
 
-One file per printer, `<id>.json`: a Repository Data Schema envelope (type printer, source Official) whose data is the printer (Printer Schema). Read only, loaded by the main process (ADR-032, D4); the offline fallback list of the SlicyWeb profile repository, used when the cache of the repository is missing or invalid. `index.json` (Profile Repository Index Schema, DATA_SCHEMA.md) lists each file with its SHA-256 and the tag of the published version; it is written by `npm run profiles:index -- vX.Y.Z` and sent with the profiles to noam76tr/slicyweb-profiles. `SOURCES.md` gives, for each printer, the pages of the manufacturer and the date of verification; no value is copied from a slicer profile, and a value not published is null.
+One file per printer, `<id>.json`: a Repository Data Schema envelope (type printer, source Official) whose data is the printer (Printer Schema). Read only, loaded by the main process (ADR-032, D4); the offline fallback list of the SlicyWeb profile repository. `SOURCES.md` gives, for each printer, the pages of the manufacturer and the date of verification; no value is copied from a slicer profile, and a value not published is null.
 
 ---
 
@@ -1591,7 +1587,6 @@ One file per printer, `<id>.json`: a Repository Data Schema envelope (type print
 |------|------|
 | `check-locales.mjs` | Checks that the dictionaries of public/locales/ have the same keys as en.json and no empty value (`npm run check:locales`) |
 | `check-ipc-channels.mjs` | Checks that the IPC allow list (src/electron/ipc/IpcChannels.ts) matches the ipcMain.handle registrations (`npm run check:ipc`) |
-| `generate-profile-index.mjs` | Checks each printer profile of data/printers/ (envelope, source Official, file name = id, 1 MB, 20 MB in all) and refuses a tag older than the current one, and writes data/printers/index.json with the tag given (`npm run profiles:index -- vX.Y.Z`) |
 
 ---
 
@@ -1704,17 +1699,15 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 
 | File | Tests |
 |------|-------|
-| `electron/PrinterIPC.test.ts` | printer:getAll (with userPrinterIds and profiles), printer:get (PRN_001), printer:count; invalid payload refused; printer:add, update and remove of a printer of the user; Official printer never changed (PRN_005); default nozzle not in the list, unknown field, same brand and model (PRN_006) refused; printer:refresh (force, failure SYNC_002, invalid payload, SYNC_001 without synchronization) |
+| `electron/PrinterIPC.test.ts` | printer:getAll (with userPrinterIds), printer:get (PRN_001), printer:count; invalid payload refused; printer:add, update and remove of a printer of the user; Official printer never changed (PRN_005); default nozzle not in the list, unknown field, same brand and model (PRN_006) refused |
 | `gui/dialogs/printerForm.test.ts` | Form of the Printer Manager: empty limit = null (never 0), comma as decimal separator, lists of nozzles and materials, required and invalid fields, default nozzle in the list, printer unchanged through the form |
 | `gui/hooks/UndoRedoShortcuts.test.ts` | Keys of undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z, Cmd, AZERTY letter, Hebrew layout (key position), Alt and other keys ignored |
-| `printer_database/PrinterProfiles.test.ts` | The 10 profiles of data/printers/: schema, file name = id, source Official, listed in SOURCES.md, all loaded; index.json lists each profile with its SHA-256 |
-| `repositories/PrinterRepositorySync.test.ts` | Download of the profile repository with a fake network: index.json on main then files at the tag, allowed address, no redirection; SHA-256 differs, invalid index or tag, profile not Official, file or download too large, tag not vX.Y.Z (SYNC_004), order of the tags; missing tag and network error (SYNC_002); no answer (SYNC_003) |
+| `printer_database/PrinterProfiles.test.ts` | The 10 profiles of data/printers/: schema, file name = id, source Official, listed in SOURCES.md, all loaded |
 | `printer_database/PrinterLoading.test.ts` | PrinterSchema (null kept, unknown field refused, no crash); profile files of both folders; missing folder; other files and subfolders ignored; damaged, invalid, too large, wrong source and duplicate files refused with PRN_002; links not followed; no path in the results |
 | `printer_database/UserPrinters.test.ts` | Printers of the user: file written in the user folder (envelope Local Custom), id chosen by the main process, loaded again at the next start; update and remove of the file; Official printer never changed (PRN_005), unknown id (PRN_001), same brand and model (PRN_006), file not written (PRN_007, no path); only a file name accepted, size limit |
 | `renderer/ObjectRenderer.test.ts` | Selection rectangle: objects touched (not only inside), turned objects, hidden objects |
 | `services/GroupTransform.test.ts` | Several objects: Ctrl+click and Ctrl+A selection; group moved, turned and scaled around its center, objects on the plate; one undo per change of the group |
-| `services/PrinterSelection.test.ts` | Printers of the window: sorted by brand and model, last printer chosen again, autoload off, last printer no longer loaded ignored, invalid response refused, nothing outside Electron; choice saved, autoloadLastPrinter kept, "No printer", unknown printer ignored; printers of the user added, updated (selected printer follows) and removed (selection and saved choice cleared), refused change; profiles checked in the background at start without a message (not when autoCheckProfiles is off), setting saved with the other printer settings, updated profiles read again (printer no longer listed cleared), result of Refresh Profiles, failure in the background silent |
-| `services/ProfileSync.test.ts` | Check of the profile repository: new index.json written then printers reloaded, once a day unless forced (also after a restart), damaged cache rebuilt, profiles older than the application never kept, failed download keeps the profiles (SYNC_002), cache not written (SYNC_001), one check at a time; cache used only when complete and unchanged, file name with a folder refused, tag of data/printers/index.json |
+| `services/PrinterSelection.test.ts` | Printers of the window: sorted by brand and model, last printer chosen again, autoload off, last printer no longer loaded ignored, invalid response refused, nothing outside Electron; choice saved, autoloadLastPrinter kept, "No printer", unknown printer ignored; printers of the user added, updated (selected printer follows) and removed (selection and saved choice cleared), refused change |
 | `services/UndoRedo.test.ts` | Undo and redo: one action per change and per gesture, redo cleared by a new action, 50 actions at most, object selected, object removed, no action when a field is left after an undo |
 | `services/TransformService.test.ts` | Transform changes: object always on the plate, scale with and without the lock, size in mm, Center On Bed, Reset actions, refused values |
 | `storage/SettingsStorage.test.ts` | settings.json without printer: language kept, default printer; invalid field of printer; missing or damaged file |
@@ -1768,7 +1761,7 @@ Run with Playwright (`npm run test:e2e`: builds the application, then starts it 
 | `fixtures.ts` | Starts the built application (dist/electron/main.js) in a new user data folder; writes the test files (STL cube); imports with the Import button |
 | `app.spec.ts` | Main window without console error, 9 menus, toolbar, no Node.js in the window; language changed and kept after a restart; Hebrew from right to left |
 | `import.spec.ts` | STL import centered and standing on the plate; several files, same names numbered; 3MF import; unsupported and corrupted files refused with their message, error closed with its Close button |
-| `printer.spec.ts` | The 10 printers of data/printers/ and the printer of the user served by printer:getAll; printer:get, damaged file refused without error in the window, PRN_001; settings.json without printer keeps the language; Printer section: Bambu Lab X1 Carbon chosen, limits ("Not published"), plate "256 × 256 mm" in the viewport, status bar, Printer > Select Printer gives the focus to the selector, printer chosen again at the next start, "No printer" saved; Printer Manager: required fields, printer entered and saved in printers/, listed in "My printers", plate, kept at the next start, deleted after a confirmation; profiles: line "Profiles v1.0.0", Printer > Refresh Profiles shows the result, printers still available, setting "Check for profile updates automatically" checked by default and saved |
+| `printer.spec.ts` | The 10 printers of data/printers/ and the printer of the user served by printer:getAll; printer:get, damaged file refused without error in the window, PRN_001; settings.json without printer keeps the language; Printer section: Bambu Lab X1 Carbon chosen, limits ("Not published"), plate "256 × 256 mm" in the viewport, status bar, Printer > Select Printer gives the focus to the selector, printer chosen again at the next start, "No printer" saved; Printer Manager: required fields, printer entered and saved in printers/, listed in "My printers", plate, kept at the next start, deleted after a confirmation |
 | `transform.spec.ts` | Fields of the Transform section; undo and redo (toolbar, Ctrl+Z and Ctrl+Y in a field, no extra action); modes G, R, S, Escape; Ctrl+A, Shift+click, selection rectangle from the top corner (under the import messages) and the bottom corner, group moved |
 
 ---

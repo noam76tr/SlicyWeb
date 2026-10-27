@@ -1305,9 +1305,6 @@ Details (Phase 7; DATA_SCHEMA.md 3.5.0, Printer Schema):
 - Build Volume: X × Y × Z in mm; Nozzle: the default nozzle, then the list of the nozzles of the printer.
 - Printer Limits: max print speed, max travel speed, max acceleration, max jerk, max nozzle temperature, max bed temperature, max chamber temperature. A value not published by the manufacturer (null) is shown as "Not published", never as 0.
 - No printer selected: "No printer selected" under the selector.
-- Profiles (Phase 7 lot 62): a discreet line under the selector gives the Official profiles in use: "Profiles v1.0.0 (SlicyWeb repository)" when they come from the profile repository, "Profiles v1.0.0 of the application" (or "Profiles of the application" without a tag) for the copy shipped with the application.
-- Printer > Refresh Profiles checks the repository at once and shows the result after this line (role status): "Checking the profiles…", then "Profiles up to date.", "Profiles updated (v1.0.1).", "Repository unreachable, current profiles kept." or "Profiles of the repository refused (invalid file), current profiles kept." The check at start (at most once a day) shows a message only when the profiles were updated. Updated profiles replace the list at once, without restart; a selected printer no longer listed is no longer selected.
-- Under the profiles line, a check box "Check for profile updates automatically" (printer.autoCheckProfiles, checked by default; USER_SETTINGS_SPEC.md). Unchecked, the check at start is not made; Printer > Refresh Profiles still works. It moves to the Preferences window when that window exists.
 
 
 

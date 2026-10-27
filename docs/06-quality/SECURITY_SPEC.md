@@ -198,47 +198,6 @@ A failed write or delete changes nothing (PRN_007); the error gives no path
 
 ---
 
-# Printer Profile Download
-
-The Official printer profiles are updated from the SlicyWeb profile repository (DECISIONS.md, ADR-032, D5; Phase 7 lot 62):
-
-```text
-Download by the main process only; the renderer makes no network request (connect-src 'self' unchanged)
-Only HTTPS addresses under https://raw.githubusercontent.com/noam76tr/slicyweb-profiles/
-No redirection followed, no cookie or credential sent, no GitHub token in the application
-index.json read on the main branch; the profile files read at the tag named by the index
-Tag vX.Y.Z and file names checked before use: no "/", no "..", file names ending with .json
-At most 1 MB per file (index.json included), 20 MB for the whole download, 500 profiles,
-15 seconds per file (SYNC_003)
-Each file: SHA-256 equal to the one of the index, UTF-8, Repository Data Schema envelope,
-PrinterSchema, source Official, id equal to the id of the index
-All or nothing: one file refused refuses the whole download (SYNC_004)
-A failed download or a cache not written keeps the profiles in use (offline use)
-Errors name the repository and the file of the repository, never a local path
-At most one automatic check every 24 hours, only when the setting printer.autoCheckProfiles is true;
-Printer > Refresh Profiles checks at once
-Version rule: profiles older than the copy of the application (tag vX.Y.Z) are never kept or used
-Printers entered by the user are never changed
-```
-
-The downloaded profiles are kept in cache/printers/ of the user data folder (DATA_SCHEMA.md, Cache Schema):
-
-```text
-Profile files and index.json written in a temporary folder, then the folder replaces the old one
-cache.json written to a temporary file, then renamed
-Validated again at each start: cache.json, SHA-256 of index.json, Profile Repository Index Schema,
-each listed file present, a regular file of 1 MB at most, with its SHA-256; no other profile file
-A cache that fails is not used (CACHE_001 in the log): data/printers/ is loaded instead,
-and the next check rebuilds the cache
-The profile files of the cache are then validated as the other profile files (PrinterSchema)
-```
-
-The SHA-256 of index.json checks the integrity of the files, not their author: anyone who can write to the repository can publish profiles. The owner of the repository uses two-factor authentication on GitHub. A signature of index.json (private key kept by the owner, public key in the application) is planned before the public release (KI-025).
-
-The logic of the download and of the check (src/repositories/PrinterRepositorySync.ts, src/services/ProfileSyncService.ts) uses no Electron and no Node.js module (KI-024, option B): fetch and Web Crypto only, and the cache through the ProfileCacheStore contract, so that a future web version keeps the same rules.
-
----
-
 # Zero Trust Rule
 
 All external data is considered untrusted.

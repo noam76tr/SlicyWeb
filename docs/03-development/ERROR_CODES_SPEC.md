@@ -712,10 +712,6 @@ Cache Corrupted
 
 
 
-Printer profiles (Phase 7 lot 62): the cache of the profile repository (cache/printers/ of the user data folder) exists but fails its validation at start (cache.json, SHA-256, index.json or a profile file). It is not used: the profiles of the application (data/printers/) are loaded, the code is written to the log of the main process, and the next check rebuilds the cache.
-
-
-
 ---
 
 
@@ -795,22 +791,14 @@ Invalid Repository Data
 ## SYNC_001
 Repository Synchronization Failed
 
-Printer profiles (Phase 7 lot 62): the download is valid but the cache cannot be written, or no synchronization is available; the profiles in use are kept.
-
 ## SYNC_002
 Remote Source Unavailable
-
-Printer profiles: network error, or an HTTP status other than 200 for index.json or a profile file (for example a tag not created yet); the profiles in use are kept.
 
 ## SYNC_003
 Remote Source Timeout
 
-Printer profiles: a file of the profile repository does not arrive within 15 seconds; the profiles in use are kept.
-
 ## SYNC_004
 Remote Data Validation Failed
-
-Printer profiles: index.json or a profile file is refused (address, size of a file or of the whole download, tag, SHA-256, UTF-8, JSON, Profile Repository Index Schema, Printer Schema, source or id); the whole download is refused and the profiles in use are kept.
 
 ## SYNC_005
 Remote Data Conflict

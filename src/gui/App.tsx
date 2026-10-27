@@ -22,6 +22,8 @@
  *
  * At start, the printers loaded by the main process are read, and the
  * last printer is selected again (PrinterSelectionService, Phase 7).
+ * The Printer Manager (PrinterManagerDialog) adds, changes and removes
+ * the printers entered by the user (Phase 7 lot 61).
  *
  * Based on:
  * - ARCHITECTURE.md
@@ -37,6 +39,7 @@ import { TransformService } from "../services/TransformService";
 import { usePrinterStore } from "../state/printerStore";
 
 import MainLayout from "./MainLayout";
+import PrinterManagerDialog from "./dialogs/PrinterManagerDialog";
 import { useTranslation } from "./hooks/useTranslation";
 import { useSelectAllShortcut } from "./hooks/useSelectAllShortcut";
 import { useUndoRedoShortcuts } from "./hooks/useUndoRedoShortcuts";
@@ -105,6 +108,7 @@ export default function App(): JSX.Element {
         rightPanel={<RightSidebar />}
         statusBar={<StatusBar />}
       />
+      <PrinterManagerDialog />
     </DirectionProvider>
   );
 }
