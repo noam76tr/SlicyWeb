@@ -176,6 +176,7 @@
   "printer.profiles.updated": "Profils mis à jour ({tag}).",
   "printer.profiles.upToDate": "Profils à jour.",
   "printer.profiles.unreachable": "Dépôt injoignable, profils actuels gardés.",
+  "printer.profiles.notPublished": "Aucune version des profils publiée, profils actuels gardés.",
   "printer.profiles.refused": "Profils du dépôt refusés (fichier invalide), profils actuels gardés.",
   "printer.profiles.autoCheck": "Vérifier automatiquement les mises à jour des profils",
   "printerManager.description": "Vos propres imprimantes. Les imprimantes de SlicyWeb ne se modifient pas, mais vous pouvez les copier.",

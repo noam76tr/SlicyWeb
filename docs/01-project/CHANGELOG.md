@@ -2258,7 +2258,7 @@ Release Type:
 Feature
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-27
@@ -2287,6 +2287,40 @@ Date:
 - USER_SETTINGS_SPEC.md (Printer Settings, Backward Compatibility)
 - KNOWN ISSUES: KI-025 added (signature of index.json)
 - KI-024 resolved (decision of Noam, option B: the desktop application stays the target; the logic of the download and of the validation of the profiles uses no Electron and no Node.js module, for a future web version)
+
+## Validation Result
+
+- Windows 11 (2026-10-27): lots 61 and 62 on GitHub (3fa56a2, identical to the lots); npm ci, npm run check:locales (317 keys), npm run check:ipc (23 channels), npm run typecheck and npm run lint report no errors, npm test: 133 tests passed, 1 skipped (link test); npm run test:e2e: 22 tests passed. index.json sent to noam76tr/slicyweb-profiles and release v1.0.0 created (external review: the tag points to main, the 10 SHA-256 match). Manual checks: Refresh Profiles gives "Profiles updated (v1.0.0)" and "Profiles v1.0.0 (SlicyWeb repository)", kept after a restart; without network "Repository unreachable, current profiles kept"; setting "Check for profile updates automatically" and Hebrew correct (Noam). Defect reported: before the release, the message "Repository unreachable" was shown while index.json was missing (fixed in 0.1.65)
+
+---
+
+# VERSION 0.1.65
+
+Release Type:
+Fix and Security
+
+Status:
+In Progress
+
+Date:
+2026-10-27
+
+## Fixed
+
+- Refresh Profiles: a repository that answers HTTP 404 for index.json or for a file at the tag (no version published yet, or tag not created yet) is no longer shown as "Repository unreachable": printer:refresh answers the status notPublished (success, no error) and the Printer section shows "No published version of the profiles yet, current profiles kept."; network errors, timeouts and other HTTP errors stay "Repository unreachable" (SYNC_002, SYNC_003)
+
+## Security
+
+- Electron 44.9.3 (was 44.7.1): GHSA-jr5w-w6x2-84p9, compromised eMudhra intermediate certificates (Electron 44.0.0 to 44.9.0)
+- npm audit fix (without --force): shadcn 4.23.0 (development dependency, command line tool, not shipped with the application) no longer depends on express and body-parser (GHSA-27r3-jxmh-p828); fast-uri 3.1.9 (through ajv, used by shadcn; GHSA-w74x-v6f9-j3xg, GHSA-xhq7-xmqj-769h, GHSA-wjr9-j795-jxcr, GHSA-333x-w4r6-6crp); undici 7.30.1 (through shadcn and @electron/get, used at install time to download Electron; GHSA-4qv8-2p9j-2685, GHSA-f72v-6w45-q472, GHSA-xjj6-f33q-929c). None of these three packages is part of the built application
+- npm audit now reports only zod (KI-026)
+
+## Changed
+
+- API_SPEC.md (printer:refresh, status notPublished), GUI_SPEC.md (Printer Section), ERROR_CODES_SPEC.md (SYNC_002), PRINTER_PROFILE_SPEC.md, DECISIONS.md (ADR-025, Electron 44.9.3), DIRECTORY_PURPOSES.md, PASSATION.md
+- Translations (en, fr, he): 1 key, printer.profiles.notPublished (318 keys)
+- Tests: HTTP 404 and 503 in PrinterRepositorySync.test.ts, notPublished in ProfileSync.test.ts and PrinterSelection.test.ts, message accepted in tests/e2e/printer.spec.ts (135 unit tests in total, 22 end-to-end tests)
+- KNOWN ISSUES: KI-013 resolved (npm audit no longer reports braces); KI-026 added (zod 3)
 
 ---
 
@@ -3151,22 +3185,6 @@ Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 
 ---
 
 
-Identifier: KI-013
-
-Since: 0.1.29
-
-Affected Module: package.json (development dependencies: shadcn and its dependency chain)
-
-Issue: npm audit reports 7 high severity vulnerabilities from the braces package (GHSA-vfj7-8cjw-p6xm, braces through 3.0.3: deeply nested brace patterns exhaust the call stack, denial of service). No patched version of braces exists. The only fix offered by npm (npm audit fix --force) installs shadcn 1.0.0, an obsolete major version, and is rejected. braces is used by development tools to expand file patterns; SlicyWeb never passes user data to it, and the shadcn package is a development dependency (0.1.30), not shipped with the application.
-
-Resolve Before: Phase 16 - Production Validation and Release (technical plan)
-
-Planned Resolution: Update shadcn (or the package in the chain) when a version depending on a patched braces is published; check with npm audit and npm audit --omit=dev.
-
-
----
-
-
 Identifier: KI-015
 
 Since: 0.1.35
@@ -3258,6 +3276,22 @@ Issue: The SHA-256 of index.json checks the integrity of the profile files, not 
 Resolve Before: Phase 16 - Production Release
 
 Planned Resolution: Signature of index.json: a private key kept by Noam signs index.json when the profiles are published; the public key is in the application, which refuses an index without a valid signature (SYNC_004). Algorithm and file format to decide (ADR and DATA_SCHEMA.md).
+
+
+---
+
+
+Identifier: KI-026
+
+Since: 0.1.65
+
+Affected Module: package.json (zod 3.25, used by the application for every runtime validation; also by shadcn and eslint-plugin-react-hooks)
+
+Issue: npm audit reports GHSA-mrhx-c7xc-m3w5 (high): zod before 4.6.6 can exhaust memory while validating oversized constrained collections. The only fix is zod 4 (npm audit fix --force installs zod 4.6.7), a major version with breaking changes for the schemas of the application (ADR-025: Zod 3.25.x). In the application, the data validated by zod is bounded before validation: profile files and index.json at 1 MB each (20 MB for a download), 500 profiles, imported files read by size-limited readers, IPC payloads from the window of the application only.
+
+Resolve Before: Phase 16 - Production Validation and Release
+
+Planned Resolution: Migrate the schemas to zod 4 in a dedicated lot (ADR-025 amendment, all tests), then check npm audit. Never run npm audit fix --force: it changes major versions without review.
 
 
 ---

@@ -9,7 +9,9 @@
  *   (PrinterRepositorySync), keeps them in the cache when index.json
  *   changed, then reloads the printers;
  * - a failed download or a cache not written changes nothing: the
- *   profiles in use are kept (offline use);
+ *   profiles in use are kept (offline use); a repository that answers
+ *   HTTP 404 (index.json or tag not published yet) is not a failure:
+ *   status notPublished, the profiles in use are kept;
  * - each check is saved as the last check (RepositorySync Result
  *   Schema), success or failure;
  * - a cache lost or damaged after a successful check is rebuilt by the
@@ -53,7 +55,10 @@ import type {
 export const CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 export type ProfileCheck =
-  | { status: "skipped" | "upToDate" | "updated"; profiles: ProfilesStatus }
+  | {
+      status: "skipped" | "upToDate" | "updated" | "notPublished";
+      profiles: ProfilesStatus;
+    }
   | {
       status: "failed";
       profiles: ProfilesStatus;
@@ -159,6 +164,15 @@ export class ProfileSyncService {
     }
 
     const download = await this.sync.download();
+
+    // Repository reached, but no version published yet (HTTP 404):
+    // nothing to update, the profiles in use are kept
+    if (!download.ok && download.notPublished) {
+      await this.saveCheck(now, this.loaded.tag ?? "", [
+        `${syncError(download.code)}: ${download.reason}`,
+      ]);
+      return { status: "notPublished", profiles: this.status() };
+    }
 
     if (!download.ok) {
       return this.failed(now, download.code, download.reason);

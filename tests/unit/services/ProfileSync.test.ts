@@ -217,6 +217,26 @@ describe("Profile sync service", () => {
     });
   });
 
+  it("reports a repository without a published version", async () => {
+    const { cache, service } = setup({
+      ok: false,
+      code: "SYNC_002",
+      reason: "main/index.json: HTTP 404",
+      notPublished: true,
+    });
+    await service.start();
+
+    expect(await service.check(true)).toEqual({
+      status: "notPublished",
+      profiles: {
+        origin: "application",
+        tag: "v1.0.0",
+        checkedAt: START.toISOString(),
+      },
+    });
+    expect(cache.exists()).toBe(false);
+  });
+
   it("reports SYNC_001 when the cache cannot be written", async () => {
     const { cache, reload, service } = setup(download());
     vi.spyOn(cache, "write").mockRejectedValue(new Error("EACCES"));

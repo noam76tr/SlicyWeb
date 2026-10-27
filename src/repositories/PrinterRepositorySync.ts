@@ -24,7 +24,9 @@
  *   maxDownloadSize (20 MB) for the whole download;
  * - no authentication, no token.
  *
- * Errors: SYNC_002 Remote Source Unavailable (network, HTTP status),
+ * Errors: SYNC_002 Remote Source Unavailable (network, HTTP status;
+ * notPublished when the answer is HTTP 404: index.json or the tag does
+ * not exist yet, the repository itself is reachable),
  * SYNC_003 Remote Source Timeout, SYNC_004 Remote Data Validation Failed
  * (schema, size, SHA-256). The reason names a file of the repository,
  * never a local path.
@@ -85,7 +87,17 @@ export type ProfileDownload =
       indexText: string;
       profiles: DownloadedProfile[];
     }
-  | { ok: false; code: ProfileSyncErrorCode; reason: string };
+  | {
+      ok: false;
+      code: ProfileSyncErrorCode;
+      reason: string;
+      /**
+       * True when the repository answered "not found" (HTTP 404) for
+       * index.json or a profile at the tag: no version is published yet
+       * (or the tag is not created yet). The repository is reachable.
+       */
+      notPublished?: boolean;
+    };
 
 export interface PrinterRepositorySyncOptions {
   fetch?: typeof fetch;
@@ -99,6 +111,7 @@ class SyncError extends Error {
   public constructor(
     public readonly code: ProfileSyncErrorCode,
     reason: string,
+    public readonly notPublished = false,
   ) {
     super(reason);
   }
@@ -176,7 +189,14 @@ export class PrinterRepositorySync {
       return { ok: true, index, indexText, profiles };
     } catch (error) {
       if (error instanceof SyncError) {
-        return { ok: false, code: error.code, reason: error.message };
+        return error.notPublished
+          ? {
+              ok: false,
+              code: error.code,
+              reason: error.message,
+              notPublished: true,
+            }
+          : { ok: false, code: error.code, reason: error.message };
       }
 
       return {
@@ -224,7 +244,11 @@ export class PrinterRepositorySync {
       }
 
       if (!response.ok) {
-        throw new SyncError("SYNC_002", `${path}: HTTP ${response.status}`);
+        throw new SyncError(
+          "SYNC_002",
+          `${path}: HTTP ${response.status}`,
+          response.status === 404,
+        );
       }
 
       const length = Number(response.headers.get("content-length"));

@@ -10,7 +10,8 @@
  * - all or nothing: a wrong SHA-256, an invalid index or profile, a file
  *   too large, a download over 20 MB in all refuse the whole download
  *   (SYNC_004);
- * - HTTP error or network error: SYNC_002; no answer: SYNC_003.
+ * - HTTP error or network error: SYNC_002, with notPublished for HTTP
+ *   404 (index.json or tag not published yet); no answer: SYNC_003.
  *
  * Based on:
  * - DATA_SCHEMA.md (Profile Repository Index Schema)
@@ -218,6 +219,23 @@ describe("Printer repository sync", () => {
       ok: false,
       code: "SYNC_002",
       reason: "v9.9.9/bambu_a1.json: HTTP 404",
+      notPublished: true,
+    });
+
+    expect(
+      await new PrinterRepositorySync({
+        fetch: fakeFetch(new Map()),
+      }).download(),
+    ).toMatchObject({ code: "SYNC_002", notPublished: true });
+
+    expect(
+      await new PrinterRepositorySync({
+        fetch: () => Promise.resolve(new Response("", { status: 503 })),
+      }).download(),
+    ).toEqual({
+      ok: false,
+      code: "SYNC_002",
+      reason: "main/index.json: HTTP 503",
     });
 
     expect(

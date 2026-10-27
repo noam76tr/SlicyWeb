@@ -338,6 +338,7 @@ test("shows the profiles in use and refreshes them", async ({ launch }) => {
     tag("printer.profiles.updated"),
     en["printer.profiles.upToDate"],
     en["printer.profiles.unreachable"],
+    en["printer.profiles.notPublished"],
     en["printer.profiles.refused"],
   ]).toContain(await status.textContent());
 

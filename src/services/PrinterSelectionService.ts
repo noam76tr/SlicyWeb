@@ -70,7 +70,13 @@ const RefreshResponseSchema = z.object({
   success: z.boolean(),
   data: z
     .object({
-      status: z.enum(["skipped", "upToDate", "updated", "failed"]),
+      status: z.enum([
+        "skipped",
+        "upToDate",
+        "updated",
+        "notPublished",
+        "failed",
+      ]),
       profiles: ProfilesStatusSchema,
     })
     .partial()
@@ -211,6 +217,9 @@ function refreshMessage(
   }
   if (status === "upToDate" || status === "skipped") {
     return { key: "printer.profiles.upToDate", tag };
+  }
+  if (status === "notPublished") {
+    return { key: "printer.profiles.notPublished", tag };
   }
   return {
     key: errors.some((error) => error.startsWith("SYNC_004"))

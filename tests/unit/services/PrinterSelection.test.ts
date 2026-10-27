@@ -438,6 +438,16 @@ describe("PrinterSelectionService.refresh", () => {
     expect(usePrinterStore.getState().profilesMessage?.key).toBe(
       "printer.profiles.unreachable",
     );
+
+    refreshResponse = {
+      success: true,
+      data: { status: "notPublished", profiles: fromRepository },
+      errors: [],
+    };
+    await PrinterSelectionService.refresh(true);
+    expect(usePrinterStore.getState().profilesMessage?.key).toBe(
+      "printer.profiles.notPublished",
+    );
   });
 
   it("does not check at start when the setting is off", async () => {

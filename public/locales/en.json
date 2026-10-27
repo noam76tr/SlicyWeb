@@ -176,6 +176,7 @@
   "printer.profiles.updated": "Profiles updated ({tag}).",
   "printer.profiles.upToDate": "Profiles up to date.",
   "printer.profiles.unreachable": "Repository unreachable, current profiles kept.",
+  "printer.profiles.notPublished": "No published version of the profiles yet, current profiles kept.",
   "printer.profiles.refused": "Profiles of the repository refused (invalid file), current profiles kept.",
   "printer.profiles.autoCheck": "Check for profile updates automatically",
   "printerManager.description": "Your own printers. The printers of SlicyWeb cannot be changed, but you can copy them.",

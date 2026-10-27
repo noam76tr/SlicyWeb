@@ -800,7 +800,7 @@ Printer profiles (Phase 7 lot 62): the download is valid but the cache cannot be
 ## SYNC_002
 Remote Source Unavailable
 
-Printer profiles: network error, or an HTTP status other than 200 for index.json or a profile file (for example a tag not created yet); the profiles in use are kept.
+Printer profiles: network error, or an HTTP status other than 200 for index.json or a profile file; the profiles in use are kept. HTTP 404 (index.json or tag not published yet) is written to the last check with this code, but it is not shown as a failure: the repository is reachable, and Refresh Profiles says that no version is published yet.
 
 ## SYNC_003
 Remote Source Timeout

@@ -176,6 +176,7 @@
   "printer.profiles.updated": "הפרופילים עודכנו ({tag}).",
   "printer.profiles.upToDate": "הפרופילים מעודכנים.",
   "printer.profiles.unreachable": "המאגר אינו זמין, הפרופילים הנוכחיים נשמרו.",
+  "printer.profiles.notPublished": "עדיין לא פורסמה גרסה של הפרופילים, הפרופילים הנוכחיים נשמרו.",
   "printer.profiles.refused": "פרופילי המאגר נדחו (קובץ לא תקין), הפרופילים הנוכחיים נשמרו.",
   "printer.profiles.autoCheck": "בדוק אוטומטית עדכונים לפרופילים",
   "printerManager.description": "המדפסות שלך. לא ניתן לשנות את המדפסות של SlicyWeb, אבל אפשר להעתיק אותן.",

@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-27. Lot 60 sur `main` (commit 6ea31df), vérifié identique. Lot 61 validé par Noam (contrôles réussis), mais pas encore visible sur `main` : à renvoyer. Lot 62 : livré, à valider. Dernière entrée du CHANGELOG : 0.1.64 (lot 62).
+Date : 2026-10-27. Lots 61 et 62 sur `main` (commit 3fa56a2), vérifiés identiques et validés par Noam ; version v1.0.0 des profils publiée sur `slicyweb-profiles`. Lot 63 : livré, à valider. Dernière entrée du CHANGELOG : 0.1.65 (lot 63).
 
 ---
 
@@ -38,7 +38,7 @@ Date : 2026-10-27. Lot 60 sur `main` (commit 6ea31df), vérifié identique. Lot 
   npm start
   ```
 
-- **Ne jamais lancer `npm audit fix --force`** (KI-013).
+- **Ne jamais lancer `npm audit fix --force`** : il change des versions majeures sans revue (KI-026, zod 4). `npm audit fix` sans `--force` est permis, dans un lot.
 - **Pas de `git status` chez Noam :** son dossier local n'est pas un dépôt git. Ne jamais le lui demander. Pour connaître les fichiers créés ou modifiés par un outil (par exemple `npx shadcn add …`), lui donner cette commande PowerShell, à lancer depuis le dossier du projet (remplacer `-30` par le nombre de minutes écoulées) :
 
   ```powershell
@@ -101,7 +101,7 @@ Date : 2026-10-27. Lot 60 sur `main` (commit 6ea31df), vérifié identique. Lot 
 
 ### Outils et versions (package.json)
 
-- Electron 44, Vite 8.3 (`vite.config.mts`, vite-plugin-electron), React 18, TypeScript 6, Zod 3.25, Zustand 5, Three.js 0.186.
+- Electron 44 (44.9.3 depuis le lot 63), Vite 8.3 (`vite.config.mts`, vite-plugin-electron), React 18, TypeScript 6, Zod 3.25, Zustand 5, Three.js 0.186.
 - Tailwind CSS 4, shadcn/ui (Base UI, style base-nova, `rtl: true`), Lucide 1.56, react-resizable-panels 4.14.
 - Polices Inter et Noto Sans Hebrew (Fontsource).
 - fflate 0.8.3 et fast-xml-parser 5.11.2 (lecture des 3MF).
@@ -192,6 +192,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 60 | Phase 7 : section Printer (sélecteur, limites, « Not published »), taille du plateau dans la vue, dernière imprimante retenue, menu Select Printer | 0.1.62 |
 | 61 | Phase 7 : imprimantes saisies par l'utilisateur (`printer:add`, `update`, `remove`), fenêtre Manage Printers, groupe « My printers » ; PRN_005 à PRN_007 | 0.1.63 |
 | 62 | Phase 7 : synchronisation des profils depuis `noam76tr/slicyweb-profiles` (`index.json`, cache, `printer:refresh`, Refresh Profiles) ; DATA_SCHEMA 3.6.0, amendement d'ADR-032 ; KI-024 réglé (B) | 0.1.64 |
+| 63 | « Aucune version publiée » distinct de « Dépôt injoignable » (HTTP 404) ; Electron 44.9.3 et `npm audit fix` ; KI-013 réglé, KI-026 (zod 4) | 0.1.65 |
 
 ---
 
@@ -286,7 +287,9 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 65. **`src/gui/panels/PrinterPanel.tsx` supprimé (lot 60, décision de Noam le 2026-10-27) :** jamais utilisé, texte en dur ; remplacé par la section Printer.
 66. **Imprimantes de l'utilisateur (lot 61, options recommandées de `lot61-imprimantes-utilisateur/LOT61-QUESTIONS.md`, à confirmer par Noam) :** fenêtre « Manage Printers » (menu Printer et bouton « Manage… ») ; tous les champs de PrinterSchema, limite vide = `null`, `supported` = true, `supportedFilaments` vide ; « Copy a printer » depuis n'importe quelle imprimante, Official comprises (copie « Modèle (copy) »), les Official jamais modifiées ni supprimées ; id `user_` + UUID choisi par le processus principal, fichier `<id>.json` dans `<dossier de réglages>/printers/`, écrit par un fichier temporaire puis renommé ; même marque et même modèle refusés (PRN_006) ; groupe « My printers » après « No printer » (`printer:getAll` renvoie `userPrinterIds`) ; suppression avec confirmation, l'imprimante choisie supprimée → « No printer » et choix enregistré effacé ; pas dans Annuler / Rétablir ; codes PRN_005, PRN_006, PRN_007. Confirmé par la validation du lot 61 (Noam, 2026-10-27).
 67. **Synchronisation des profils (lot 62, Q1 à Q6 de `lot62-synchronisation-profils/LOT62-QUESTIONS.md` : option A partout, choisie par Noam le 2026-10-27) :** `index.json` sur `main` donne le tag et le SHA-256 de chaque profil, profils lus à ce tag (amendement d'ADR-032 : plus de tag inscrit dans l'application) ; format « Profile Repository Index Schema » (DATA_SCHEMA 3.6.0) ; vérification au démarrage en arrière-plan au plus une fois par 24 h, et par Printer > Refresh Profiles ; tout ou rien (SYNC_004), adresse autorisée seulement, sans redirection, 15 s, 1 Mo, 500 profils ; cache `<dossier de réglages>/cache/printers/` validé à chaque démarrage, qui remplace `data/printers/` (un profil retiré du dépôt disparaît de la liste) ; ligne « Profiles v1.0.0 (SlicyWeb repository) » ou « … of the application » sous le sélecteur, message après Refresh Profiles ; canal `printer:refresh` (23 canaux). Ajouts de Noam : tag `vX.Y.Z`, et entre le cache et `data/printers/` la liste la plus récente gagne (un cache plus ancien que la copie de l'application n'est pas utilisé) ; 20 Mo au plus pour tout un téléchargement ; réglage « Check for profile updates automatically » (`printer.autoCheckProfiles`, activé par défaut, case sous la ligne des profils tant qu'il n'y a pas de fenêtre Préférences) ; signature d'`index.json` à faire avant la phase 16 (KI-025) ; Noam active la double authentification sur GitHub.
-68. **Publier une mise à jour des profils (étapes détaillées dans `lot62-synchronisation-profils/LOT62.md`) :** modifier `data/printers/` ; `npm run profiles:index -- vX.Y.Z` (tag plus récent que l'actuel) ; envoyer les profils, `SOURCES.md` et `index.json` sur `main` de `slicyweb-profiles` ; créer la release `vX.Y.Z` (Releases > Draft a new release). Tant que le tag n'existe pas, les applications gardent leurs profils (SYNC_002).
+68. **Publier une mise à jour des profils (étapes détaillées dans `lot62-synchronisation-profils/LOT62.md`) :** modifier `data/printers/` ; `npm run profiles:index -- vX.Y.Z` (tag plus récent que l'actuel) ; envoyer les profils, `SOURCES.md` et `index.json` sur `main` de `slicyweb-profiles` ; créer la release `vX.Y.Z` (Releases > Draft a new release). Tant que le tag n'existe pas, les applications gardent leurs profils et Actualiser affiche « aucune version publiée ».
+
+69. **Lot 63 (demande de Noam, 2026-10-27) :** une réponse HTTP 404 du dépôt (`index.json` ou tag absent) donne « Aucune version des profils publiée, profils actuels gardés. » (statut `notPublished`, pas une erreur) ; « Dépôt injoignable » reste pour les erreurs réseau, le délai dépassé et les autres statuts HTTP. Petit lot sécurité : Electron 44.9.3, `npm audit fix` (shadcn 4.23.0, fast-uri, undici ; body-parser n'est plus installé) ; zod 4 en Known Issue (KI-026). La clôture de la phase 7 passe au lot 64.
 
 **Méthode**
 
@@ -299,8 +302,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 1. **Phase 6 : Transform System** : close le 2026-10-21 (lot 53).
    - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49) ; plusieurs objets (lot 50) ; rectangle et Maj+clic (lot 51) ; Ctrl+Z dans un champ (lot 52).
    - Contrôles manuels des lots 49 à 52 : tous réussis (le contrôle 16 du lot 51 a été corrigé au lot 52).
-2. **Tests automatiques avec Playwright** (lots 54, 55, 58, 60, 61 et 62) : 22 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple, imprimantes). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
-3. **Phase 7 : Printer Database** (In Progress, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue (fait) ; 61 imprimantes saisies par l'utilisateur (validé, à renvoyer sur `main`) ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (livré, à valider ; ensuite Noam envoie `data/printers/index.json` sur `slicyweb-profiles` et crée la release `v1.0.0`) ; 63 clôture.
+2. **Tests automatiques avec Playwright** (lots 54, 55, 58, 60, 61, 62 et 63) : 22 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple, imprimantes). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
+3. **Phase 7 : Printer Database** (In Progress, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue (fait) ; 61 imprimantes saisies par l'utilisateur (fait) ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (fait, v1.0.0 publiée) ; 63 « aucune version publiée » et sécurité des dépendances (livré, à valider) ; 64 clôture.
 4. **Phases 8 à 16**, dans l'ordre du plan technique.
 5. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
@@ -308,13 +311,13 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    |---|---|---|
    | KI-007 | Réponse de Generate Recommendation différente du Recommendation Schema | Implémentation de l'API Recommendation |
    | KI-008 | Limites de l'imprimante et du matériau non appliquées au profil recommandé | Phase 14 |
-   | KI-013 | npm audit : 7 alertes « high » (braces, via shadcn) ; ne pas lancer `npm audit fix --force` | Phase 16 |
    | KI-015 | Panneaux inutilisés avec du texte en dur ; `Renderer.ts` inutilisé (`PrinterPanel.tsx` supprimé au lot 60) | Phase qui affiche chaque panneau (8 à 10) |
    | KI-019 | 3MF Bambu à plusieurs plateaux : objets éloignés | Phase 14 |
    | KI-020 | Noms d'objets et métadonnées du 3MF non gardés (aucun champ dans DATA_SCHEMA) | Phase 13 |
    | KI-021 | Objet enfoncé sous le plateau, non permis pour l'instant | Phase 15 |
    | KI-023 | Avis juridique sur les profils d'imprimantes et les licences | Phase 16 |
    | KI-025 | Signature d'`index.json` (clé privée de Noam, clé publique dans l'application) : le SHA-256 vérifie l'intégrité, pas l'auteur | Phase 16 |
+   | KI-026 | npm audit : zod 3 (GHSA-mrhx-c7xc-m3w5), correction seulement en zod 4 (version majeure) ; ne pas lancer `npm audit fix --force` | Phase 16 |
 
 6. **Points signalés, en attente d'une décision de Noam :**
    - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (lié à KI-007).
@@ -328,7 +331,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot62-synchronisation-profils/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 62 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot63-securite-profils/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 63 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

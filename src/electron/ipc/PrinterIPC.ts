@@ -356,6 +356,8 @@ export class PrinterIPC {
 
           if (result.status === "failed") {
             console.warn(`${syncError(result.code)}: ${result.reason}`);
+          } else if (result.status === "notPublished") {
+            console.info("Printer profiles: no version published yet");
           }
 
           const response = this.createResponse(
