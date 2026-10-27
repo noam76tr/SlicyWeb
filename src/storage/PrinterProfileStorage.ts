@@ -3,8 +3,9 @@
  * Printer Profile Storage
  *
  * Reads the printer profile files of a folder: each *.json file directly
- * in the folder (one printer per file). Other files (README, SOURCES.md)
- * and subfolders are ignored. Writes and deletes the files of the
+ * in the folder (one printer per file). Other files (README, SOURCES.md),
+ * index.json (index of the profile repository, not a printer) and
+ * subfolders are ignored. Writes and deletes the files of the
  * printers of the user (Local Custom, Phase 7 lot 61).
  *
  * Rules:
@@ -68,7 +69,10 @@ export class PrinterProfileStorage {
 
     const names = entries
       .filter(
-        (entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".json"),
+        (entry) =>
+          entry.isFile() &&
+          entry.name.toLowerCase().endsWith(".json") &&
+          entry.name.toLowerCase() !== "index.json",
       )
       .map((entry) => entry.name)
       .sort();

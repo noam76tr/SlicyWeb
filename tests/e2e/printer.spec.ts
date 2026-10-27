@@ -14,7 +14,12 @@
  * focus to the selector. Printers of the user (Phase 7 lot 61): Printer >
  * Manage Printers opens the Printer Manager; a printer entered there is
  * saved in printers/ of the user data folder, listed in "My printers",
- * kept at the next start, and deleted after a confirmation.
+ * kept at the next start, and deleted after a confirmation. Profiles
+ * (Phase 7 lot 62): the Printer section shows the origin and the tag of
+ * the Official profiles; Printer > Refresh Profiles shows the result of
+ * the check (repository reached or not: the current profiles are kept
+ * when it fails); the setting "Check for profile updates automatically"
+ * is on by default and saved.
  *
  * The printer of these tests is test data, not a real printer.
  *
@@ -22,7 +27,7 @@
  * - TEST_PLAN.md (End-To-End Testing: Printer Loads, Plate Updates)
  * - GUI_SPEC.md (Printer Section, Printer Selector, Plate Display,
  *   Printer Manager)
- * - API_SPEC.md (PrinterIPC Channels)
+ * - API_SPEC.md (PrinterIPC Channels, printer:refresh)
  * - USER_SETTINGS_SPEC.md (Backward Compatibility)
  */
 
@@ -135,7 +140,11 @@ test("keeps the language of a settings.json without printer", async ({
     theme: "dark",
     language: "fr",
     units: "metric",
-    printer: { defaultPrinter: null, autoloadLastPrinter: true },
+    printer: {
+      defaultPrinter: null,
+      autoloadLastPrinter: true,
+      autoCheckProfiles: true,
+    },
   });
   expect(errors).toEqual([]);
 });
@@ -190,7 +199,11 @@ test("chooses a printer, shows its plate and keeps it", async ({ launch }) => {
     window.slicyWeb.invoke("settings:get"),
   )) as Response;
   expect(settings.data.settings).toMatchObject({
-    printer: { defaultPrinter: null, autoloadLastPrinter: true },
+    printer: {
+      defaultPrinter: null,
+      autoloadLastPrinter: true,
+      autoCheckProfiles: true,
+    },
   });
   expect(second.errors).toEqual([]);
 });
@@ -295,4 +308,58 @@ test("enters a printer of the user, uses it and deletes it", async ({
   await expect(again.getByLabel(en["printer.selector"])).toHaveValue("");
   await expect(again.getByText(/^Plate:/)).toHaveCount(0);
   expect(second.errors).toEqual([]);
+});
+
+test("shows the profiles in use and refreshes them", async ({ launch }) => {
+  const { window: page, errors, app } = await launch();
+  const tag = (key: string) =>
+    en[key as keyof typeof en].replace("{tag}", "v1.0.0");
+
+  await expect(
+    page
+      .getByText(tag("printer.profiles.applicationTag"))
+      .or(page.getByText(tag("printer.profiles.repository"))),
+  ).toBeVisible();
+
+  await page
+    .getByRole("menubar")
+    .getByRole("menuitem", { name: en["menu.printer"] })
+    .click();
+  await page
+    .getByRole("menuitem", { name: en["printer.refreshProfiles"] })
+    .click();
+
+  // Repository reached or not, the check ends with one of these messages
+  const status = page.getByRole("status");
+  await expect(status).not.toHaveText(en["printer.profiles.checking"], {
+    timeout: 40_000,
+  });
+  expect([
+    tag("printer.profiles.updated"),
+    en["printer.profiles.upToDate"],
+    en["printer.profiles.unreachable"],
+    en["printer.profiles.refused"],
+  ]).toContain(await status.textContent());
+
+  // The printers stay available whatever the result
+  const selector = page.getByLabel(en["printer.selector"]);
+  await selector.selectOption({ label: "X1 Carbon" });
+  await expect(page.locator("footer")).toContainText("Bambu Lab X1 Carbon");
+
+  // The setting "Check for profile updates automatically", on by default
+  const autoCheck = page.getByLabel(en["printer.profiles.autoCheck"]);
+  await expect(autoCheck).toBeChecked();
+  await autoCheck.uncheck();
+  await expect
+    .poll(async () => {
+      const settings = (await page.evaluate(() =>
+        window.slicyWeb.invoke("settings:get"),
+      )) as Response;
+      return settings.data.settings;
+    })
+    .toMatchObject({
+      printer: { defaultPrinter: "bambu_x1c", autoCheckProfiles: false },
+    });
+  expect(errors).toEqual([]);
+  await app.close();
 });

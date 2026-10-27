@@ -10,7 +10,12 @@
  * the user (Phase 7 lot 61): add, update and remove read the printers
  * again; the selected printer follows its update, and is cleared (with
  * the saved choice) when it is removed; a refused change returns its
- * errors.
+ * errors. Profiles (Phase 7 lot 62): load() checks the profile
+ * repository in the background, silently; Refresh Profiles shows the
+ * result; updated profiles are read again, and a printer no longer
+ * listed is no longer selected; with the setting autoCheckProfiles off,
+ * load() does not check, and the setting is saved with the other
+ * printer settings.
  *
  * The bridge window.slicyWeb is replaced by a fake one: the tests run in
  * Node.js, without Electron.
@@ -65,6 +70,13 @@ let printers: unknown[];
 let userPrinterIds: string[];
 let preferences: PrinterPreferences;
 let invoke: ReturnType<typeof vi.fn>;
+let refreshResponse: unknown;
+
+const fromRepository = {
+  origin: "repository",
+  tag: "v1.0.1",
+  checkedAt: "2026-10-27T08:00:00.000Z",
+};
 
 function settingsResponse(): unknown {
   return {
@@ -84,7 +96,19 @@ function settingsResponse(): unknown {
 beforeEach(() => {
   printers = [zeta, alphaY, alphaX];
   userPrinterIds = [];
-  preferences = { defaultPrinter: null, autoloadLastPrinter: true };
+  refreshResponse = {
+    success: true,
+    data: {
+      status: "skipped",
+      profiles: { origin: "application", tag: "v1.0.0", checkedAt: null },
+    },
+    errors: [],
+  };
+  preferences = {
+    defaultPrinter: null,
+    autoloadLastPrinter: true,
+    autoCheckProfiles: true,
+  };
   invoke = vi.fn((channel: string, payload?: unknown) => {
     switch (channel) {
       case "printer:getAll":
@@ -127,6 +151,8 @@ beforeEach(() => {
           errors: [],
         });
       }
+      case "printer:refresh":
+        return Promise.resolve(refreshResponse);
       case "settings:get":
         return Promise.resolve(settingsResponse());
       case "settings:update":
@@ -141,6 +167,9 @@ beforeEach(() => {
     printers: [],
     userPrinterIds: [],
     selectedPrinter: null,
+    profiles: null,
+    profilesMessage: null,
+    autoCheckProfiles: true,
   });
 });
 
@@ -163,7 +192,11 @@ describe("PrinterSelectionService.load", () => {
   });
 
   it("selects the last printer again", async () => {
-    preferences = { defaultPrinter: "zeta_b", autoloadLastPrinter: true };
+    preferences = {
+      defaultPrinter: "zeta_b",
+      autoloadLastPrinter: true,
+      autoCheckProfiles: true,
+    };
 
     await PrinterSelectionService.load();
 
@@ -171,7 +204,11 @@ describe("PrinterSelectionService.load", () => {
   });
 
   it("does not select the last printer when autoload is off", async () => {
-    preferences = { defaultPrinter: "zeta_b", autoloadLastPrinter: false };
+    preferences = {
+      defaultPrinter: "zeta_b",
+      autoloadLastPrinter: false,
+      autoCheckProfiles: true,
+    };
 
     await PrinterSelectionService.load();
 
@@ -179,7 +216,11 @@ describe("PrinterSelectionService.load", () => {
   });
 
   it("ignores a last printer that is no longer loaded", async () => {
-    preferences = { defaultPrinter: "removed", autoloadLastPrinter: true };
+    preferences = {
+      defaultPrinter: "removed",
+      autoloadLastPrinter: true,
+      autoCheckProfiles: true,
+    };
 
     await PrinterSelectionService.load();
 
@@ -218,19 +259,28 @@ describe("PrinterSelectionService.select", () => {
 
     expect(usePrinterStore.getState().selectedPrinter).toEqual(alphaY);
     expect(invoke).toHaveBeenCalledWith("settings:update", {
-      printer: { defaultPrinter: "alpha_y", autoloadLastPrinter: true },
+      printer: {
+        defaultPrinter: "alpha_y",
+        autoloadLastPrinter: true,
+        autoCheckProfiles: true,
+      },
     });
     expect(preferences.defaultPrinter).toBe("alpha_y");
   });
 
-  it("keeps autoloadLastPrinter as saved", async () => {
-    preferences = { defaultPrinter: null, autoloadLastPrinter: false };
+  it("keeps autoloadLastPrinter and autoCheckProfiles as saved", async () => {
+    preferences = {
+      defaultPrinter: null,
+      autoloadLastPrinter: false,
+      autoCheckProfiles: false,
+    };
 
     await PrinterSelectionService.select("zeta_b");
 
     expect(preferences).toEqual({
       defaultPrinter: "zeta_b",
       autoloadLastPrinter: false,
+      autoCheckProfiles: false,
     });
   });
 
@@ -311,5 +361,131 @@ describe("Printers of the user", () => {
     });
     expect(usePrinterStore.getState().selectedPrinter).toEqual(zeta);
     expect(usePrinterStore.getState().printers).toHaveLength(3);
+  });
+});
+
+describe("PrinterSelectionService.refresh", () => {
+  it("checks in the background at start, without a message", async () => {
+    await PrinterSelectionService.load();
+    await vi.waitFor(() =>
+      expect(invoke).toHaveBeenCalledWith("printer:refresh", { force: false }),
+    );
+
+    expect(usePrinterStore.getState().profiles).toEqual({
+      origin: "application",
+      tag: "v1.0.0",
+      checkedAt: null,
+    });
+    expect(usePrinterStore.getState().profilesMessage).toBeNull();
+  });
+
+  it("reads the updated profiles and drops a printer no longer listed", async () => {
+    preferences = {
+      defaultPrinter: "zeta_b",
+      autoloadLastPrinter: true,
+      autoCheckProfiles: true,
+    };
+    await PrinterSelectionService.load();
+    printers = [alphaX];
+    refreshResponse = {
+      success: true,
+      data: { status: "updated", profiles: fromRepository },
+      errors: [],
+    };
+
+    await PrinterSelectionService.refresh(false);
+
+    const state = usePrinterStore.getState();
+    expect(state.printers).toEqual([alphaX]);
+    expect(state.selectedPrinter).toBeNull();
+    expect(preferences.defaultPrinter).toBeNull();
+    expect(state.profiles).toEqual(fromRepository);
+    expect(state.profilesMessage).toEqual({
+      key: "printer.profiles.updated",
+      tag: "v1.0.1",
+    });
+  });
+
+  it("shows the result of a forced check", async () => {
+    refreshResponse = {
+      success: true,
+      data: { status: "upToDate", profiles: fromRepository },
+      errors: [],
+    };
+    await PrinterSelectionService.refresh(true);
+    expect(usePrinterStore.getState().profilesMessage).toEqual({
+      key: "printer.profiles.upToDate",
+      tag: "v1.0.1",
+    });
+
+    refreshResponse = {
+      success: false,
+      data: { status: "failed", profiles: fromRepository },
+      errors: ["SYNC_004 Remote Data Validation Failed"],
+    };
+    await PrinterSelectionService.refresh(true);
+    expect(usePrinterStore.getState().profilesMessage).toEqual({
+      key: "printer.profiles.refused",
+      tag: "v1.0.1",
+    });
+
+    refreshResponse = {
+      success: false,
+      data: { status: "failed", profiles: fromRepository },
+      errors: ["SYNC_002 Remote Source Unavailable"],
+    };
+    await PrinterSelectionService.refresh(true);
+    expect(usePrinterStore.getState().profilesMessage?.key).toBe(
+      "printer.profiles.unreachable",
+    );
+  });
+
+  it("does not check at start when the setting is off", async () => {
+    preferences = {
+      defaultPrinter: null,
+      autoloadLastPrinter: true,
+      autoCheckProfiles: false,
+    };
+
+    await PrinterSelectionService.load();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(invoke).not.toHaveBeenCalledWith("printer:refresh", {
+      force: false,
+    });
+    expect(usePrinterStore.getState().autoCheckProfiles).toBe(false);
+
+    // Refresh Profiles still checks
+    await PrinterSelectionService.refresh(true);
+    expect(invoke).toHaveBeenCalledWith("printer:refresh", { force: true });
+  });
+
+  it("saves the setting and keeps the other printer settings", async () => {
+    preferences = {
+      defaultPrinter: "zeta_b",
+      autoloadLastPrinter: false,
+      autoCheckProfiles: true,
+    };
+
+    await PrinterSelectionService.setAutoCheckProfiles(false);
+
+    expect(preferences).toEqual({
+      defaultPrinter: "zeta_b",
+      autoloadLastPrinter: false,
+      autoCheckProfiles: false,
+    });
+    expect(usePrinterStore.getState().autoCheckProfiles).toBe(false);
+  });
+
+  it("shows nothing when a check in the background fails", async () => {
+    refreshResponse = {
+      success: false,
+      data: { status: "failed", profiles: fromRepository },
+      errors: ["SYNC_002 Remote Source Unavailable"],
+    };
+
+    await PrinterSelectionService.refresh(false);
+
+    expect(usePrinterStore.getState().profilesMessage).toBeNull();
   });
 });

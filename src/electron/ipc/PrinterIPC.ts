@@ -17,7 +17,7 @@
  * - API_SPEC.md
  * - PRINTER_PROFILE_SPEC.md
  * - DATA_SCHEMA.md (IPC Payload Schema)
- * - DECISIONS.md (ADR-032, D4)
+ * - DECISIONS.md (ADR-032, D4, D5)
  *
  * The printers are loaded by the main process at start (PrinterService,
  * data/printers/ and the printers of the user). printer:getAll,
@@ -30,6 +30,12 @@
  * new printer is chosen by the main process. Official printers are never
  * changed (PRN_005), the same brand and model is refused (PRN_006), a
  * file not written changes nothing (PRN_007).
+ *
+ * Profiles of the SlicyWeb profile repository (Phase 7 lot 62):
+ * printer:getAll gives their origin, tag and last check (profiles);
+ * printer:refresh checks the repository (ProfileSyncService), now when
+ * force is true, otherwise at most once a day. A failed check keeps the
+ * profiles in use (SYNC_001 to SYNC_004).
  */
 
 import { ipcMain } from "electron";
@@ -38,6 +44,11 @@ import { z } from "zod";
 import type { PrinterChangeResult } from "../../printer_database/PrinterManager";
 import { PrinterSchema } from "../../schemas/PrinterSchema";
 import type { PrinterService } from "../../services/PrinterService";
+import {
+  syncError,
+  type ProfileSyncService,
+} from "../../services/ProfileSyncService";
+import type { ProfilesStatus } from "../../types/ProfileSync";
 
 // Zod schemas for IPC payloads
 const IPCResponseSchema = z.object({
@@ -47,6 +58,18 @@ const IPCResponseSchema = z.object({
   data: z.record(z.unknown()).optional(),
   errors: z.array(z.string()).default([]),
 });
+
+const RefreshSchema = z
+  .object({ force: z.boolean().default(false) })
+  .strict()
+  .default({});
+
+/** Status without a profile synchronization (tests) */
+const NO_SYNC: ProfilesStatus = {
+  origin: "application",
+  tag: null,
+  checkedAt: null,
+};
 
 const PrinterIdSchema = z.object({
   printerId: z.string().min(1, "printerId is required"),
@@ -94,6 +117,7 @@ function validationErrors(error: unknown): string[] {
 export class PrinterIPC {
   public constructor(
     private readonly printerService: PrinterService,
+    private readonly profileSync: ProfileSyncService | null = null,
   ) {}
   private createResponse(
     channel: string,
@@ -121,12 +145,13 @@ export class PrinterIPC {
         try {
           const printers = this.printerService.getPrinters();
           const userPrinterIds = this.printerService.getUserPrinterIds();
+          const profiles = this.profileSync?.status() ?? NO_SYNC;
 
           const response = this.createResponse(
             "printer:getAll",
             requestId,
             true,
-            { printers, userPrinterIds },
+            { printers, userPrinterIds, profiles },
           );
 
           return IPCResponseSchema.parse(response);
@@ -294,6 +319,57 @@ export class PrinterIPC {
         } catch (error) {
           const response = this.createResponse(
             "printer:remove",
+            requestId,
+            false,
+            undefined,
+            validationErrors(error),
+          );
+          return IPCResponseSchema.parse(response);
+        }
+      },
+    );
+
+    ipcMain.handle(
+      "printer:refresh",
+      async (
+        _event,
+        requestId: string,
+        payload: unknown,
+      ) => {
+        try {
+          // Validate incoming payload, then check the repository
+          const { force } = RefreshSchema.parse(payload);
+
+          if (!this.profileSync) {
+            return IPCResponseSchema.parse(
+              this.createResponse(
+                "printer:refresh",
+                requestId,
+                false,
+                { status: "failed", profiles: NO_SYNC },
+                [syncError("SYNC_001")],
+              ),
+            );
+          }
+
+          const result = await this.profileSync.check(force);
+
+          if (result.status === "failed") {
+            console.warn(`${syncError(result.code)}: ${result.reason}`);
+          }
+
+          const response = this.createResponse(
+            "printer:refresh",
+            requestId,
+            result.status !== "failed",
+            { status: result.status, profiles: result.profiles },
+            result.status === "failed" ? [syncError(result.code)] : [],
+          );
+
+          return IPCResponseSchema.parse(response);
+        } catch (error) {
+          const response = this.createResponse(
+            "printer:refresh",
             requestId,
             false,
             undefined,

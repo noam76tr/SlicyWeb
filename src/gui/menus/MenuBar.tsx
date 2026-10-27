@@ -22,6 +22,8 @@
  *   closes (otherwise the menu gives the focus back to its title);
  * - Printer > Manage Printers (Phase 7 lot 61): opens the Printer
  *   Manager (PrinterManagerDialog);
+ * - Printer > Refresh Profiles (Phase 7 lot 62): checks the SlicyWeb
+ *   profile repository now (PrinterSelectionService.refresh);
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -38,6 +40,7 @@
 import { Fragment, useRef } from "react";
 
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import { PrinterSelectionService } from "../../services/PrinterSelectionService";
 import { TransformService } from "../../services/TransformService";
 import { useHistoryStore } from "../../state/historyStore";
 import { useObjectStore } from "../../state/objectStore";
@@ -175,7 +178,10 @@ const MENUS: MenuDefinition[] = [
         { key: "printer.manage", action: openPrinterManager },
       ],
       [
-        { key: "printer.refreshProfiles" },
+        {
+          key: "printer.refreshProfiles",
+          action: () => void PrinterSelectionService.refresh(true),
+        },
         { key: "printer.importProfile" },
         { key: "printer.exportProfile" },
       ],
