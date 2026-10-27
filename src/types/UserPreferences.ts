@@ -30,6 +30,12 @@ export interface PrinterPreferences {
   defaultPrinter: string | null;
 
   autoloadLastPrinter: boolean;
+
+  /**
+   * Check the SlicyWeb profile repository at start, at most once a day
+   * (DATA_SCHEMA.md 3.6.0, ADR-032 D5); Refresh Profiles works anyway.
+   */
+  autoCheckProfiles: boolean;
 }
 
 export interface UserPreferences {

@@ -278,7 +278,9 @@ System
 
     "defaultPrinter": null,
 
-    "autoloadLastPrinter": true
+    "autoloadLastPrinter": true,
+
+    "autoCheckProfiles": true
 
   }
 
@@ -289,6 +291,8 @@ System
 
 
 defaultPrinter: id of the last printer selected, or null (none selected yet). With autoloadLastPrinter true, this printer is selected again at startup (Phase 7, ADR-032; DATA_SCHEMA.md, User Preferences Schema).
+
+autoCheckProfiles: "Check for profile updates automatically", true by default (Phase 7 lot 62, DATA_SCHEMA.md 3.6.0). When true, the SlicyWeb profile repository is checked at start, in the background, at most once every 24 hours. When false, it is checked only with Printer > Refresh Profiles. The setting is a check box in the Printer section (GUI_SPEC.md), until a Preferences window exists.
 
 
 
@@ -463,7 +467,7 @@ The language choice is saved at each change and restored at the next start.
 
 Old settings must migrate automatically.
 
-A settings.json without printer (written before DATA_SCHEMA.md 3.5.0) loads without error: theme, language and units are kept, printer takes its default value (defaultPrinter null, autoloadLastPrinter true). An invalid field takes its default value; the other fields are kept.
+A settings.json without printer (written before DATA_SCHEMA.md 3.5.0) loads without error: theme, language and units are kept, printer takes its default value (defaultPrinter null, autoloadLastPrinter true, autoCheckProfiles true). A printer without autoCheckProfiles (written before DATA_SCHEMA.md 3.6.0) keeps its other fields, with autoCheckProfiles true. An invalid field takes its default value; the other fields are kept.
 
 
 

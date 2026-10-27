@@ -232,14 +232,19 @@ Printers (DATA_SCHEMA.md, Printer Schema), loaded at start by the main process (
 
 | Channel | Payload | Response data |
 |---|---|---|
-| `printer:getAll` | none | `{ printers }` |
+| `printer:getAll` | none | `{ printers, userPrinterIds, profiles }`: userPrinterIds = ids of the printers entered by the user (Local Custom); profiles = `{ origin, tag, checkedAt }` of the Official profiles in use: origin `repository` (cache of the SlicyWeb profile repository) or `application` (data/printers/), tag of their index.json (null when unknown), date of the last check of the repository (ISO 8601, null before the first one) |
 | `printer:get` | `{ printerId }` | `{ printer }`; unknown id: `success: false`, error `PRN_001 Printer Not Found` |
 | `printer:count` | none | `{ count }` |
-| `printer:add` | a printer (PrinterSchema) | not available yet: `success: false`, nothing changed (printers entered by the user, Phase 7) |
-| `printer:update` | a printer (PrinterSchema) | not available yet: `success: false`, nothing changed |
-| `printer:remove` | `{ printerId }` | not available yet: `success: false`, nothing changed |
+| `printer:add` | a printer (PrinterSchema); its id is ignored | `{ printer }`: the printer added, with the id chosen by the main process (`user_` + random UUID); same brand and model as a loaded printer: `PRN_006 Printer Already Exists` |
+| `printer:update` | a printer (PrinterSchema) | `{ printer }`; unknown id: `PRN_001 Printer Not Found`; printer not entered by the user: `PRN_005 Printer Not Editable`; same brand and model as another printer: `PRN_006 Printer Already Exists` |
+| `printer:remove` | `{ printerId }` | `{ printerId }`; unknown id: `PRN_001`; printer not entered by the user: `PRN_005` |
+| `printer:refresh` | `{ force }` (boolean, default false); optional | `{ status, profiles }`: status `skipped` (checked less than 24 hours ago, force false), `upToDate` (same index.json, or profiles of the repository older than those of the application, which are kept), `updated` (new profiles kept in the cache and loaded) or `failed`; profiles as for printer:getAll. A failed check returns `success: false` with `SYNC_001 Repository Synchronization Failed` (cache not written), `SYNC_002 Remote Source Unavailable`, `SYNC_003 Remote Source Timeout` or `SYNC_004 Remote Data Validation Failed`, and the profiles in use are kept |
 
-A value of motion or thermal of a printer may be null (unknown, never 0). An invalid payload returns `success: false` with the validation errors. A refused profile file (PRN_002) is left out of the printers and reported in the log of the main process.
+A value of motion or thermal of a printer may be null (unknown, never 0). An invalid payload returns `success: false` with the validation errors ("path: message"); for printer:add and printer:update, the default nozzle must be one of the nozzles of the printer. A refused profile file (PRN_002) is left out of the printers and reported in the log of the main process.
+
+printer:add, printer:update and printer:remove change only the printers entered by the user (Local Custom, Phase 7 lot 61): the main process writes or deletes their file in the printers/ folder of the user data folder (one file per printer, Repository Data Schema envelope, source Local Custom), then changes the printers. A file that cannot be written or deleted returns `PRN_007 Printer Not Saved`, and nothing is changed. The renderer never gives a path.
+
+printer:refresh checks the SlicyWeb profile repository (DECISIONS.md, ADR-032, D5; Phase 7 lot 62): the main process downloads index.json from the main branch, then each profile at the tag named by the index (SECURITY_SPEC.md, Printer Profile Download), keeps them in the cache of the user data folder and loads them in place of data/printers/. The renderer asks for a check at start when the setting printer.autoCheckProfiles is true (force false: at most once every 24 hours) and with Printer > Refresh Profiles (force true). The profiles of the repository are used only when their tag (vX.Y.Z) is the same as, or more recent than, the tag of data/printers/index.json. After `updated`, the renderer reads the printers again. Printers entered by the user are never changed. The details of a failure (file, HTTP status) go to the log of the main process, never a local path.
 
 ---
 
@@ -249,7 +254,7 @@ The preload bridge (src/electron/preload.ts, window.slicyWeb) accepts only the c
 
 | Bridge method | Allow list | Channels |
 |---|---|---|
-| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle: `import:3mf`, `import:stl`, `import:validate`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:remove`, `printer:update`, `project:create`, `project:delete`, `project:load`, `project:save`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
+| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle: `import:3mf`, `import:stl`, `import:validate`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:refresh`, `printer:remove`, `printer:update`, `project:create`, `project:delete`, `project:load`, `project:save`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
 | `send(channel, data)` | SEND_CHANNELS | none yet |
 | `on(channel, callback)` | RECEIVE_CHANNELS | none yet |
 

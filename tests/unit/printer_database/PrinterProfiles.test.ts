@@ -6,14 +6,18 @@
  * passes PrinterProfileFileSchema, is named after the id of its printer,
  * has the source Official and is listed in data/printers/SOURCES.md
  * (page of the manufacturer, date of verification); the loader of the
- * main process loads them all, without refused file.
+ * main process loads them all, without refused file. index.json (index
+ * of the profile repository, Phase 7 lot 62) lists each profile with
+ * the SHA-256 of its file.
  *
  * Based on:
- * - DATA_SCHEMA.md (Printer Schema 3.5.0, Repository Data Schema)
+ * - DATA_SCHEMA.md (Printer Schema 3.5.0, Repository Data Schema,
+ *   Profile Repository Index Schema)
  * - DECISIONS.md (ADR-032)
  * - TEST_PLAN.md
  */
 
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -21,6 +25,7 @@ import { describe, expect, it } from "vitest";
 
 import { PrinterManager } from "../../../src/printer_database/PrinterManager";
 import { PrinterProfileFileSchema } from "../../../src/schemas/PrinterSchema";
+import { ProfileIndexSchema } from "../../../src/schemas/ProfileRepositorySchema";
 
 const FOLDER = path.resolve(__dirname, "../../../data/printers");
 
@@ -39,7 +44,7 @@ const PRINTERS = [
 
 const files = fs
   .readdirSync(FOLDER)
-  .filter((name) => name.endsWith(".json"))
+  .filter((name) => name.endsWith(".json") && name !== "index.json")
   .sort();
 
 describe("Printer profiles of data/printers", () => {
@@ -56,6 +61,22 @@ describe("Printer profiles of data/printers", () => {
     expect(`${profile.id}.json`).toBe(name);
     expect(profile.source).toBe("Official");
     expect(profile.validated).toBe(false);
+  });
+
+  it("lists each profile in index.json with its SHA-256", () => {
+    const index = ProfileIndexSchema.parse(
+      JSON.parse(fs.readFileSync(path.join(FOLDER, "index.json"), "utf8")),
+    );
+
+    expect(index.profiles.map(({ file }) => file)).toEqual(files);
+    for (const { file, id, sha256 } of index.profiles) {
+      expect(`${id}.json`).toBe(file);
+      expect(
+        createHash("sha256")
+          .update(fs.readFileSync(path.join(FOLDER, file)))
+          .digest("hex"),
+      ).toBe(sha256);
+    }
   });
 
   it("lists each profile in SOURCES.md with the date of verification", () => {

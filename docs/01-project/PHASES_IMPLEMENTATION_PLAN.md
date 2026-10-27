@@ -1288,10 +1288,10 @@ Order of the lots:
 - Lot 59: the 10 printer profiles and SOURCES.md
 - Lot 60: Printer section and selector, build plate on selection, last printer kept
 - Lot 61: printers entered by the user
-- Lot 62: synchronization from noam76tr/slicyweb-profiles
+- Lot 62: synchronization from noam76tr/slicyweb-profiles (index.json on main names the tag, SHA-256, cache in the user data folder, Printer > Refresh Profiles; ADR-032 amendment)
 - Lot 63: closure of Phase 7
 
-To decide: web version of SlicyWeb (KI-024)
+Web version of SlicyWeb (KI-024): decided 2026-10-27, option B. The desktop application stays the target; the download and the validation of the profiles use no Electron and no Node.js module, for a future web version (ADR-032).
 
 ---
 

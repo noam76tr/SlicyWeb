@@ -3,8 +3,10 @@
  * Printer Profile Storage
  *
  * Reads the printer profile files of a folder: each *.json file directly
- * in the folder (one printer per file). Other files (README, SOURCES.md)
- * and subfolders are ignored.
+ * in the folder (one printer per file). Other files (README, SOURCES.md),
+ * index.json (index of the profile repository, not a printer) and
+ * subfolders are ignored. Writes and deletes the files of the
+ * printers of the user (Local Custom, Phase 7 lot 61).
  *
  * Rules:
  * - Missing folder: no file, no error (the user has no printer yet).
@@ -14,6 +16,10 @@
  *   Printer Database (PrinterSchema) before use.
  * - Results name a file by its name only, never by its full path
  *   (DATA_SCHEMA.md, Error Schema: no internal file path).
+ * - Writing and deleting take a file name, never a path: only a name of
+ *   letters, digits, "_" and "-" ending with .json is accepted, so no
+ *   file outside the folder is touched. A file is written to a temporary
+ *   file, then renamed: it is never left half written.
  *
  * Main process only (Node.js file system).
  *
@@ -28,6 +34,9 @@ import path from "node:path";
 
 /** A printer profile is a few kilobytes; larger files are refused */
 export const MAX_PROFILE_FILE_SIZE = 1024 * 1024;
+
+/** Name of a profile file written by SlicyWeb: no folder, no ".." */
+const PROFILE_FILE_NAME = /^[A-Za-z0-9_-]+\.json$/;
 
 export interface ProfileFileContent {
   fileName: string;
@@ -60,7 +69,10 @@ export class PrinterProfileStorage {
 
     const names = entries
       .filter(
-        (entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".json"),
+        (entry) =>
+          entry.isFile() &&
+          entry.name.toLowerCase().endsWith(".json") &&
+          entry.name.toLowerCase() !== "index.json",
       )
       .map((entry) => entry.name)
       .sort();
@@ -86,5 +98,46 @@ export class PrinterProfileStorage {
     }
 
     return result;
+  }
+
+  /**
+   * Writes a profile file in the folder (created when missing).
+   * Throws when the name is not a profile file name, when the content is
+   * over MAX_PROFILE_FILE_SIZE or when the file cannot be written.
+   */
+  public writeFile(folder: string, fileName: string, content: unknown): void {
+    if (!PROFILE_FILE_NAME.test(fileName)) {
+      throw new Error("Invalid profile file name");
+    }
+
+    const text = `${JSON.stringify(content, null, 2)}\n`;
+
+    if (Buffer.byteLength(text, "utf8") > MAX_PROFILE_FILE_SIZE) {
+      throw new Error("File too large");
+    }
+
+    fs.mkdirSync(folder, { recursive: true });
+
+    const filePath = path.join(folder, fileName);
+    const temporaryPath = `${filePath}.tmp`;
+
+    try {
+      fs.writeFileSync(temporaryPath, text, "utf8");
+      fs.renameSync(temporaryPath, filePath);
+    } catch (error) {
+      fs.rmSync(temporaryPath, { force: true });
+      throw error;
+    }
+  }
+
+  /**
+   * Deletes a profile file of the folder. A missing file is not an error.
+   */
+  public deleteFile(folder: string, fileName: string): void {
+    if (!PROFILE_FILE_NAME.test(fileName)) {
+      throw new Error("Invalid profile file name");
+    }
+
+    fs.rmSync(path.join(folder, fileName), { force: true });
   }
 }

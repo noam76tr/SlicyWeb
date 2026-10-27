@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.5.0
+Version: 3.6.0
 
 Status: Approved
 
@@ -1888,6 +1888,58 @@ critical
 
 ```
 
+Printer profile cache (3.6.0, ADR-032 D5): cache.json of the cache of the SlicyWeb profile repository (cache/printers/ of the user data folder) is this object. source is the repository (noam76tr/slicyweb-profiles), version is the tag of the profiles, checksum is the SHA-256 of their index.json (64 lowercase hexadecimal characters), createdAt is the date of the download and expiresAt the date of the next check (ISO 8601). An expired cache stays usable offline until the next successful check. The cache is used only when cache.json, index.json and each profile file are valid and unchanged.
+
+---
+
+# Profile Repository Index Schema
+
+index.json of the SlicyWeb profile repository noam76tr/slicyweb-profiles (3.6.0, ADR-032 D5), on its main branch. It names the published tag of the printer profiles and the SHA-256 of each profile file. The application ships a copy in data/printers/index.json, written by npm run profiles:index.
+
+```json
+{
+  "type": "printer-index",
+  "version": "1.0.0",
+  "tag": "v1.0.0",
+  "profiles": [
+    {
+      "file": "",
+      "id": "",
+      "sha256": ""
+    }
+  ]
+}
+```
+
+Required fields:
+
+```text
+type
+version
+tag
+profiles
+profiles[].file
+profiles[].id
+profiles[].sha256
+```
+
+Rules:
+
+```text
+type is "printer-index"
+version is the version of the index format
+tag is the Git tag where the profile files are read: "v" and three numbers, vX.Y.Z (as v1.0.0); each number has 6 digits at most and no leading zero
+profiles has 1 to 500 entries; no other field is accepted
+file is a file name of the repository folder: letters, digits, "_" and "-", ending with .json; never index.json, never a folder
+id is the id of the profile in this file
+sha256 is the SHA-256 of the file, 64 lowercase hexadecimal characters
+A file or an id is listed once
+```
+
+Version rule: tags are ordered by their three numbers (v1.0.10 is more recent than v1.0.9). The application uses the profiles of the repository only when their tag is the same as, or more recent than, the tag of its own copy (data/printers/index.json): a list shipped with a new version of the application is never replaced by an older one.
+
+The index is refused, and no profile is used, when one of these rules fails, when index.json and the profiles exceed 20 MB in all, when a file of the index cannot be read at the tag, or when a file differs from its sha256, fails the Repository Data Schema and Printer Schema validation, is not of source Official or has another id.
+
 ---
 
 # User Preferences Schema
@@ -1909,7 +1961,9 @@ critical
 
      "defaultPrinter": null,
 
-     "autoloadLastPrinter": true
+     "autoloadLastPrinter": true,
+
+     "autoCheckProfiles": true
 
    }
 
@@ -1921,6 +1975,8 @@ critical
 
 
 printer (3.5.0, ADR-032, USER_SETTINGS_SPEC.md Printer Settings): defaultPrinter is the id of the last printer selected, or null when none was selected (null = not chosen yet, as for the selections of the Project Schema); when autoloadLastPrinter is true, this printer is selected again at startup. A defaultPrinter that is no longer in the printer database is ignored (no printer selected).
+
+printer.autoCheckProfiles (3.6.0, ADR-032 D5, decision of Noam): boolean, true by default. When true, the SlicyWeb profile repository is checked at start, at most once every 24 hours; when false, it is checked only with Printer > Refresh Profiles. A settings.json without this field loads with true.
 
 
 ---

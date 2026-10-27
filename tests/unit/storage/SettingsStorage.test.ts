@@ -48,7 +48,11 @@ describe("Settings storage", () => {
       theme: "light",
       language: "he",
       units: "metric",
-      printer: { defaultPrinter: null, autoloadLastPrinter: true },
+      printer: {
+        defaultPrinter: null,
+        autoloadLastPrinter: true,
+        autoCheckProfiles: true,
+      },
     });
   });
 
@@ -60,12 +64,20 @@ describe("Settings storage", () => {
 
     storage.save({
       ...storage.load(),
-      printer: { defaultPrinter: "test-printer", autoloadLastPrinter: true },
+      printer: {
+        defaultPrinter: "test-printer",
+        autoloadLastPrinter: true,
+        autoCheckProfiles: true,
+      },
     });
 
     expect(new SettingsStorage(filePath).load()).toMatchObject({
       language: "fr",
-      printer: { defaultPrinter: "test-printer", autoloadLastPrinter: true },
+      printer: {
+        defaultPrinter: "test-printer",
+        autoloadLastPrinter: true,
+        autoCheckProfiles: true,
+      },
     });
   });
 
@@ -75,13 +87,21 @@ describe("Settings storage", () => {
         theme: "dark",
         language: "fr",
         units: "metric",
-        printer: { defaultPrinter: 12, autoloadLastPrinter: false },
+        printer: {
+          defaultPrinter: 12,
+          autoloadLastPrinter: false,
+          autoCheckProfiles: true,
+        },
       },
     });
 
     expect(new SettingsStorage(filePath).load()).toMatchObject({
       language: "fr",
-      printer: { defaultPrinter: null, autoloadLastPrinter: false },
+      printer: {
+        defaultPrinter: null,
+        autoloadLastPrinter: false,
+        autoCheckProfiles: true,
+      },
     });
   });
 
@@ -90,7 +110,11 @@ describe("Settings storage", () => {
       theme: "dark",
       language: "en",
       units: "metric",
-      printer: { defaultPrinter: null, autoloadLastPrinter: true },
+      printer: {
+        defaultPrinter: null,
+        autoloadLastPrinter: true,
+        autoCheckProfiles: true,
+      },
     };
 
     expect(new SettingsStorage(filePath).load()).toEqual(defaults);

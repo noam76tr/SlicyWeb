@@ -30,6 +30,8 @@ export const PrinterPreferencesSchema = z
     // Id of the last printer selected, null when none was selected
     defaultPrinter: z.string().trim().min(1).nullable(),
     autoloadLastPrinter: z.boolean(),
+    // Check the profile repository at start (DATA_SCHEMA.md 3.6.0)
+    autoCheckProfiles: z.boolean(),
   })
   .strict();
 
@@ -46,7 +48,7 @@ export const UserPreferencesSchema = z
 /**
  * Partial update of the preferences (settings:update).
  * Unknown fields are refused. printer is replaced as a whole: an update
- * of printer gives both of its fields.
+ * of printer gives all of its fields.
  */
 export const UserPreferencesUpdateSchema = UserPreferencesSchema.partial();
 
@@ -60,5 +62,6 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   printer: {
     defaultPrinter: null,
     autoloadLastPrinter: true,
+    autoCheckProfiles: true,
   },
 };

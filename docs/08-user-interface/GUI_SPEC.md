@@ -498,7 +498,7 @@ Export Profile
 
 ```
 
-Select Printer (Phase 7) moves the focus to the Printer Selector of the Properties Panel, when the menu closes. The other items stay disabled until the phase that provides their action.
+Select Printer (Phase 7) moves the focus to the Printer Selector of the Properties Panel, when the menu closes. Manage Printers (Phase 7) opens the Printer Manager. The other items stay disabled until the phase that provides their action.
 
 
 
@@ -1305,6 +1305,9 @@ Details (Phase 7; DATA_SCHEMA.md 3.5.0, Printer Schema):
 - Build Volume: X × Y × Z in mm; Nozzle: the default nozzle, then the list of the nozzles of the printer.
 - Printer Limits: max print speed, max travel speed, max acceleration, max jerk, max nozzle temperature, max bed temperature, max chamber temperature. A value not published by the manufacturer (null) is shown as "Not published", never as 0.
 - No printer selected: "No printer selected" under the selector.
+- Profiles (Phase 7 lot 62): a discreet line under the selector gives the Official profiles in use: "Profiles v1.0.0 (SlicyWeb repository)" when they come from the profile repository, "Profiles v1.0.0 of the application" (or "Profiles of the application" without a tag) for the copy shipped with the application.
+- Printer > Refresh Profiles checks the repository at once and shows the result after this line (role status): "Checking the profiles…", then "Profiles up to date.", "Profiles updated (v1.0.1).", "Repository unreachable, current profiles kept." or "Profiles of the repository refused (invalid file), current profiles kept." The check at start (at most once a day) shows a message only when the profiles were updated. Updated profiles replace the list at once, without restart; a selected printer no longer listed is no longer selected.
+- Under the profiles line, a check box "Check for profile updates automatically" (printer.autoCheckProfiles, checked by default; USER_SETTINGS_SPEC.md). Unchecked, the check at start is not made; Printer > Refresh Profiles still works. It moves to the Preferences window when that window exists.
 
 
 
@@ -1363,6 +1366,32 @@ Prusa
 Phase 7: a list of the window (select), with "No printer" first, then one group per brand; brands and models in alphabetical order. The printers are those loaded by the main process (printer:getAll; ADR-032).
 
 The printer chosen is saved as the last printer (User Preferences, printer.defaultPrinter). At the next start, it is chosen again when autoloadLastPrinter is true and the printer is still loaded; otherwise no printer is selected. "No printer" clears the choice.
+
+The printers entered by the user come right after "No printer", in a group "My printers" ("Brand Model", alphabetical order); the brand groups list only the Official printers. A "Manage…" button under the selector opens the Printer Manager.
+
+
+
+---
+
+
+
+# Printer Manager
+
+Phase 7. A dialog opened by Printer > Manage Printers and by the "Manage…" button of the Printer Section. It adds, changes and removes the printers entered by the user (Local Custom, PRINTER_PROFILE_SPEC.md).
+
+Structure:
+
+```text
+Start side: My printers (list), New printer, Copy a printer…
+End side: form of the printer chosen, Save, Delete
+```
+
+- Copy a printer: any loaded printer, Official included; the copy is a new printer of the user, named "Model (copy)". Official printers are never listed in My printers, so they are never changed.
+- Form (DATA_SCHEMA.md, Printer Schema): Brand, Model, Build Volume X, Y, Z, Default Nozzle and Nozzles are required (the default nozzle is one of the nozzles); Series, Manufacturer, Firmware, Release Date are free text; Printer Limits left empty are null, shown as "Not published"; part, auxiliary and chamber fans; extruder type (direct drive, bowden, unknown) and number of extruders; materials separated by commas. supported is always true; supportedFilaments stays empty until Phase 9.
+- Numbers accept a comma as decimal separator. Nozzles are separated by semicolons or spaces.
+- Errors are shown under their field; errors of the main process (PRN_005, PRN_006, PRN_007) under the form.
+- Delete asks for a confirmation ("Delete Brand Model?"). When the printer deleted is the selected printer, no printer is selected and the saved choice is cleared. A change of the selected printer updates the Printer Section and the build plate at once.
+- Changes of printers are not part of Undo / Redo (UNDO_REDO_SPEC.md: transforms only in Phase 6).
 
 
 

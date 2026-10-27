@@ -815,7 +815,7 @@ Printer Profile Sources, Licences and Profile Repository
 
 Decision:
 
-Printer profiles written by SlicyWeb from the pages of the manufacturers (never copied from slicer profile files), published as Repository Data Schema envelopes in the public SlicyWeb repository noam76tr/slicyweb-profiles (all rights reserved, read without authentication, no token in the application), with an offline fallback copy in data/printers/, plus printers entered by the user; loaded and validated by the main process; unknown values null; updates from that repository only (main process, allowed address, integrity check, local cache, offline use). Web version: to decide (KI-024).
+Printer profiles written by SlicyWeb from the pages of the manufacturers (never copied from slicer profile files), published as Repository Data Schema envelopes in the public SlicyWeb repository noam76tr/slicyweb-profiles (all rights reserved, read without authentication, no token in the application), with an offline fallback copy in data/printers/, plus printers entered by the user; loaded and validated by the main process; unknown values null; updates from that repository only (main process, allowed address, integrity check, local cache, offline use); index.json on the main branch names the tag of the profiles (amendment, lot 62). Web version (KI-024): option B, the desktop application stays the target and the download and validation logic uses no Electron or Node.js module.
 
 Rationale:
 

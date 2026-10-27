@@ -16,6 +16,7 @@
     "typecheck": "tsc --noEmit",
     "check:locales": "node scripts/build/check-locales.mjs",
     "check:ipc": "node scripts/build/check-ipc-channels.mjs",
+    "profiles:index": "node scripts/build/generate-profile-index.mjs",
     "lint": "eslint src tests vite.config.mts vitest.config.mts playwright.config.mts --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" vite.config.mts",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\" vite.config.mts",

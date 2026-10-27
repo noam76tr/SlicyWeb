@@ -9,7 +9,8 @@
  * File content (DATA_SCHEMA.md, User Preferences Schema):
  *
  *   { "preferences": { "theme": "dark", "language": "en", "units": "metric",
- *     "printer": { "defaultPrinter": null, "autoloadLastPrinter": true } } }
+ *     "printer": { "defaultPrinter": null, "autoloadLastPrinter": true,
+ *       "autoCheckProfiles": true } } }
  *
  * Rules:
  * - Missing or unreadable file: default preferences.
@@ -160,6 +161,11 @@ function readPrinter(value: unknown): UserPreferences["printer"] {
       shape.autoloadLastPrinter,
       entries.autoloadLastPrinter,
       fallback.autoloadLastPrinter,
+    ),
+    autoCheckProfiles: readField(
+      shape.autoCheckProfiles,
+      entries.autoCheckProfiles,
+      fallback.autoCheckProfiles,
     ),
   };
 }

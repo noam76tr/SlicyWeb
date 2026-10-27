@@ -27,6 +27,7 @@ export const INVOKE_CHANNELS = [
   "printer:count",
   "printer:get",
   "printer:getAll",
+  "printer:refresh",
   "printer:remove",
   "printer:update",
   "project:create",

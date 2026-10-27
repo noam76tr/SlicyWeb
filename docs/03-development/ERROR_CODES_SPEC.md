@@ -3,7 +3,7 @@
 # ERROR CODES SPECIFICATION
 
 
-Version: 2.1.0
+Version: 2.2.0
 
 Status: Approved
 
@@ -290,6 +290,66 @@ Unsupported Printer
 Build Volume Invalid
 
 ```
+
+
+
+---
+
+
+
+## PRN_005
+
+
+
+```text
+
+Printer Not Editable
+
+```
+
+
+
+printer:update or printer:remove on a printer that was not entered by the user (Official printer). Official printers are never changed.
+
+
+
+---
+
+
+
+## PRN_006
+
+
+
+```text
+
+Printer Already Exists
+
+```
+
+
+
+printer:add or printer:update with the brand and the model of another loaded printer (case and outer spaces ignored).
+
+
+
+---
+
+
+
+## PRN_007
+
+
+
+```text
+
+Printer Not Saved
+
+```
+
+
+
+The file of a printer of the user could not be written or deleted (disk full, no right to write). Nothing is changed. The message gives the system error code, never a path.
 
 
 
@@ -652,6 +712,10 @@ Cache Corrupted
 
 
 
+Printer profiles (Phase 7 lot 62): the cache of the profile repository (cache/printers/ of the user data folder) exists but fails its validation at start (cache.json, SHA-256, index.json or a profile file). It is not used: the profiles of the application (data/printers/) are loaded, the code is written to the log of the main process, and the next check rebuilds the cache.
+
+
+
 ---
 
 
@@ -731,14 +795,22 @@ Invalid Repository Data
 ## SYNC_001
 Repository Synchronization Failed
 
+Printer profiles (Phase 7 lot 62): the download is valid but the cache cannot be written, or no synchronization is available; the profiles in use are kept.
+
 ## SYNC_002
 Remote Source Unavailable
+
+Printer profiles: network error, or an HTTP status other than 200 for index.json or a profile file (for example a tag not created yet); the profiles in use are kept.
 
 ## SYNC_003
 Remote Source Timeout
 
+Printer profiles: a file of the profile repository does not arrive within 15 seconds; the profiles in use are kept.
+
 ## SYNC_004
 Remote Data Validation Failed
+
+Printer profiles: index.json or a profile file is refused (address, size of a file or of the whole download, tag, SHA-256, UTF-8, JSON, Profile Repository Index Schema, Printer Schema, source or id); the whole download is refused and the profiles in use are kept.
 
 ## SYNC_005
 Remote Data Conflict

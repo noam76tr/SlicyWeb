@@ -85,7 +85,7 @@ data/
 │   ├── filaments/
 │   ├── materials/
 │   ├── presets/
-│   ├── printers/                       = profils d'imprimantes Official (un fichier JSON par imprimante, SOURCES.md)
+│   ├── printers/                       = profils d'imprimantes Official (un fichier JSON par imprimante, SOURCES.md, index.json)
 │   └── templates/
 
 docs/
@@ -405,6 +405,8 @@ src/gui/
 ├── layouts/
 ├── windows/
 ├── dialogs/
+│   ├── PrinterManagerDialog.tsx = Printer Manager: printers entered by the user (Phase 7)
+│   └── printerForm.ts         = form of the Printer Manager and its conversion to a printer
 ├── menus/
 │   └── MenuBar.tsx            = the nine menus of GUI_SPEC.md
 ├── toolbars/
@@ -412,7 +414,7 @@ src/gui/
 │   └── TransformModeBar.tsx   = buttons Move, Rotate, Scale over the viewport, the only mode buttons (Phase 6)
 ├── components/
 │   ├── I18nProvider.tsx       = translations, language and text direction for the GUI
-│   └── ui/                    = shadcn/ui components (button, dropdown-menu, menubar, resizable)
+│   └── ui/                    = shadcn/ui components (button, dialog, dropdown-menu, menubar, resizable)
 ├── themes/
 ├── hooks/
 │   ├── useSelectAllShortcut.ts = Ctrl+A (Phase 6)
@@ -468,7 +470,7 @@ Structure:
 src/repositories/
 
 ├── GitHubRepository.ts
-├── PrinterRepositorySync.ts
+├── PrinterRepositorySync.ts   = download of the profiles of noam76tr/slicyweb-profiles, without Electron (Phase 7)
 ├── MaterialRepositorySync.ts
 ├── FilamentRepositorySync.ts
 └── PresetRepositorySync.ts
@@ -524,6 +526,7 @@ src/schemas/
 ├── MaterialSchema.ts
 ├── PrintPresetSchema.ts
 ├── PrinterSchema.ts
+├── ProfileRepositorySchema.ts = index.json of the profile repository, cache.json, last check (Phase 7)
 ├── ProjectSchema.ts
 ├── RecommendationSchema.ts
 └── UserPreferencesSchema.ts
@@ -771,6 +774,7 @@ src/services/
 ├── ImportService.ts           = import queue, progress, cancel and errors for the GUI (ADR-029)
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
 ├── PrinterSelectionService.ts = printers of the window, last printer (Phase 7)
+├── ProfileSyncService.ts      = check of the profile repository, once a day or forced (Phase 7)
 └── StorageService.ts
 ```
 
@@ -816,6 +820,7 @@ src/types/
 ├── Optimization.ts
 ├── CostEstimation.ts
 ├── DefaultMaterial.ts
+├── ProfileSync.ts             = origin of the profiles, ProfileCacheStore contract (Phase 7)
 └── UserPreferences.ts
 ```
 
@@ -862,6 +867,7 @@ src/events/
 src/storage/
 
 ├── CacheStorage.ts
+├── PrinterProfileCache.ts     = cache of the downloaded profiles, cache/printers/ (Phase 7)
 ├── PrinterProfileStorage.ts
 ├── ProjectStorage.ts
 ├── SettingsStorage.ts
@@ -908,11 +914,16 @@ tests/
 │   ├── electron/
 │   │   └── PrinterIPC.test.ts = printer:* channels (Phase 7)
 │   ├── gui/
+│   │   ├── dialogs/
+│   │   │   └── printerForm.test.ts = form of the Printer Manager (Phase 7)
 │   │   └── hooks/
 │   │       └── UndoRedoShortcuts.test.ts = keys of undo and redo (Phase 6)
 │   ├── printer_database/
 │   │   ├── PrinterLoading.test.ts = printer profile files, PrinterSchema (Phase 7)
-│   │   └── PrinterProfiles.test.ts = the profiles of data/printers/ (Phase 7)
+│   │   ├── PrinterProfiles.test.ts = the profiles of data/printers/ and their index.json (Phase 7)
+│   │   └── UserPrinters.test.ts = printers entered by the user (Phase 7)
+│   ├── repositories/
+│   │   └── PrinterRepositorySync.test.ts = download of the profile repository (Phase 7)
 │   ├── renderer/
 │   │   └── ObjectRenderer.test.ts = selection rectangle (Phase 6)
 │   ├── scene/
@@ -921,7 +932,8 @@ tests/
 │   │   └── SettingsStorage.test.ts = settings.json, printer settings (Phase 7)
 │   └── services/
 │       ├── GroupTransform.test.ts = several objects selected (Phase 6)
-│       ├── PrinterSelection.test.ts = printers of the window, last printer (Phase 7)
+│       ├── PrinterSelection.test.ts = printers of the window, last printer, profiles (Phase 7)
+│       ├── ProfileSync.test.ts = check of the profile repository, cache (Phase 7)
 │       ├── TransformService.test.ts = transform changes, object on the plate
 │       └── UndoRedo.test.ts = undo and redo of the transform changes
 ├── integration/
@@ -929,7 +941,7 @@ tests/
     ├── fixtures.ts = starts the built application, test files
     ├── app.spec.ts = main window, languages
     ├── import.spec.ts = STL and 3MF import, refused files
-    ├── printer.spec.ts = printers served by the main process, Printer section (Phase 7)
+    ├── printer.spec.ts = printers served by the main process, Printer section, Printer Manager, profiles (Phase 7)
     └── transform.spec.ts = transforms, undo and redo, several objects (Phase 6)
 ```
 
@@ -975,7 +987,8 @@ scripts/
 
 ├── build/
 │   ├── check-locales.mjs      = checks that en, fr and he dictionaries share the same keys
-│   └── check-ipc-channels.mjs = checks the IPC allow list against the registered handlers
+│   ├── check-ipc-channels.mjs = checks the IPC allow list against the registered handlers
+│   └── generate-profile-index.mjs = writes data/printers/index.json (npm run profiles:index -- vX.Y.Z)
 ├── migration/
 ├── release/
 └── setup/
@@ -1061,7 +1074,6 @@ Source directories and files:
 ```text
 src/gui/layouts/
 src/gui/windows/
-src/gui/dialogs/
 src/gui/themes/
 src/recovery/backups/
 src/schemas/ErrorSchema.ts

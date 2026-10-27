@@ -5,7 +5,15 @@
  * Printer section of the Properties Panel (GUI_SPEC.md, Printer Section,
  * Printer Selector):
  * - the selector lists the printers by brand, then by model
- *   (Brand └─ Models), with "No printer" first;
+ *   (Brand └─ Models), with "No printer" first; the printers entered by
+ *   the user come before the brands, in the group "My printers"
+ *   (Phase 7 lot 61);
+ * - "Manage…" opens the Printer Manager (PrinterManagerDialog);
+ * - under it, the origin and the tag of the Official profiles (SlicyWeb
+ *   profile repository or copy of the application), then the message of
+ *   the last check (Printer > Refresh Profiles; Phase 7 lot 62), and
+ *   the setting "Check for profile updates automatically"
+ *   (printer.autoCheckProfiles, saved by PrinterSelectionService);
  * - the selected printer shows its Brand, Model, Build Volume, Nozzle
  *   and Printer Limits. A limit not published by the manufacturer
  *   (null) is shown as "Not published", never as 0 (DATA_SCHEMA.md 3.5.0).
@@ -17,7 +25,7 @@
  * No business logic.
  *
  * Based on:
- * - GUI_SPEC.md (Printer Section, Printer Selector)
+ * - GUI_SPEC.md (Printer Section, Printer Selector, Printer Manager)
  * - DATA_SCHEMA.md (Printer Schema)
  * - DECISIONS.md (ADR-032, D8)
  */
@@ -27,6 +35,8 @@ import { useMemo } from "react";
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
 import { usePrinterStore } from "../../state/printerStore";
 import type { Printer } from "../../types/Printer";
+import { Button } from "../components/ui/button";
+import { openPrinterManager } from "../dialogs/PrinterManagerDialog";
 import { useTranslation } from "../hooks/useTranslation";
 
 export const PRINTER_SELECTOR_ID = "printer-selector";
@@ -67,8 +77,22 @@ export default function PrinterSection(): JSX.Element {
   const { t } = useTranslation();
 
   const printers = usePrinterStore((state) => state.printers);
+  const userPrinterIds = usePrinterStore((state) => state.userPrinterIds);
   const selected = usePrinterStore((state) => state.selectedPrinter);
-  const groups = useMemo(() => groupByBrand(printers), [printers]);
+  const profiles = usePrinterStore((state) => state.profiles);
+  const profilesMessage = usePrinterStore((state) => state.profilesMessage);
+  const autoCheckProfiles = usePrinterStore((state) => state.autoCheckProfiles);
+  const userPrinters = useMemo(
+    () => printers.filter((printer) => userPrinterIds.includes(printer.id)),
+    [printers, userPrinterIds],
+  );
+  const groups = useMemo(
+    () =>
+      groupByBrand(
+        printers.filter((printer) => !userPrinterIds.includes(printer.id)),
+      ),
+    [printers, userPrinterIds],
+  );
 
   const limit = (value: number | null, unit: string): string =>
     value === null ? t("printer.notPublished") : `${format(value)} ${unit}`;
@@ -89,6 +113,15 @@ export default function PrinterSection(): JSX.Element {
           className="h-7 w-full rounded border border-input bg-background px-1.5 text-xs text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
         >
           <option value={NONE}>{t("printer.none")}</option>
+          {userPrinters.length > 0 && (
+            <optgroup label={t("printer.myPrinters")}>
+              {userPrinters.map((printer) => (
+                <option key={printer.id} value={printer.id}>
+                  {printer.brand} {printer.model}
+                </option>
+              ))}
+            </optgroup>
+          )}
           {groups.map(([brand, models]) => (
             <optgroup key={brand} label={brand}>
               {models.map((printer) => (
@@ -99,6 +132,38 @@ export default function PrinterSection(): JSX.Element {
             </optgroup>
           ))}
         </select>
+      </label>
+
+      <Button variant="outline" size="xs" onClick={openPrinterManager}>
+        {t("printer.manageButton")}
+      </Button>
+
+      {profiles && (
+        <p className="text-muted-foreground">
+          {profiles.origin === "repository"
+            ? t("printer.profiles.repository", { tag: profiles.tag ?? "" })
+            : profiles.tag
+              ? t("printer.profiles.applicationTag", { tag: profiles.tag })
+              : t("printer.profiles.application")}
+          {profilesMessage && (
+            <span role="status" className="block">
+              {t(profilesMessage.key, { tag: profilesMessage.tag ?? "" })}
+            </span>
+          )}
+        </p>
+      )}
+
+      <label className="flex items-center gap-2 text-muted-foreground">
+        <input
+          type="checkbox"
+          checked={autoCheckProfiles}
+          onChange={(event) =>
+            void PrinterSelectionService.setAutoCheckProfiles(
+              event.target.checked,
+            )
+          }
+        />
+        {t("printer.profiles.autoCheck")}
       </label>
 
       {selected ? (

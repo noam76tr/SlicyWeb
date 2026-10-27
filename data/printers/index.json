@@ -1,0 +1,57 @@
+{
+  "type": "printer-index",
+  "version": "1.0.0",
+  "tag": "v1.0.0",
+  "profiles": [
+    {
+      "file": "bambu_a1.json",
+      "id": "bambu_a1",
+      "sha256": "119ea4b169cc957e5df2279f9e30a8d8dc8ee59c1e0020e2ee6276e6a91ddf22"
+    },
+    {
+      "file": "bambu_a1_mini.json",
+      "id": "bambu_a1_mini",
+      "sha256": "4cc68e4b52c75f534f9e831fd5503462ef28f3ad44db2c5b2ac4fa6846588029"
+    },
+    {
+      "file": "bambu_p1s.json",
+      "id": "bambu_p1s",
+      "sha256": "75d2efbcb21e5ec90e00d46e67d4b2f9c44967add851a02dce78bcaa39ce0118"
+    },
+    {
+      "file": "bambu_x1c.json",
+      "id": "bambu_x1c",
+      "sha256": "229609d95674e3570208284e1a3622594afe688d244b3831aecd5159ed0131ec"
+    },
+    {
+      "file": "creality_ender3_v3_se.json",
+      "id": "creality_ender3_v3_se",
+      "sha256": "be30ae9ff69aa39e54619741c1a3a9d6e47f60f5390fd55e1bae3f375aff7099"
+    },
+    {
+      "file": "creality_k1c.json",
+      "id": "creality_k1c",
+      "sha256": "359ca57c5e443dda2cfe6d12a1314f7fcfe177fea4b68ab1a8368c99c528a5ac"
+    },
+    {
+      "file": "elegoo_neptune4_pro.json",
+      "id": "elegoo_neptune4_pro",
+      "sha256": "78f49d5e4ee4dd82e7d46c8be3e935401ff6e8c16836b87fe47fb6ceac70d228"
+    },
+    {
+      "file": "prusa_core_one_plus.json",
+      "id": "prusa_core_one_plus",
+      "sha256": "fdb3374e376243a2b266369d2ea3b17658768d55f0b980580116f5d6be23031e"
+    },
+    {
+      "file": "prusa_mini_plus.json",
+      "id": "prusa_mini_plus",
+      "sha256": "5ee18568ef825cf069105e0a01b3ba8705e18c7e276031496db481946bfc3ce2"
+    },
+    {
+      "file": "prusa_mk4s.json",
+      "id": "prusa_mk4s",
+      "sha256": "c801690ed603979acdcdb1650689af5b83719196678413b313ff890aee7a4f8d"
+    }
+  ]
+}

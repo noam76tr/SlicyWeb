@@ -2186,7 +2186,7 @@ Release Type:
 Feature
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-27
@@ -2210,6 +2210,83 @@ Date:
 ## Removed
 
 - src/gui/panels/PrinterPanel.tsx: never used, hardcoded English text (KI-015); replaced by the Printer section of the Properties Panel (decision of Noam)
+
+## Validation Result
+
+- Windows 11 (2026-10-27): lot 60 on GitHub (6ea31df, identical to the lot); npm run check:locales (266 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 81 tests passed, 1 skipped (link test: no right to create a link on Windows); npm run test:e2e: 20 tests passed; manual checks: X1 Carbon plate 256 × 256 mm and status bar, "Not published" for the jerk and the chamber temperature, MK4S speeds and acceleration "Not published", MK4S chosen again after a restart, "No printer" hides the plate and its size, Printer > Select Printer gives the focus to the list, plate size at the bottom right in Hebrew (Noam)
+
+---
+
+# VERSION 0.1.63
+
+Release Type:
+Feature
+
+Status:
+Completed
+
+Date:
+2026-10-27
+
+## Added
+
+- Printers entered by the user (Local Custom, Phase 7 lot 61): printer:add, printer:update and printer:remove change them (API_SPEC.md, PrinterIPC Channels). The main process chooses the id of a new printer (user_ + random UUID), writes one file per printer in the printers/ folder of the user data folder (Repository Data Schema envelope, source Local Custom), then changes the printers; Official printers are never changed
+- Printer Manager (GUI_SPEC.md): src/gui/dialogs/PrinterManagerDialog.tsx and printerForm.ts, opened by Printer > Manage Printers and by the "Manage…" button of the Printer section; My printers, New printer, Copy a printer (copy named "Model (copy)"), form of all the fields of the Printer Schema (a limit left empty is null, "Not published"), Save, Delete with a confirmation
+- Printer selector: the printers of the user in the group "My printers", after "No printer"
+- src/gui/components/ui/dialog.tsx: shadcn/ui Dialog component (Base UI, no new npm dependency)
+- ERROR_CODES_SPEC.md 2.2.0: PRN_005 Printer Not Editable, PRN_006 Printer Already Exists, PRN_007 Printer Not Saved
+- Translations (en, fr, he): 42 keys of the Printer Manager (308 keys)
+- Tests: tests/unit/printer_database/UserPrinters.test.ts, tests/unit/gui/dialogs/printerForm.test.ts, printers of the user in PrinterIPC.test.ts and PrinterSelection.test.ts (104 unit tests in total); tests/e2e/printer.spec.ts, Printer Manager (21 end-to-end tests in total)
+
+## Changed
+
+- printer:getAll also returns userPrinterIds (ids of the printers of the user); printers unchanged
+- printer:add and printer:update: the default nozzle must be one of the nozzles; validation errors given as "path: message"
+- src/storage/PrinterProfileStorage.ts: writes (temporary file, then renamed) and deletes a profile file, by file name only
+- src/services/PrinterSelectionService.ts: add, update, remove; the selected printer follows its update and is cleared (with the saved choice) when it is removed
+- API_SPEC.md (PrinterIPC Channels), GUI_SPEC.md (Printer Menu, Printer Selector, Printer Manager), SECURITY_SPEC.md (Printer Profile Files), PRINTER_PROFILE_SPEC.md (printers of the user), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
+
+## Validation Result
+
+- Windows 11 (2026-10-27): npm run check:locales (308 keys), npm run check:ipc (22 channels), npm run typecheck and npm run lint report no errors, npm test: 103 tests passed, 1 skipped (link test); npm run test:e2e: 21 tests passed; the 10 manual checks of the Printer Manager passed, Hebrew included (Noam). src/gui/panels/PresetPanel.tsx restored and src/gui/panels/PrinterPanel.tsx deleted on main. Repository noam76tr/slicyweb-profiles created (public, LICENSE.md all rights reserved, the 10 profiles and SOURCES.md). Sending of lot 61 to GitHub: checked with lot 62
+
+---
+
+# VERSION 0.1.64
+
+Release Type:
+Feature
+
+Status:
+In Progress
+
+Date:
+2026-10-27
+
+## Added
+
+- Synchronization of the printer profiles with the SlicyWeb profile repository noam76tr/slicyweb-profiles (ADR-032 D5 and its amendment, Phase 7 lot 62): src/repositories/PrinterRepositorySync.ts downloads index.json from the main branch, then each profile file at the tag named by the index; HTTPS under https://raw.githubusercontent.com/noam76tr/slicyweb-profiles/ only, no redirection, 15 seconds and 1 MB per file, 20 MB for the whole download, at most 500 profiles; SHA-256, Repository Data Schema envelope, PrinterSchema, source Official and id checked; all or nothing (SYNC_002, SYNC_003, SYNC_004)
+- src/services/ProfileSyncService.ts: check at start in the background, at most once every 24 hours, or at once with Printer > Refresh Profiles; version rule: profiles of the repository older than those of the application (tag vX.Y.Z) are never kept, and the cache is used only when its tag is not older than data/printers/index.json; a new index.json is kept in the cache, then the printers are loaded again; a failure keeps the profiles in use; each check is saved (RepositorySync Result Schema); a cache lost after a successful check is rebuilt at the next start
+- src/storage/PrinterProfileCache.ts: cache in cache/printers/ of the user data folder (profile files and index.json, cache.json in the Cache Schema, sync.json); written in a temporary folder then swapped; validated again at each start, and used in place of data/printers/ only when it is complete and unchanged (CACHE_001 otherwise)
+- printer:refresh (23 IPC channels): `{ force }`, answers `{ status, profiles }`; printer:getAll also returns `profiles` (origin, tag, date of the last check)
+- Printer section: a line gives the profiles in use ("Profiles v1.0.0 (SlicyWeb repository)" or "Profiles v1.0.0 of the application"); Printer > Refresh Profiles is available and shows its result in this line; updated profiles replace the list without restart
+- Setting "Check for profile updates automatically" (printer.autoCheckProfiles, true by default): a check box under the profiles line; when unchecked, no check at start (Refresh Profiles still works); a settings.json without it loads with true
+- DATA_SCHEMA.md 3.6.0: Profile Repository Index Schema (index.json, tag vX.Y.Z, version rule); cache.json of the printer profile cache; User Preferences Schema: printer.autoCheckProfiles
+- data/printers/index.json (tag v1.0.0, 10 profiles) and scripts/build/generate-profile-index.mjs (npm run profiles:index -- vX.Y.Z)
+- src/schemas/ProfileRepositorySchema.ts, src/types/ProfileSync.ts (ProfileCacheStore contract)
+- Translations (en, fr, he): 9 keys of the profiles (317 keys)
+- Tests: tests/unit/repositories/PrinterRepositorySync.test.ts, tests/unit/services/ProfileSync.test.ts, printer:refresh in PrinterIPC.test.ts, refresh and autoCheckProfiles in PrinterSelection.test.ts, index.json in PrinterProfiles.test.ts (134 unit tests in total); tests/e2e/printer.spec.ts, profiles line, Refresh Profiles and the setting (22 end-to-end tests in total)
+
+## Changed
+
+- src/repositories/PrinterRepositorySync.ts: the placeholder (never used, never registered) is replaced by the download of the profile repository
+- src/electron/main.ts: the Official printers come from the cache when it is valid, otherwise from data/printers/; the IPC handlers are registered after the printers are loaded
+- src/storage/PrinterProfileStorage.ts: index.json is not read as a profile
+- DECISIONS.md: ADR-032 amended (tag read from index.json on main; KI-024 decided, option B)
+- API_SPEC.md (PrinterIPC Channels, Allowed IPC Channels), SECURITY_SPEC.md (Printer Profile Download), GUI_SPEC.md (Printer Section), PRINTER_PROFILE_SPEC.md (profile repository, publishing an update), ERROR_CODES_SPEC.md (use of CACHE_001, SYNC_001 to SYNC_004 for the printer profiles; no new code), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
+- USER_SETTINGS_SPEC.md (Printer Settings, Backward Compatibility)
+- KNOWN ISSUES: KI-025 added (signature of index.json)
+- KI-024 resolved (decision of Noam, option B: the desktop application stays the target; the logic of the download and of the validation of the profiles uses no Electron and no Node.js module, for a future web version)
 
 ---
 
@@ -3170,17 +3247,17 @@ Planned Resolution: Legal review of the printer profiles, of SOURCES.md and of t
 ---
 
 
-Identifier: KI-024
+Identifier: KI-025
 
-Since: 0.1.59
+Since: 0.1.64
 
-Affected Module: Architecture (Electron main process, printer:* IPC, CSP, RepositorySync)
+Affected Module: Printer profile synchronization (src/repositories/PrinterRepositorySync.ts, noam76tr/slicyweb-profiles; ADR-032)
 
-Issue: The final product could also be an online web site, not only the Electron application. The architecture assumes Electron: the main process downloads and validates the profiles, reads and writes the files of the user, and the CSP of the window allows no network address. A web version has no main process.
+Issue: The SHA-256 of index.json checks the integrity of the profile files, not their author. Anyone who can write to the profile repository (a stolen GitHub account, for example) can publish profiles that the application accepts. The GitHub account of the owner uses two-factor authentication.
 
-Resolve Before: Lot 62 (synchronization of the printer profiles), and before Phase 16 - Production Release for the rest
+Resolve Before: Phase 16 - Production Release
 
-Planned Resolution: Decide whether a web version is a target. If yes: an ADR on the profiles (served by the server of the site, or read by the browser from raw.githubusercontent.com with connect-src and CORS, same Printer Schema validation and SHA-256 check), the cache (IndexedDB), the files of the user (file input and download instead of the file system), the settings, the CSP and the hosting; the GUI keeps using the same API (window.api), with a web implementation instead of the IPC.
+Planned Resolution: Signature of index.json: a private key kept by Noam signs index.json when the profiles are published; the public key is in the application, which refuses an index without a valid signature (SYNC_004). Algorithm and file format to decide (ADR and DATA_SCHEMA.md).
 
 
 ---
