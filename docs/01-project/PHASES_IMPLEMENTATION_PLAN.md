@@ -1269,7 +1269,9 @@ Multiple Objects Supported
 
 # PRINTER DATABASE
 
-Status: In Progress
+Status: Completed
+
+Date: 2026-10-27
 
 Decisions (ADR-032, decisions D1 to D8 of Noam, 2026-10-24):
 
@@ -1290,9 +1292,28 @@ Order of the lots:
 - Lot 61: printers entered by the user
 - Lot 62: synchronization from noam76tr/slicyweb-profiles (index.json on main names the tag, SHA-256, cache in the user data folder, Printer > Refresh Profiles; ADR-032 amendment)
 - Lot 63: "no published version" distinguished from "repository unreachable" (HTTP 404); Electron 44.9.3 and npm audit fix (security)
-- Lot 64: closure of Phase 7
+- Lot 64: closure of Phase 7; src/printer_database/PrinterCache.ts removed (never used, replaced by src/storage/PrinterProfileCache.ts)
 
 Web version of SlicyWeb (KI-024): decided 2026-10-27, option B. The desktop application stays the target; the download and the validation of the profiles use no Electron and no Node.js module, for a future web version (ADR-032).
+
+Progress:
+
+- Documentation (CHANGELOG 0.1.59): ADR-032, DATA_SCHEMA.md 3.5.0, PRINTER_PROFILE_SPEC.md 2.0.0, KI-023
+- Loading by the main process (CHANGELOG 0.1.60): PrinterService, PrinterManager, printer:getAll, printer:get, printer:count; printer settings
+- Profiles (CHANGELOG 0.1.61): the 10 printers of data/printers/ and SOURCES.md
+- Printer section (CHANGELOG 0.1.62): selector, limits ("Not published" for null), plate of the printer in the viewport and the status bar, last printer kept
+- Printers of the user (CHANGELOG 0.1.63): Printer Manager, printer:add, printer:update, printer:remove, PRN_005 to PRN_007
+- Synchronization (CHANGELOG 0.1.64): noam76tr/slicyweb-profiles, index.json, SHA-256, cache, printer:refresh, Refresh Profiles, setting printer.autoCheckProfiles; DATA_SCHEMA.md 3.6.0; version v1.0.0 of the profiles published (2026-10-27)
+- Corrections and security (CHANGELOG 0.1.65): "no published version" (HTTP 404), Electron 44.9.3, npm audit fix
+
+Validation result (Windows 11, checks and manual controls of Noam, lots 58 to 63, 2026-10-26 and 2026-10-27; all passed):
+
+- Printer Loads: the 10 Official printers and the printers of the user are loaded by the main process and listed in the selector; a damaged profile file is refused without stopping the application (PRN_002); the profiles of the repository (v1.0.0) are downloaded, checked, kept in the cache and used after a restart; without network, the current profiles are kept
+- Plate Updates: the plate of the selected printer in the viewport and its size in the status bar (Bambu Lab X1 Carbon 256 × 256 mm), "No printer" removes the plate, the printer is chosen again at the next start; a printer of the user updates the plate
+- Hebrew checked for the Printer section, the Printer Manager and the messages of the profiles
+- With lot 63 (CHANGELOG 0.1.65): npm run check:locales (318 keys), npm run check:ipc (23 channels), npm run typecheck and npm run lint with no errors, npm test 134 tests passed and 1 skipped (link test, Windows), npm run test:e2e 22 tests passed; npm audit reports only zod (KI-026)
+
+Open issues after the closure: KI-023 (legal review of the profiles, Phase 16), KI-025 (signature of index.json, Phase 16), KI-026 (zod 4, Phase 16). Import Profile and Export Profile (Printer menu) come with Phase 15. The control "Repository unreachable" without network was checked with lot 62, not again with lot 63.
 
 ---
 

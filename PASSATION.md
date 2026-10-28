@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-27. Lots 61 et 62 sur `main` (commit 3fa56a2), vérifiés identiques et validés par Noam ; version v1.0.0 des profils publiée sur `slicyweb-profiles`. Lot 63 : livré, à valider. Dernière entrée du CHANGELOG : 0.1.65 (lot 63).
+Date : 2026-10-27. Lot 63 sur `main` (commit 81e9964), vérifié identique et validé par Noam ; version v1.0.0 des profils publiée sur `slicyweb-profiles`. Lot 64 (clôture de la phase 7) : livré, à valider. Dernière entrée du CHANGELOG : 0.1.66 (lot 64).
 
 ---
 
@@ -74,12 +74,13 @@ Date : 2026-10-27. Lots 61 et 62 sur `main` (commit 3fa56a2), vérifiés identiq
 | 4 | 3D Viewport | Completed (2026-10-16) | 0.1.37 |
 | 5 | Model Import | Completed (2026-10-17) | 0.1.44 |
 | 6 | Transform System | Completed (2026-10-21) | 0.1.47 à 0.1.56 |
-| 7 à 16 | Printer Database, Material Database, Model Analysis, Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
+| 7 | Printer Database | Completed (2026-10-27) | 0.1.59 à 0.1.66 |
+| 8 à 16 | Material Database, Model Analysis, Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
 
 - **Fenêtre :** Electron avec React ; barre de menus (9 menus de GUI_SPEC) ; barre d'outils (11 boutons) ; panneaux latéraux redimensionnables et repliables ; barre d'état ; thème sombre.
-- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 308 clés de traduction.
+- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 318 clés de traduction.
 - **Vue 3D :**
   - repère en mm, X à droite, Y vers l'arrière, Z vers le haut, origine au centre du plateau (ADR-028) ;
   - grille adaptative et axes ;
@@ -193,6 +194,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 61 | Phase 7 : imprimantes saisies par l'utilisateur (`printer:add`, `update`, `remove`), fenêtre Manage Printers, groupe « My printers » ; PRN_005 à PRN_007 | 0.1.63 |
 | 62 | Phase 7 : synchronisation des profils depuis `noam76tr/slicyweb-profiles` (`index.json`, cache, `printer:refresh`, Refresh Profiles) ; DATA_SCHEMA 3.6.0, amendement d'ADR-032 ; KI-024 réglé (B) | 0.1.64 |
 | 63 | « Aucune version publiée » distinct de « Dépôt injoignable » (HTTP 404) ; Electron 44.9.3 et `npm audit fix` ; KI-013 réglé, KI-026 (zod 4) | 0.1.65 |
+| 64 | Clôture de la phase 7 ; `PrinterCache.ts` supprimé (jamais utilisé) | 0.1.66 |
 
 ---
 
@@ -290,6 +292,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 68. **Publier une mise à jour des profils (étapes détaillées dans `lot62-synchronisation-profils/LOT62.md`) :** modifier `data/printers/` ; `npm run profiles:index -- vX.Y.Z` (tag plus récent que l'actuel) ; envoyer les profils, `SOURCES.md` et `index.json` sur `main` de `slicyweb-profiles` ; créer la release `vX.Y.Z` (Releases > Draft a new release). Tant que le tag n'existe pas, les applications gardent leurs profils et Actualiser affiche « aucune version publiée ».
 
 69. **Lot 63 (demande de Noam, 2026-10-27) :** une réponse HTTP 404 du dépôt (`index.json` ou tag absent) donne « Aucune version des profils publiée, profils actuels gardés. » (statut `notPublished`, pas une erreur) ; « Dépôt injoignable » reste pour les erreurs réseau, le délai dépassé et les autres statuts HTTP. Petit lot sécurité : Electron 44.9.3, `npm audit fix` (shadcn 4.23.0, fast-uri, undici ; body-parser n'est plus installé) ; zod 4 en Known Issue (KI-026). La clôture de la phase 7 passe au lot 64.
+70. **Clôture de la phase 7 (lot 64) :** `src/printer_database/PrinterCache.ts` supprimé (jamais utilisé, remplacé par `PrinterProfileCache.ts` ; option recommandée, à confirmer par Noam) ; `PrinterImporter.ts` gardé pour « Import Profile » (phase 15).
 
 **Méthode**
 
@@ -303,9 +306,10 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    - Fait : sens de la transformation (ADR-031), rendu, tests ; section Transform du panneau (lot 45) ; sélection, glisser, poignées 3D et raccourcis G, R, S (lot 46) ; corrections (lots 47 et 48) ; Annuler / Rétablir (lot 49) ; plusieurs objets (lot 50) ; rectangle et Maj+clic (lot 51) ; Ctrl+Z dans un champ (lot 52).
    - Contrôles manuels des lots 49 à 52 : tous réussis (le contrôle 16 du lot 51 a été corrigé au lot 52).
 2. **Tests automatiques avec Playwright** (lots 54, 55, 58, 60, 61, 62 et 63) : 22 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple, imprimantes). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
-3. **Phase 7 : Printer Database** (In Progress, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue (fait) ; 61 imprimantes saisies par l'utilisateur (fait) ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (fait, v1.0.0 publiée) ; 63 « aucune version publiée » et sécurité des dépendances (livré, à valider) ; 64 clôture.
-4. **Phases 8 à 16**, dans l'ordre du plan technique.
-5. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
+3. **Phase 7 : Printer Database** (Completed, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue (fait) ; 61 imprimantes saisies par l'utilisateur (fait) ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (fait, v1.0.0 publiée) ; 63 « aucune version publiée » et sécurité des dépendances (fait) ; 64 clôture (livré, à valider). Close le 2026-10-27, sous réserve de la validation du lot 64.
+4. **Phase 8 : Material Database** (suivante) : commencer par un lot d'analyse, comme le lot 56 pour la phase 7 (inventaire, sources des données de matériaux et licences, décisions à prendre avec Noam).
+5. **Phases 9 à 16**, dans l'ordre du plan technique.
+6. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
    | KI | Sujet | À régler avant |
    |---|---|---|
@@ -319,7 +323,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    | KI-025 | Signature d'`index.json` (clé privée de Noam, clé publique dans l'application) : le SHA-256 vérifie l'intégrité, pas l'auteur | Phase 16 |
    | KI-026 | npm audit : zod 3 (GHSA-mrhx-c7xc-m3w5), correction seulement en zod 4 (version majeure) ; ne pas lancer `npm audit fix --force` | Phase 16 |
 
-6. **Points signalés, en attente d'une décision de Noam :**
+7. **Points signalés, en attente d'une décision de Noam :**
    - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (lié à KI-007).
    - SLICER_EXPORT_SPEC.md : version restée en 1.0.0, pas de code d'erreur pour les contrôles de scène (proposés : EXP_013 hors volume, EXP_014 collision).
    - Duplication projet/scène des 4 sélections dans DATA_SCHEMA (décision 4) : choisir la source de vérité.
@@ -331,7 +335,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot63-securite-profils/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 63 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot64-cloture-phase7/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 64 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

@@ -669,8 +669,7 @@ Until the project owner decides otherwise:
 
 | File | Role |
 |------|------|
-| `PrinterCache.ts` | Cache storage for printer profiles |
-| `PrinterImporter.ts` | Imports printer profiles from JSON with validation |
+| `PrinterImporter.ts` | Imports printer profiles from JSON with validation; not used yet (Import Profile, Phase 15) |
 | `PrinterManager.ts` | Printer profile management (add, remove, retrieve); loads the profile files of the folders given by the main process (Official first), refused files reported with PRN_002; adds, updates and removes the printers of the user (file written first; PRN_001, PRN_005, PRN_006, PRN_007) |
 | `PrinterRepository.ts` | In-memory storage and retrieval of printer profiles |
 | `PrinterValidator.ts` | Validation of printers and of printer profile files with PrinterSchema (Zod), source of the file checked |

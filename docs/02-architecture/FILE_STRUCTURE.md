@@ -603,8 +603,7 @@ src/printer_database/
 ├── PrinterManager.ts
 ├── PrinterRepository.ts
 ├── PrinterValidator.ts
-├── PrinterCache.ts
-└── PrinterImporter.ts
+└── PrinterImporter.ts         = not used yet (Import Profile, Phase 15)
 ```
 
 ---

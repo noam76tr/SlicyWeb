@@ -849,7 +849,7 @@ Submodules
 
 PrinterRepository
 
-PrinterCache
+PrinterProfileCache (src/storage/, cache of the profile repository)
 
 PrinterValidator
 
