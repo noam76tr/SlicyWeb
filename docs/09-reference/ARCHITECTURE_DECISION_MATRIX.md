@@ -2,7 +2,7 @@
 
 # ARCHITECTURE DECISION MATRIX
 
-Version: 2.4.0
+Version: 2.5.0
 
 Status: Approved
 
@@ -180,6 +180,7 @@ Requires:
 | ADM-026 | 3MF Import With fflate And fast-xml-parser In The Web Worker | Import | High | Approved |
 | ADM-027 | Object Transform Meaning (Rotation Unit, Order, Pivot, Scale) | Scene | High | Approved |
 | ADM-028 | Printer Profile Sources, Licences and Profile Repository | Printer Database | High | Approved |
+| ADM-029 | Material and Filament Profile Sources | Material Database | High | Approved |
 
 ---
 
@@ -829,6 +830,31 @@ Benefits:
 
 - No licence constraint from the slicers
 - One profile format, checked against its source
+
+---
+
+ADM-029
+
+Title:
+
+Material and Filament Profile Sources
+
+Decision:
+
+Materials (families) and filaments (product lines) written by SlicyWeb from the technical data sheets of the manufacturers (never copied from slicer profile files), as Repository Data Schema envelopes in data/materials/ and data/filaments/, plus filaments entered by the user; the ranges of a family come from the sheets of its shipped filaments; values not published are null; loaded and validated by the main process (material:* and filament:* IPC channels); updates later from noam76tr/slicyweb-profiles, one index per type.
+
+Rationale:
+
+Same licence situation as the printer profiles (ADM-028); Local First; no guessed value.
+
+Reference:
+
+ADR-033 (DECISIONS.md)
+
+Benefits:
+
+- One rule for printers, materials and filaments
+- Each number checked against its source
 
 ---
 

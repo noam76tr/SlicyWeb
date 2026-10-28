@@ -1,8 +1,38 @@
 {
   "type": "printer-index",
   "version": "1.0.0",
-  "tag": "v1.0.0",
+  "tag": "v1.0.1",
   "profiles": [
+    {
+      "file": "anycubic_kobra3.json",
+      "id": "anycubic_kobra3",
+      "sha256": "67f9b4071877fbd1c2c3a750bb117f352c35c952473b3526eb55264da0c72d70"
+    },
+    {
+      "file": "anycubic_kobra3_max.json",
+      "id": "anycubic_kobra3_max",
+      "sha256": "8b58ccf912a480b0c478eee31bbfba166343059200afc7830e9e609d0e262160"
+    },
+    {
+      "file": "anycubic_kobra3_v2.json",
+      "id": "anycubic_kobra3_v2",
+      "sha256": "7bd00b4de597eab06bd208a233e171580d9a5b2338ce8181384d72e64cd27f00"
+    },
+    {
+      "file": "anycubic_kobra_s1.json",
+      "id": "anycubic_kobra_s1",
+      "sha256": "fec841da02291cbf5f3c778ff30f28cd78f21b44f305336d4619ceefa1d530b2"
+    },
+    {
+      "file": "anycubic_kobra_s1_max.json",
+      "id": "anycubic_kobra_s1_max",
+      "sha256": "13398bf947354d29d406567c214d7e82a2db7c19a35740c47abc8a1645bd6f58"
+    },
+    {
+      "file": "anycubic_kobra_x.json",
+      "id": "anycubic_kobra_x",
+      "sha256": "8cc658c2ec039a915bc1a00f42a64460a79b9db2601b83bcb7e4861cadba9604"
+    },
     {
       "file": "bambu_a1.json",
       "id": "bambu_a1",
@@ -12,6 +42,11 @@
       "file": "bambu_a1_mini.json",
       "id": "bambu_a1_mini",
       "sha256": "4cc68e4b52c75f534f9e831fd5503462ef28f3ad44db2c5b2ac4fa6846588029"
+    },
+    {
+      "file": "bambu_h2c.json",
+      "id": "bambu_h2c",
+      "sha256": "d1adf5e67f4edc304ecb773d3a6e1804521bd1cf805b7ca1272245431af37acc"
     },
     {
       "file": "bambu_p1s.json",
@@ -24,9 +59,64 @@
       "sha256": "229609d95674e3570208284e1a3622594afe688d244b3831aecd5159ed0131ec"
     },
     {
+      "file": "biqu_b1.json",
+      "id": "biqu_b1",
+      "sha256": "e9b2215e66a8813d7b7e8f7975e75568d421c3ce1c1530f3972d99c68e182c8f"
+    },
+    {
+      "file": "biqu_bx.json",
+      "id": "biqu_bx",
+      "sha256": "dd88c388c0490fd1d8c2ac409b475885cc460034297b178b5e323e5334acb7bf"
+    },
+    {
+      "file": "biqu_hurakan.json",
+      "id": "biqu_hurakan",
+      "sha256": "4ad1395cb3e999a6e5f07bac4efa33d4b9a659c37c04901167d16a340ea3ea36"
+    },
+    {
+      "file": "creality_ender3_v3.json",
+      "id": "creality_ender3_v3",
+      "sha256": "ef5040fe7ca85518c0eab6d30f8f7f00de6b6eb84b30082fa68cc83d569be292"
+    },
+    {
+      "file": "creality_ender3_v3_ke.json",
+      "id": "creality_ender3_v3_ke",
+      "sha256": "1bff9e92e40b299be0e53e0ea969486f6ba9cfdc7b0812dd5507cd546064b7c6"
+    },
+    {
+      "file": "creality_ender3_v3_plus.json",
+      "id": "creality_ender3_v3_plus",
+      "sha256": "0ffe6a644f67d535527237753a7094908f615787ef273c8271a72c207c01250e"
+    },
+    {
       "file": "creality_ender3_v3_se.json",
       "id": "creality_ender3_v3_se",
       "sha256": "be30ae9ff69aa39e54619741c1a3a9d6e47f60f5390fd55e1bae3f375aff7099"
+    },
+    {
+      "file": "creality_ender5_max.json",
+      "id": "creality_ender5_max",
+      "sha256": "c428483a6c5606483d9bfe0b2aa65ba64e54ef5a7a8d7281be9d8f11196abddd"
+    },
+    {
+      "file": "creality_hi.json",
+      "id": "creality_hi",
+      "sha256": "77dc6d623608359e5a763bf0161c2f1b972ffc14aecc9621c768f496b937e031"
+    },
+    {
+      "file": "creality_k1.json",
+      "id": "creality_k1",
+      "sha256": "bf2315b7836662299a0ade85a71461fab9d2eafb8bddc57cbaa57a3b44732fd8"
+    },
+    {
+      "file": "creality_k1_max.json",
+      "id": "creality_k1_max",
+      "sha256": "1d52d52e31480eca86da7cfc10edaee450383b04d79bd90287357ee0b5d534cf"
+    },
+    {
+      "file": "creality_k1_se.json",
+      "id": "creality_k1_se",
+      "sha256": "7087893744ff3c7b759e5a2aedd4edfca5de1601d25890adc741dce0c925635c"
     },
     {
       "file": "creality_k1c.json",
@@ -34,9 +124,89 @@
       "sha256": "359ca57c5e443dda2cfe6d12a1314f7fcfe177fea4b68ab1a8368c99c528a5ac"
     },
     {
+      "file": "creality_k2.json",
+      "id": "creality_k2",
+      "sha256": "d710d511e0abafc8847da548ce3300ed1595ca4655b108140cf03b4d69b83ebd"
+    },
+    {
+      "file": "creality_k2_plus.json",
+      "id": "creality_k2_plus",
+      "sha256": "ff7f8b6d3ca8919933aef657be269e44cc07b64866713ecebf8a3236070bdc81"
+    },
+    {
+      "file": "creality_k2_pro.json",
+      "id": "creality_k2_pro",
+      "sha256": "3b0827aa2bcb6ca0d62fdebd3ec56a6a3d8fc4039596357f34a851292f67cdfd"
+    },
+    {
+      "file": "creality_k2_se.json",
+      "id": "creality_k2_se",
+      "sha256": "d74b95db3d9d26748eb5077502283962811a95ad0f216c49c1ecd41271114ccf"
+    },
+    {
+      "file": "creality_sparkx_i7.json",
+      "id": "creality_sparkx_i7",
+      "sha256": "a802393f206b0f646ba55a911a03e6d45f1ada6eee549cae2e1a10842b719172"
+    },
+    {
+      "file": "elegoo_centauri_carbon.json",
+      "id": "elegoo_centauri_carbon",
+      "sha256": "2dd20bfb52e6168ba7bdeaeb2be1b3a26e52d41dd36a0af634efd472b8041354"
+    },
+    {
+      "file": "elegoo_neptune4.json",
+      "id": "elegoo_neptune4",
+      "sha256": "0f917844452787ccf69366082ab4fa45a0624fcd6658a50f88d328a2915288a7"
+    },
+    {
+      "file": "elegoo_neptune4_max.json",
+      "id": "elegoo_neptune4_max",
+      "sha256": "fa2feec9c9c45fcde572dacce36f0fa5fd35684d6bd50a31c37d69346af4bd83"
+    },
+    {
+      "file": "elegoo_neptune4_plus.json",
+      "id": "elegoo_neptune4_plus",
+      "sha256": "f7e4c8fbe26cb4aa3e69b68bef6e10c740f6b5eb4e2aa5354b8f55d6585baaf7"
+    },
+    {
       "file": "elegoo_neptune4_pro.json",
       "id": "elegoo_neptune4_pro",
       "sha256": "78f49d5e4ee4dd82e7d46c8be3e935401ff6e8c16836b87fe47fb6ceac70d228"
+    },
+    {
+      "file": "flashforge_ad5x.json",
+      "id": "flashforge_ad5x",
+      "sha256": "8705fe212395c3be6a7856b79c157cc15ca7211ff1d3af25f15bf563daab8c5c"
+    },
+    {
+      "file": "flashforge_adventurer_5m.json",
+      "id": "flashforge_adventurer_5m",
+      "sha256": "cc9458e05a2689ceadbde01a7c78a8fbbfb616a753a99130a6f37ca7755c7fa7"
+    },
+    {
+      "file": "flashforge_adventurer_5m_pro.json",
+      "id": "flashforge_adventurer_5m_pro",
+      "sha256": "5754334fd32f40ff72843ec1730cdf5e6c0b044fcec539b48b5fdaef7d6bccaf"
+    },
+    {
+      "file": "flashforge_creator_5.json",
+      "id": "flashforge_creator_5",
+      "sha256": "4b5157c6ed3b7531952379fed19e97a5a25096829d0977f22bbd20a4df0a6da8"
+    },
+    {
+      "file": "flashforge_creator_5_pro.json",
+      "id": "flashforge_creator_5_pro",
+      "sha256": "0daa856b80a7ffe17aee877dbfb159227d16d2c72cb6aa22e18aad1dced7194f"
+    },
+    {
+      "file": "flashforge_guider_3_ultra.json",
+      "id": "flashforge_guider_3_ultra",
+      "sha256": "79a6df3508f9d0aacd65d8dceb33ad754ef2966dfd59a744d61e938c40ffe21c"
+    },
+    {
+      "file": "prusa_core_one_l_plus.json",
+      "id": "prusa_core_one_l_plus",
+      "sha256": "2718948a38ba1cc62bd9a89ec948641ba1e8ab6b5d9164acbc8cce7c0b19e8fb"
     },
     {
       "file": "prusa_core_one_plus.json",
@@ -52,6 +222,71 @@
       "file": "prusa_mk4s.json",
       "id": "prusa_mk4s",
       "sha256": "c801690ed603979acdcdb1650689af5b83719196678413b313ff890aee7a4f8d"
+    },
+    {
+      "file": "prusa_xl_plus.json",
+      "id": "prusa_xl_plus",
+      "sha256": "34f6a93cdfc1e2b609de59fe392d7463ca4fe49e88560c072271021a5aab92d3"
+    },
+    {
+      "file": "qidi_max4.json",
+      "id": "qidi_max4",
+      "sha256": "96ab8b5b11c62984aa9176538ef75ef73e63e70b517f9d231e37230b77a13759"
+    },
+    {
+      "file": "qidi_plus4.json",
+      "id": "qidi_plus4",
+      "sha256": "376908a7afe9dea27a16847c5f164970f7b8393913b466d9ac13f2a075dd774d"
+    },
+    {
+      "file": "qidi_plus5.json",
+      "id": "qidi_plus5",
+      "sha256": "e9a0d089b48adbbc48e1842f6473301fb14c1c210b14e3a024c3c717f036b7ea"
+    },
+    {
+      "file": "qidi_q1_pro.json",
+      "id": "qidi_q1_pro",
+      "sha256": "7dd5e4ee310c60f343106c453001387ed5cf0b7f9d951e53fb73d42310575c49"
+    },
+    {
+      "file": "qidi_q2.json",
+      "id": "qidi_q2",
+      "sha256": "1453c8fef9c13f6b7d66316fd53b6530d1a582749337b3164a5f04fe23b3b04d"
+    },
+    {
+      "file": "qidi_q2c.json",
+      "id": "qidi_q2c",
+      "sha256": "4f9205902b7113d1cabd4418c9ec4a2a7b34251f2f1a917b251243291aaf86a6"
+    },
+    {
+      "file": "snapmaker_u1.json",
+      "id": "snapmaker_u1",
+      "sha256": "6f2a9a79a41eb581a091af7bcbed812d48f2c80475b0fd6dee331627e9d29c7c"
+    },
+    {
+      "file": "sovol_sv06_ace.json",
+      "id": "sovol_sv06_ace",
+      "sha256": "2c9171b7e1b67691c45ace0f2a7ed9b7a3572b7556ca0e6efb2a1651734e0de8"
+    },
+    {
+      "file": "sovol_sv06_plus_ace.json",
+      "id": "sovol_sv06_plus_ace",
+      "sha256": "6152285ba863e92fdf5fd9e4c631916d3d2bc218b1830eba80ec4c12c537bb8c"
+    },
+    {
+      "file": "sovol_sv08.json",
+      "id": "sovol_sv08",
+      "sha256": "0cb5a63ea01ee744da6d4ed3145396cd1d16282a3ab04bc25c4643b5cc44e1fd"
+    },
+    {
+      "file": "sovol_sv08_max.json",
+      "id": "sovol_sv08_max",
+      "sha256": "994e50fa6e62f8063d3ae0d6b4815894a20b32190dd2fad7e1ec59dc4024926a"
+    },
+    {
+      "file": "sovol_zero.json",
+      "id": "sovol_zero",
+      "sha256": "b7bcd8c9097b6ce909002cef915f8a256c2aca04b63a56f31a74ab4429ba7688"
     }
   ]
 }

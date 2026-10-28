@@ -1,0 +1,46 @@
+{
+  "id": "sovol_zero",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "sovol_zero",
+    "brand": "Sovol",
+    "model": "Zero",
+    "series": "Zero",
+    "manufacturer": "Sovol",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 152.4,
+      "y": 152.4,
+      "z": 152.5
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.2, 0.4, 0.6, 0.8, 1],
+    "motion": {
+      "maxPrintSpeed": 1200,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 40000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 350,
+      "maxBedTemp": 120,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "unknown",
+      "count": 1
+    },
+    "supportedMaterials": [],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

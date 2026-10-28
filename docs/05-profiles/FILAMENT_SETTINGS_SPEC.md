@@ -3,7 +3,7 @@
 # FILAMENT SETTINGS SPECIFICATION
 
 
-Version: 1.0.0
+Version: 2.0.0
 
 
 Status: Approved
@@ -39,6 +39,22 @@ eSUN PETG
 Overture TPU
 
 ```
+
+
+
+# Alignment With DATA_SCHEMA.md (2.0.0)
+
+
+
+DATA_SCHEMA.md (priority 0) is the source of truth for the fields of a filament (Filament Schema, flat structure). This specification follows it (ADR-033):
+
+- A filament is a product line of a brand (as Bambu Lab PLA Basic). It belongs to a family: its material field is the category of a material (MATERIAL_PROFILE_SPEC.md, Material Families).
+- A filament profile has the fields of the Filament Schema of DATA_SCHEMA.md: id, brand, name, material, color, diameter, density, pricePerKg, temperature (minNozzle, maxNozzle, minBed, maxBed), manufacturerSettings (retractionDistance, retractionSpeed, fanSpeed, nozzleTemperature, bedTemperature), recommendedProfile (empty until Phase 10). No other field.
+- temperature keeps the ranges published by the manufacturer; manufacturerSettings keeps the single values published by the manufacturer. A range is never turned into a single value.
+- A value not published is null, never 0. The four temperature values are required (not null) for a shipped filament. A shipped filament is a product line: color null, pricePerKg null.
+- A profile file is a Repository Data Schema envelope (id, type "filament", version of the profile, source, data, validated); data is the filament.
+- Sources: written by SlicyWeb from the technical data sheet of the manufacturer, never copied from a profile file of a slicer (ADR-033 D1). The sheet and the date of verification of each filament are listed in data/filaments/SOURCES.md. Source types used: Official (shipped filaments) and Custom User Profile (filaments entered by the user, Manage Filaments, Phase 8 lot 70). Community sources are not used.
+- The sections of this document without a field in DATA_SCHEMA.md (Profile Structure, metadata, verified, profileVersion, manufacturer and source, printing, quality, visual, moisture, stringing, warp risk, layer adhesion, surface finish, special requirements, cost settings other than pricePerKg) are future: they are not part of a profile until DATA_SCHEMA.md defines them.
 
 
 

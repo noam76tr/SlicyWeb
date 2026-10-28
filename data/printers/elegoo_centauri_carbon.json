@@ -1,0 +1,46 @@
+{
+  "id": "elegoo_centauri_carbon",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "elegoo_centauri_carbon",
+    "brand": "Elegoo",
+    "model": "Centauri Carbon",
+    "series": "Centauri",
+    "manufacturer": "Elegoo",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 256,
+      "y": 256,
+      "z": 256
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": 500,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 20000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 320,
+      "maxBedTemp": 110,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": true,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "unknown",
+      "count": 1
+    },
+    "supportedMaterials": [],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

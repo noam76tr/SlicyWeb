@@ -1,0 +1,46 @@
+{
+  "id": "biqu_b1",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "biqu_b1",
+    "brand": "BIQU",
+    "model": "B1",
+    "series": "B1",
+    "manufacturer": "BIQU",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 235,
+      "y": 235,
+      "z": 270
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": 100,
+      "maxTravelSpeed": null,
+      "maxAcceleration": null,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": null,
+      "maxBedTemp": null,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "unknown",
+      "count": 1
+    },
+    "supportedMaterials": ["PLA", "ABS", "PETG"],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

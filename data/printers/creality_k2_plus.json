@@ -1,0 +1,55 @@
+{
+  "id": "creality_k2_plus",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "creality_k2_plus",
+    "brand": "Creality",
+    "model": "K2 Plus",
+    "series": "K2",
+    "manufacturer": "Creality",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 350,
+      "y": 350,
+      "z": 350
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": 600,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 30000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 350,
+      "maxBedTemp": 120,
+      "maxChamberTemp": 60
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": true,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": [
+      "PLA",
+      "ABS",
+      "PETG",
+      "PA-CF",
+      "PLA-CF",
+      "PET",
+      "ASA",
+      "PPA-CF"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

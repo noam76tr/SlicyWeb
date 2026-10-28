@@ -411,6 +411,28 @@ Unsupported Material
 
 ---
 
+# Filament Errors
+
+Phase 8, ADR-033. The errors of the filaments entered by the user (Manage Filaments) are added with lot 70.
+
+## FIL_001
+
+```text
+Filament Not Found
+```
+
+A filament id that is not loaded (filament:update, filament:remove, or the last filament of the settings, which is then ignored).
+
+## FIL_002
+
+```text
+Invalid Filament Profile
+```
+
+A filament file that cannot be read, is larger than the size limit, fails the Repository Data Schema or Filament Schema validation, or whose id is already loaded. The file is refused; the other filaments are loaded.
+
+---
+
 # Schema and Validation Errors
 
 ## SCH_001

@@ -1,0 +1,46 @@
+{
+  "id": "creality_k1",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "creality_k1",
+    "brand": "Creality",
+    "model": "K1",
+    "series": "K1",
+    "manufacturer": "Creality",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 220,
+      "y": 220,
+      "z": 250
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": 600,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 20000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 300,
+      "maxBedTemp": 100,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": ["PLA", "TPU", "PA-CF", "PLA-CF", "PETG", "ABS"],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

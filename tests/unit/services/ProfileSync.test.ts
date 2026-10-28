@@ -121,15 +121,15 @@ describe("Profile sync service", () => {
       status: "updated",
       profiles: {
         origin: "repository",
-        tag: "v1.0.0",
+        tag: "v1.0.1",
         checkedAt: START.toISOString(),
       },
     });
     expect(reload).toHaveBeenCalledTimes(2);
-    expect(cache.readValid()?.tag).toBe("v1.0.0");
+    expect(cache.readValid()?.tag).toBe("v1.0.1");
     expect(await cache.readLastCheck()).toMatchObject({
       success: true,
-      version: "v1.0.0",
+      version: "v1.0.1",
       errors: [],
       synchronizedAt: START.toISOString(),
     });
@@ -172,7 +172,7 @@ describe("Profile sync service", () => {
     const second = setup(download());
     expect((await second.service.start()).origin).toBe("application");
     expect((await second.service.check(false)).status).toBe("updated");
-    expect(second.cache.readValid()?.tag).toBe("v1.0.0");
+    expect(second.cache.readValid()?.tag).toBe("v1.0.1");
   });
 
   it("never keeps profiles older than those of the application", async () => {
@@ -272,7 +272,7 @@ describe("Printer profile cache", () => {
       createdAt: START.toISOString(),
       expiresAt: new Date(START.getTime() + CHECK_INTERVAL_MS).toISOString(),
       source: "noam76tr/slicyweb-profiles",
-      version: "v1.0.0",
+      version: "v1.0.1",
       checksum: await sha256Hex(new TextEncoder().encode(indexText)),
     };
     await cache.write(profiles, indexText, metadata);
@@ -283,8 +283,8 @@ describe("Printer profile cache", () => {
     const cache = await written();
     const valid = cache.readValid();
 
-    expect(valid?.tag).toBe("v1.0.0");
-    expect(fs.readdirSync(valid?.folder ?? "")).toHaveLength(11);
+    expect(valid?.tag).toBe("v1.0.1");
+    expect(fs.readdirSync(valid?.folder ?? "")).toHaveLength(58);
     expect(await cache.readChecksum()).toBe(valid?.checksum);
   });
 
@@ -321,7 +321,7 @@ describe("Printer profile cache", () => {
   });
 
   it("reads the tag of the profiles of the application", () => {
-    expect(readIndexTag(FOLDER)).toBe("v1.0.0");
+    expect(readIndexTag(FOLDER)).toBe("v1.0.1");
     expect(readIndexTag(root)).toBeNull();
   });
 });

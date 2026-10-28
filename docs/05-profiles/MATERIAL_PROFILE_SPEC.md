@@ -4,7 +4,7 @@
 
 
 
-Version: 1.0.0
+Version: 2.0.0
 
 
 
@@ -26,6 +26,58 @@ This document defines the complete structure of material profiles used by the Sl
 
 
 All material profiles must follow this specification.
+
+
+
+# Alignment With DATA_SCHEMA.md (2.0.0)
+
+
+
+DATA_SCHEMA.md (priority 0) is the source of truth for the fields of a material (Complete Material Schema, flat structure). This specification follows it (ADR-033):
+
+- A material is a family of plastic (PLA, PETG...). A commercial product is a filament (FILAMENT_SETTINGS_SPEC.md) that belongs to a family.
+- A material profile has the fields of the Complete Material Schema of DATA_SCHEMA.md: id, name, category, brand and description (optional), temperature (minNozzle, maxNozzle, minBed, maxBed), cooling (fanMin, fanMax), physical (density, shrinkage, warpingRisk), recommended (printSpeed, travelSpeed, retractionDistance, retractionSpeed). No other field.
+- A value not published is null, never 0. The four temperature values are required (not null) for a shipped material.
+- A profile file is a Repository Data Schema envelope (id, type "material", version of the profile, source, data, validated); data is the material.
+- Shipped materials (ADR-033 D2): the temperature ranges of a family are those of its shipped filaments, the smallest minimum and the largest maximum; a single value is the value published by every shipped filament of the family that publishes it, or null. A family without a shipped filament is not shipped. The filaments used for each family are listed in data/materials/SOURCES.md. Users do not enter materials.
+- Sources: written by SlicyWeb from the technical data sheets of the manufacturers, never copied from a profile file of a slicer (ADR-033 D1). Source type used: Official. Community sources are not used.
+- The sections of this document without a field in DATA_SCHEMA.md (Profile Structure, metadata, thermal with recommended temperatures, mechanical, drying, environmental behavior, compatibility, cost, color, food safety, outdoor usage, chemical and fire resistance, risk factors, AI scoring, source, profileVersion, verified) are future: they are not part of a profile until DATA_SCHEMA.md defines them. The Material Categories below are replaced by the Material Families.
+
+
+
+# Material Families (2.0.0)
+
+
+
+Reference list of the families (category of a material, material of a filament), ADR-033 D5:
+
+| Family | Shipped (Phase 8) |
+|---|---|
+| PLA | Yes |
+| PETG | Yes |
+| ABS | Yes |
+| ASA | Yes |
+| TPU | Yes |
+| PA | No |
+| PC | No |
+| PVA | No |
+| HIPS | No |
+| PP | No |
+| PET | No |
+| PLA-CF, PETG-CF, PA-CF, PET-CF | No |
+
+A variant of a family (PLA+, PLA Matte, PETG HF...) is a filament of the family, not a family: eSUN PLA+ belongs to PLA.
+
+supportedMaterials of a printer keeps the words of the page of its manufacturer. To compare them with the families, these aliases are used:
+
+| Word on the page of the manufacturer | Family |
+|---|---|
+| Flex | TPU |
+| NYLON, Nylon | PA |
+| PLA, PETG, ABS, ASA, TPU, PA, PC, PVA, HIPS, PP, PET, PLA-CF, PA-CF, PET-CF | The same family |
+| CPE, nGen, PVB, BVOH, and any other word | No family (not compared) |
+
+When the printer lists at least one material and the family of the chosen material is not in its list (after the aliases), the Material section shows a warning (GUI_SPEC.md); it never blocks the choice. A printer that lists no material gives no warning.
 
 
 

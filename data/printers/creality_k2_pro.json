@@ -1,0 +1,55 @@
+{
+  "id": "creality_k2_pro",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "creality_k2_pro",
+    "brand": "Creality",
+    "model": "K2 Pro",
+    "series": "K2",
+    "manufacturer": "Creality",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 300,
+      "y": 300,
+      "z": 300
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": 600,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 20000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 300,
+      "maxBedTemp": 110,
+      "maxChamberTemp": 60
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": true,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "unknown",
+      "count": 1
+    },
+    "supportedMaterials": [
+      "PLA",
+      "PETG",
+      "PET",
+      "ABS",
+      "ASA",
+      "PLA-CF",
+      "PA-CF",
+      "PPA-CF"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

@@ -5,7 +5,8 @@
  * The printer profiles shipped in data/printers/ (ADR-032, D7): each file
  * passes PrinterProfileFileSchema, is named after the id of its printer,
  * has the source Official and is listed in data/printers/SOURCES.md
- * (page of the manufacturer, date of verification); the loader of the
+ * (page of the manufacturer, date of verification; 10 printers in
+ * v1.0.0, 57 in v1.0.1); the loader of the
  * main process loads them all, without refused file. index.json (index
  * of the profile repository, Phase 7 lot 62) lists each profile with
  * the SHA-256 of its file.
@@ -29,7 +30,8 @@ import { ProfileIndexSchema } from "../../../src/schemas/ProfileRepositorySchema
 
 const FOLDER = path.resolve(__dirname, "../../../data/printers");
 
-const PRINTERS = [
+/** The 10 first printers (v1.0.0), always shipped */
+const FIRST_PRINTERS = [
   "bambu_a1",
   "bambu_a1_mini",
   "bambu_p1s",
@@ -48,8 +50,11 @@ const files = fs
   .sort();
 
 describe("Printer profiles of data/printers", () => {
-  it("contains the 10 first printers", () => {
-    expect(files).toEqual(PRINTERS.map((id) => `${id}.json`));
+  it("contains the 57 printers of v1.0.1, with the 10 first printers", () => {
+    expect(files).toHaveLength(57);
+    expect(files).toEqual(
+      expect.arrayContaining(FIRST_PRINTERS.map((id) => `${id}.json`)),
+    );
   });
 
   it.each(files)("%s passes the schema, with its id and source", (name) => {
@@ -83,6 +88,7 @@ describe("Printer profiles of data/printers", () => {
     const sources = fs.readFileSync(path.join(FOLDER, "SOURCES.md"), "utf8");
 
     expect(sources).toContain("read on 2026-10-26");
+    expect(sources).toContain("read on 2026-10-28");
     for (const name of files) {
       expect(sources).toContain(`(${name})`);
     }
@@ -94,7 +100,7 @@ describe("Printer profiles of data/printers", () => {
       { folder: FOLDER, source: "Official" },
     ]);
 
-    expect(result).toEqual({ loaded: PRINTERS.length, rejected: [] });
+    expect(result).toEqual({ loaded: files.length, rejected: [] });
     expect(manager.getPrinter("bambu_x1c")?.buildVolume).toEqual({
       x: 256,
       y: 256,

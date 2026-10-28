@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-28. Lot 64 sur `main` (commit ff9c550), vérifié identique et validé par Noam : phase 7 close. Lot 65 (analyse de la phase 8, décisions D1 à D11) : à envoyer sur GitHub, réponses de Noam attendues. Dernière entrée du CHANGELOG : 0.1.66 (lot 64).
+Date : 2026-10-28. Lot 65 (analyse de la phase 8) sur `main` (commit 89b9ad3), vérifié identique ; Noam a répondu aux décisions D1 à D11 (décisions 71 à 75). Lot 66 (documentation de la phase 8) : à envoyer sur GitHub. Profils v1.0.1 (47 imprimantes ajoutées, 57 au total, hors numérotation des lots) : à envoyer sur GitHub après le lot 66, puis sur `noam76tr/slicyweb-profiles`. Dernière entrée du CHANGELOG : 0.1.68 (profils v1.0.1).
 
 ---
 
@@ -86,7 +86,7 @@ Date : 2026-10-28. Lot 64 sur `main` (commit ff9c550), vérifié identique et va
   - grille adaptative et axes ;
   - caméras perspective et orthographique, 7 vues prédéfinies, Home ;
   - pas de plateau tant qu'aucune imprimante n'est choisie (phase 7).
-- **Imprimantes (phase 7) :** 10 profils dans `data/printers/` (Official) et les imprimantes de l'utilisateur (`<dossier de réglages>/printers/`, Local Custom), lus par le processus principal. Section Printer du panneau Propriétés : sélecteur (« No printer », « My printers », puis un groupe par marque), limites (« Not published » pour `null`), taille du plateau en bas de la vue, dernière imprimante retenue. Fenêtre Manage Printers (lot 61) : ajouter, copier, modifier, supprimer ses propres imprimantes ; les imprimantes Official ne se modifient jamais. Synchronisation (lot 62) : au démarrage (au plus une fois par 24 h) et par Printer > Refresh Profiles, le processus principal lit `index.json` sur `main` de `noam76tr/slicyweb-profiles`, puis les profils au tag de l'index (SHA-256, tout ou rien), et les garde dans `<dossier de réglages>/cache/printers/` ; ce cache valide remplace `data/printers/`. Une ligne « Profiles v1.0.0 … » sous le sélecteur.
+- **Imprimantes (phase 7) :** 57 profils dans `data/printers/` (Official ; 10 en v1.0.0, 47 ajoutés en v1.0.1) et les imprimantes de l'utilisateur (`<dossier de réglages>/printers/`, Local Custom), lus par le processus principal. Section Printer du panneau Propriétés : sélecteur (« No printer », « My printers », puis un groupe par marque), limites (« Not published » pour `null`), taille du plateau en bas de la vue, dernière imprimante retenue. Fenêtre Manage Printers (lot 61) : ajouter, copier, modifier, supprimer ses propres imprimantes ; les imprimantes Official ne se modifient jamais. Synchronisation (lot 62) : au démarrage (au plus une fois par 24 h) et par Printer > Refresh Profiles, le processus principal lit `index.json` sur `main` de `noam76tr/slicyweb-profiles`, puis les profils au tag de l'index (SHA-256, tout ou rien), et les garde dans `<dossier de réglages>/cache/printers/` ; ce cache valide remplace `data/printers/`. Une ligne « Profiles v1.0.1 … » sous le sélecteur.
 - **Import :**
   - STL (binaire et texte) et 3MF ;
   - par File > Import, le bouton Import ou le glisser-déposer ;
@@ -196,6 +196,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 63 | « Aucune version publiée » distinct de « Dépôt injoignable » (HTTP 404) ; Electron 44.9.3 et `npm audit fix` ; KI-013 réglé, KI-026 (zod 4) | 0.1.65 |
 | 64 | Clôture de la phase 7 ; `PrinterCache.ts` supprimé (jamais utilisé) | 0.1.66 |
 | 65 | Analyse seule : phase 8 (Material Database), inventaire, sources et licences, décisions D1 à D11 (`lot65-phase8-analyse/PHASE8-ANALYSE.md`) | — |
+| 66 | Phase 8, documentation : ADR-033, DATA_SCHEMA 3.7.0, MATERIAL_PROFILE_SPEC et FILAMENT_SETTINGS_SPEC 2.0.0, FIL_001 et FIL_002 | 0.1.67 |
+| — | Profils v1.0.1 (hors lot) : 47 imprimantes ajoutées à `data/printers/` et à `noam76tr/slicyweb-profiles` (pages des fabricants lues le 2026-10-28), machines sans fiche lisible listées dans `profils-v1.0.1/PROFILS-V1.0.1.md` ; tests adaptés (57 profils, tag v1.0.1) | 0.1.68 |
 
 ---
 
@@ -294,6 +296,11 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 69. **Lot 63 (demande de Noam, 2026-10-27) :** une réponse HTTP 404 du dépôt (`index.json` ou tag absent) donne « Aucune version des profils publiée, profils actuels gardés. » (statut `notPublished`, pas une erreur) ; « Dépôt injoignable » reste pour les erreurs réseau, le délai dépassé et les autres statuts HTTP. Petit lot sécurité : Electron 44.9.3, `npm audit fix` (shadcn 4.23.0, fast-uri, undici ; body-parser n'est plus installé) ; zod 4 en Known Issue (KI-026). La clôture de la phase 7 passe au lot 64.
 70. **Clôture de la phase 7 (lot 64) :** `src/printer_database/PrinterCache.ts` supprimé (jamais utilisé, remplacé par `PrinterProfileCache.ts` ; option recommandée, confirmée par Noam, qui a supprimé le fichier) ; `PrinterImporter.ts` gardé pour « Import Profile » (phase 15).
+71. **Phase 8, sources (ADR-033, D1 et D2, Noam, 2026-10-28) :** matériaux et filaments écrits par SlicyWeb à partir des fiches techniques des fabricants, jamais recopiés depuis les profils des slicers ; sources dans `data/materials/SOURCES.md` et `data/filaments/SOURCES.md`. Un matériau est une famille ; ses plages = la plus petite valeur minimale et la plus grande valeur maximale des fiches de ses filaments livrés ; une famille sans filament livré n'est pas livrée. KI-023 couvre aussi les matériaux.
+72. **Format (D3, D4, et carte du lot 66) :** enveloppe Repository Data Schema (`type` `material` ou `filament`) ; `null` = non publié, jamais 0 ; températures de buse et de plateau obligatoires pour un profil livré ; le filament a ses plages (`temperature`, même structure que le matériau, nombre ou `null`) et les valeurs uniques du fabricant dans `manufacturerSettings` (jamais une valeur prise au milieu d'une plage) ; filament livré = gamme, `color` et `pricePerKg` à `null` (DATA_SCHEMA 3.7.0).
+73. **Noms (D5) :** liste de référence des familles et table des alias dans MATERIAL_PROFILE_SPEC 2.0.0 ; `supportedMaterials` des imprimantes garde les mots du fabricant ; famille absente de la liste de l'imprimante = avertissement, jamais un blocage (pas d'avertissement si l'imprimante ne publie aucun matériau).
+74. **Chargement et interface (D6, D9, D10) :** processus principal ; canaux `material:getAll`, `filament:getAll` (lot 67), puis `filament:add`, `update`, `remove` (lot 70) ; sections Material et Filament, filaments filtrés par famille ; dernier choix retenu (`material.defaultMaterial`, `defaultFilament`, `autoloadLastMaterial`) ; fenêtre Manage Filaments.
+75. **Liste et suite (D7, D8, D11) :** 5 familles (PLA, PETG, ABS, ASA, TPU ; PA et PC retirés par Noam) et 12 gammes (Bambu Lab PLA Basic, PLA Matte, PETG HF, ABS, TPU 95A HF ; Prusament PLA, PETG, ASA ; Polymaker PolyLite PLA, PolyLite PETG ; eSUN PLA+, famille PLA ; Elegoo PLA), aucun filament personnel de Noam ; synchronisation au lot 71 dans `slicyweb-profiles` (dossiers `materials/` et `filaments/`, un `index.json` chacun) ; fichiers inutilisés supprimés au lot concerné, selon le tableau D11 de l'analyse (validé).
 
 **Méthode**
 
@@ -308,7 +315,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    - Contrôles manuels des lots 49 à 52 : tous réussis (le contrôle 16 du lot 51 a été corrigé au lot 52).
 2. **Tests automatiques avec Playwright** (lots 54, 55, 58, 60, 61, 62 et 63) : 22 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple, imprimantes). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
 3. **Phase 7 : Printer Database** (Completed, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue (fait) ; 61 imprimantes saisies par l'utilisateur (fait) ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (fait, v1.0.0 publiée) ; 63 « aucune version publiée » et sécurité des dépendances (fait) ; 64 clôture (fait). Close le 2026-10-27, lot 64 validé par Noam.
-4. **Phase 8 : Material Database** (en cours) : analyse au lot 65 (`lot65-phase8-analyse/PHASE8-ANALYSE.md`), 11 décisions D1 à D11 en attente des réponses de Noam. Découpage proposé : 66 documentation, 67 chargement, 68 données, 69 interface, 70 filaments de l'utilisateur, 71 synchronisation, 72 clôture.
+4. **Phase 8 : Material Database** (In Progress, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (livré, à valider) ; 67 chargement ; 68 données ; 69 interface ; 70 filaments de l'utilisateur ; 71 synchronisation ; 72 clôture.
 5. **Phases 9 à 16**, dans l'ordre du plan technique.
 6. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
@@ -320,7 +327,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    | KI-019 | 3MF Bambu à plusieurs plateaux : objets éloignés | Phase 14 |
    | KI-020 | Noms d'objets et métadonnées du 3MF non gardés (aucun champ dans DATA_SCHEMA) | Phase 13 |
    | KI-021 | Objet enfoncé sous le plateau, non permis pour l'instant | Phase 15 |
-   | KI-023 | Avis juridique sur les profils d'imprimantes et les licences | Phase 16 |
+   | KI-023 | Avis juridique sur les profils d'imprimantes, les matériaux, les filaments et les licences | Phase 16 |
    | KI-025 | Signature d'`index.json` (clé privée de Noam, clé publique dans l'application) : le SHA-256 vérifie l'intégrité, pas l'auteur | Phase 16 |
    | KI-026 | npm audit : zod 3 (GHSA-mrhx-c7xc-m3w5), correction seulement en zod 4 (version majeure) ; ne pas lancer `npm audit fix --force` | Phase 16 |
 
@@ -336,7 +343,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot65-phase8-analyse/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 65 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot66-phase8-docs/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 66 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

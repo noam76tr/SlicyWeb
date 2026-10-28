@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.6.0
+Version: 3.7.0
 
 Status: Approved
 
@@ -277,6 +277,8 @@ source
 data
 validated
 ```
+
+Types (3.7.0, ADR-032, ADR-033): "printer" (data is a Printer Schema), "material" (data is a Complete Material Schema) and "filament" (data is a Filament Schema). The files are written with validated false; the loader sets validated only after the schema validation.
 
 Repository data must not be consumed when:
 
@@ -831,6 +833,10 @@ Unknown values (3.5.0, ADR-032): each value of thermal is a number, or null when
 
  "category": "",
 
+ "brand": "",
+
+ "description": "",
+
  "temperature": {},
 
  "cooling": {},
@@ -843,7 +849,21 @@ Unknown values (3.5.0, ADR-032): each value of thermal is a number, or null when
 
 ```
 
---- 
+Material rules (3.7.0, ADR-033):
+
+```text
+id, name, category, temperature, cooling, physical and recommended are required; no other field is accepted
+brand and description are optional (Material Schema); a shipped material is a family and has no brand
+id: lowercase letters, digits and "_" (as "pla")
+category is the name of the family (as "PLA"): a name of the Material Families of MATERIAL_PROFILE_SPEC.md
+temperature: minNozzle and maxNozzle, minBed and maxBed are numbers in degrees Celsius (min not above max), or null when not published; the four values are required (not null) for a shipped material
+Each value of cooling (fanMin, fanMax, percent from 0 to 100), physical (density in g/cm3, shrinkage in percent, warpingRisk low, medium or high) and recommended (speeds in mm/s, retractionDistance in mm) is a number (or a warpingRisk value), or null when it is not published
+null means not published, never 0; code that uses these values (recommendation, export, KI-008) handles null explicitly
+```
+
+Shipped materials (3.7.0, ADR-033 D2): the ranges of temperature of a shipped material are those of its shipped filaments (Filament Schema, temperature): the smallest minimum and the largest maximum. A single value (fanMin, fanMax, density, shrinkage, warpingRisk, recommended) is the value published by every shipped filament of the family that publishes it, or null when they differ or none publishes it.
+
+---
 
 # Filament Schema
 
@@ -858,6 +878,13 @@ Unknown values (3.5.0, ADR-032): each value of thermal is a number, or null when
   "density": 1.24,
   "pricePerKg": 0,
 
+  "temperature": {
+    "minNozzle": 190,
+    "maxNozzle": 230,
+    "minBed": 35,
+    "maxBed": 45
+  },
+
   "manufacturerSettings": {
     "retractionDistance": 0,
     "retractionSpeed": 0,
@@ -868,6 +895,22 @@ Unknown values (3.5.0, ADR-032): each value of thermal is a number, or null when
 
   "recommendedProfile": {}
 }
+```
+
+Filament rules (3.7.0, ADR-033):
+
+```text
+All the fields above are required; no other field is accepted
+id: lowercase letters, digits and "_" (as "bambu_pla_basic")
+brand and name: the brand and the product line, as written by the manufacturer (as "Bambu Lab", "PLA Basic")
+material is the family of the filament: the category of a material (as "PLA")
+color is a name chosen by the user, or null; a shipped filament is a product line, its color is null
+diameter in mm (1.75 or 2.85)
+density (g/cm3) and pricePerKg are numbers, or null when not published; pricePerKg of a shipped filament is null (it depends on the country and the seller), the user gives it for their own filaments; its currency is the one of the user preferences
+temperature has the structure of Material Thermal Properties: the ranges published by the manufacturer, in degrees Celsius; each value is a number, or null when not published; the four values are required (not null) for a shipped filament
+manufacturerSettings has exactly these five fields: retractionDistance (mm), retractionSpeed (mm/s), fanSpeed (percent), nozzleTemperature and bedTemperature (degrees Celsius); each is a single value published by the manufacturer, or null (a range only is kept in temperature, never turned into a single value)
+recommendedProfile stays {} until the recommendation engine (Phase 10) defines its content
+null means not published, never 0
 ```
 
 ---
@@ -1965,6 +2008,16 @@ The index is refused, and no profile is used, when one of these rules fails, whe
 
      "autoCheckProfiles": true
 
+   },
+
+   "material": {
+
+     "defaultMaterial": null,
+
+     "defaultFilament": null,
+
+     "autoloadLastMaterial": true
+
    }
 
  }
@@ -1975,6 +2028,8 @@ The index is refused, and no profile is used, when one of these rules fails, whe
 
 
 printer (3.5.0, ADR-032, USER_SETTINGS_SPEC.md Printer Settings): defaultPrinter is the id of the last printer selected, or null when none was selected (null = not chosen yet, as for the selections of the Project Schema); when autoloadLastPrinter is true, this printer is selected again at startup. A defaultPrinter that is no longer in the printer database is ignored (no printer selected).
+
+material (3.7.0, ADR-033 D9, USER_SETTINGS_SPEC.md Material Settings): defaultMaterial is the id of the last material selected, or null; defaultFilament is the id of the last filament selected, or null; when autoloadLastMaterial is true, they are selected again at startup. An id that is no longer in the material or filament database is ignored (nothing selected). A settings.json without material loads with these defaults.
 
 printer.autoCheckProfiles (3.6.0, ADR-032 D5, decision of Noam): boolean, true by default. When true, the SlicyWeb profile repository is checked at start, at most once every 24 hours; when false, it is checked only with Printer > Refresh Profiles. A settings.json without this field loads with true.
 

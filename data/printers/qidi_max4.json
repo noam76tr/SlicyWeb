@@ -1,0 +1,55 @@
+{
+  "id": "qidi_max4",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "qidi_max4",
+    "brand": "QIDI",
+    "model": "Max4",
+    "series": "Max",
+    "manufacturer": "QIDI",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 390,
+      "y": 390,
+      "z": 340
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.2, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": 800,
+      "maxTravelSpeed": 800,
+      "maxAcceleration": 30000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 370,
+      "maxBedTemp": 120,
+      "maxChamberTemp": 65
+    },
+    "cooling": {
+      "partFan": true,
+      "auxFan": true,
+      "chamberFan": true
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": [
+      "PLA",
+      "ABS",
+      "ASA",
+      "PETG",
+      "TPU",
+      "PA",
+      "PC",
+      "Carbon/Glass Fiber Reinforced Polymer"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

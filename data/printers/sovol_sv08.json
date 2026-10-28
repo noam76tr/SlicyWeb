@@ -1,0 +1,46 @@
+{
+  "id": "sovol_sv08",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "sovol_sv08",
+    "brand": "Sovol",
+    "model": "SV08",
+    "series": "SV08",
+    "manufacturer": "Sovol",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 350,
+      "y": 350,
+      "z": 345
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.2, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": 700,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 40000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 300,
+      "maxBedTemp": null,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": ["PLA", "PETG", "TPU", "PETG-CF", "ABS"],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

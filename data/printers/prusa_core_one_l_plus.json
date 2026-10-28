@@ -1,0 +1,55 @@
+{
+  "id": "prusa_core_one_l_plus",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "prusa_core_one_l_plus",
+    "brand": "Prusa",
+    "model": "CORE One L+",
+    "series": "CORE One",
+    "manufacturer": "Prusa",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 300,
+      "y": 300,
+      "z": 330
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": null,
+      "maxTravelSpeed": null,
+      "maxAcceleration": null,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 290,
+      "maxBedTemp": 120,
+      "maxChamberTemp": 60
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": [
+      "PLA",
+      "PETG",
+      "Flex",
+      "PVA",
+      "PC",
+      "PP",
+      "CPE",
+      "PVB"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

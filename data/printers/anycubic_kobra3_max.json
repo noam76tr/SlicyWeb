@@ -1,0 +1,46 @@
+{
+  "id": "anycubic_kobra3_max",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "anycubic_kobra3_max",
+    "brand": "Anycubic",
+    "model": "Kobra 3 Max",
+    "series": "Kobra 3",
+    "manufacturer": "Anycubic",
+    "firmware": "Kobra OS",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 420,
+      "y": 420,
+      "z": 500
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": 600,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 10000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 300,
+      "maxBedTemp": 90,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": ["PLA", "PETG", "TPU"],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

@@ -1,0 +1,55 @@
+{
+  "id": "qidi_q1_pro",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "qidi_q1_pro",
+    "brand": "QIDI",
+    "model": "Q1 Pro",
+    "series": "Q",
+    "manufacturer": "QIDI",
+    "firmware": "Klipper",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 245,
+      "y": 245,
+      "z": 240
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.2, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": 600,
+      "maxTravelSpeed": 600,
+      "maxAcceleration": 20000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 350,
+      "maxBedTemp": 120,
+      "maxChamberTemp": 60
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": true,
+      "chamberFan": true
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": [
+      "PLA",
+      "ABS",
+      "ASA",
+      "PETG",
+      "TPU",
+      "PA",
+      "PC",
+      "Carbon/Glass Fiber Reinforced Polymer"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

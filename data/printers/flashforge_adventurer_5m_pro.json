@@ -1,0 +1,46 @@
+{
+  "id": "flashforge_adventurer_5m_pro",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "flashforge_adventurer_5m_pro",
+    "brand": "Flashforge",
+    "model": "Adventurer 5M Pro",
+    "series": "Adventurer 5M",
+    "manufacturer": "Flashforge",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 220,
+      "y": 220,
+      "z": 220
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.25, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": null,
+      "maxTravelSpeed": 600,
+      "maxAcceleration": 20000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 280,
+      "maxBedTemp": 100,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": true,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": ["PLA", "PETG", "ABS", "ASA"],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

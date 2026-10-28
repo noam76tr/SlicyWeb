@@ -1,0 +1,46 @@
+{
+  "id": "elegoo_neptune4_max",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "elegoo_neptune4_max",
+    "brand": "Elegoo",
+    "model": "Neptune 4 Max",
+    "series": "Neptune 4",
+    "manufacturer": "Elegoo",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 420,
+      "y": 420,
+      "z": 480
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": 500,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 8000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 300,
+      "maxBedTemp": 85,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": true,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "unknown",
+      "count": 1
+    },
+    "supportedMaterials": [],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

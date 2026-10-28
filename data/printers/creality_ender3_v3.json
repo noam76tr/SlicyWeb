@@ -1,0 +1,46 @@
+{
+  "id": "creality_ender3_v3",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "creality_ender3_v3",
+    "brand": "Creality",
+    "model": "Ender-3 V3",
+    "series": "Ender-3 V3",
+    "manufacturer": "Creality",
+    "firmware": "Creality OS (Klipper)",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 220,
+      "y": 220,
+      "z": 250
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": 600,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 20000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 300,
+      "maxBedTemp": 110,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": ["PLA", "TPU", "PLA-CF", "PETG-CF", "PETG", "ABS"],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

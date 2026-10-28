@@ -86,10 +86,12 @@ describe("Printer repository sync", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.index.tag).toBe("v1.0.0");
-    expect(result.profiles).toHaveLength(10);
+    expect(result.profiles).toHaveLength(57);
     expect(result.profiles[0]?.profile.source).toBe("Official");
     expect(calls[0]?.url).toBe(`${PROFILE_REPOSITORY_URL}main/index.json`);
-    expect(calls[1]?.url).toBe(`${PROFILE_REPOSITORY_URL}v1.0.0/bambu_a1.json`);
+    expect(calls[1]?.url).toBe(
+      `${PROFILE_REPOSITORY_URL}v1.0.0/anycubic_kobra3.json`,
+    );
     for (const { url, init } of calls) {
       expect(url.startsWith("https://raw.githubusercontent.com/")).toBe(true);
       expect(init).toMatchObject({ redirect: "error", credentials: "omit" });
@@ -218,7 +220,7 @@ describe("Printer repository sync", () => {
     ).toEqual({
       ok: false,
       code: "SYNC_002",
-      reason: "v9.9.9/bambu_a1.json: HTTP 404",
+      reason: "v9.9.9/anycubic_kobra3.json: HTTP 404",
       notPublished: true,
     });
 

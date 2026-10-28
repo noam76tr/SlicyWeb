@@ -1394,6 +1394,38 @@ Plate Updates
 
 # MATERIAL DATABASE
 
+Status: In Progress
+
+Date: 2026-10-28
+
+Decisions (ADR-033, decisions D1 to D11 of Noam, 2026-10-28; analysis of lot 65):
+
+- A material is a family (PLA, PETG...); a filament is a product line of a brand that belongs to a family
+- Materials and filaments written by SlicyWeb from the technical data sheets of the manufacturers, never copied from a profile file of a slicer; sources in SOURCES.md; filaments entered by the user (Manage Filaments)
+- The temperature ranges of a family come from the sheets of its shipped filaments; a family without a shipped filament is not shipped
+- Profile files: Repository Data Schema envelopes (types material and filament); values not published: null (DATA_SCHEMA.md 3.7.0); filament temperature ranges (temperature) and single values of the manufacturer (manufacturerSettings)
+- Reference list of families and aliases of the words of the printer pages (MATERIAL_PROFILE_SPEC.md 2.0.0); a family not listed by the printer gives a warning, never a block
+- Loading and validation in the main process; new IPC channels material:getAll, filament:getAll, then filament:add, filament:update, filament:remove
+- First list: 5 families (PLA, PETG, ABS, ASA, TPU) and 12 product lines (Bambu Lab PLA Basic, PLA Matte, PETG HF, ABS, TPU 95A HF; Prusament PLA, PETG, ASA; Polymaker PolyLite PLA, PolyLite PETG; eSUN PLA+; Elegoo PLA)
+- Material and Filament sections of the Properties panel; last choice kept in the user settings (material.defaultMaterial, defaultFilament, autoloadLastMaterial)
+- Updates later from noam76tr/slicyweb-profiles (folders materials/ and filaments/, one index.json each); index.json of the printers unchanged
+- Unused files replaced or deleted in the lot concerned (ADR-033 D11)
+
+Order of the lots:
+
+- Lot 65: analysis (inventory, sources and licences, decisions)
+- Lot 66: ADR-033, DATA_SCHEMA.md 3.7.0, MATERIAL_PROFILE_SPEC.md 2.0.0, FILAMENT_SETTINGS_SPEC.md 2.0.0, USER_SETTINGS_SPEC.md, ERROR_CODES_SPEC.md (FIL_001, FIL_002), GUI_SPEC.md (documentation)
+- Lot 67: loading in the main process, Material and Filament schemas with null, material:getAll and filament:getAll
+- Lot 68: the materials and filaments of the first list, and SOURCES.md
+- Lot 69: Material and Filament sections, selectors, warning, last choice kept
+- Lot 70: filaments entered by the user (Manage Filaments)
+- Lot 71: synchronization of the materials and filaments from noam76tr/slicyweb-profiles
+- Lot 72: closure of Phase 8
+
+Progress:
+
+- Analysis (lot 65) and documentation (CHANGELOG 0.1.67): ADR-033, DATA_SCHEMA.md 3.7.0
+
 
 
 ---

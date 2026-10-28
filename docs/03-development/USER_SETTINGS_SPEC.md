@@ -310,7 +310,9 @@ autoCheckProfiles: "Check for profile updates automatically", true by default (P
 
   "material": {
 
-    "defaultMaterial": "PLA",
+    "defaultMaterial": null,
+
+    "defaultFilament": null,
 
     "autoloadLastMaterial": true
 
@@ -319,6 +321,8 @@ autoCheckProfiles: "Check for profile updates automatically", true by default (P
 }
 
 ```
+
+defaultMaterial: id of the last material (family) selected, or null (none selected yet). defaultFilament: id of the last filament selected, or null. With autoloadLastMaterial true, they are selected again at startup (Phase 8, ADR-033 D9; DATA_SCHEMA.md 3.7.0, User Preferences Schema). An id no longer in the database is ignored.
 
 
 
@@ -467,7 +471,7 @@ The language choice is saved at each change and restored at the next start.
 
 Old settings must migrate automatically.
 
-A settings.json without printer (written before DATA_SCHEMA.md 3.5.0) loads without error: theme, language and units are kept, printer takes its default value (defaultPrinter null, autoloadLastPrinter true, autoCheckProfiles true). A printer without autoCheckProfiles (written before DATA_SCHEMA.md 3.6.0) keeps its other fields, with autoCheckProfiles true. An invalid field takes its default value; the other fields are kept.
+A settings.json without printer (written before DATA_SCHEMA.md 3.5.0) loads without error: theme, language and units are kept, printer takes its default value (defaultPrinter null, autoloadLastPrinter true, autoCheckProfiles true). A printer without autoCheckProfiles (written before DATA_SCHEMA.md 3.6.0) keeps its other fields, with autoCheckProfiles true. A settings.json without material (written before DATA_SCHEMA.md 3.7.0) loads in the same way, with defaultMaterial null, defaultFilament null and autoloadLastMaterial true. An invalid field takes its default value; the other fields are kept.
 
 
 

@@ -2359,6 +2359,58 @@ Date:
 
 ---
 
+# VERSION 0.1.67
+
+Release Type:
+Architecture Decision
+
+Status:
+In Progress
+
+Date:
+2026-10-28
+
+## Added
+
+- ADR-033 (DECISIONS.md) and ADM-029 (ARCHITECTURE_DECISION_MATRIX.md 2.5.0): sources of the materials and filaments (written by SlicyWeb from the technical data sheets of the manufacturers, never copied from a profile file of a slicer), a material is a family whose ranges come from its shipped filaments, profile files as Repository Data Schema envelopes, null for values not published, families and aliases, loading by the main process and new IPC channels, first list (5 families, 12 product lines), Material and Filament sections, filaments of the user, later updates from noam76tr/slicyweb-profiles (decisions D1 to D11 of Noam, analysis of lot 65)
+- DATA_SCHEMA.md 3.7.0: Material rules (brand and description optional, null when not published, ranges of a shipped family); Filament rules (temperature ranges with the structure of Material Thermal Properties, decision of Noam in lot 66; manufacturerSettings with exactly its five fields; color, density and pricePerKg may be null; recommendedProfile empty until Phase 10); Repository Data Schema types printer, material and filament; User Preferences Schema: material.defaultMaterial, material.defaultFilament (new) and material.autoloadLastMaterial
+- ERROR_CODES_SPEC.md: Filament Errors FIL_001 (Filament Not Found) and FIL_002 (Invalid Filament Profile)
+
+## Changed
+
+- MATERIAL_PROFILE_SPEC.md 2.0.0: aligned with DATA_SCHEMA.md (flat Complete Material Schema, null, envelope); Material Families (reference list) and aliases of the words of the printer pages; sections without a field in DATA_SCHEMA.md marked future
+- FILAMENT_SETTINGS_SPEC.md 2.0.0: aligned with DATA_SCHEMA.md (flat Filament Schema, temperature ranges and single values, null, envelope); sources Official and Custom User Profile; sections without a field in DATA_SCHEMA.md marked future
+- USER_SETTINGS_SPEC.md (Material Settings): defaultMaterial null instead of "PLA", defaultFilament added
+- GUI_SPEC.md: Material Section and Filament Section (Phase 8 behaviour); Printer Manager: supportedFilaments empty until the filaments exist (Phase 8, was "Phase 9")
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 8 In Progress, its decisions and the order of the lots 65 to 72; PASSATION.md
+- KNOWN ISSUES: KI-023 also covers the materials and filaments (ADR-033)
+
+---
+
+# VERSION 0.1.68
+
+Release Type:
+Printer Database (data)
+
+Status:
+In Progress
+
+Date:
+2026-10-28
+
+## Added
+
+- Printer profiles v1.0.1: 47 printers on sale from ten brands added to data/printers/ (57 in total, the 10 printers of v1.0.0 unchanged), written from pages of the manufacturers read on 2026-10-28 (ADR-032, D2): Anycubic (6), Bambu Lab (1), BIQU (3), Creality (13), Elegoo (4), Flashforge (6), Prusa (2), QIDI (6), Snapmaker (1), Sovol (5); a value that is not published is null (DATA_SCHEMA.md 3.5.0)
+- data/printers/SOURCES.md: one section per new printer (pages and values read), and the rules added in v1.0.1 (nozzle 0.4 when no diameter is published, volume of one nozzle for a printer with several nozzles, lower value kept when two pages differ), and a list of the printers whose official sheet was not found (not added)
+
+## Changed
+
+- data/printers/index.json: tag v1.0.1, 57 profiles with their SHA-256 (fewer than MAX_INDEX_PROFILES, 500)
+- Tests: PrinterProfiles.test.ts (57 profiles with the 10 first printers, SOURCES.md read on 2026-10-28), PrinterRepositorySync.test.ts (57 profiles, first file anycubic_kobra3.json), ProfileSync.test.ts (tag v1.0.1 of data/printers/, 58 files in the cache folder), tests/e2e/printer.spec.ts (57 printers and the printer of the user, line "Profiles v1.0.1")
+- DIRECTORY_PURPOSES.md, PASSATION.md
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -3288,13 +3340,13 @@ Identifier: KI-023
 
 Since: 0.1.59
 
-Affected Module: data/printers/, noam76tr/slicyweb-profiles (ADR-032)
+Affected Module: data/printers/, data/materials/, data/filaments/, noam76tr/slicyweb-profiles (ADR-032, ADR-033)
 
-Issue: The printer profiles of SlicyWeb are written from the pages of the manufacturers and no profile file of a slicer is copied (the slicer profiles are under AGPL-3.0 or LGPL-3.0, or without licence). No legal review has confirmed this approach (copyright of the pages, database right in Europe, licence of the data of the profile repository, all rights reserved).
+Issue: The printer profiles, materials and filaments of SlicyWeb are written from the pages and technical data sheets of the manufacturers and no profile file of a slicer is copied (the slicer profiles are under AGPL-3.0 or LGPL-3.0, or without licence). No legal review has confirmed this approach (copyright of the pages, database right in Europe, licence of the data of the profile repository, all rights reserved).
 
 Resolve Before: Phase 16 - Production Release (technical plan)
 
-Planned Resolution: Legal review of the printer profiles, of SOURCES.md and of the licences before the public release.
+Planned Resolution: Legal review of the printer profiles, materials and filaments, of the SOURCES.md files and of the licences before the public release.
 
 
 ---

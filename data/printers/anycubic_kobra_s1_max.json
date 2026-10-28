@@ -1,0 +1,62 @@
+{
+  "id": "anycubic_kobra_s1_max",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "anycubic_kobra_s1_max",
+    "brand": "Anycubic",
+    "model": "Kobra S1 Max",
+    "series": "Kobra S1",
+    "manufacturer": "Anycubic",
+    "firmware": "Kobra OS",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 350,
+      "y": 350,
+      "z": 350
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.25, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": 600,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 20000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 350,
+      "maxBedTemp": 120,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": [
+      "PLA",
+      "PETG",
+      "TPU",
+      "PET",
+      "PLA-CF",
+      "PETG-CF",
+      "PVA",
+      "ABS",
+      "ASA",
+      "PC",
+      "PA",
+      "PA6-CF",
+      "PC-CF",
+      "PC-GF",
+      "PET-CF"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

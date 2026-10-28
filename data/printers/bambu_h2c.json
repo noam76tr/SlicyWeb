@@ -1,0 +1,67 @@
+{
+  "id": "bambu_h2c",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "bambu_h2c",
+    "brand": "Bambu Lab",
+    "model": "H2C",
+    "series": "H2",
+    "manufacturer": "Bambu Lab",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 325,
+      "y": 320,
+      "z": 320
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.2, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": 1000,
+      "maxTravelSpeed": 1000,
+      "maxAcceleration": 20000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 350,
+      "maxBedTemp": 120,
+      "maxChamberTemp": 65
+    },
+    "cooling": {
+      "partFan": true,
+      "auxFan": true,
+      "chamberFan": true
+    },
+    "extruder": {
+      "type": "unknown",
+      "count": 2
+    },
+    "supportedMaterials": [
+      "PLA",
+      "PETG",
+      "TPU",
+      "PVA",
+      "BVOH",
+      "ABS",
+      "ASA",
+      "PC",
+      "PA",
+      "PET",
+      "PPS",
+      "Carbon/Glass Fiber Reinforced PLA",
+      "Carbon/Glass Fiber Reinforced PETG",
+      "Carbon/Glass Fiber Reinforced PA",
+      "Carbon/Glass Fiber Reinforced PET",
+      "Carbon/Glass Fiber Reinforced PC",
+      "Carbon/Glass Fiber Reinforced ABS",
+      "Carbon/Glass Fiber Reinforced ASA",
+      "Carbon/Glass Fiber Reinforced PPA",
+      "Carbon/Glass Fiber Reinforced PPS"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

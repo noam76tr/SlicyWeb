@@ -1387,7 +1387,7 @@ End side: form of the printer chosen, Save, Delete
 ```
 
 - Copy a printer: any loaded printer, Official included; the copy is a new printer of the user, named "Model (copy)". Official printers are never listed in My printers, so they are never changed.
-- Form (DATA_SCHEMA.md, Printer Schema): Brand, Model, Build Volume X, Y, Z, Default Nozzle and Nozzles are required (the default nozzle is one of the nozzles); Series, Manufacturer, Firmware, Release Date are free text; Printer Limits left empty are null, shown as "Not published"; part, auxiliary and chamber fans; extruder type (direct drive, bowden, unknown) and number of extruders; materials separated by commas. supported is always true; supportedFilaments stays empty until Phase 9.
+- Form (DATA_SCHEMA.md, Printer Schema): Brand, Model, Build Volume X, Y, Z, Default Nozzle and Nozzles are required (the default nozzle is one of the nozzles); Series, Manufacturer, Firmware, Release Date are free text; Printer Limits left empty are null, shown as "Not published"; part, auxiliary and chamber fans; extruder type (direct drive, bowden, unknown) and number of extruders; materials separated by commas. supported is always true; supportedFilaments stays empty until the filaments exist (Phase 8).
 - Numbers accept a comma as decimal separator. Nozzles are separated by semicolons or spaces.
 - Errors are shown under their field; errors of the main process (PRN_005, PRN_006, PRN_007) under the form.
 - Delete asks for a confirmation ("Delete Brand Model?"). When the printer deleted is the selected printer, no printer is selected and the saved choice is cleared. A change of the selected printer updates the Printer Section and the build plate at once.
@@ -1421,6 +1421,8 @@ Speed Profile
 
 ```
 
+Phase 8 (ADR-033 D5, D9; the layout is completed with lot 69): a selector of the families (MATERIAL_PROFILE_SPEC.md, Material Families), then the nozzle and bed temperature ranges, the fan, the density; a value not published shows "Not published". When the selected printer lists materials and the family is not in its list (after the aliases of MATERIAL_PROFILE_SPEC.md), a warning "Not listed by the printer manufacturer" is shown; the choice is never blocked. Material > Select Material opens this selector. The last choice is kept in the settings (USER_SETTINGS_SPEC.md, Material Settings).
+
 
 
 ---
@@ -1442,6 +1444,8 @@ Cooling Overrides
 
 Retraction Profile
 ```
+
+Phase 8 (ADR-033 D9; the layout is completed with lot 69): a selector of the filaments of the selected family, grouped by brand ("My filaments" for the filaments of the user); choosing a filament also chooses its family. Then the temperature ranges of the manufacturer, its single values (manufacturerSettings), the color; a value not published shows "Not published". Filament > Select Filament opens this selector; Filament > Manage Filaments opens the Filament Manager (lot 70). The last choice is kept in the settings.
 
 ---
 

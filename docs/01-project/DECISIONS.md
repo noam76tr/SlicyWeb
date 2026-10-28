@@ -2445,6 +2445,81 @@ Reason:
 
 ---
 
+# ADR-033
+
+Title: Material and Filament Profile Sources
+
+Status: Accepted
+
+Date: 2026-10-28
+
+## Context
+
+Phase 8 (Material Database) needs materials and filaments. data/materials/ and data/filaments/ are empty. A material is a family of plastic (PLA, PETG...); a filament is a product line of a brand (Bambu Lab PLA Basic, Prusament PETG...) that belongs to a family (FILAMENT_SETTINGS_SPEC.md, Filament Hierarchy). The filament profiles of the slicers are under AGPL-3.0 or LGPL-3.0, or without licence (ADR-032). Other sources: the technical data sheets of the manufacturers (facts), Ultimaker fdm_materials (CC0-1.0, tuned for Ultimaker printers), Open Filament Database of SimplyPrint (MIT according to its repository, community data not checked by the manufacturers). The manufacturers publish nozzle and bed temperature ranges, often the density and the drying, sometimes the fan and the retraction, almost never the shrinkage or the travel speed. Analysis: lot 65 (PHASE8-ANALYSE.md), decisions D1 to D11 of Noam (2026-10-28).
+
+## Decision
+
+- Sources (D1): the same rule as ADR-032. The materials and filaments shipped by SlicyWeb are written from the technical data sheets of the manufacturers, never copied from a profile file of a slicer, even when the values are the same. The sheet and the date of verification of each filament are listed in data/filaments/SOURCES.md, and the filaments used for each material in data/materials/SOURCES.md. fdm_materials and Open Filament Database are not used for now (possible later, Import Material, Phase 15). The user can enter their own filaments (D10). The legal review before the public release (KI-023) covers the materials and filaments too.
+- Materials (D2): a shipped material is a family. Its temperature ranges are those published by the sheets of the shipped filaments of this family: the smallest minimum and the largest maximum. A single value of the family (fan, density, shrinkage, warping risk, recommended settings) is the value published by every shipped filament of the family that publishes it, or null when they differ or none publishes it. A family without a shipped filament is not shipped. Users do not enter materials: a filament of the user carries all its values.
+- File format (D3): each file is a Repository Data Schema envelope (DATA_SCHEMA.md): type "material" or "filament", version of the profile, source, data = the material (Complete Material Schema) or the filament (Filament Schema), validated false in the file. DATA_SCHEMA.md 3.7.0: brand and description of a material are optional; manufacturerSettings of a filament has exactly its five fields; recommendedProfile stays empty until Phase 10; filament temperature ranges (temperature, the structure of Material Thermal Properties, each value a number or null; decision of Noam in lot 66, 2026-10-28), the single values of the manufacturer staying in manufacturerSettings. MATERIAL_PROFILE_SPEC.md and FILAMENT_SETTINGS_SPEC.md follow DATA_SCHEMA.md (priority 0); their sections without a field in DATA_SCHEMA.md are future.
+- Values not published (D4): null, never 0, as for the printers (ADR-032 D6). Nozzle and bed temperature ranges are required for a shipped profile. A shipped filament is a product line: its color is null; the user gives the color and the price per kg of their own filaments.
+- Names (D5): a reference list of families (MATERIAL_PROFILE_SPEC.md, Material Families). supportedMaterials of a printer keeps the words of the page of the manufacturer; an alias table links them to the families. A material not listed by a printer that lists materials gives a warning, never a block.
+- Loading (D6): the main process reads data/materials/ and data/filaments/ (read only) and the filaments of the user (filaments/ of the user data folder), validates them and serves them through new IPC channels: material:getAll and filament:getAll (lot 67), filament:add, filament:update and filament:remove (lot 70). The renderer reads no profile file.
+- Updates (D7): local first; then the same profile repository noam76tr/slicyweb-profiles, with folders materials/ and filaments/, each with its own index.json (types material-index and filament-index), and the rules of ADR-032 (tag vX.Y.Z, SHA-256, size limits, all or nothing, most recent list wins). index.json of the printers does not change. Lot 71.
+- First list (D8): 5 families: PLA, PETG, ABS, ASA, TPU. 12 product lines in 1.75 mm: Bambu Lab PLA Basic, PLA Matte, PETG HF, ABS, TPU 95A HF; Prusament PLA, PETG, ASA; Polymaker PolyLite PLA, PolyLite PETG; eSUN PLA+ (family PLA); Elegoo PLA. A product line whose official sheet cannot be found or read is not shipped.
+- Interface (D9): Material and Filament sections of the Properties panel; the filaments are filtered by the chosen family; choosing a filament chooses its family; the last choice is kept in the user settings (material.defaultMaterial, material.defaultFilament, material.autoloadLastMaterial; DATA_SCHEMA.md 3.7.0) until projects keep it (Phase 13).
+- Filaments of the user (D10): Manage Filaments window (Phase 8, lot 70), as the Printer Manager (lot 61).
+- Unused files (D11): MaterialPanel.tsx, FilamentPanel.tsx, MaterialValidator.ts, FilamentValidator.ts, MaterialCache.ts, FilamentCache.ts and DefaultMaterial.ts are deleted in the lot that replaces them; MaterialRepositorySync.ts and FilamentRepositorySync.ts are rewritten in lot 71 (model: PrinterRepositorySync); MaterialImporter.ts and FilamentImporter.ts are kept for Import Material and Import Filament (Phase 15).
+
+## Consequences
+
+Advantages:
+
+- No licence constraint from the slicers; the same rule for printers, materials and filaments
+- Each number has a source that can be checked; nothing is guessed
+
+Disadvantages:
+
+- Each filament is written and checked by hand
+- Many values are null (not published), so the recommendation (Phase 10) and the export must handle them
+
+## Alternatives Considered
+
+Open Filament Database (MIT) as a complement
+
+Postponed
+
+Reason:
+
+- Community data, not checked by the manufacturers; licence shown differently by different sources
+
+Generic materials of Ultimaker fdm_materials (CC0)
+
+Rejected for the shipped profiles
+
+Reason:
+
+- Values tuned for Ultimaker printers (often 2.85 mm)
+
+Filament profiles of the slicers
+
+Rejected
+
+Reason:
+
+- Same reasons as ADR-032
+
+## Related Documents
+
+- DATA_SCHEMA.md (Material Schema, Filament Schema, Repository Data Schema, User Preferences Schema)
+- MATERIAL_PROFILE_SPEC.md, FILAMENT_SETTINGS_SPEC.md
+- USER_SETTINGS_SPEC.md (Material Settings)
+- ERROR_CODES_SPEC.md (Material Errors, Filament Errors)
+- ADR-032
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-029)
+
+---
+
 # Future Decision Template
 
 Copy and complete:

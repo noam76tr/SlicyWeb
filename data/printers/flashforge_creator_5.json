@@ -1,0 +1,55 @@
+{
+  "id": "flashforge_creator_5",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "flashforge_creator_5",
+    "brand": "Flashforge",
+    "model": "Creator 5",
+    "series": "Creator 5",
+    "manufacturer": "Flashforge",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 256,
+      "y": 256,
+      "z": 256
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.25, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": 300,
+      "maxTravelSpeed": 600,
+      "maxAcceleration": 30000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 320,
+      "maxBedTemp": 120,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "unknown",
+      "count": 4
+    },
+    "supportedMaterials": [
+      "PLA",
+      "PETG",
+      "TPU",
+      "PLA-CF",
+      "PETG-CF",
+      "SILK",
+      "PVA",
+      "BVOH"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}
