@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-28. Lot 65 (analyse de la phase 8) sur `main` (commit 89b9ad3), vérifié identique ; Noam a répondu aux décisions D1 à D11 (décisions 71 à 75). Lot 66 (documentation de la phase 8) : à envoyer sur GitHub. Profils v1.0.1 (47 imprimantes ajoutées, 57 au total, hors numérotation des lots) : à envoyer sur GitHub après le lot 66, puis sur `noam76tr/slicyweb-profiles`. Dernière entrée du CHANGELOG : 0.1.68 (profils v1.0.1).
+Date : 2026-10-28. Lot 65 (analyse de la phase 8) sur `main` (commit 89b9ad3), vérifié identique ; Noam a répondu aux décisions D1 à D11 (décisions 71 à 75). Lot 66 (documentation de la phase 8) : à envoyer sur GitHub. Lot 66 et profils v1.0.1 sur `main` (d5d414f), vérifiés identiques. Profils v1.0.1 complétés à 69 imprimantes ajoutées (79 au total) : `index.json` et `SOURCES.md` à envoyer, puis release v1.0.1 de `noam76tr/slicyweb-profiles`. Dernière entrée du CHANGELOG : 0.1.68 (profils v1.0.1).
 
 ---
 
@@ -86,7 +86,7 @@ Date : 2026-10-28. Lot 65 (analyse de la phase 8) sur `main` (commit 89b9ad3), v
   - grille adaptative et axes ;
   - caméras perspective et orthographique, 7 vues prédéfinies, Home ;
   - pas de plateau tant qu'aucune imprimante n'est choisie (phase 7).
-- **Imprimantes (phase 7) :** 57 profils dans `data/printers/` (Official ; 10 en v1.0.0, 47 ajoutés en v1.0.1) et les imprimantes de l'utilisateur (`<dossier de réglages>/printers/`, Local Custom), lus par le processus principal. Section Printer du panneau Propriétés : sélecteur (« No printer », « My printers », puis un groupe par marque), limites (« Not published » pour `null`), taille du plateau en bas de la vue, dernière imprimante retenue. Fenêtre Manage Printers (lot 61) : ajouter, copier, modifier, supprimer ses propres imprimantes ; les imprimantes Official ne se modifient jamais. Synchronisation (lot 62) : au démarrage (au plus une fois par 24 h) et par Printer > Refresh Profiles, le processus principal lit `index.json` sur `main` de `noam76tr/slicyweb-profiles`, puis les profils au tag de l'index (SHA-256, tout ou rien), et les garde dans `<dossier de réglages>/cache/printers/` ; ce cache valide remplace `data/printers/`. Une ligne « Profiles v1.0.1 … » sous le sélecteur.
+- **Imprimantes (phase 7) :** 79 profils dans `data/printers/` (Official ; 10 en v1.0.0, 69 ajoutés en v1.0.1) et les imprimantes de l'utilisateur (`<dossier de réglages>/printers/`, Local Custom), lus par le processus principal. Section Printer du panneau Propriétés : sélecteur (« No printer », « My printers », puis un groupe par marque), limites (« Not published » pour `null`), taille du plateau en bas de la vue, dernière imprimante retenue. Fenêtre Manage Printers (lot 61) : ajouter, copier, modifier, supprimer ses propres imprimantes ; les imprimantes Official ne se modifient jamais. Synchronisation (lot 62) : au démarrage (au plus une fois par 24 h) et par Printer > Refresh Profiles, le processus principal lit `index.json` sur `main` de `noam76tr/slicyweb-profiles`, puis les profils au tag de l'index (SHA-256, tout ou rien), et les garde dans `<dossier de réglages>/cache/printers/` ; ce cache valide remplace `data/printers/`. Une ligne « Profiles v1.0.1 … » sous le sélecteur.
 - **Import :**
   - STL (binaire et texte) et 3MF ;
   - par File > Import, le bouton Import ou le glisser-déposer ;
@@ -197,7 +197,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 64 | Clôture de la phase 7 ; `PrinterCache.ts` supprimé (jamais utilisé) | 0.1.66 |
 | 65 | Analyse seule : phase 8 (Material Database), inventaire, sources et licences, décisions D1 à D11 (`lot65-phase8-analyse/PHASE8-ANALYSE.md`) | — |
 | 66 | Phase 8, documentation : ADR-033, DATA_SCHEMA 3.7.0, MATERIAL_PROFILE_SPEC et FILAMENT_SETTINGS_SPEC 2.0.0, FIL_001 et FIL_002 | 0.1.67 |
-| — | Profils v1.0.1 (hors lot) : 47 imprimantes ajoutées à `data/printers/` et à `noam76tr/slicyweb-profiles` (pages des fabricants lues le 2026-10-28), machines sans fiche lisible listées dans `profils-v1.0.1/PROFILS-V1.0.1.md` ; tests adaptés (57 profils, tag v1.0.1) | 0.1.68 |
+| — | Profils v1.0.1 (hors lot) : 69 imprimantes ajoutées à `data/printers/` et à `noam76tr/slicyweb-profiles` (pages des fabricants lues le 2026-10-28), machines sans fiche lisible listées dans `profils-v1.0.1/PROFILS-V1.0.1.md` ; tests adaptés (79 profils, tag v1.0.1) | 0.1.68 |
 
 ---
 

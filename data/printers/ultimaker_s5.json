@@ -1,0 +1,46 @@
+{
+  "id": "ultimaker_s5",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "ultimaker_s5",
+    "brand": "UltiMaker",
+    "model": "S5",
+    "series": "S-series",
+    "manufacturer": "UltiMaker",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 330,
+      "y": 240,
+      "z": 300
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.25, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": null,
+      "maxTravelSpeed": null,
+      "maxAcceleration": null,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 280,
+      "maxBedTemp": null,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "bowden",
+      "count": 2
+    },
+    "supportedMaterials": [],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

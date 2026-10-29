@@ -1,0 +1,46 @@
+{
+  "id": "ultimaker_s8",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "ultimaker_s8",
+    "brand": "UltiMaker",
+    "model": "S8",
+    "series": "S-series",
+    "manufacturer": "UltiMaker",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 330,
+      "y": 240,
+      "z": 300
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.25, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": 500,
+      "maxTravelSpeed": 500,
+      "maxAcceleration": 50000,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 340,
+      "maxBedTemp": 120,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": true
+    },
+    "extruder": {
+      "type": "bowden",
+      "count": 2
+    },
+    "supportedMaterials": [],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

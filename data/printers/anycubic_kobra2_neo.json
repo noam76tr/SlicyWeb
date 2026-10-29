@@ -1,0 +1,46 @@
+{
+  "id": "anycubic_kobra2_neo",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "anycubic_kobra2_neo",
+    "brand": "Anycubic",
+    "model": "Kobra 2 Neo",
+    "series": "Kobra 2",
+    "manufacturer": "Anycubic",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 220,
+      "y": 220,
+      "z": 250
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": 250,
+      "maxTravelSpeed": null,
+      "maxAcceleration": 2500,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 260,
+      "maxBedTemp": 110,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": ["PLA", "ABS", "PETG", "TPU"],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

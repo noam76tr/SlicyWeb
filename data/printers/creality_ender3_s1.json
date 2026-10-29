@@ -1,0 +1,46 @@
+{
+  "id": "creality_ender3_s1",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "creality_ender3_s1",
+    "brand": "Creality",
+    "model": "Ender-3 S1",
+    "series": "Ender-3 S1",
+    "manufacturer": "Creality",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 220,
+      "y": 220,
+      "z": 270
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.4],
+    "motion": {
+      "maxPrintSpeed": 150,
+      "maxTravelSpeed": null,
+      "maxAcceleration": null,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 260,
+      "maxBedTemp": 100,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 1
+    },
+    "supportedMaterials": ["PLA", "TPU", "PETG", "ABS"],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

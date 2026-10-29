@@ -1,0 +1,55 @@
+{
+  "id": "raise3d_pro3",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "raise3d_pro3",
+    "brand": "Raise3D",
+    "model": "Pro3",
+    "series": "Pro3",
+    "manufacturer": "Raise3D",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 300,
+      "y": 300,
+      "z": 300
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.2, 0.4, 0.6, 0.8, 1],
+    "motion": {
+      "maxPrintSpeed": null,
+      "maxTravelSpeed": 350,
+      "maxAcceleration": null,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 300,
+      "maxBedTemp": 120,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "unknown",
+      "count": 2
+    },
+    "supportedMaterials": [
+      "PLA",
+      "ABS",
+      "ASA",
+      "PETG",
+      "PC",
+      "PETG ESD",
+      "TPU",
+      "PVA+"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

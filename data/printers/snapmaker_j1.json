@@ -1,0 +1,60 @@
+{
+  "id": "snapmaker_j1",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "snapmaker_j1",
+    "brand": "Snapmaker",
+    "model": "J1",
+    "series": "J1",
+    "manufacturer": "Snapmaker",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 300,
+      "y": 200,
+      "z": 200
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.2, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": null,
+      "maxTravelSpeed": null,
+      "maxAcceleration": null,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 300,
+      "maxBedTemp": 100,
+      "maxChamberTemp": null
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "unknown",
+      "count": 2
+    },
+    "supportedMaterials": [
+      "PLA",
+      "ABS",
+      "HIPS",
+      "PC",
+      "TPU",
+      "TPE",
+      "PETG",
+      "ASA",
+      "PP",
+      "PVA",
+      "PA",
+      "PA-GF",
+      "PA-CF"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}

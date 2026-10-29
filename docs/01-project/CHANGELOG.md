@@ -2400,13 +2400,13 @@ Date:
 
 ## Added
 
-- Printer profiles v1.0.1: 47 printers on sale from ten brands added to data/printers/ (57 in total, the 10 printers of v1.0.0 unchanged), written from pages of the manufacturers read on 2026-10-28 (ADR-032, D2): Anycubic (6), Bambu Lab (1), BIQU (3), Creality (13), Elegoo (4), Flashforge (6), Prusa (2), QIDI (6), Snapmaker (1), Sovol (5); a value that is not published is null (DATA_SCHEMA.md 3.5.0)
+- Printer profiles v1.0.1: 69 printers added to data/printers/ (79 in total, the 10 printers of v1.0.0 unchanged): 47 printers on sale from ten brands and 22 older printers or printers of other brands, written from pages of the manufacturers read on 2026-10-28 (ADR-032, D2): Anycubic (10), Artillery (2), Bambu Lab (2), BIQU (3), Creality (19), Elegoo (4), Flashforge (6), Prusa (2), QIDI (6), Raise3D (2), Snapmaker (2), Sovol (5), UltiMaker (6, with the MakerBot Sketch Sprint); a value that is not published is null (DATA_SCHEMA.md 3.5.0)
 - data/printers/SOURCES.md: one section per new printer (pages and values read), and the rules added in v1.0.1 (nozzle 0.4 when no diameter is published, volume of one nozzle for a printer with several nozzles, lower value kept when two pages differ), and a list of the printers whose official sheet was not found (not added)
 
 ## Changed
 
-- data/printers/index.json: tag v1.0.1, 57 profiles with their SHA-256 (fewer than MAX_INDEX_PROFILES, 500)
-- Tests: PrinterProfiles.test.ts (57 profiles with the 10 first printers, SOURCES.md read on 2026-10-28), PrinterRepositorySync.test.ts (57 profiles, first file anycubic_kobra3.json), ProfileSync.test.ts (tag v1.0.1 of data/printers/, 58 files in the cache folder), tests/e2e/printer.spec.ts (57 printers and the printer of the user, line "Profiles v1.0.1")
+- data/printers/index.json: tag v1.0.1, 79 profiles with their SHA-256 (fewer than MAX_INDEX_PROFILES, 500)
+- Tests: PrinterProfiles.test.ts (79 profiles with the 10 first printers, SOURCES.md read on 2026-10-28), PrinterRepositorySync.test.ts (79 profiles, first file anycubic_kobra2_max.json), ProfileSync.test.ts (tag v1.0.1 of data/printers/, 80 files in the cache folder), tests/e2e/printer.spec.ts (79 printers and the printer of the user, line "Profiles v1.0.1")
 - DIRECTORY_PURPOSES.md, PASSATION.md
 
 ---

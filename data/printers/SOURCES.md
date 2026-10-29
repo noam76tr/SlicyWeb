@@ -100,6 +100,32 @@ All the pages below were read on 2026-10-28. The rules above apply, with these a
 - Pages of an official store of the manufacturer (store.creality.com, store.anycubic.com, ca.anycubic.com, us.store.bambulab.com, au.elegoo.com, us.elegoo.com, biqu.equipment) and blogs and guides of these stores are pages of the manufacturer.
 
 
+## Anycubic Kobra 2 Max (anycubic_kobra2_max.json)
+
+- https://store.anycubic.com/blogs/3d-printing-guides/anycubic-kobra-2-series-specs-and-features-comparison (official Anycubic store guide, comparison table, Kobra 2 Max): build volume 420 × 420 × 500 mm; max printing speed 500 mm/s; acceleration 10000 mm/s²; extruder direct drive + double gears; nozzle diameter 0.4 mm; max nozzle temperature 260 °C; max hotbed temperature 90 °C; supported filaments PLA/ABS/PETG/TPU
+- https://store.anycubic.com/products/kobra-2-max (specifications): printing volume 420 × 420 × 500 mm; printing speed maximum 500 mm/s; acceleration maximum 10,000 mm/s²; nozzle max temperature 260 °C, diameter standard 0.4 mm; hotbed max temperature 90 °C; supporting filaments PLA/ABS/PETG/TPU; firmware solution Kobra OS
+- null: maxTravelSpeed, maxJerk, maxChamberTemp
+- cooling: no part cooling, auxiliary or chamber fan named
+
+## Anycubic Kobra 2 Neo (anycubic_kobra2_neo.json)
+
+- https://store.anycubic.com/blogs/3d-printing-guides/anycubic-kobra-2-series-specs-and-features-comparison (official Anycubic store guide, comparison table, Kobra 2 Neo): build volume 220 × 220 × 250 mm; max printing speed 250 mm/s; acceleration 2500 mm/s²; extruder direct drive; nozzle diameter 0.4 mm; max nozzle temperature 260 °C; max hotbed temperature 110 °C; supported filaments PLA/ABS/PETG/TPU
+- null: maxTravelSpeed, maxJerk, maxChamberTemp
+- cooling: no part cooling, auxiliary or chamber fan named
+
+## Anycubic Kobra 2 Plus (anycubic_kobra2_plus.json)
+
+- https://store.anycubic.com/blogs/3d-printing-guides/anycubic-kobra-2-series-specs-and-features-comparison (official Anycubic store guide, comparison table, Kobra 2 Plus): build volume 320 × 320 × 400 mm; max printing speed 500 mm/s; acceleration 10000 mm/s²; extruder direct drive + double gears; nozzle diameter 0.4 mm; max nozzle temperature 260 °C; max hotbed temperature 90 °C; supported filaments PLA/ABS/PETG/TPU
+- https://store.anycubic.com/products/kobra-2-plus (tech specs): printing speed 500 mm/s (max.); extruder direct extruder + double gears; nozzle ≤ 260 °C, ø 0.4 mm; hotbed temperature ≤ 90 °C; printing material PLA/ABS/PETG/TPU
+- null: maxTravelSpeed, maxJerk, maxChamberTemp
+- cooling: no part cooling, auxiliary or chamber fan named
+
+## Anycubic Kobra 2 Pro (anycubic_kobra2_pro.json)
+
+- https://store.anycubic.com/blogs/3d-printing-guides/anycubic-kobra-2-series-specs-and-features-comparison (official Anycubic store guide, comparison table, Kobra 2 Pro): build volume 220 × 220 × 250 mm; max printing speed 500 mm/s; acceleration 20000 mm/s²; extruder direct drive + double gears; nozzle diameter 0.4 mm; max nozzle temperature 260 °C; max hotbed temperature 110 °C; supported filaments PLA/ABS/PETG/TPU
+- null: maxTravelSpeed, maxJerk, maxChamberTemp
+- cooling: no part cooling, auxiliary or chamber fan named
+
 ## Anycubic Kobra 3 (anycubic_kobra3.json)
 
 - https://store.anycubic.com/products/anycubic-kobra-3 (official Anycubic store, specifications): printing volume 250 × 250 × 260 mm; printing speed recommended 300 mm/s, maximum 600 mm/s; acceleration recommended 10,000 mm/s², maximum 20,000 mm/s²; extrusion type direct drive; nozzle max temperature 300 °C, diameter standard 0.4 mm, expandable to 0.6 / 0.8 mm; hotbed max temperature 110 °C; supporting filaments PLA/PETG/TPU; firmware solution Kobra OS
@@ -140,12 +166,34 @@ All the pages below were read on 2026-10-28. The rules above apply, with these a
 - null: maxTravelSpeed, maxJerk, maxChamberTemp
 - cooling: no fan named on the page
 
+## Artillery Sidewinder X4 Plus (artillery_sidewinder_x4_plus.json)
+
+- https://www.artillery3d.com/products/sidewinder-x4-plus (specifications): build volume 300 × 300 × 400 mm; max printing speed 500 mm/s; max acceleration 10000 mm/s² (the highlights say 12,000 mm/s²); extruder all metal dual gear direct drive; nozzle temp ≤ 300 °C; hotbed temp ≤ 100 °C; support filament PLA/TPU/PETG/ABS/PET/Carbon; Klipper firmware (description)
+- maxAcceleration: the specifications table (10000 mm/s²) and the highlights (12,000 mm/s²) differ; the lower value is kept
+- defaultNozzle 0.4 and supportedNozzles [0.4]: no nozzle diameter is published in the specifications (the schema needs a value)
+- null: maxTravelSpeed, maxJerk, maxChamberTemp
+- cooling: no fan named in the specifications
+
+## Artillery Sidewinder X4 Pro (artillery_sidewinder_x4_pro.json)
+
+- https://www.artillery3d.com/products/sidewinder-x4-pro (specifications): printing size 240 × 240 × 260 mm; max printing speed 500 mm/s; acceleration 12000 mm/s²; dual-gear direct extruder; max nozzle temperature 300 °C; max hotbed temperature 100 °C; filament compatibility PLA/TPU/PETG/ABS/Nylon; motherboard quiet Klipper firmware
+- defaultNozzle 0.4 and supportedNozzles [0.4]: no nozzle diameter is published in the specifications (the schema needs a value)
+- null: maxTravelSpeed, maxJerk, maxChamberTemp
+- cooling: no fan named in the specifications
+
 ## Bambu Lab H2C (bambu_h2c.json)
 
 - https://bambulab.com/en/h2c/specs (Technical Specifications): build volume single nozzle printing 325 × 320 × 320 mm (left), 305 × 320 × 325 mm (right), dual nozzle printing 300 × 320 × 320 mm, total volume for two nozzles 330 × 320 × 320 mm; max nozzle temperature 350 °C; supported nozzle diameter 0.2, 0.4, 0.6, 0.8 mm; max heatbed temperature 120 °C; max speed of toolhead 1000 mm/s; max acceleration of toolhead 20,000 mm/s²; active chamber heating, max temperature 65 °C; part cooling fan, auxiliary part cooling fan, chamber exhaust fan, chamber heat circulation fan (closed loop control); materials PLA, PETG, TPU, PVA, BVOH, ABS, ASA, PC, PA, PET, PPS; Carbon/Glass Fiber Reinforced PLA, PETG, PA, PET, PC, ABS, ASA, PPA, PPS
 - buildVolume: single nozzle printing, left nozzle (the largest single-nozzle volume); extruder.count 2 (left and right nozzles)
 - defaultNozzle 0.4: the included nozzle is not stated; 0.4 mm is in the supported list
 - null: maxJerk
+- extruder.type unknown (not stated)
+
+## Bambu Lab P1P (bambu_p1p.json)
+
+- https://us.store.bambulab.com/products/p1s (official Bambu Lab US store, comparison table, P1P column): build volume 256 × 256 × 256 mm; nozzle 0.4 mm stainless steel included, 0.2, 0.6, 0.8 mm optional; max hot end temperature 300 °C; max build plate temperature 100 °C; max speed of tool head 500 mm/s; max acceleration of tool head 20 m/s² (20000 mm/s²); control board fan, chamber temperature regulator fan and auxiliary part cooling fan optional; supported filament ideal PLA, PETG, TPU, PVA, PET, capable PA, PC, ABS, ASA
+- cooling: the auxiliary and chamber fans are optional (left out); no page read names the part cooling fan of the P1P
+- null: maxJerk, maxChamberTemp
 - extruder.type unknown (not stated)
 
 ## BIQU B1 (biqu_b1.json)
@@ -170,6 +218,46 @@ All the pages below were read on 2026-10-28. The rules above apply, with these a
 - null: maxTravelSpeed, maxAcceleration, maxJerk, maxChamberTemp
 - extruder.type unknown (not stated)
 - cooling: no fan named in the specifications
+
+## Creality Ender-3 Neo (creality_ender3_neo.json)
+
+- https://store.creality.com/blogs/all/ender-3-v2-3-neo-3-v2-neo-comparison-guide (official Creality store blog, comparison table, Ender-3 Neo): build volume 220 × 220 × 250 mm; printing speed max 120 mm/s; Bowden extruder; nozzle diameter standard 0.4 mm; max nozzle temperature 260 °C; max heatbed temperature 100 °C; supported filaments PLA, PETG, ABS
+- null: maxTravelSpeed, maxAcceleration, maxJerk, maxChamberTemp
+- cooling: no fan named on the pages read
+
+## Creality Ender-3 Pro (creality_ender3_pro.json)
+
+- https://store.creality.com/blogs/all/creality-ender-3-pro-v2-s1-s1-pro-v3-ke-detailed-comparative-analysis (official Creality store blog, specification table, Ender-3 Pro): build volume 220 × 220 × 250 mm; printing speed max 100 mm/s; Bowden extruder; nozzle diameter 0.4 mm; max nozzle temperature 260 °C; max heatbed temperature 110 °C; supported filaments PLA, PETG, ABS, TPU, PLA-Wood
+- null: maxTravelSpeed, maxAcceleration, maxJerk, maxChamberTemp
+- cooling: no fan named on the pages read
+
+## Creality Ender-3 S1 (creality_ender3_s1.json)
+
+- https://store.creality.com/blogs/all/creality-ender-3-pro-v2-s1-s1-pro-v3-ke-detailed-comparative-analysis (official Creality store blog, specification table, Ender-3 S1): build volume 220 × 220 × 270 mm; printing speed max 150 mm/s; direct drive extruder; nozzle diameter 0.4 mm; max nozzle temperature 260 °C; max heatbed temperature 100 °C; supported filaments PLA, TPU, PETG, ABS
+- https://www.creality.com/blog/the-differences-of-ender-3-s1-ender-3-s1-pro-ender-3-s1-plus (official Creality blog, 2022-06-29): Sprite dual-gear direct extruder; nozzle 260 °C; heatbed 100 °C
+- null: maxTravelSpeed, maxAcceleration, maxJerk, maxChamberTemp
+- cooling: no fan named on the pages read
+
+## Creality Ender-3 S1 Pro (creality_ender3_s1_pro.json)
+
+- https://store.creality.com/blogs/all/creality-ender-3-pro-v2-s1-s1-pro-v3-ke-detailed-comparative-analysis (official Creality store blog, specification table, Ender-3 S1 Pro): build volume 220 × 220 × 270 mm; printing speed max 150 mm/s; direct drive extruder; nozzle diameter 0.4 mm; max nozzle temperature 300 °C; max heatbed temperature 110 °C; supported filaments PLA, ABS, PLA-Wood, TPU, PETG, PA
+- https://www.creality.com/blog/the-differences-of-ender-3-s1-ender-3-s1-pro-ender-3-s1-plus (official Creality blog, 2022-06-29): Sprite dual-gear direct extruder; nozzle 300 °C; heatbed 110 °C
+- null: maxTravelSpeed, maxAcceleration, maxJerk, maxChamberTemp
+- cooling: no fan named on the pages read
+
+## Creality Ender-3 V2 (creality_ender3_v2.json)
+
+- https://store.creality.com/blogs/all/creality-ender-3-pro-v2-s1-s1-pro-v3-ke-detailed-comparative-analysis (official Creality store blog, specification table, Ender-3 V2): build volume 220 × 220 × 250 mm; printing speed max 100 mm/s; Bowden extruder; nozzle diameter 0.4 mm; max nozzle temperature 260 °C; max heatbed temperature 100 °C; supported filaments PLA, PETG, TPU
+- https://store.creality.com/blogs/all/ender-3-v2-3-neo-3-v2-neo-comparison-guide (official Creality store blog, comparison table, Ender-3 V2): the same values
+- null: maxTravelSpeed, maxAcceleration, maxJerk, maxChamberTemp
+- cooling: no fan named on the pages read
+
+## Creality Ender-3 V2 Neo (creality_ender3_v2_neo.json)
+
+- https://store.creality.com/blogs/all/ender-3-v2-3-neo-3-v2-neo-comparison-guide (official Creality store blog, comparison table, Ender-3 V2 Neo): build volume 220 × 220 × 250 mm; printing speed max 120 mm/s; Bowden extruder; nozzle diameter standard 0.4 mm; max nozzle temperature 260 °C; max heatbed temperature 100 °C; supported filaments PLA, PETG, ABS
+- https://www.creality.com/products/ender-3-v2-neo-3d-printer: full-metal Bowden extruder
+- null: maxTravelSpeed, maxAcceleration, maxJerk, maxChamberTemp
+- cooling: no fan named on the pages read
 
 ## Creality Ender-3 V3 (creality_ender3_v3.json)
 
@@ -335,6 +423,12 @@ All the pages below were read on 2026-10-28. The rules above apply, with these a
 - extruder.type unknown (not stated)
 - cooling: no fan named on the page
 
+## UltiMaker MakerBot Sketch Sprint (makerbot_sketch_sprint.json)
+
+- https://ultimaker.com/3d-printers/sketch-series/makerbot-sketch-sprint/ (technical specifications): build volume 220 × 220 × 220 mm; speeds of 300 mm/s; direct drive single extrusion; single extrusion print head; nozzle diameter 0.4 mm; nozzle temperature max 280 °C; heated build plate able to reach 110 °C; uses PLA and Tough PLA
+- null: maxTravelSpeed, maxAcceleration, maxJerk, maxChamberTemp
+- cooling: no fan named on the page
+
 ## Prusa CORE One L+ (prusa_core_one_l_plus.json)
 
 - https://www.prusa3d.com/product/prusa-core-one-l/ (CORE One L+ technical specifications; the page of the CORE One L now shows the CORE One L+): build volume 300 × 300 × 330 mm; extruder Nextruder Direct Drive; nozzles included Prusa Brass High-Flow CHT 0.4 mm and Abrasive-Resistant 0.4 mm; max nozzle temperature 290 °C (400 °C with the optional HT Hotend upgrade: left out); max heatbed temperature 120 °C; max chamber temperature 60 °C (active convection chamber); supported materials PLA, PETG, Flex, PVA, PC, PP, CPE, PVB (ABS, ASA, HIPS, PA with the Advanced Filtration option: left out)
@@ -386,6 +480,31 @@ All the pages below were read on 2026-10-28. The rules above apply, with these a
 - https://us.qidi3d.com/pages/compare (QIDI comparison table): direct extruder, hardened steel dual gears
 - null: maxJerk, maxChamberTemp (no chamber heating)
 
+## Raise3D Pro3 (raise3d_pro3.json)
+
+- https://s1.raise3d.com/2024/08/Raise3D_Pro3-Series-Technical-Specifications_V4.7.pdf (Raise3D Pro3 Series Technical Specifications V4.7, Pro3): build volume (single extruder) 300 × 300 × 300 mm; print head travel speed 15-350 mm/s; dual-head with electronic lifting system; nozzle diameter 0.4 mm (default), 0.2/0.6/0.8/1.0 mm (available); max nozzle temperature 300 °C; max build plate temperature 120 °C; supported filaments PLA/ABS/ASA/PETG/PC/PETG ESD/TPU 95A/PVA+
+- buildVolume: single extruder
+- null: maxPrintSpeed, maxAcceleration, maxJerk, maxChamberTemp
+- extruder.type unknown (not stated)
+- cooling: no fan named in the specifications
+
+## Raise3D Pro3 Plus (raise3d_pro3_plus.json)
+
+- https://s1.raise3d.com/2024/08/Raise3D_Pro3-Series-Technical-Specifications_V4.7.pdf (Raise3D Pro3 Series Technical Specifications V4.7, Pro3 Plus): build volume (single extruder) 300 × 300 × 605 mm; print head travel speed 15-350 mm/s; dual-head with electronic lifting system; nozzle diameter 0.4 mm (default), 0.2/0.6/0.8/1.0 mm (available); max nozzle temperature 300 °C; max build plate temperature 120 °C; supported filaments PLA/ABS/ASA/PETG/PC/PETG ESD/TPU 95A/PVA+
+- buildVolume: single extruder
+- null: maxPrintSpeed, maxAcceleration, maxJerk, maxChamberTemp
+- extruder.type unknown (not stated)
+- cooling: no fan named in the specifications
+
+## Snapmaker J1 (snapmaker_j1.json)
+
+- https://support.snapmaker.com/hc/en-us/articles/9773156785175-What-are-the-specs-of-J1 (Snapmaker support, specs of J1): build volume default mode & backup mode 300 × 200 × 200 mm, copy mode 160 × 200 × 200 mm, mirror mode 150 × 200 × 200 mm; independent dual extruders (IDEX); nozzle 0.4 mm (included), 0.2, 0.6, 0.8 mm, hardened (sold separately); max nozzle temperature 300 °C; max heated bed temperature 100 °C; supported filaments PLA, ABS, HIPS, PC, TPU, TPE, PETG, ASA, PP, PVA, PA, PA-GF, PA-CF
+- buildVolume: default mode
+- motion null: the max speed row gives five values that the page does not assign to a mode or an axis
+- null: maxAcceleration, maxJerk, maxChamberTemp
+- extruder.type unknown (not stated)
+- cooling: no fan named on the page
+
 ## Snapmaker U1 (snapmaker_u1.json)
 
 - https://www.snapmaker.com/snapmaker-u1/specs (specs): build volume 270 × 270 × 270 mm; max toolhead speed 500 mm/s; max acceleration 20,000 mm/s²; toolheads included 4; nozzle diameter 0.4 mm; max nozzle temperature 300 °C; max heated bed temperature 100 °C; part cooling main & auxiliary part cooling fans; basic material compatibility PLA, PETG, TPU, PVA, PCTG (PET, ABS, ASA, PA, PC with the optional top cover: left out); firmware Klipper
@@ -425,6 +544,47 @@ All the pages below were read on 2026-10-28. The rules above apply, with these a
 - extruder.type unknown (not stated)
 - cooling: no fan named on the page
 
+## UltiMaker Factor 4+ (ultimaker_factor_4_plus.json)
+
+- https://ultimaker.com/3d-printers/factor-series/ultimaker-factor-4-plus/ (technical specifications): build volume 330 × 240 × 300 mm; dual-extrusion, direct drive print head and swappable print cores; nozzle diameters 0.25, 0.4, 0.6, 0.8 mm; nozzle temperature 180 - 340 °C; heated bed up to 120 °C; actively temperature controlled build volume up to 70 °C; 200+ materials including PPS CF, ABS, Nylon, PC, Tough PLA, PLA, PETG, CPE, CPE+, TPU 95A, PP
+- supportedMaterials: the materials named on the page ("200+ materials including")
+- null: maxPrintSpeed, maxTravelSpeed, maxAcceleration, maxJerk
+- cooling: no fan named on the page
+
+## UltiMaker S5 (ultimaker_s5.json)
+
+- https://ultimaker.com/3d-printers/s-series/ultimaker-s5/ (technical specifications): build volume 330 × 240 × 300 mm; Bowden dual extrusion; dual-geared feeder; nozzle diameters 0.25, 0.4, 0.6, 0.8 mm; nozzle temperature 180 - 280 °C; partly enclosed, passively heated; 280+ materials
+- maxBedTemp null: the page gives only the heat-up time (20 to 60 °C)
+- null: maxPrintSpeed, maxTravelSpeed, maxAcceleration, maxJerk, maxChamberTemp
+- cooling: no fan named on the page
+- supportedMaterials empty: the page gives "280+" materials, not a list
+
+## UltiMaker S6 (ultimaker_s6.json)
+
+- https://ultimaker.com/3d-printers/s-series/ultimaker-s6/ (technical specifications): build volume 330 × 240 × 300 mm; travel speed up to 500 mm/s; acceleration up to 50.000 mm/s²; jerk up to 100.000.000 mm/s³; dual-geared feeder; Bowden dual extrusion; nozzle diameters 0.25, 0.4, 0.6, 0.8 mm; nozzle temperature up to 340 °C with the CC+ print cores; partly enclosed, passively heated; 301+ materials
+- maxBedTemp null: the page gives only the heat-up time (20 to 60 °C)
+- maxJerk null: the jerk is published in mm/s³, not in the unit of the Printer Schema
+- null: maxPrintSpeed, maxChamberTemp
+- cooling: no fan named on the page
+- supportedMaterials empty: the page gives "301+" materials, not a list
+
+## UltiMaker S7 (ultimaker_s7.json)
+
+- https://ultimaker.com/3d-printers/s-series/ultimaker-s7/ (technical specifications): build volume 330 × 240 × 300 mm; dual-geared feeder; Bowden dual extrusion; nozzle diameters 0.25, 0.4, 0.6, 0.8 mm; nozzle temperature 180 - 280 °C; fully enclosed, passively heated; air extraction by low-noise brushless fan
+- https://um-support-files.ultimaker.com/manuals/user-manual/S7/EN-UltiMaker-S7-V1.2.pdf (user manual V1.2, specifications): build volume 330 × 240 × 300 mm; nozzle 0.4 mm included, 0.25, 0.6, 0.8 mm sold separately; heated flexible build plate 20 – 125 °C; dual-extrusion print head; Air Manager fan (air extraction)
+- chamberFan: the air extraction fan of the Air Manager
+- null: maxPrintSpeed, maxTravelSpeed, maxAcceleration, maxJerk, maxChamberTemp (passively heated chamber)
+- supportedMaterials empty: the pages give "280+" materials, not a list
+
+## UltiMaker S8 (ultimaker_s8.json)
+
+- https://ultimaker.com/3d-printers/s-series/ultimaker-s8/ (technical specifications): build volume 330 × 240 × 300 mm; XY speed up to 500 mm/s (travel speed); acceleration up to 50.000 mm/s²; dual-geared feeder; dual extrusion print head; nozzle diameters 0.25, 0.4, 0.6, 0.8 mm; nozzle temperature up to 340 °C; fully enclosed build chamber; air extraction by low-noise brushless fan; 301+ materials
+- https://um-support-files.ultimaker.com/manuals/user-manual/S8/EN-UltiMakerS8-V1.4-2025-07.pdf (user manual V1.4): speed up to 500 mm/s; acceleration up to 50 000 mm/s²; jerk up to 100 000 000 mm/s³; nozzle up to 340 °C; heated flexible build plate up to 120 °C; dual-extrusion printer; Bowden tubes between the feeders and the print head; Air Manager fan
+- maxJerk null: the jerk is published in mm/s³, not in the unit of the Printer Schema
+- chamberFan: the air extraction fan of the Air Manager
+- null: maxChamberTemp
+- supportedMaterials empty: the pages give "301+" materials, not a list
+
 ## Official sheet not found (fiche non trouvée)
 
 These printers are on sale from the brands of v1.0.1, but no page of the manufacturer with their technical values could be read on 2026-10-28. They are not added: no value is taken from another source.
@@ -435,3 +595,5 @@ These printers are on sale from the brands of v1.0.1, but no page of the manufac
 - QIDI X-Plus 3, X-Max 3, X-Smart 3: the comparison page of QIDI mixes the columns (speed, nozzle and materials not attributable to one printer); X-Smart 5: no page of the manufacturer found
 - Flashforge Guider4, Guider4 Pro: no page on the global site of Flashforge
 - Prusa MK3.5: no page of technical parameters found
+- Artillery Sidewinder X4 Max: the product page could not be read
+- UltiMaker Method, Method X, Method XL, MakerBot Sketch, Sketch Large, Factor 4: no readable product page of the manufacturer with the technical values (only series pages)

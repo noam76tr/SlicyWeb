@@ -3,7 +3,7 @@
  * Printer Database End-To-End Tests
  *
  * Printer profiles loaded by the main process (ADR-032, D4), read by the
- * window through the printer:* channels only: the 57 printers of
+ * window through the printer:* channels only: the 79 printers of
  * data/printers/ and the printers of the user; a damaged profile file is
  * refused without stopping the application; a settings.json written
  * before the printer settings (DATA_SCHEMA.md 3.5.0) keeps the language
@@ -96,8 +96,8 @@ test("serves the printers of the user and refuses a damaged file", async ({
   )) as Response;
   const ids = (all.data.printers as { id: string }[]).map(({ id }) => id);
   expect(all.success).toBe(true);
-  // The 57 printers of data/printers/, then the printer of the user
-  expect(ids).toHaveLength(58);
+  // The 79 printers of data/printers/, then the printer of the user
+  expect(ids).toHaveLength(80);
   expect(ids).toContain("bambu_x1c");
   expect(ids).toContain(printer.id);
 

@@ -6,7 +6,7 @@
  * passes PrinterProfileFileSchema, is named after the id of its printer,
  * has the source Official and is listed in data/printers/SOURCES.md
  * (page of the manufacturer, date of verification; 10 printers in
- * v1.0.0, 57 in v1.0.1); the loader of the
+ * v1.0.0, 79 in v1.0.1); the loader of the
  * main process loads them all, without refused file. index.json (index
  * of the profile repository, Phase 7 lot 62) lists each profile with
  * the SHA-256 of its file.
@@ -50,8 +50,8 @@ const files = fs
   .sort();
 
 describe("Printer profiles of data/printers", () => {
-  it("contains the 57 printers of v1.0.1, with the 10 first printers", () => {
-    expect(files).toHaveLength(57);
+  it("contains the 79 printers of v1.0.1, with the 10 first printers", () => {
+    expect(files).toHaveLength(79);
     expect(files).toEqual(
       expect.arrayContaining(FIRST_PRINTERS.map((id) => `${id}.json`)),
     );

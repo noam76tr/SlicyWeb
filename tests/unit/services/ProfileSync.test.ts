@@ -284,7 +284,7 @@ describe("Printer profile cache", () => {
     const valid = cache.readValid();
 
     expect(valid?.tag).toBe("v1.0.1");
-    expect(fs.readdirSync(valid?.folder ?? "")).toHaveLength(58);
+    expect(fs.readdirSync(valid?.folder ?? "")).toHaveLength(80);
     expect(await cache.readChecksum()).toBe(valid?.checksum);
   });
 

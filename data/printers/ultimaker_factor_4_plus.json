@@ -1,0 +1,58 @@
+{
+  "id": "ultimaker_factor_4_plus",
+  "type": "printer",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "ultimaker_factor_4_plus",
+    "brand": "UltiMaker",
+    "model": "Factor 4+",
+    "series": "Factor",
+    "manufacturer": "UltiMaker",
+    "firmware": "",
+    "releaseDate": "",
+    "supported": true,
+    "buildVolume": {
+      "x": 330,
+      "y": 240,
+      "z": 300
+    },
+    "defaultNozzle": 0.4,
+    "supportedNozzles": [0.25, 0.4, 0.6, 0.8],
+    "motion": {
+      "maxPrintSpeed": null,
+      "maxTravelSpeed": null,
+      "maxAcceleration": null,
+      "maxJerk": null
+    },
+    "thermal": {
+      "maxNozzleTemp": 340,
+      "maxBedTemp": 120,
+      "maxChamberTemp": 70
+    },
+    "cooling": {
+      "partFan": false,
+      "auxFan": false,
+      "chamberFan": false
+    },
+    "extruder": {
+      "type": "direct_drive",
+      "count": 2
+    },
+    "supportedMaterials": [
+      "PPS CF",
+      "ABS",
+      "Nylon",
+      "PC",
+      "Tough PLA",
+      "PLA",
+      "PETG",
+      "CPE",
+      "CPE+",
+      "TPU",
+      "PP"
+    ],
+    "supportedFilaments": []
+  },
+  "validated": false
+}
