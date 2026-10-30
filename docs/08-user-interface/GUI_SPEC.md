@@ -875,6 +875,8 @@ No printer selected: no build plate is shown. The grid covers a default workspac
 
 Coordinate system (ADR-028): millimeters, X to the right, Y to the back, Z up; origin at the center of the build plate, Z = 0 on the plate surface.
 
+Appearance (lot 67, request of Noam, 2026-10-30): the build plate is drawn as a magnetic print sheet, in both themes: dark sheet with a light grain, rounded corners and a thin rim. A tab centered on the front edge (Y negative) shows the front of the printer; there is no other front mark (no arrow, no "Front" text). The coordinate grid stays visible on the sheet and stops at its rounded corners. The name of the printer (brand and model, as in the Status Bar) is written in text only, with low contrast, inside the sheet along the front edge; no logo of a manufacturer (trademarks). The sheet, the tab and the name follow the size of the build plate, are under the objects, can never be selected and never stop a click on an object; they disappear when no printer is selected.
+
 
 
 ---
@@ -1421,7 +1423,7 @@ Speed Profile
 
 ```
 
-Phase 8 (ADR-033 D5, D9; the layout is completed with lot 69): a selector of the families (MATERIAL_PROFILE_SPEC.md, Material Families), then the nozzle and bed temperature ranges, the fan, the density; a value not published shows "Not published". When the selected printer lists materials and the family is not in its list (after the aliases of MATERIAL_PROFILE_SPEC.md), a warning "Not listed by the printer manufacturer" is shown; the choice is never blocked. Material > Select Material opens this selector. The last choice is kept in the settings (USER_SETTINGS_SPEC.md, Material Settings).
+Phase 8 (ADR-033 D5, D9; the layout is completed with lot 70): a selector of the families (MATERIAL_PROFILE_SPEC.md, Material Families), then the nozzle and bed temperature ranges, the fan, the density; a value not published shows "Not published". When the selected printer lists materials and the family is not in its list (after the aliases of MATERIAL_PROFILE_SPEC.md), a warning "Not listed by the printer manufacturer" is shown; the choice is never blocked. Material > Select Material opens this selector. The last choice is kept in the settings (USER_SETTINGS_SPEC.md, Material Settings).
 
 
 
@@ -1445,7 +1447,7 @@ Cooling Overrides
 Retraction Profile
 ```
 
-Phase 8 (ADR-033 D9; the layout is completed with lot 69): a selector of the filaments of the selected family, grouped by brand ("My filaments" for the filaments of the user); choosing a filament also chooses its family. Then the temperature ranges of the manufacturer, its single values (manufacturerSettings), the color; a value not published shows "Not published". Filament > Select Filament opens this selector; Filament > Manage Filaments opens the Filament Manager (lot 70). The last choice is kept in the settings.
+Phase 8 (ADR-033 D9; the layout is completed with lot 70): a selector of the filaments of the selected family, grouped by brand ("My filaments" for the filaments of the user); choosing a filament also chooses its family. Then the temperature ranges of the manufacturer, its single values (manufacturerSettings), the color; a value not published shows "Not published". Filament > Select Filament opens this selector; Filament > Manage Filaments opens the Filament Manager (lot 71). The last choice is kept in the settings.
 
 ---
 

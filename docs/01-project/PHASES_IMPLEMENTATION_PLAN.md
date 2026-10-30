@@ -1415,12 +1415,14 @@ Order of the lots:
 
 - Lot 65: analysis (inventory, sources and licences, decisions)
 - Lot 66: ADR-033, DATA_SCHEMA.md 3.7.0, MATERIAL_PROFILE_SPEC.md 2.0.0, FILAMENT_SETTINGS_SPEC.md 2.0.0, USER_SETTINGS_SPEC.md, ERROR_CODES_SPEC.md (FIL_001, FIL_002), GUI_SPEC.md (documentation)
-- Lot 67: loading in the main process, Material and Filament schemas with null, material:getAll and filament:getAll
-- Lot 68: the materials and filaments of the first list, and SOURCES.md
-- Lot 69: Material and Filament sections, selectors, warning, last choice kept
-- Lot 70: filaments entered by the user (Manage Filaments)
-- Lot 71: synchronization of the materials and filaments from noam76tr/slicyweb-profiles
-- Lot 72: closure of Phase 8
+- Lot 67 (outside Phase 8, request of Noam, 2026-10-30): build plate drawn as a magnetic print sheet with a front tab, printer name on the plate (GUI_SPEC.md, Build Plate)
+- Lot 68: loading in the main process, Material and Filament schemas with null, material:getAll and filament:getAll
+- Lot 69: the materials and filaments of the first list, and SOURCES.md
+- Lot 70: Material and Filament sections, selectors, warning, last choice kept
+- Lot 71: filaments entered by the user (Manage Filaments)
+- Lot 72: synchronization of the materials and filaments from noam76tr/slicyweb-profiles
+- Lot 73: closure of Phase 8
+- After the closure of Phase 8 (decision of Noam, 2026-10-30): navigation cube in a corner of the 3D viewport (translated faces that turn with the camera, a click on a face gives its view, colored X, Y, Z axes), in place of the axes at the center of the plate
 
 Progress:
 

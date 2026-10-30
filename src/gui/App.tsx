@@ -54,6 +54,7 @@ import Viewport from "./viewport/Viewport";
 
 export default function App(): JSX.Element {
   const { t, direction } = useTranslation();
+  const printer = usePrinterStore((state) => state.selectedPrinter);
   const buildVolume = usePrinterStore(
     (state) => state.selectedPrinter?.buildVolume ?? null,
   );
@@ -92,6 +93,7 @@ export default function App(): JSX.Element {
                   ? t("viewport.plate", { x: buildVolume.x, y: buildVolume.y })
                   : null
               }
+              printerName={printer ? `${printer.brand} ${printer.model}` : null}
               onTransformObjects={(transforms, live) =>
                 TransformService.applyMany(transforms, { live })
               }

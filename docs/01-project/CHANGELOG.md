@@ -2365,7 +2365,7 @@ Release Type:
 Architecture Decision
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-28
@@ -2385,6 +2385,10 @@ Date:
 - PHASES_IMPLEMENTATION_PLAN.md: Phase 8 In Progress, its decisions and the order of the lots 65 to 72; PASSATION.md
 - KNOWN ISSUES: KI-023 also covers the materials and filaments (ADR-033)
 
+## Validation Result
+
+- Windows 11 (2026-10-30): lot 66 on GitHub (d5d414f, identical to the lot), checked with the printer profiles v1.0.1 (0.1.68, same run of Noam)
+
 ---
 
 # VERSION 0.1.68
@@ -2393,7 +2397,7 @@ Release Type:
 Printer Database (data)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-28
@@ -2408,6 +2412,43 @@ Date:
 - data/printers/index.json: tag v1.0.1, 79 profiles with their SHA-256 (fewer than MAX_INDEX_PROFILES, 500)
 - Tests: PrinterProfiles.test.ts (79 profiles with the 10 first printers, SOURCES.md read on 2026-10-28), PrinterRepositorySync.test.ts (79 profiles, first file anycubic_kobra2_max.json), ProfileSync.test.ts (tag v1.0.1 of data/printers/, 80 files in the cache folder), tests/e2e/printer.spec.ts (79 printers and the printer of the user, line "Profiles v1.0.1")
 - DIRECTORY_PURPOSES.md, PASSATION.md
+
+## Validation Result
+
+- Windows 11 (2026-10-30): printer profiles v1.0.1 on GitHub; npm test: 203 tests passed, 1 skipped (link test); npm run test:e2e: 22 tests passed; release v1.0.1 of noam76tr/slicyweb-profiles published; Printer > Refresh Profiles shows "Profiles updated (v1.0.1)" with the new printers (Noam)
+
+---
+
+# VERSION 0.1.69
+
+Release Type:
+3D Viewport
+
+Status:
+In Progress
+
+Date:
+2026-10-30
+
+## Added
+
+- Build plate drawn as a magnetic print sheet when a printer is selected (request of Noam, 2026-10-30; GUI_SPEC.md, Build Plate): dark sheet with a light grain (tiled texture drawn by the application), rounded corners and a thin rim; a tab centered on the front edge (Y negative, ADR-028) shows the front of the printer, with no arrow and no "Front" text; the grid stays visible on the sheet and stops at its rounded corners
+- Name of the printer (brand and model) written on the sheet along the front edge, in text only and with low contrast; no logo of a manufacturer
+- tests/e2e/printer.spec.ts: the plate and the printer name are drawn with a printer and removed with "No printer"; a click on the plate is a click in the empty space, a click on the object over the plate selects it (23 end-to-end tests)
+
+## Changed
+
+- src/renderer/helpers/WorkspaceHelpers.ts: sheet (ShapeGeometry, grain, rim, tab), grid clipped at the rounded corners, printer name (setPrinterName), getPlateState for the tests; the sheet and the name are never picked (only the objects are), they follow the size of the plate and disappear without a printer
+- src/constants/ViewportConstants.ts: BUILD_PLATE_COLOR #1A1A1D, grain, rim, corner radius and tab sizes, text of the printer name (PLATE_NAME_*)
+- src/gui/viewport/Viewport.tsx: printerName property; data-plate and data-plate-name attributes of the viewport, read by the end-to-end tests
+- src/gui/App.tsx: passes the name of the selected printer to the viewport
+- GUI_SPEC.md (Build Plate): appearance of the plate; DIRECTORY_PURPOSES.md
+- PHASES_IMPLEMENTATION_PLAN.md: lot 67 outside Phase 8; the Phase 8 lots become 68 to 73; navigation cube after the closure of Phase 8 (decision of Noam, 2026-10-30); lot numbers updated in DECISIONS.md (ADR-033), GUI_SPEC.md, FILAMENT_SETTINGS_SPEC.md, ERROR_CODES_SPEC.md and PASSATION.md
+- PASSATION.md
+
+## Known Limitations
+
+- No light theme yet (GUI_SPEC.md, Visual Style: optional); the sheet is dark in both themes, like a real sheet, so that the grid and the name stay readable on a light background
 
 ---
 

@@ -42,9 +42,45 @@ export const GRID_SPACINGS_MM = [1, 2, 5, 10, 20, 50, 100] as const;
 export const GRID_MIN_PIXEL_SPACING = 10;
 export const GRID_MAJOR_EVERY = 5;
 
-/** Build plate colors (displayed when a printer is selected) */
-export const BUILD_PLATE_COLOR = 0x2f2f33;
+/**
+ * Build plate, drawn as a magnetic print sheet when a printer is
+ * selected: dark sheet with rounded corners, a light grain texture and
+ * a rim; a tab centered on the front edge (Y negative, ADR-028) shows
+ * the front of the printer.
+ * BUILD_PLATE_COLOR: mean color of the sheet; BUILD_PLATE_GRAIN: maximum
+ * change of its grain (0 to 255), one texture tile every
+ * BUILD_PLATE_GRAIN_TILE_MM.
+ * Corner radius and tab: ratios of the smaller plate side, between
+ * their minimum and maximum in millimeters.
+ */
+export const BUILD_PLATE_COLOR = 0x1a1a1d;
+export const BUILD_PLATE_GRAIN = 12;
+export const BUILD_PLATE_GRAIN_TILE_MM = 40;
+export const BUILD_PLATE_RIM_COLOR = 0x4a4a50;
+export const BUILD_PLATE_CORNER_RATIO = 0.03;
+export const BUILD_PLATE_CORNER_MIN_MM = 3;
+export const BUILD_PLATE_CORNER_MAX_MM = 10;
+export const BUILD_PLATE_TAB_WIDTH_RATIO = 0.16;
+export const BUILD_PLATE_TAB_WIDTH_MIN_MM = 24;
+export const BUILD_PLATE_TAB_WIDTH_MAX_MM = 60;
+export const BUILD_PLATE_TAB_DEPTH_RATIO = 0.06;
+export const BUILD_PLATE_TAB_DEPTH_MIN_MM = 8;
+export const BUILD_PLATE_TAB_DEPTH_MAX_MM = 16;
 export const BUILD_VOLUME_EDGE_COLOR = 0x4fa3ff;
+
+/**
+ * Printer name written on the plate, along the front edge: low
+ * contrast, under the objects, never picked. Height of its text:
+ * PLATE_NAME_TEXT_RATIO of the smaller plate side, between
+ * PLATE_NAME_TEXT_MIN_MM and PLATE_NAME_TEXT_MAX_MM.
+ */
+export const PLATE_NAME_COLOR = "#8e8e96";
+export const PLATE_NAME_OPACITY = 0.5;
+export const PLATE_NAME_TEXT_RATIO = 0.04;
+export const PLATE_NAME_TEXT_MIN_MM = 5;
+export const PLATE_NAME_TEXT_MAX_MM = 12;
+export const PLATE_NAME_FONT =
+  "'Inter Variable', 'Noto Sans Hebrew Variable', 'Segoe UI', Roboto, sans-serif";
 
 /** Color of the objects, and of the selected object (GUI_SPEC.md accent #4FA3FF) */
 export const OBJECT_COLOR = 0xb4b8c0;

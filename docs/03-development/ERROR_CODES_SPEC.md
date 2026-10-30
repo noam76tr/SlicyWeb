@@ -413,7 +413,7 @@ Unsupported Material
 
 # Filament Errors
 
-Phase 8, ADR-033. The errors of the filaments entered by the user (Manage Filaments) are added with lot 70.
+Phase 8, ADR-033. The errors of the filaments entered by the user (Manage Filaments) are added with lot 71.
 
 ## FIL_001
 

@@ -8,7 +8,8 @@
  * - Renderer lifecycle
  *
  * The viewport shows the coordinate grid, the axes and, when a
- * printer is selected, its build plate (WorkspaceHelpers), and the
+ * printer is selected, its build plate with its name (WorkspaceHelpers),
+ * and the
  * objects of the scene (ObjectRenderer, object store).
  * Camera: mouse controls of GUI_SPEC.md (CameraManager); projection
  * and view presets come from the View menu (viewport store);
@@ -114,6 +115,12 @@ interface ViewportProps {
   plateLabel: string | null;
 
   /**
+   * Name of the selected printer (brand and model), written on the build
+   * plate; null when no printer is selected.
+   */
+  printerName: string | null;
+
+  /**
    * Applies transforms to one object or a group, by objectId
    * (TransformService); returns false when they are refused. live: step
    * of a rotation with the gizmo, not placed on the plate.
@@ -135,11 +142,15 @@ export default function Viewport({
   label,
   unavailableMessage,
   plateLabel,
+  printerName,
   onTransformObjects,
   onTransformGesture,
 }: ViewportProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [unavailable, setUnavailable] = useState(false);
+  const workspaceRef = useRef<WorkspaceHelpers | null>(null);
+  const printerNameRef = useRef(printerName);
+  printerNameRef.current = printerName;
 
   // Latest callback, read by the event handlers created once
   const onTransformRef = useRef(onTransformObjects);
@@ -169,6 +180,7 @@ export default function Viewport({
     const scene = rendererManager.getScene();
     const lightingManager = new LightingManager(scene);
     const workspace = new WorkspaceHelpers(scene);
+    workspaceRef.current = workspace;
     const objectRenderer = new ObjectRenderer(scene);
     const sceneRenderer = new SceneRenderer(rendererManager);
 
@@ -230,6 +242,7 @@ export default function Viewport({
     workspace.setBuildVolume(
       usePrinterStore.getState().selectedPrinter?.buildVolume ?? null,
     );
+    workspace.setPrinterName(printerNameRef.current);
 
     // Initial projection and view
     cameraManager.setProjection(useViewportStore.getState().projection);
@@ -339,12 +352,38 @@ export default function Viewport({
       gizmo.dispose();
       sceneRenderer.stop();
       objectRenderer.dispose();
+      workspaceRef.current = null;
       workspace.dispose();
       lightingManager.dispose();
       cameraManager.dispose();
       rendererManager.dispose();
     };
   }, []);
+
+  // Printer name on the plate; the plate itself follows the printer store
+  useEffect(() => {
+    const workspace = workspaceRef.current;
+    const container = containerRef.current;
+
+    if (!workspace || !container) {
+      return;
+    }
+
+    workspace.setPrinterName(printerName);
+
+    // Read by the end-to-end tests: the plate is drawn in the 3D view
+    const { plate, name } = workspace.getPlateState();
+    if (plate) {
+      container.dataset.plate = "true";
+    } else {
+      delete container.dataset.plate;
+    }
+    if (name) {
+      container.dataset.plateName = name;
+    } else {
+      delete container.dataset.plateName;
+    }
+  }, [printerName, plateLabel]);
 
   return (
     <div

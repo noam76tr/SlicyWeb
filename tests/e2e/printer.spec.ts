@@ -19,7 +19,9 @@
  * the Official profiles; Printer > Refresh Profiles shows the result of
  * the check (repository reached or not: the current profiles are kept
  * when it fails); the setting "Check for profile updates automatically"
- * is on by default and saved.
+ * is on by default and saved. Build plate (lot 67): with a printer, the
+ * plate and the printer name are drawn in the 3D view, never in the way
+ * of the clicks on the objects; "No printer" removes them.
  *
  * The printer of these tests is test data, not a real printer.
  *
@@ -37,7 +39,7 @@ import path from "node:path";
 import en from "../../public/locales/en.json";
 import fr from "../../public/locales/fr.json";
 
-import { expect, test } from "./fixtures";
+import { cubeStl, expect, importFiles, objectRows, test } from "./fixtures";
 
 const printer = {
   id: "e2e-test-printer",
@@ -206,6 +208,59 @@ test("chooses a printer, shows its plate and keeps it", async ({ launch }) => {
     },
   });
   expect(second.errors).toEqual([]);
+});
+
+test("draws the plate and the printer name, never in the way of the clicks", async ({
+  window,
+  files,
+  started,
+}) => {
+  const viewport = window.getByRole("img", { name: en["viewport.title"] });
+  const selector = window.getByLabel(en["printer.selector"]);
+
+  // No printer: no plate, no name
+  await expect(viewport).not.toHaveAttribute("data-plate");
+  await expect(viewport).not.toHaveAttribute("data-plate-name");
+
+  await selector.selectOption({ label: "X1 Carbon" });
+  await expect(viewport).toHaveAttribute("data-plate", "true");
+  await expect(viewport).toHaveAttribute(
+    "data-plate-name",
+    "Bambu Lab X1 Carbon",
+  );
+
+  // Seen from the top, the cube is at the center of the view, on the
+  // plate
+  await importFiles(window, [files("cube.stl", cubeStl("cube", 30))]);
+  await expect(objectRows(window)).toHaveText(["cube.stl"]);
+  await window
+    .getByRole("menubar")
+    .getByRole("menuitem", { name: en["menu.view"] })
+    .click();
+  await window
+    .getByRole("menuitem", { name: en["view.top"], exact: true })
+    .click();
+
+  const box = await viewport.boundingBox();
+  if (!box) {
+    throw new Error("3D viewport not shown");
+  }
+  const selected = objectRows(window).getByRole("button", { pressed: true });
+
+  // A click on the plate, in front of the cube, is a click in the empty
+  // space
+  await window.mouse.click(box.x + box.width / 2, box.y + box.height * 0.62);
+  await expect(selected).toHaveCount(0);
+
+  // The plate never stops a click on an object
+  await window.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(selected).toHaveText(["cube.stl"]);
+
+  // "No printer": the plate and the name disappear
+  await selector.selectOption("");
+  await expect(viewport).not.toHaveAttribute("data-plate");
+  await expect(viewport).not.toHaveAttribute("data-plate-name");
+  expect(started.errors).toEqual([]);
 });
 
 test("enters a printer of the user, uses it and deletes it", async ({
