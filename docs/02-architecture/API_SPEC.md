@@ -186,6 +186,8 @@ StorageIPC
 ImportIPC
 SettingsIPC
 PrinterIPC
+MaterialIPC
+FilamentIPC
 ```
 
 Communication flow:
@@ -248,13 +250,37 @@ printer:refresh checks the SlicyWeb profile repository (DECISIONS.md, ADR-032, D
 
 ---
 
+## MaterialIPC Channels
+
+Materials (DATA_SCHEMA.md, Complete Material Schema), loaded at start by the main process (DECISIONS.md, ADR-033, D6; Phase 8 lot 68): MaterialService reads the profile files of data/materials/ (Official), validates them (Repository Data Schema envelope, MaterialSchema; the four temperatures are required for a shipped material) and keeps the valid ones. The renderer reads no profile file.
+
+| Channel | Payload | Response data |
+|---|---|---|
+| `material:getAll` | none | `{ materials }` |
+
+A value of a material may be null (not published, never 0). A refused profile file (MAT_002) is left out of the materials and reported in the log of the main process.
+
+---
+
+## FilamentIPC Channels
+
+Filaments (DATA_SCHEMA.md, Filament Schema), loaded at start by the main process (DECISIONS.md, ADR-033, D6; Phase 8 lot 68): FilamentService reads the profile files of data/filaments/ (Official), then of the filaments/ folder of the user data folder (Local Custom), validates them (Repository Data Schema envelope, FilamentSchema; a shipped filament has its four temperatures, and its color and price per kg are null) and keeps the valid ones. A filament of the user never replaces an Official filament with the same id. The renderer reads no profile file.
+
+| Channel | Payload | Response data |
+|---|---|---|
+| `filament:getAll` | none | `{ filaments, userFilamentIds }`: userFilamentIds = ids of the filaments entered by the user (Local Custom) |
+
+density, pricePerKg, the values of temperature and of manufacturerSettings of a filament may be null (not published, never 0). A refused profile file (FIL_002) is left out of the filaments and reported in the log of the main process. filament:add, filament:update and filament:remove come with Manage Filaments (Phase 8 lot 71).
+
+---
+
 ## Allowed IPC Channels
 
 The preload bridge (src/electron/preload.ts, window.slicyWeb) accepts only the channels of the allow list src/electron/ipc/IpcChannels.ts:
 
 | Bridge method | Allow list | Channels |
 |---|---|---|
-| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle: `import:3mf`, `import:stl`, `import:validate`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:refresh`, `printer:remove`, `printer:update`, `project:create`, `project:delete`, `project:load`, `project:save`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
+| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle: `filament:getAll`, `import:3mf`, `import:stl`, `import:validate`, `material:getAll`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:refresh`, `printer:remove`, `printer:update`, `project:create`, `project:delete`, `project:load`, `project:save`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
 | `send(channel, data)` | SEND_CHANNELS | none yet |
 | `on(channel, callback)` | RECEIVE_CHANNELS | none yet |
 

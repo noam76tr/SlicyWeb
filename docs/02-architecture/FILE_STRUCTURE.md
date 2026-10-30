@@ -337,8 +337,10 @@ src/electron/
 ├── preload.ts
 
 └── ipc/
+    ├── FilamentIPC.ts         = filament:getAll (Phase 8)
     ├── ImportIPC.ts
     ├── IpcChannels.ts         = allow list of the IPC channels (API_SPEC.md)
+    ├── MaterialIPC.ts         = material:getAll (Phase 8)
     ├── PrinterIPC.ts
     ├── ProjectIPC.ts
     ├── SettingsIPC.ts
@@ -613,11 +615,10 @@ src/printer_database/
 ```text
 src/material_database/
 
-├── MaterialManager.ts
+├── MaterialManager.ts         = loading of the material profile files (Phase 8)
 ├── MaterialRepository.ts
-├── MaterialValidator.ts
 ├── MaterialCache.ts
-└── MaterialImporter.ts
+└── MaterialImporter.ts        = not used yet (Import Material, Phase 15)
 ```
 
 ---
@@ -626,11 +627,10 @@ src/material_database/
 ```text
 src/filament_database/
 
-├── FilamentManager.ts
+├── FilamentManager.ts         = loading of the filament profile files (Phase 8)
 ├── FilamentRepository.ts
-├── FilamentValidator.ts
 ├── FilamentCache.ts
-└── FilamentImporter.ts
+└── FilamentImporter.ts        = not used yet (Import Filament, Phase 15)
 ```
 
 ---
@@ -911,12 +911,15 @@ tests/
 
 ├── unit/
 │   ├── electron/
+│   │   ├── MaterialIPC.test.ts = material:getAll, filament:getAll (Phase 8)
 │   │   └── PrinterIPC.test.ts = printer:* channels (Phase 7)
 │   ├── gui/
 │   │   ├── dialogs/
 │   │   │   └── printerForm.test.ts = form of the Printer Manager (Phase 7)
 │   │   └── hooks/
 │   │       └── UndoRedoShortcuts.test.ts = keys of undo and redo (Phase 6)
+│   ├── material_database/
+│   │   └── MaterialLoading.test.ts = material and filament profile files, MaterialSchema, FilamentSchema (Phase 8)
 │   ├── printer_database/
 │   │   ├── PrinterLoading.test.ts = printer profile files, PrinterSchema (Phase 7)
 │   │   ├── PrinterProfiles.test.ts = the profiles of data/printers/ and their index.json (Phase 7)
@@ -940,6 +943,7 @@ tests/
     ├── fixtures.ts = starts the built application, test files
     ├── app.spec.ts = main window, languages
     ├── import.spec.ts = STL and 3MF import, refused files
+    ├── material.spec.ts = materials and filaments served by the main process (Phase 8)
     ├── printer.spec.ts = printers served by the main process, Printer section, Printer Manager, profiles (Phase 7)
     └── transform.spec.ts = transforms, undo and redo, several objects (Phase 6)
 ```

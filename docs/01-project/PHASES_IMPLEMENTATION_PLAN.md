@@ -1427,6 +1427,7 @@ Order of the lots:
 Progress:
 
 - Analysis (lot 65) and documentation (CHANGELOG 0.1.67): ADR-033, DATA_SCHEMA.md 3.7.0
+- Loading (lot 68, CHANGELOG 0.1.70): MaterialSchema and FilamentSchema with null, profile files read by the main process, material:getAll and filament:getAll
 
 
 

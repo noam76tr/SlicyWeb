@@ -6,15 +6,35 @@
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
  * - FILAMENT_SETTINGS_SPEC.md
+ * - DECISIONS.md (ADR-033, D6): the main process loads the profiles
+ *   (loadProfiles) and serves them through the filament:getAll IPC
+ *   channel.
  */
 
 import type { Filament } from "../types/Filament";
 
-import { FilamentManager } from "../filament_database/FilamentManager";
+import {
+  FilamentManager,
+  type FilamentLoadResult,
+  type FilamentProfileFolder,
+} from "../filament_database/FilamentManager";
 
 export class FilamentService {
-  private readonly filamentManager =
-    new FilamentManager();
+  public constructor(
+    private readonly filamentManager = new FilamentManager(),
+  ) {}
+
+  public loadProfiles(
+    folders: FilamentProfileFolder[]
+  ): FilamentLoadResult {
+    return this.filamentManager.loadProfiles(
+      folders
+    );
+  }
+
+  public getUserFilamentIds(): string[] {
+    return this.filamentManager.getUserFilamentIds();
+  }
 
   public addFilament(
     filament: Filament

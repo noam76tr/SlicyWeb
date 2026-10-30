@@ -393,6 +393,10 @@ Invalid Material Profile
 
 
 
+Material profile file refused at loading (Phase 8 lot 68): larger than 1 MB, not readable, invalid JSON, not a valid Repository Data Schema envelope or material (MaterialSchema; for a shipped material, the four temperatures are required), source other than the source of its folder, or id already loaded. The other files are loaded.
+
+
+
 ---
 
 
@@ -429,7 +433,7 @@ A filament id that is not loaded (filament:update, filament:remove, or the last 
 Invalid Filament Profile
 ```
 
-A filament file that cannot be read, is larger than the size limit, fails the Repository Data Schema or Filament Schema validation, or whose id is already loaded. The file is refused; the other filaments are loaded.
+A filament file that cannot be read, is larger than the size limit (1 MB), fails the Repository Data Schema or Filament Schema validation (for a shipped filament: the four temperatures are required, color and pricePerKg are null), has a source other than the source of its folder, or whose id is already loaded. The file is refused; the other filaments are loaded (Phase 8 lot 68).
 
 ---
 

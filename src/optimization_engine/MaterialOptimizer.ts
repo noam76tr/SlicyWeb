@@ -105,16 +105,20 @@ export class MaterialOptimizer {
   /**
    * Verifies that material settings
    * remain within material limits.
+   * A limit not published (null) is not checked.
    */
   public validateMaterialSettings(
     material: Material,
     nozzleTemperature: number,
   ): boolean {
+    const { minNozzle, maxNozzle } =
+      material.temperature;
+
     return (
-      nozzleTemperature >=
-        material.temperature.minNozzle &&
-      nozzleTemperature <=
-        material.temperature.maxNozzle
+      (minNozzle === null ||
+        nozzleTemperature >= minNozzle) &&
+      (maxNozzle === null ||
+        nozzleTemperature <= maxNozzle)
     );
   }
 

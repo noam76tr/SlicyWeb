@@ -5,7 +5,9 @@
  * Reads the printer profile files of a folder: each *.json file directly
  * in the folder (one printer per file). Other files (README, SOURCES.md),
  * index.json (index of the profile repository, not a printer) and
- * subfolders are ignored. Writes and deletes the files of the
+ * subfolders are ignored. The material and filament profile files are
+ * read the same way (Phase 8 lot 68, ADR-033 D6: one material or one
+ * filament per file). Writes and deletes the files of the
  * printers of the user (Local Custom, Phase 7 lot 61).
  *
  * Rules:

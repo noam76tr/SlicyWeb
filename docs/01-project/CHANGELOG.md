@@ -2425,7 +2425,7 @@ Release Type:
 3D Viewport
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-30
@@ -2449,6 +2449,46 @@ Date:
 ## Known Limitations
 
 - No light theme yet (GUI_SPEC.md, Visual Style: optional); the sheet is dark in both themes, like a real sheet, so that the grid and the name stay readable on a light background
+
+## Validation Result
+
+- Windows 11 (2026-10-30): lot 67 on GitHub (354971e, identical to the lot); npm run check:locales: 318 keys; npm run check:ipc: 23 channels; npm test: 203 tests passed, 1 skipped (link test); npm run test:e2e: 23 tests passed; manual checks 1 to 7 passed (no plate without a printer, name along the middle of the front edge, Front and Top views, plate and name follow the size, cube on the name selected, Hebrew readable, "No printer"); the name on the plate stays brand and model (Noam)
+
+---
+
+# VERSION 0.1.70
+
+Release Type:
+Material Database
+
+Status:
+In Progress
+
+Date:
+2026-10-30
+
+## Added
+
+- Phase 8 lot 68 (ADR-033, D3, D4, D6): materials and filaments loaded by the main process at start. MaterialService reads data/materials/ (Official, read only); FilamentService reads data/filaments/ (Official, read only), then filaments/ of the user data folder (Local Custom). Each file is a Repository Data Schema envelope (type material or filament), validated before use; a refused file is reported in the log of the main process (MAT_002 Invalid Material Profile, FIL_002 Invalid Filament Profile) and the other files are loaded; a filament of the user never replaces an Official filament with the same id. No material or filament is shipped yet (lot 69): the lists are empty without filaments of the user
+- IPC channels material:getAll ({ materials }) and filament:getAll ({ filaments, userFilamentIds }) (API_SPEC.md, MaterialIPC and FilamentIPC Channels); allow list: 25 channels
+- src/electron/ipc/MaterialIPC.ts, src/electron/ipc/FilamentIPC.ts
+- Tests: tests/unit/material_database/MaterialLoading.test.ts (10 tests), tests/unit/electron/MaterialIPC.test.ts (2 tests), tests/e2e/material.spec.ts (1 test; 24 end-to-end tests)
+
+## Changed
+
+- src/schemas/MaterialSchema.ts (DATA_SCHEMA.md 3.7.0, Complete Material Schema and Material rules): every value of temperature, cooling, physical and recommended is a number (or a warpingRisk value) or null; min not above max when both are known; id of lowercase letters, digits and "_"; category is a family of MATERIAL_PROFILE_SPEC.md (Material Families, MATERIAL_FAMILIES); unknown fields refused (.strict()); MaterialProfileFileSchema: envelope, id of the envelope = id of the material, the four temperatures required for a shipped (Official) material
+- src/schemas/FilamentSchema.ts (DATA_SCHEMA.md 3.7.0, Filament Schema and Filament rules): temperature ranges (structure of Material Thermal Properties), manufacturerSettings with exactly its five fields, recommendedProfile {}, color, density and pricePerKg null when not given, diameter 1.75 or 2.85, material = a family; unknown fields refused; FilamentProfileFileSchema: a shipped filament has its four temperatures, color null and pricePerKg null
+- src/types/Material.ts, src/types/Filament.ts: null for a value not published
+- src/material_database/MaterialManager.ts, src/filament_database/FilamentManager.ts, src/services/MaterialService.ts, src/services/FilamentService.ts: loadProfiles; ids of the filaments of the user
+- src/material_database/MaterialImporter.ts, src/filament_database/FilamentImporter.ts: validation with the schemas (Import Material and Import Filament, Phase 15)
+- src/cost_engine/MaterialEstimator.ts: material cost null when the price per kg is null (never 0); src/optimization_engine/MaterialOptimizer.ts: a temperature limit not published is not checked
+- src/storage/PrinterProfileStorage.ts: reads the material and filament profile files too (comment only, same rules)
+- src/electron/main.ts, src/electron/ipc/IpcChannels.ts
+- API_SPEC.md (MaterialIPC and FilamentIPC Channels, Allowed IPC Channels), ERROR_CODES_SPEC.md (MAT_002, FIL_002), SECURITY_SPEC.md (Material and Filament Profile Files), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md (progress), PASSATION.md
+
+## Removed
+
+- src/material_database/MaterialValidator.ts and src/filament_database/FilamentValidator.ts, replaced by MaterialSchema and FilamentSchema (ADR-033 D11, table validated by Noam on 2026-10-28)
 
 ---
 

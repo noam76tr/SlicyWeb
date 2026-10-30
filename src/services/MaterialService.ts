@@ -6,15 +6,31 @@
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
  * - MATERIAL_PROFILE_SPEC.md
+ * - DECISIONS.md (ADR-033, D6): the main process loads the profiles
+ *   (loadProfiles) and serves them through the material:getAll IPC
+ *   channel.
  */
 
 import type { Material } from "../types/Material";
 
-import { MaterialManager } from "../material_database/MaterialManager";
+import {
+  MaterialManager,
+  type MaterialLoadResult,
+  type MaterialProfileFolder,
+} from "../material_database/MaterialManager";
 
 export class MaterialService {
-  private readonly materialManager =
-    new MaterialManager();
+  public constructor(
+    private readonly materialManager = new MaterialManager(),
+  ) {}
+
+  public loadProfiles(
+    folders: MaterialProfileFolder[]
+  ): MaterialLoadResult {
+    return this.materialManager.loadProfiles(
+      folders
+    );
+  }
 
   public addMaterial(
     material: Material

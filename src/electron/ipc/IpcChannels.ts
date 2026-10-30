@@ -20,9 +20,11 @@
  */
 
 export const INVOKE_CHANNELS = [
+  "filament:getAll",
   "import:3mf",
   "import:stl",
   "import:validate",
+  "material:getAll",
   "printer:add",
   "printer:count",
   "printer:get",

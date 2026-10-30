@@ -7,11 +7,13 @@
  * - DATA_SCHEMA.md
  * - FILAMENT_SETTINGS_SPEC.md
  * - API_SPEC.md
+ *
+ * Validation uses FilamentSchema (Zod): FilamentValidator was replaced by
+ * the schema (Phase 8 lot 68, ADR-033 D11). Import Filament: Phase 15.
  */
 
+import { FilamentSchema } from "../schemas/FilamentSchema";
 import type { Filament } from "../types/Filament";
-
-import { FilamentValidator } from "./FilamentValidator";
 
 export class FilamentImporter {
   /**
@@ -20,17 +22,16 @@ export class FilamentImporter {
   public import(
     data: unknown,
   ): Filament {
-    if (
-      !FilamentValidator.validate(
-        data as Filament,
-      )
-    ) {
+    const result =
+      FilamentSchema.safeParse(data);
+
+    if (!result.success) {
       throw new Error(
         "Invalid filament profile."
       );
     }
 
-    return data as Filament;
+    return result.data;
   }
 
   /**

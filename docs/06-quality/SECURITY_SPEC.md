@@ -198,6 +198,23 @@ A failed write or delete changes nothing (PRN_007); the error gives no path
 
 ---
 
+# Material and Filament Profile Files
+
+The main process reads the material and filament profile files with the same rules (DECISIONS.md, ADR-033, D6; Phase 8 lot 68):
+
+```text
+Only three folders: data/materials/ and data/filaments/ of the application (Official, read only)
+and filaments/ of the user data folder (Local Custom); no material of the user
+The folders are fixed by the main process, never given by the renderer
+Only the *.json files directly in these folders; subfolders and links are not followed
+At most 1 MB per file
+Each file is validated (Repository Data Schema envelope, MaterialSchema or FilamentSchema) before use
+A refused file (MAT_002, FIL_002) never stops the loading of the other files
+Results name a file by its name only, never by its path
+```
+
+---
+
 # Printer Profile Download
 
 The Official printer profiles are updated from the SlicyWeb profile repository (DECISIONS.md, ADR-032, D5; Phase 7 lot 62):

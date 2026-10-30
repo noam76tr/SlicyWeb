@@ -16,11 +16,20 @@
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
  * - MATERIAL_PROFILE_SPEC.md
+ *
+ * Validation uses MaterialSchema (Zod): MaterialValidator was replaced by
+ * the schema (Phase 8 lot 68, ADR-033 D11). Import Material: Phase 15.
  */
 
+import { MaterialSchema } from "../schemas/MaterialSchema";
 import type { Material } from "../types/Material";
 
-import { MaterialValidator } from "./MaterialValidator";
+/** The material, or null when it fails MaterialSchema */
+function validMaterial(content: unknown): Material | null {
+  const result = MaterialSchema.safeParse(content);
+
+  return result.success ? result.data : null;
+}
 
 export class MaterialImporter {
   /**
@@ -30,19 +39,9 @@ export class MaterialImporter {
     json: string,
   ): Material | null {
     try {
-      const material = JSON.parse(
-        json,
-      ) as Material;
-
-      if (
-        !MaterialValidator.validate(
-          material,
-        )
-      ) {
-        return null;
-      }
-
-      return material;
+      return validMaterial(
+        JSON.parse(json) as unknown,
+      );
     } catch {
       return null;
     }
@@ -57,14 +56,18 @@ export class MaterialImporter {
     try {
       const materials = JSON.parse(
         json,
-      ) as Material[];
+      ) as unknown;
 
-      return materials.filter(
-        (material) =>
-          MaterialValidator.validate(
-            material,
-          ),
-      );
+      if (!Array.isArray(materials)) {
+        return [];
+      }
+
+      return materials
+        .map(validMaterial)
+        .filter(
+          (material): material is Material =>
+            material !== null,
+        );
     } catch {
       return [];
     }
