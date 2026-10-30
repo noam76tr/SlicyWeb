@@ -38,6 +38,19 @@ export interface PrinterPreferences {
   autoCheckProfiles: boolean;
 }
 
+/**
+ * Material and filament of the user preferences (DATA_SCHEMA.md 3.7.0,
+ * ADR-033 D9): ids of the last material (family) and filament selected,
+ * or null when none was selected.
+ */
+export interface MaterialPreferences {
+  defaultMaterial: string | null;
+
+  defaultFilament: string | null;
+
+  autoloadLastMaterial: boolean;
+}
+
 export interface UserPreferences {
   theme: Theme;
 
@@ -46,4 +59,6 @@ export interface UserPreferences {
   units: string;
 
   printer: PrinterPreferences;
+
+  material: MaterialPreferences;
 }

@@ -17,6 +17,10 @@
  * Phase 7: the Printer section chooses the printer and shows its build
  * volume, nozzle and limits (PrinterSection.tsx).
  *
+ * Phase 8: the Material and Filament sections choose the material (a
+ * family) and the filament and show their values (MaterialSection.tsx,
+ * FilamentSection.tsx).
+ *
  * No business logic.
  *
  * Based on:
@@ -27,13 +31,13 @@
 import { useMemo } from "react";
 
 import { useAnalysisStore } from "../../state/analysisStore";
-import { useFilamentStore } from "../../state/filamentStore";
-import { useMaterialStore } from "../../state/materialStore";
 import { useObjectStore } from "../../state/objectStore";
 import { usePresetStore } from "../../state/presetStore";
 import { useRecommendationStore } from "../../state/recommendationStore";
 import { useTranslation } from "../hooks/useTranslation";
 
+import FilamentSection from "./FilamentSection";
+import MaterialSection from "./MaterialSection";
 import { getDisplayNames } from "./objectNames";
 import PrinterSection from "./PrinterSection";
 import SidebarSection from "./SidebarSection";
@@ -42,8 +46,6 @@ import TransformSection from "./TransformSection";
 export default function RightSidebar(): JSX.Element {
   const { t } = useTranslation();
 
-  const material = useMaterialStore((state) => state.selectedMaterial);
-  const filament = useFilamentStore((state) => state.selectedFilament);
   const preset = usePresetStore((state) => state.selectedPreset);
 
   const objects = useObjectStore((state) => state.objects);
@@ -91,13 +93,11 @@ export default function RightSidebar(): JSX.Element {
       </SidebarSection>
 
       <SidebarSection title={t("material.title")}>
-        {material ? material.name : t("material.noSelection")}
+        <MaterialSection />
       </SidebarSection>
 
       <SidebarSection title={t("filament.title")}>
-        {filament
-          ? `${filament.brand} ${filament.name}`
-          : t("filament.noSelection")}
+        <FilamentSection />
       </SidebarSection>
 
       <SidebarSection title={t("preset.title")}>

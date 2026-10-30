@@ -1423,7 +1423,7 @@ Speed Profile
 
 ```
 
-Phase 8 (ADR-033 D5, D9; the layout is completed with lot 70): a selector of the families (MATERIAL_PROFILE_SPEC.md, Material Families), then the nozzle and bed temperature ranges, the fan, the density; a value not published shows "Not published". When the selected printer lists materials and the family is not in its list (after the aliases of MATERIAL_PROFILE_SPEC.md), a warning "Not listed by the printer manufacturer" is shown; the choice is never blocked. Material > Select Material opens this selector. The last choice is kept in the settings (USER_SETTINGS_SPEC.md, Material Settings).
+Phase 8 (ADR-033 D5, D9; lot 70): a selector of the families loaded (MATERIAL_PROFILE_SPEC.md, Material Families, in the order of the list), with "No material" first, then the nozzle and bed temperature ranges, the fan, the density; a value not published shows "Not published". Choosing a family clears the filament when it belongs to another family. When the selected printer lists materials and the family is not in its list (after the aliases of MATERIAL_PROFILE_SPEC.md), a warning "Not listed by the printer manufacturer" is shown; the choice is never blocked. Material > Select Material opens this selector. The last choice is kept in the settings (USER_SETTINGS_SPEC.md, Material Settings).
 
 
 
@@ -1447,7 +1447,7 @@ Cooling Overrides
 Retraction Profile
 ```
 
-Phase 8 (ADR-033 D9; the layout is completed with lot 70): a selector of the filaments of the selected family, grouped by brand ("My filaments" for the filaments of the user); choosing a filament also chooses its family. Then the temperature ranges of the manufacturer, its single values (manufacturerSettings), the color; a value not published shows "Not published". Filament > Select Filament opens this selector; Filament > Manage Filaments opens the Filament Manager (lot 71). The last choice is kept in the settings.
+Phase 8 (ADR-033 D9; lot 70): a selector of the filaments of the selected family (all the filaments when no material is selected), with "No filament" first, grouped by brand ("My filaments" first for the filaments of the user); choosing a filament also chooses its family. Then the brand, the color ("Not specified" for a shipped filament, a product line), the temperature ranges of the manufacturer and its single values (manufacturerSettings, "Values of the manufacturer"); a value not published shows "Not published". Filament > Select Filament opens this selector; Filament > Manage Filaments opens the Filament Manager (lot 71). The last choice is kept in the settings.
 
 ---
 

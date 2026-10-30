@@ -2502,7 +2502,7 @@ Release Type:
 Material Database
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-30
@@ -2528,6 +2528,46 @@ Date:
 - Elegoo PLA (first list, D8) is not shipped: no technical data sheet found, and its official product page gives no bed temperature, which is required for a shipped filament (ADR-033, D8: a product line without a readable official sheet is not shipped)
 - Polymaker PolyLite PETG is being discontinued by Polymaker in favor of Polymaker PETG (Polymaker wiki); it stays in the list while its sheet is published
 - No index.json in data/materials/ and data/filaments/ yet: it comes with the synchronization (lot 72)
+
+## Validation Result
+
+- Windows 11 (2026-10-30): lot 69 on GitHub (004881c, identical to the lot; DefaultMaterial.ts deleted in 8af179c); npm run check:locales: 318 keys; npm run check:ipc: 25 channels; typecheck and lint without error; npm run test:e2e: 24 tests passed; data checked against SOURCES.md and the sheets for Bambu Lab PETG HF, Prusament ASA, Bambu Lab ABS and Polymaker PolyLite PLA; Elegoo PLA left out as written in SOURCES.md (Noam). npm test: 241 tests passed on the same files on Linux (240 and 1 skipped expected on Windows); the total of Noam (215 passed, 1 skipped) is to be confirmed
+
+---
+
+# VERSION 0.1.72
+
+Release Type:
+Material Database
+
+Status:
+In Progress
+
+Date:
+2026-10-30
+
+## Added
+
+- Phase 8 lot 70 (ADR-033, D5, D9; GUI_SPEC.md, Material Section, Filament Section): Material and Filament sections of the Properties Panel (src/gui/sidebar/MaterialSection.tsx, FilamentSection.tsx, profileRows.tsx)
+- Material section: selector of the families loaded, in the order of MATERIAL_PROFILE_SPEC.md, "No material" first; nozzle and bed ranges, fan, density; "Not published" for null; warning "Not listed by the printer manufacturer" when the selected printer lists materials and none of them is the family (aliases Flex = TPU, NYLON = PA), never a block
+- Filament section: selector of the filaments of the selected family (all the filaments without a family), "No filament" first, "My filaments" then one group per brand; a filament selects its family; brand, color ("Not specified" for a shipped filament), ranges and values of the manufacturer, "Not published" for null
+- Last choice kept: settings material (defaultMaterial, defaultFilament, autoloadLastMaterial; DATA_SCHEMA.md 3.7.0, USER_SETTINGS_SPEC.md, Material Settings), selected again at start when still loaded; a filament of another family than the material is ignored
+- Material > Select Material and Filament > Select Filament move the focus to their selector
+- src/services/MaterialSelectionService.ts (materials and filaments of the window), src/material_database/MaterialFamilies.ts (words of a printer and families)
+- 16 translation keys (en, fr, he): 334 keys
+- Tests: tests/unit/services/MaterialSelection.test.ts (8 tests), tests/unit/storage/SettingsStorage.test.ts (1 test), tests/e2e/material.spec.ts (1 test: filament and family, warning with the Bambu Lab A1 and ASA, menu, choice kept at the next start; 25 end-to-end tests)
+
+## Changed
+
+- src/schemas/UserPreferencesSchema.ts, src/types/UserPreferences.ts, src/storage/SettingsStorage.ts: material settings; a settings.json without material loads with the defaults, an invalid field of material takes its default value only
+- src/state/filamentStore.ts: ids of the filaments of the user
+- src/gui/sidebar/RightSidebar.tsx, src/gui/menus/MenuBar.tsx, src/gui/App.tsx
+- API_SPEC.md (settings:update), GUI_SPEC.md (Material Section, Filament Section), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md (progress), PASSATION.md
+- KNOWN ISSUES: KI-015 updated (MaterialPanel and FilamentPanel removed)
+
+## Removed
+
+- src/gui/panels/MaterialPanel.tsx and src/gui/panels/FilamentPanel.tsx: never used, hardcoded English text (KI-015); replaced by the Material and Filament sections (ADR-033 D11)
 
 ---
 
@@ -3396,11 +3436,11 @@ Identifier: KI-015
 
 Since: 0.1.35
 
-Affected Module: src/gui/panels/ (MaterialPanel, FilamentPanel, PresetPanel, AnalysisPanel, RecommendationPanel), src/renderer/Renderer.ts
+Affected Module: src/gui/panels/ (PresetPanel, AnalysisPanel, RecommendationPanel), src/renderer/Renderer.ts
 
 Issue: These components are not used by the interface of Phase 3, and some of them contain hardcoded English text, against the Internationalization Rule (CLAUDE.md). The Properties Panel (src/gui/sidebar/RightSidebar.tsx) is used instead of the panels. Since 0.1.36, Viewport.tsx is used (3D viewport); src/renderer/Renderer.ts is no longer used and duplicates RendererManager.
 
-Resolve Before: the phase that displays each component (Phases 7 to 10 for the panels; KI-011 for AnalysisPanel); Renderer.ts can be removed at any time. ViewportToolbar and ViewportStatus removed in 0.1.56 (replaced by the mode buttons over the viewport and the status bar); PrinterPanel removed in 0.1.62 (replaced by the Printer section of the Properties Panel)
+Resolve Before: the phase that displays each component (Phases 7 to 10 for the panels; KI-011 for AnalysisPanel); Renderer.ts can be removed at any time. ViewportToolbar and ViewportStatus removed in 0.1.56 (replaced by the mode buttons over the viewport and the status bar); PrinterPanel removed in 0.1.62 (replaced by the Printer section of the Properties Panel); MaterialPanel and FilamentPanel removed in 0.1.72 (replaced by the Material and Filament sections)
 
 Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it.
 

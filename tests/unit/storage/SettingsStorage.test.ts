@@ -6,11 +6,13 @@
  * Compatibility): a file written before DATA_SCHEMA.md 3.5.0, without
  * printer, loads without error and keeps the language, theme and units
  * of the user, with the default printer; an invalid field of printer
- * takes its default value only.
+ * takes its default value only. A file written before 3.7.0, without
+ * material, takes the default material settings; an invalid field of
+ * material takes its default value only (Phase 8 lot 70).
  *
  * Based on:
- * - DATA_SCHEMA.md (User Preferences Schema 3.5.0)
- * - USER_SETTINGS_SPEC.md (Printer Settings)
+ * - DATA_SCHEMA.md (User Preferences Schema 3.5.0, 3.7.0)
+ * - USER_SETTINGS_SPEC.md (Printer Settings, Material Settings)
  * - TEST_PLAN.md
  */
 
@@ -52,6 +54,11 @@ describe("Settings storage", () => {
         defaultPrinter: null,
         autoloadLastPrinter: true,
         autoCheckProfiles: true,
+      },
+      material: {
+        defaultMaterial: null,
+        defaultFilament: null,
+        autoloadLastMaterial: true,
       },
     });
   });
@@ -115,11 +122,40 @@ describe("Settings storage", () => {
         autoloadLastPrinter: true,
         autoCheckProfiles: true,
       },
+      material: {
+        defaultMaterial: null,
+        defaultFilament: null,
+        autoloadLastMaterial: true,
+      },
     };
 
     expect(new SettingsStorage(filePath).load()).toEqual(defaults);
 
     fs.writeFileSync(filePath, "{ broken");
     expect(new SettingsStorage(filePath).load()).toEqual(defaults);
+  });
+
+  it("gives its default value to an invalid field of material only", () => {
+    writeSettings({
+      preferences: {
+        theme: "dark",
+        language: "fr",
+        units: "metric",
+        material: {
+          defaultMaterial: "pla",
+          defaultFilament: 7,
+          autoloadLastMaterial: false,
+        },
+      },
+    });
+
+    expect(new SettingsStorage(filePath).load()).toMatchObject({
+      language: "fr",
+      material: {
+        defaultMaterial: "pla",
+        defaultFilament: null,
+        autoloadLastMaterial: false,
+      },
+    });
   });
 });

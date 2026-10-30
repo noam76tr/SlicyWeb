@@ -217,7 +217,7 @@ User preferences (DATA_SCHEMA.md, User Preferences Schema), stored in settings.j
 | Channel | Payload | Response data |
 |---|---|---|
 | `settings:get` | none | `{ settings }` |
-| `settings:update` | partial preferences (`theme`, `language`, `units`, `printer` with both of its fields); unknown fields refused | `{ settings }` |
+| `settings:update` | partial preferences (`theme`, `language`, `units`, `printer` with all of its fields, `material` with all of its fields: defaultMaterial, defaultFilament, autoloadLastMaterial); unknown fields refused | `{ settings }` |
 | `settings:reset` | none | `{ settings }` (default preferences) |
 | `settings:theme` | `{ theme }`: dark, light or system | `{ settings }` |
 | `settings:language` | `{ language }`: en, fr or he | `{ settings }` |

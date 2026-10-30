@@ -24,6 +24,9 @@
  *   Manager (PrinterManagerDialog);
  * - Printer > Refresh Profiles (Phase 7 lot 62): checks the SlicyWeb
  *   profile repository now (PrinterSelectionService.refresh);
+ * - Material > Select Material, Filament > Select Filament (Phase 8 lot
+ *   70): move the focus to the selectors of the Material and Filament
+ *   sections, like Printer > Select Printer;
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -63,6 +66,8 @@ import {
 import { LANGUAGE_NAME_KEYS, useTranslation } from "../hooks/useTranslation";
 import { IMPORT_ACCEPT, openImportDialog } from "../import/openImportDialog";
 import { openPrinterManager } from "../dialogs/PrinterManagerDialog";
+import { FILAMENT_SELECTOR_ID } from "../sidebar/FilamentSection";
+import { MATERIAL_SELECTOR_ID } from "../sidebar/MaterialSection";
 import { PRINTER_SELECTOR_ID } from "../sidebar/PrinterSection";
 
 interface MenuItemDefinition {
@@ -190,14 +195,20 @@ const MENUS: MenuDefinition[] = [
   {
     key: "menu.material",
     groups: [
-      [{ key: "material.select" }, { key: "material.manage" }],
+      [
+        { key: "material.select", focusId: MATERIAL_SELECTOR_ID },
+        { key: "material.manage" },
+      ],
       [{ key: "material.import" }, { key: "material.export" }],
     ],
   },
   {
     key: "menu.filament",
     groups: [
-      [{ key: "filament.select" }, { key: "filament.manage" }],
+      [
+        { key: "filament.select", focusId: FILAMENT_SELECTOR_ID },
+        { key: "filament.manage" },
+      ],
       [{ key: "filament.import" }, { key: "filament.export" }],
     ],
   },

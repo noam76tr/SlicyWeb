@@ -10,7 +10,9 @@
  *
  *   { "preferences": { "theme": "dark", "language": "en", "units": "metric",
  *     "printer": { "defaultPrinter": null, "autoloadLastPrinter": true,
- *       "autoCheckProfiles": true } } }
+ *       "autoCheckProfiles": true },
+ *     "material": { "defaultMaterial": null, "defaultFilament": null,
+ *       "autoloadLastMaterial": true } } }
  *
  * Rules:
  * - Missing or unreadable file: default preferences.
@@ -18,7 +20,9 @@
  *   valid fields are kept (USER_SETTINGS_SPEC.md, Backward
  *   Compatibility). A settings.json written before 3.5.0 (no printer)
  *   keeps its theme, language and units, with the default printer.
- *   The fields of printer are read one by one, in the same way.
+ *   The fields of printer are read one by one, in the same way. A
+ *   settings.json written before 3.7.0 (no material) takes the default
+ *   material settings; the fields of material are read one by one.
  * - Other top-level entries of the file are kept when writing.
  * - Writing goes through a temporary file, then a rename, so that
  *   an interrupted write never leaves a truncated settings.json.
@@ -38,6 +42,7 @@ import type { ZodType } from "zod";
 
 import {
   DEFAULT_USER_PREFERENCES,
+  MaterialPreferencesSchema,
   PrinterPreferencesSchema,
   UserPreferencesSchema,
 } from "../schemas/UserPreferencesSchema";
@@ -60,7 +65,11 @@ export class SettingsStorage {
     const stored = this.readFile().preferences;
 
     if (typeof stored !== "object" || stored === null) {
-      return { ...DEFAULT_USER_PREFERENCES, printer: readPrinter(undefined) };
+      return {
+        ...DEFAULT_USER_PREFERENCES,
+        printer: readPrinter(undefined),
+        material: readMaterial(undefined),
+      };
     }
 
     const entries = stored as Record<string, unknown>;
@@ -75,6 +84,7 @@ export class SettingsStorage {
       ),
       units: readField(shape.units, entries.units, DEFAULT_USER_PREFERENCES.units),
       printer: readPrinter(entries.printer),
+      material: readMaterial(entries.material),
     };
   }
 
@@ -110,6 +120,7 @@ export class SettingsStorage {
     return this.save({
       ...DEFAULT_USER_PREFERENCES,
       printer: { ...DEFAULT_USER_PREFERENCES.printer },
+      material: { ...DEFAULT_USER_PREFERENCES.material },
     });
   }
 
@@ -166,6 +177,35 @@ function readPrinter(value: unknown): UserPreferences["printer"] {
       shape.autoCheckProfiles,
       entries.autoCheckProfiles,
       fallback.autoCheckProfiles,
+    ),
+  };
+}
+
+function readMaterial(value: unknown): UserPreferences["material"] {
+  const fallback = DEFAULT_USER_PREFERENCES.material;
+
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return { ...fallback };
+  }
+
+  const entries = value as Record<string, unknown>;
+  const shape = MaterialPreferencesSchema.shape;
+
+  return {
+    defaultMaterial: readField(
+      shape.defaultMaterial,
+      entries.defaultMaterial,
+      fallback.defaultMaterial,
+    ),
+    defaultFilament: readField(
+      shape.defaultFilament,
+      entries.defaultFilament,
+      fallback.defaultFilament,
+    ),
+    autoloadLastMaterial: readField(
+      shape.autoloadLastMaterial,
+      entries.autoloadLastMaterial,
+      fallback.autoloadLastMaterial,
     ),
   };
 }

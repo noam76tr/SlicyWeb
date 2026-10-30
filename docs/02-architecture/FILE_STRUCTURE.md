@@ -390,6 +390,9 @@ src/gui/
 │   ├── RightSidebar.tsx
 │   ├── SidebarSection.tsx
 │   ├── PrinterSection.tsx     = Printer section of the Properties Panel (Phase 7)
+│   ├── MaterialSection.tsx    = Material section of the Properties Panel (Phase 8)
+│   ├── FilamentSection.tsx    = Filament section of the Properties Panel (Phase 8)
+│   ├── profileRows.tsx        = rows of values of the Material and Filament sections (Phase 8)
 │   ├── TransformSection.tsx   = Transform section of the Properties Panel (Phase 6)
 │   └── objectNames.ts         = display names of the objects (duplicates: "cube (1)")
 ├── import/
@@ -397,8 +400,6 @@ src/gui/
 │   ├── ImportDropZone.tsx     = drag and drop of files in the viewport
 │   └── ImportStatus.tsx       = progress, Cancel, confirmation and errors of the imports
 ├── panels/
-│   ├── MaterialPanel.tsx
-│   ├── FilamentPanel.tsx
 │   ├── PresetPanel.tsx
 │   ├── AnalysisPanel.tsx
 │   └── RecommendationPanel.tsx
@@ -616,6 +617,7 @@ src/printer_database/
 src/material_database/
 
 ├── MaterialManager.ts         = loading of the material profile files (Phase 8)
+├── MaterialFamilies.ts        = words of a printer compared with the families, aliases (Phase 8)
 ├── MaterialRepository.ts
 ├── MaterialCache.ts
 └── MaterialImporter.ts        = not used yet (Import Material, Phase 15)
@@ -773,6 +775,7 @@ src/services/
 ├── ImportService.ts           = import queue, progress, cancel and errors for the GUI (ADR-029)
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
 ├── PrinterSelectionService.ts = printers of the window, last printer (Phase 7)
+├── MaterialSelectionService.ts = materials and filaments of the window, last choice (Phase 8)
 ├── ProfileSyncService.ts      = check of the profile repository, once a day or forced (Phase 7)
 └── StorageService.ts
 ```
@@ -931,9 +934,10 @@ tests/
 │   ├── scene/
 │   │   └── ObjectTransform.test.ts = Transform Rules (ADR-031)
 │   ├── storage/
-│   │   └── SettingsStorage.test.ts = settings.json, printer settings (Phase 7)
+│   │   └── SettingsStorage.test.ts = settings.json, printer and material settings (Phases 7 and 8)
 │   └── services/
 │       ├── GroupTransform.test.ts = several objects selected (Phase 6)
+│       ├── MaterialSelection.test.ts = materials and filaments of the window, last choice, families of a printer (Phase 8)
 │       ├── PrinterSelection.test.ts = printers of the window, last printer, profiles (Phase 7)
 │       ├── ProfileSync.test.ts = check of the profile repository, cache (Phase 7)
 │       ├── TransformService.test.ts = transform changes, object on the plate

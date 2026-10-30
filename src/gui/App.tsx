@@ -34,6 +34,7 @@
 import { useEffect } from "react";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 
+import { MaterialSelectionService } from "../services/MaterialSelectionService";
 import { PrinterSelectionService } from "../services/PrinterSelectionService";
 import { TransformService } from "../services/TransformService";
 import { usePrinterStore } from "../state/printerStore";
@@ -64,6 +65,7 @@ export default function App(): JSX.Element {
   useEffect(() => {
     document.title = "SlicyWeb";
     void PrinterSelectionService.load();
+    void MaterialSelectionService.load();
   }, []);
 
   const header = (

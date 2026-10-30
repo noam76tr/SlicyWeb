@@ -14,10 +14,17 @@ import type { Filament } from "../types/Filament";
 interface FilamentState {
   filaments: Filament[];
 
+  /** Ids of the filaments entered by the user (Local Custom) */
+  userFilamentIds: string[];
+
   selectedFilament: Filament | null;
 
   setFilaments: (
     filaments: Filament[]
+  ) => void;
+
+  setUserFilamentIds: (
+    userFilamentIds: string[]
   ) => void;
 
   addFilament: (
@@ -35,11 +42,18 @@ export const useFilamentStore =
   create<FilamentState>((set) => ({
     filaments: [],
 
+    userFilamentIds: [],
+
     selectedFilament: null,
 
     setFilaments: (filaments) =>
       set({
         filaments
+      }),
+
+    setUserFilamentIds: (userFilamentIds) =>
+      set({
+        userFilamentIds
       }),
 
     addFilament: (filament) =>

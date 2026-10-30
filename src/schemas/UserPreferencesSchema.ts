@@ -7,8 +7,9 @@
  *
  * Based on:
  * - DATA_SCHEMA.md (User Preferences Schema, Theme Values, Language Values)
- * - USER_SETTINGS_SPEC.md (General Settings, Printer Settings)
- * - DECISIONS.md (ADR-032, D8)
+ * - USER_SETTINGS_SPEC.md (General Settings, Printer Settings, Material
+ *   Settings)
+ * - DECISIONS.md (ADR-032, D8; ADR-033, D9)
  */
 
 import { z } from "zod";
@@ -35,6 +36,16 @@ export const PrinterPreferencesSchema = z
   })
   .strict();
 
+export const MaterialPreferencesSchema = z
+  .object({
+    // Ids of the last material and filament selected, null when none
+    // (DATA_SCHEMA.md 3.7.0)
+    defaultMaterial: z.string().trim().min(1).nullable(),
+    defaultFilament: z.string().trim().min(1).nullable(),
+    autoloadLastMaterial: z.boolean(),
+  })
+  .strict();
+
 export const UserPreferencesSchema = z
   .object({
     theme: ThemeSchema,
@@ -42,13 +53,14 @@ export const UserPreferencesSchema = z
     // DATA_SCHEMA.md documents "metric" without a closed list of values
     units: z.string().min(1),
     printer: PrinterPreferencesSchema,
+    material: MaterialPreferencesSchema,
   })
   .strict();
 
 /**
  * Partial update of the preferences (settings:update).
- * Unknown fields are refused. printer is replaced as a whole: an update
- * of printer gives all of its fields.
+ * Unknown fields are refused. printer and material are replaced as a
+ * whole: an update of one of them gives all of its fields.
  */
 export const UserPreferencesUpdateSchema = UserPreferencesSchema.partial();
 
@@ -63,5 +75,10 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
     defaultPrinter: null,
     autoloadLastPrinter: true,
     autoCheckProfiles: true,
+  },
+  material: {
+    defaultMaterial: null,
+    defaultFilament: null,
+    autoloadLastMaterial: true,
   },
 };
