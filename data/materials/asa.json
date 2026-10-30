@@ -1,0 +1,33 @@
+{
+  "id": "asa",
+  "type": "material",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "asa",
+    "name": "ASA",
+    "category": "ASA",
+    "temperature": {
+      "minNozzle": 250,
+      "maxNozzle": 270,
+      "minBed": 105,
+      "maxBed": 115
+    },
+    "cooling": {
+      "fanMin": null,
+      "fanMax": null
+    },
+    "physical": {
+      "density": 1.07,
+      "shrinkage": null,
+      "warpingRisk": null
+    },
+    "recommended": {
+      "printSpeed": null,
+      "travelSpeed": null,
+      "retractionDistance": null,
+      "retractionSpeed": null
+    }
+  },
+  "validated": false
+}

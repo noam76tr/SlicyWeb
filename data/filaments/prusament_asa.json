@@ -1,0 +1,31 @@
+{
+  "id": "prusament_asa",
+  "type": "filament",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "prusament_asa",
+    "brand": "Prusament",
+    "name": "ASA",
+    "material": "ASA",
+    "color": null,
+    "diameter": 1.75,
+    "density": 1.07,
+    "pricePerKg": null,
+    "temperature": {
+      "minNozzle": 250,
+      "maxNozzle": 270,
+      "minBed": 105,
+      "maxBed": 115
+    },
+    "manufacturerSettings": {
+      "retractionDistance": null,
+      "retractionSpeed": null,
+      "fanSpeed": 30,
+      "nozzleTemperature": 260,
+      "bedTemperature": 110
+    },
+    "recommendedProfile": {}
+  },
+  "validated": false
+}

@@ -1,0 +1,31 @@
+{
+  "id": "bambu_pla_matte",
+  "type": "filament",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "bambu_pla_matte",
+    "brand": "Bambu Lab",
+    "name": "PLA Matte",
+    "material": "PLA",
+    "color": null,
+    "diameter": 1.75,
+    "density": 1.31,
+    "pricePerKg": null,
+    "temperature": {
+      "minNozzle": 190,
+      "maxNozzle": 230,
+      "minBed": 35,
+      "maxBed": 45
+    },
+    "manufacturerSettings": {
+      "retractionDistance": null,
+      "retractionSpeed": null,
+      "fanSpeed": 100,
+      "nozzleTemperature": null,
+      "bedTemperature": null
+    },
+    "recommendedProfile": {}
+  },
+  "validated": false
+}

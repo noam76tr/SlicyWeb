@@ -1,0 +1,33 @@
+{
+  "id": "tpu",
+  "type": "material",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "tpu",
+    "name": "TPU",
+    "category": "TPU",
+    "temperature": {
+      "minNozzle": 220,
+      "maxNozzle": 240,
+      "minBed": 30,
+      "maxBed": 35
+    },
+    "cooling": {
+      "fanMin": null,
+      "fanMax": null
+    },
+    "physical": {
+      "density": 1.22,
+      "shrinkage": null,
+      "warpingRisk": null
+    },
+    "recommended": {
+      "printSpeed": null,
+      "travelSpeed": null,
+      "retractionDistance": null,
+      "retractionSpeed": null
+    }
+  },
+  "validated": false
+}

@@ -1,0 +1,31 @@
+{
+  "id": "bambu_tpu_95a_hf",
+  "type": "filament",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "bambu_tpu_95a_hf",
+    "brand": "Bambu Lab",
+    "name": "TPU 95A HF",
+    "material": "TPU",
+    "color": null,
+    "diameter": 1.75,
+    "density": 1.22,
+    "pricePerKg": null,
+    "temperature": {
+      "minNozzle": 220,
+      "maxNozzle": 240,
+      "minBed": 30,
+      "maxBed": 35
+    },
+    "manufacturerSettings": {
+      "retractionDistance": null,
+      "retractionSpeed": null,
+      "fanSpeed": null,
+      "nozzleTemperature": null,
+      "bedTemperature": null
+    },
+    "recommendedProfile": {}
+  },
+  "validated": false
+}

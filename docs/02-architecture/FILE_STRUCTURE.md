@@ -82,8 +82,8 @@ SlicyWeb/
 ```text
 data/
 │   ├── cache/
-│   ├── filaments/
-│   ├── materials/
+│   ├── filaments/                      = profils de filaments Official (un fichier JSON par gamme, SOURCES.md)
+│   ├── materials/                      = profils de matériaux Official (un fichier JSON par famille, SOURCES.md)
 │   ├── presets/
 │   ├── printers/                       = profils d'imprimantes Official (un fichier JSON par imprimante, SOURCES.md, index.json)
 │   └── templates/
@@ -818,7 +818,6 @@ src/types/
 ├── Notification.ts
 ├── Optimization.ts
 ├── CostEstimation.ts
-├── DefaultMaterial.ts
 ├── ProfileSync.ts             = origin of the profiles, ProfileCacheStore contract (Phase 7)
 └── UserPreferences.ts
 ```
@@ -919,7 +918,8 @@ tests/
 │   │   └── hooks/
 │   │       └── UndoRedoShortcuts.test.ts = keys of undo and redo (Phase 6)
 │   ├── material_database/
-│   │   └── MaterialLoading.test.ts = material and filament profile files, MaterialSchema, FilamentSchema (Phase 8)
+│   │   ├── MaterialLoading.test.ts = material and filament profile files, MaterialSchema, FilamentSchema (Phase 8)
+│   │   └── MaterialProfiles.test.ts = the profiles of data/materials/ and data/filaments/ (Phase 8)
 │   ├── printer_database/
 │   │   ├── PrinterLoading.test.ts = printer profile files, PrinterSchema (Phase 7)
 │   │   ├── PrinterProfiles.test.ts = the profiles of data/printers/ and their index.json (Phase 7)

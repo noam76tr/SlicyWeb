@@ -2462,7 +2462,7 @@ Release Type:
 Material Database
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-30
@@ -2489,6 +2489,45 @@ Date:
 ## Removed
 
 - src/material_database/MaterialValidator.ts and src/filament_database/FilamentValidator.ts, replaced by MaterialSchema and FilamentSchema (ADR-033 D11, table validated by Noam on 2026-10-28)
+
+## Validation Result
+
+- Windows 11 (2026-10-30): lot 68 on GitHub (55d7006, identical to the lot; MaterialValidator.ts and FilamentValidator.ts deleted in cee91f8 and aaec40a); npm run check:locales: 318 keys; npm run check:ipc: 25 channels; typecheck and lint without error; npm test: 215 tests passed, 1 skipped (link test); npm run test:e2e: 24 tests passed; manual check passed (FIL_002 for a damaged file of the user, application started normally) (Noam)
+
+---
+
+# VERSION 0.1.71
+
+Release Type:
+Material Database
+
+Status:
+In Progress
+
+Date:
+2026-10-30
+
+## Added
+
+- Phase 8 lot 69 (ADR-033, D1, D2, D8): the first shipped profiles, written from the technical data sheets of the manufacturers (read on 2026-10-30), never from a profile file of a slicer
+- data/filaments/: 11 product lines in 1.75 mm, color and pricePerKg null: Bambu Lab PLA Basic, PLA Matte, PETG HF, ABS, TPU 95A HF; Prusament PLA, PETG, ASA; Polymaker PolyLite PLA, PolyLite PETG; eSUN PLA+ (family PLA); data/filaments/SOURCES.md (sheet, version and date of each filament, values left null and why)
+- data/materials/: the 5 families PLA, PETG, ABS, ASA, TPU; ranges = smallest minimum and largest maximum of their filaments; density of the filaments when they are all the same, otherwise null; cooling, shrinkage, warpingRisk and recommended null; data/materials/SOURCES.md (filaments of each family)
+- tests/unit/material_database/MaterialProfiles.test.ts: each file passes its schema, file name = id, source Official, listed in SOURCES.md; ranges and density of each family checked against its filaments; all loaded, none refused
+
+## Changed
+
+- tests/e2e/material.spec.ts: the 5 materials and the 11 filaments of data/ served, with the filament of the user
+- DIRECTORY_PURPOSES.md (data/materials/, data/filaments/), FILE_STRUCTURE.md, PHASES_IMPLEMENTATION_PLAN.md (progress), PASSATION.md
+
+## Removed
+
+- src/types/DefaultMaterial.ts: values without a source, never used (ADR-033 D11)
+
+## Known Limitations
+
+- Elegoo PLA (first list, D8) is not shipped: no technical data sheet found, and its official product page gives no bed temperature, which is required for a shipped filament (ADR-033, D8: a product line without a readable official sheet is not shipped)
+- Polymaker PolyLite PETG is being discontinued by Polymaker in favor of Polymaker PETG (Polymaker wiki); it stays in the list while its sheet is published
+- No index.json in data/materials/ and data/filaments/ yet: it comes with the synchronization (lot 72)
 
 ---
 

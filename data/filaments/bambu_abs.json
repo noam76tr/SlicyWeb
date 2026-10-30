@@ -1,0 +1,31 @@
+{
+  "id": "bambu_abs",
+  "type": "filament",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "bambu_abs",
+    "brand": "Bambu Lab",
+    "name": "ABS",
+    "material": "ABS",
+    "color": null,
+    "diameter": 1.75,
+    "density": 1.05,
+    "pricePerKg": null,
+    "temperature": {
+      "minNozzle": 240,
+      "maxNozzle": 270,
+      "minBed": 80,
+      "maxBed": 100
+    },
+    "manufacturerSettings": {
+      "retractionDistance": null,
+      "retractionSpeed": null,
+      "fanSpeed": null,
+      "nozzleTemperature": null,
+      "bedTemperature": null
+    },
+    "recommendedProfile": {}
+  },
+  "validated": false
+}

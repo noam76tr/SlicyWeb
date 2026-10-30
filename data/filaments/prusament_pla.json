@@ -1,0 +1,31 @@
+{
+  "id": "prusament_pla",
+  "type": "filament",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "prusament_pla",
+    "brand": "Prusament",
+    "name": "PLA",
+    "material": "PLA",
+    "color": null,
+    "diameter": 1.75,
+    "density": 1.24,
+    "pricePerKg": null,
+    "temperature": {
+      "minNozzle": 200,
+      "maxNozzle": 220,
+      "minBed": 40,
+      "maxBed": 60
+    },
+    "manufacturerSettings": {
+      "retractionDistance": null,
+      "retractionSpeed": null,
+      "fanSpeed": 100,
+      "nozzleTemperature": 210,
+      "bedTemperature": null
+    },
+    "recommendedProfile": {}
+  },
+  "validated": false
+}

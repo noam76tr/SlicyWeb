@@ -1,0 +1,31 @@
+{
+  "id": "bambu_petg_hf",
+  "type": "filament",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "bambu_petg_hf",
+    "brand": "Bambu Lab",
+    "name": "PETG HF",
+    "material": "PETG",
+    "color": null,
+    "diameter": 1.75,
+    "density": 1.28,
+    "pricePerKg": null,
+    "temperature": {
+      "minNozzle": 230,
+      "maxNozzle": 260,
+      "minBed": 65,
+      "maxBed": 75
+    },
+    "manufacturerSettings": {
+      "retractionDistance": null,
+      "retractionSpeed": null,
+      "fanSpeed": null,
+      "nozzleTemperature": null,
+      "bedTemperature": null
+    },
+    "recommendedProfile": {}
+  },
+  "validated": false
+}

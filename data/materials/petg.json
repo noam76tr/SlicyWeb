@@ -1,0 +1,33 @@
+{
+  "id": "petg",
+  "type": "material",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "petg",
+    "name": "PETG",
+    "category": "PETG",
+    "temperature": {
+      "minNozzle": 230,
+      "maxNozzle": 260,
+      "minBed": 65,
+      "maxBed": 90
+    },
+    "cooling": {
+      "fanMin": null,
+      "fanMax": null
+    },
+    "physical": {
+      "density": null,
+      "shrinkage": null,
+      "warpingRisk": null
+    },
+    "recommended": {
+      "printSpeed": null,
+      "travelSpeed": null,
+      "retractionDistance": null,
+      "retractionSpeed": null
+    }
+  },
+  "validated": false
+}

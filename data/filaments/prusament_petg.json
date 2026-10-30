@@ -1,0 +1,31 @@
+{
+  "id": "prusament_petg",
+  "type": "filament",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "prusament_petg",
+    "brand": "Prusament",
+    "name": "PETG",
+    "material": "PETG",
+    "color": null,
+    "diameter": 1.75,
+    "density": 1.27,
+    "pricePerKg": null,
+    "temperature": {
+      "minNozzle": 240,
+      "maxNozzle": 260,
+      "minBed": 70,
+      "maxBed": 90
+    },
+    "manufacturerSettings": {
+      "retractionDistance": null,
+      "retractionSpeed": null,
+      "fanSpeed": 50,
+      "nozzleTemperature": 250,
+      "bedTemperature": 80
+    },
+    "recommendedProfile": {}
+  },
+  "validated": false
+}

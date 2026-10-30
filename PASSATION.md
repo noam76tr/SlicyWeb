@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-10-30. Lot 67 (plateau en plaque magnétique, hors phase 8) sur `main` (354971e), validé par Noam (318 clés, 23 canaux, 203 tests + 1 ignoré, 23 tests e2e, contrôles 1 à 7). Lot 68 (phase 8, chargement des matériaux et filaments) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.70 (lot 68).
+Date : 2026-10-30. Lot 68 (phase 8, chargement des matériaux et filaments) sur `main` (aaec40a), validé par Noam (318 clés, 25 canaux, 215 tests + 1 ignoré, 24 tests e2e, contrôle manuel). Lot 69 (5 matériaux, 11 filaments, SOURCES.md) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.71 (lot 69).
 
 ---
 
@@ -87,7 +87,7 @@ Date : 2026-10-30. Lot 67 (plateau en plaque magnétique, hors phase 8) sur `mai
   - caméras perspective et orthographique, 7 vues prédéfinies, Home ;
   - pas de plateau tant qu'aucune imprimante n'est choisie (phase 7) ;
   - plateau dessiné comme une plaque magnétique (lot 67) : plaque sombre à grain léger, coins arrondis, languette au milieu du bord avant (seul repère « avant »), grille sur la plaque, nom de l'imprimante (marque et modèle, texte seul) le long du bord avant ; jamais sélectionnable, ne bloque pas les clics.
-- **Matériaux et filaments (phase 8, lot 68) :** le processus principal lit `data/materials/`, `data/filaments/` (Official) et les filaments de l'utilisateur (`<dossier de réglages>/filaments/`, Local Custom), les valide (MaterialSchema, FilamentSchema, `null` = non publié) et les sert par `material:getAll` et `filament:getAll`. Aucun matériau ni filament livré avant le lot 69, rien à l'écran avant le lot 70.
+- **Matériaux et filaments (phase 8, lot 68) :** le processus principal lit `data/materials/`, `data/filaments/` (Official) et les filaments de l'utilisateur (`<dossier de réglages>/filaments/`, Local Custom), les valide (MaterialSchema, FilamentSchema, `null` = non publié) et les sert par `material:getAll` et `filament:getAll`. Lot 69 : 5 matériaux (PLA, PETG, ABS, ASA, TPU) et 11 filaments livrés, écrits à partir des fiches techniques (`data/materials/SOURCES.md`, `data/filaments/SOURCES.md`) ; Elegoo PLA non livré (pas de fiche avec la température du plateau). Rien à l'écran avant le lot 70.
 - **Imprimantes (phase 7) :** 79 profils dans `data/printers/` (Official ; 10 en v1.0.0, 69 ajoutés en v1.0.1) et les imprimantes de l'utilisateur (`<dossier de réglages>/printers/`, Local Custom), lus par le processus principal. Section Printer du panneau Propriétés : sélecteur (« No printer », « My printers », puis un groupe par marque), limites (« Not published » pour `null`), taille du plateau en bas de la vue, dernière imprimante retenue. Fenêtre Manage Printers (lot 61) : ajouter, copier, modifier, supprimer ses propres imprimantes ; les imprimantes Official ne se modifient jamais. Synchronisation (lot 62) : au démarrage (au plus une fois par 24 h) et par Printer > Refresh Profiles, le processus principal lit `index.json` sur `main` de `noam76tr/slicyweb-profiles`, puis les profils au tag de l'index (SHA-256, tout ou rien), et les garde dans `<dossier de réglages>/cache/printers/` ; ce cache valide remplace `data/printers/`. Une ligne « Profiles v1.0.1 … » sous le sélecteur.
 - **Import :**
   - STL (binaire et texte) et 3MF ;
@@ -202,6 +202,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | — | Profils v1.0.1 (hors lot) : 69 imprimantes ajoutées à `data/printers/` et à `noam76tr/slicyweb-profiles` (pages des fabricants lues le 2026-10-28), machines sans fiche lisible listées dans `profils-v1.0.1/PROFILS-V1.0.1.md` ; tests adaptés (79 profils, tag v1.0.1) | 0.1.68 |
 | 67 | Plateau en plaque magnétique (coins arrondis, grain, languette avant) et nom de l'imprimante sur le plateau, hors phase 8 ; numéros de la phase 8 décalés (68 à 73) ; cube de navigation prévu après la phase 8 | 0.1.69 |
 | 68 | Phase 8, chargement : MaterialSchema et FilamentSchema avec `null` et `.strict()`, fichiers lus par le processus principal (MAT_002, FIL_002), `material:getAll` et `filament:getAll` (25 canaux) ; `MaterialValidator.ts` et `FilamentValidator.ts` supprimés (D11) | 0.1.70 |
+| 69 | Phase 8, données : 5 matériaux et 11 filaments (fiches lues le 2026-10-30), SOURCES.md ; Elegoo PLA non livré ; `DefaultMaterial.ts` supprimé (D11) | 0.1.71 |
 
 ---
 
@@ -320,7 +321,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    - Contrôles manuels des lots 49 à 52 : tous réussis (le contrôle 16 du lot 51 a été corrigé au lot 52).
 2. **Tests automatiques avec Playwright** (lots 54, 55, 58, 60, 61, 62, 63, 67 et 68) : 24 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple, imprimantes, matériaux). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
 3. **Phase 7 : Printer Database** (Completed, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue (fait) ; 61 imprimantes saisies par l'utilisateur (fait) ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (fait, v1.0.0 publiée) ; 63 « aucune version publiée » et sécurité des dépendances (fait) ; 64 clôture (fait). Close le 2026-10-27, lot 64 validé par Noam.
-4. **Phase 8 : Material Database** (In Progress, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (fait, validé) ; 68 chargement (livré) ; 69 données ; 70 interface ; 71 filaments de l'utilisateur ; 72 synchronisation ; 73 clôture. (Lot 67 : plateau, hors phase 8.)
+4. **Phase 8 : Material Database** (In Progress, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (fait, validé) ; 68 chargement (fait, validé) ; 69 données (livré) ; 70 interface ; 71 filaments de l'utilisateur ; 72 synchronisation ; 73 clôture. (Lot 67 : plateau, hors phase 8.)
 5. **Cube de navigation** (décision 76) : après la clôture de la phase 8, avant la phase 9.
 6. **Phases 9 à 16**, dans l'ordre du plan technique.
 7. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
@@ -349,7 +350,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot68-chargement-materiaux/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 68 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot69-donnees-materiaux/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 69 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

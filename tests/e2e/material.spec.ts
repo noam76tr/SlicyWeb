@@ -4,9 +4,10 @@
  *
  * Material and filament profiles loaded by the main process (ADR-033,
  * D6), read by the window through material:getAll and filament:getAll
- * only: the filaments of the user (filaments/ of the user data folder)
- * are served with their ids; a damaged file is refused without stopping
- * the application. The materials and filaments of data/ come with lot 69.
+ * only: the 5 materials of data/materials/, the 11 filaments of
+ * data/filaments/ (lot 69) and the filaments of the user (filaments/ of
+ * the user data folder), served with their ids; a damaged file is
+ * refused without stopping the application.
  *
  * The filament of this test is test data, not a real product.
  *
@@ -71,12 +72,16 @@ test("serves the materials and the filaments of the user, refuses a damaged file
     window.slicyWeb.invoke("material:getAll"),
   )) as Response;
   expect(materials.success).toBe(true);
-  expect(Array.isArray(materials.data.materials)).toBe(true);
+  expect(
+    (materials.data.materials as { id: string }[]).map(({ id }) => id).sort(),
+  ).toEqual(["abs", "asa", "petg", "pla", "tpu"]);
 
   const filaments = (await page.evaluate(() =>
     window.slicyWeb.invoke("filament:getAll"),
   )) as Response;
   expect(filaments.success).toBe(true);
+  // The 11 filaments of data/filaments/, then the filament of the user
+  expect(filaments.data.filaments).toHaveLength(12);
   expect(filaments.data.filaments).toContainEqual(filament);
   expect(filaments.data.userFilamentIds).toEqual([filament.id]);
   expect(errors).toEqual([]);

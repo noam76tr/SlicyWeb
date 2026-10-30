@@ -1,0 +1,31 @@
+{
+  "id": "polymaker_polylite_petg",
+  "type": "filament",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "polymaker_polylite_petg",
+    "brand": "Polymaker",
+    "name": "PolyLite PETG",
+    "material": "PETG",
+    "color": null,
+    "diameter": 1.75,
+    "density": 1.25,
+    "pricePerKg": null,
+    "temperature": {
+      "minNozzle": 230,
+      "maxNozzle": 260,
+      "minBed": 70,
+      "maxBed": 80
+    },
+    "manufacturerSettings": {
+      "retractionDistance": null,
+      "retractionSpeed": null,
+      "fanSpeed": null,
+      "nozzleTemperature": null,
+      "bedTemperature": null
+    },
+    "recommendedProfile": {}
+  },
+  "validated": false
+}

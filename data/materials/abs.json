@@ -1,0 +1,33 @@
+{
+  "id": "abs",
+  "type": "material",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "id": "abs",
+    "name": "ABS",
+    "category": "ABS",
+    "temperature": {
+      "minNozzle": 240,
+      "maxNozzle": 270,
+      "minBed": 80,
+      "maxBed": 100
+    },
+    "cooling": {
+      "fanMin": null,
+      "fanMax": null
+    },
+    "physical": {
+      "density": 1.05,
+      "shrinkage": null,
+      "warpingRisk": null
+    },
+    "recommended": {
+      "printSpeed": null,
+      "travelSpeed": null,
+      "retractionDistance": null,
+      "retractionSpeed": null
+    }
+  },
+  "validated": false
+}

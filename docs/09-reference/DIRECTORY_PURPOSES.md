@@ -1215,7 +1215,6 @@ No other store keeps a copy of a selection.
 | `Analysis.ts` | Types for 3D model analysis (geometry, mesh, stability, overhangs, bridges, thin walls) |
 | `Classification.ts` | Types for object classification (categories, confidence levels) |
 | `CostEstimation.ts` | Types for print cost estimation (filament, energy, time) |
-| `DefaultMaterial.ts` | Default material constant (PLA) with a complete profile |
 | `Filament.ts` | Types for filaments (brand, material, properties, price) |
 | `Material.ts` | Types for materials (temperature, cooling, parameters) |
 | `Notification.ts` | Types for user notifications (type, message, timestamp) |
@@ -1346,6 +1345,8 @@ One file per printer, `<id>.json`: a Repository Data Schema envelope (type print
 - TPU Materials
 - Other Material Types
 
+One file per family, `<id>.json` (pla, petg, abs, asa, tpu): a Repository Data Schema envelope (type material, source Official) whose data is the material (Complete Material Schema). Read only, loaded by the main process (ADR-033, D6). The ranges of a family come from its shipped filaments (ADR-033, D2); `SOURCES.md` lists the filaments used for each family. DefaultMaterial.ts (values without a source) was deleted in Phase 8 lot 69.
+
 ---
 
 ## data/filaments/
@@ -1357,6 +1358,8 @@ One file per printer, `<id>.json`: a Repository Data Schema envelope (type print
 - Manufacturer-Specific Filaments
 - Filament Definitions
 - Brand Profiles
+
+One file per product line, `<id>.json` (11 lines in lot 69): a Repository Data Schema envelope (type filament, source Official) whose data is the filament (Filament Schema; color and pricePerKg null). Read only, loaded by the main process (ADR-033, D6). `SOURCES.md` gives, for each filament, the technical data sheet of the manufacturer and the date of verification; no value is copied from a slicer profile, and a value not published is null.
 
 ---
 
@@ -1712,6 +1715,7 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 | `gui/dialogs/printerForm.test.ts` | Form of the Printer Manager: empty limit = null (never 0), comma as decimal separator, lists of nozzles and materials, required and invalid fields, default nozzle in the list, printer unchanged through the form |
 | `gui/hooks/UndoRedoShortcuts.test.ts` | Keys of undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z, Cmd, AZERTY letter, Hebrew layout (key position), Alt and other keys ignored |
 | `material_database/MaterialLoading.test.ts` | MaterialSchema and FilamentSchema (null kept apart from 0; unknown field, family not listed, inverted range, sixth manufacturer setting, other diameter refused); Importers through the schemas; material files (MAT_002: damaged, too large, no temperature for a shipped material, wrong source, duplicate); missing folder; filaments of both folders, user filament never over an Official one; shipped filament with a color, a price or a missing temperature refused (FIL_002) |
+| `material_database/MaterialProfiles.test.ts` | The 5 materials and 11 filaments of data/: schema, file name = id, source Official, listed in SOURCES.md; each filament in a shipped family; ranges of a family = smallest minimum and largest maximum of its filaments, density null when they differ; loaded without refused file |
 | `printer_database/PrinterProfiles.test.ts` | The 79 profiles of data/printers/ (v1.0.1, with the 10 first printers): schema, file name = id, source Official, listed in SOURCES.md, all loaded; index.json lists each profile with its SHA-256 |
 | `repositories/PrinterRepositorySync.test.ts` | Download of the profile repository with a fake network: index.json on main then files at the tag, allowed address, no redirection; SHA-256 differs, invalid index or tag, profile not Official, file or download too large, tag not vX.Y.Z (SYNC_004), order of the tags; missing tag (HTTP 404: notPublished), HTTP 503 and network error (SYNC_002); no answer (SYNC_003) |
 | `printer_database/PrinterLoading.test.ts` | PrinterSchema (null kept, unknown field refused, no crash); profile files of both folders; missing folder; other files and subfolders ignored; damaged, invalid, too large, wrong source and duplicate files refused with PRN_002; links not followed; no path in the results |
@@ -1773,7 +1777,7 @@ Run with Playwright (`npm run test:e2e`: builds the application, then starts it 
 | `fixtures.ts` | Starts the built application (dist/electron/main.js) in a new user data folder; writes the test files (STL cube); imports with the Import button |
 | `app.spec.ts` | Main window without console error, 9 menus, toolbar, no Node.js in the window; language changed and kept after a restart; Hebrew from right to left |
 | `import.spec.ts` | STL import centered and standing on the plate; several files, same names numbered; 3MF import; unsupported and corrupted files refused with their message, error closed with its Close button |
-| `material.spec.ts` | material:getAll answers; the filament of the user served by filament:getAll with its id in userFilamentIds; damaged filament file refused without error in the window |
+| `material.spec.ts` | The 5 materials and the 11 filaments of data/ served; the filament of the user served by filament:getAll with its id in userFilamentIds; damaged filament file refused without error in the window |
 | `printer.spec.ts` | The 79 printers of data/printers/ and the printer of the user served by printer:getAll; printer:get, damaged file refused without error in the window, PRN_001; settings.json without printer keeps the language; Printer section: Bambu Lab X1 Carbon chosen, limits ("Not published"), plate "256 × 256 mm" in the viewport, status bar, Printer > Select Printer gives the focus to the selector, printer chosen again at the next start, "No printer" saved; Printer Manager: required fields, printer entered and saved in printers/, listed in "My printers", plate, kept at the next start, deleted after a confirmation; profiles: line "Profiles v1.0.1", Printer > Refresh Profiles shows the result, printers still available, setting "Check for profile updates automatically" checked by default and saved |
 | `transform.spec.ts` | Fields of the Transform section; undo and redo (toolbar, Ctrl+Z and Ctrl+Y in a field, no extra action); modes G, R, S, Escape; Ctrl+A, Shift+click, selection rectangle from the top corner (under the import messages) and the bottom corner, group moved |
 

@@ -1428,6 +1428,7 @@ Progress:
 
 - Analysis (lot 65) and documentation (CHANGELOG 0.1.67): ADR-033, DATA_SCHEMA.md 3.7.0
 - Loading (lot 68, CHANGELOG 0.1.70): MaterialSchema and FilamentSchema with null, profile files read by the main process, material:getAll and filament:getAll
+- Data (lot 69, CHANGELOG 0.1.71): 5 materials and 11 filaments (Elegoo PLA not shipped: no sheet with a bed temperature), SOURCES.md
 
 
 
