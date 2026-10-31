@@ -4,12 +4,18 @@
  *
  * Printers entered by the user (GUI_SPEC.md, Printer Manager; Phase 7
  * lot 61). Opened by Printer > Manage Printers and by the "Manage…"
- * button of the Printer section (openPrinterManager):
+ * button of the Printer section (openPrinterManager), on the selected
+ * printer when it is a printer of the user (lot 71):
  * - on the start side, the list of the printers of the user, "New" and
  *   "Copy a printer" (any loaded printer, Official included: the copy is
  *   a new printer of the user named "Model (copy)");
  * - on the end side, the form of the printer (printerForm.ts): a value
  *   of motion or thermal left empty is "Not published" (null);
+ * - the top of the form says what Save does: "Edit: name" for a printer
+ *   of the user, "New printer" for a new one or a copy (lot 71);
+ * - an invalid value is shown under its field as soon as it is typed;
+ *   a required field left empty, when the field is left or at Save.
+ *   Save is disabled while an error is shown (lot 71);
  * - Save adds or replaces the printer, Delete removes it after a
  *   confirmation. Official printers are never shown in the list, so they
  *   are never changed.
@@ -29,7 +35,7 @@
  * - DECISIONS.md (ADR-032)
  */
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { create } from "zustand";
 
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
@@ -55,12 +61,28 @@ import {
   type PrinterFormField,
 } from "./printerForm";
 
-const useManagerStore = create<{ open: boolean }>(() => ({ open: false }));
+/** Open state, and the printer of the user to edit when it opens */
+const useManagerStore = create<{ open: boolean; editId: string | null }>(
+  () => ({ open: false, editId: null }),
+);
 
-/** Opens the Printer Manager (menu, Printer section) */
+/**
+ * Opens the Printer Manager (menu, Printer section), on the selected
+ * printer when it is a printer of the user
+ */
 export function openPrinterManager(): void {
-  useManagerStore.setState({ open: true });
+  const { selectedPrinter, userPrinterIds } = usePrinterStore.getState();
+
+  useManagerStore.setState({
+    open: true,
+    editId:
+      selectedPrinter && userPrinterIds.includes(selectedPrinter.id)
+        ? selectedPrinter.id
+        : null,
+  });
 }
+
+const REQUIRED = "printerManager.error.required";
 
 const ERROR_CODES = ["PRN_001", "PRN_005", "PRN_006", "PRN_007"];
 
@@ -116,11 +138,15 @@ export default function PrinterManagerDialog(): JSX.Element {
   const { t } = useTranslation();
 
   const open = useManagerStore((state) => state.open);
+  const editId = useManagerStore((state) => state.editId);
   const printers = usePrinterStore((state) => state.printers);
   const userPrinterIds = usePrinterStore((state) => state.userPrinterIds);
 
   const [editing, setEditing] = useState<Editing | null>(null);
-  const [errors, setErrors] = useState<PrinterFormErrors>({});
+  const [touched, setTouched] = useState<ReadonlySet<PrinterFormField>>(
+    new Set(),
+  );
+  const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState<Message>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -130,17 +156,54 @@ export default function PrinterManagerDialog(): JSX.Element {
     [printers, userPrinterIds],
   );
 
+  /**
+   * Errors shown: an invalid value at once; a required field left empty
+   * once it was left, or after Save
+   */
+  const errors = useMemo<PrinterFormErrors>(() => {
+    if (!editing) return {};
+
+    const result = formToPrinter(editing.form, editing.id ?? NEW_PRINTER_ID);
+    if (result.ok) return {};
+
+    return Object.fromEntries(
+      Object.entries(result.errors).filter(
+        ([field, key]) =>
+          key !== REQUIRED ||
+          submitted ||
+          touched.has(field as PrinterFormField),
+      ),
+    );
+  }, [editing, submitted, touched]);
+
+  const hasErrors = Object.keys(errors).length > 0;
+
   const start = (next: Editing | null): void => {
     setEditing(next);
-    setErrors({});
+    setTouched(new Set());
+    setSubmitted(false);
     setMessage(null);
     setConfirmDelete(false);
   };
 
   const close = (): void => {
-    useManagerStore.setState({ open: false });
+    useManagerStore.setState({ open: false, editId: null });
     start(null);
   };
+
+  // Opened on a printer of the user: its form, in edition
+  useEffect(() => {
+    if (!open || editId === null) return;
+
+    const printer = usePrinterStore
+      .getState()
+      .printers.find((item) => item.id === editId);
+
+    if (printer) {
+      start({ id: printer.id, form: printerToForm(printer) });
+    }
+    useManagerStore.setState({ editId: null });
+  }, [open, editId]);
 
   const copy = (printer: Printer): void => {
     const form = printerToForm(printer);
@@ -159,8 +222,11 @@ export default function PrinterManagerDialog(): JSX.Element {
   ): void => {
     if (!editing) return;
     setEditing({ ...editing, form: { ...editing.form, [field]: value } });
-    setErrors((current) => ({ ...current, [field]: undefined }));
     setMessage(null);
+  };
+
+  const leave = (field: PrinterFormField): void => {
+    setTouched((current) => new Set(current).add(field));
   };
 
   const save = async (): Promise<void> => {
@@ -169,7 +235,7 @@ export default function PrinterManagerDialog(): JSX.Element {
     const result = formToPrinter(editing.form, editing.id ?? NEW_PRINTER_ID);
 
     if (!result.ok) {
-      setErrors(result.errors);
+      setSubmitted(true);
       setMessage({ kind: "error", key: "printerManager.error.form" });
       return;
     }
@@ -187,8 +253,7 @@ export default function PrinterManagerDialog(): JSX.Element {
     }
 
     const saved = change.printer ?? result.printer;
-    setEditing({ id: saved.id, form: printerToForm(saved) });
-    setErrors({});
+    start({ id: saved.id, form: printerToForm(saved) });
     setMessage({ kind: "status", key: "printerManager.saved" });
   };
 
@@ -244,6 +309,7 @@ export default function PrinterManagerDialog(): JSX.Element {
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? errorId : undefined}
             onChange={(event) => setField(name, event.target.value)}
+            onBlur={() => leave(name)}
             className={INPUT_CLASS}
           />
         </label>
@@ -274,6 +340,17 @@ export default function PrinterManagerDialog(): JSX.Element {
   const editedName = editing
     ? `${editing.form.brand.trim()} ${editing.form.model.trim()}`.trim()
     : "";
+
+  /** The printer of the user being edited, as it is saved */
+  const edited =
+    editing?.id != null
+      ? printers.find((printer) => printer.id === editing.id)
+      : undefined;
+  const formTitle = edited
+    ? t("printerManager.editing", {
+        name: `${edited.brand} ${edited.model}`,
+      })
+    : t("printerManager.new");
 
   return (
     <Dialog
@@ -362,7 +439,7 @@ export default function PrinterManagerDialog(): JSX.Element {
           {/* Form of the printer */}
           {editing ? (
             <form
-              aria-label={editedName || t("printerManager.new")}
+              aria-label={formTitle}
               noValidate
               onSubmit={(event) => {
                 event.preventDefault();
@@ -370,6 +447,8 @@ export default function PrinterManagerDialog(): JSX.Element {
               }}
               className="flex min-h-0 flex-col gap-3"
             >
+              <h3 className="font-medium text-foreground">{formTitle}</h3>
+
               <div className="min-h-0 space-y-4 overflow-y-auto pe-1">
                 <div className="grid grid-cols-2 gap-2">
                   {field("brand", t("printer.brand"), { required: true })}
@@ -527,7 +606,7 @@ export default function PrinterManagerDialog(): JSX.Element {
                       {t("action.delete")}
                     </Button>
                   )}
-                  <Button type="submit" size="sm" disabled={busy}>
+                  <Button type="submit" size="sm" disabled={busy || hasErrors}>
                     {t("action.save")}
                   </Button>
                 </div>

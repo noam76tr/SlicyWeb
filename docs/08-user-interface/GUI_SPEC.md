@@ -1394,7 +1394,8 @@ End side: form of the printer chosen, Save, Delete
 - Copy a printer: any loaded printer, Official included; the copy is a new printer of the user, named "Model (copy)". Official printers are never listed in My printers, so they are never changed.
 - Form (DATA_SCHEMA.md, Printer Schema): Brand, Model, Build Volume X, Y, Z, Default Nozzle and Nozzles are required (the default nozzle is one of the nozzles); Series, Manufacturer, Firmware, Release Date are free text; Printer Limits left empty are null, shown as "Not published"; part, auxiliary and chamber fans; extruder type (direct drive, bowden, unknown) and number of extruders; materials separated by commas. supported is always true; supportedFilaments stays empty until the filaments exist (Phase 8).
 - Numbers accept a comma as decimal separator. Nozzles are separated by semicolons or spaces.
-- Errors are shown under their field; errors of the main process (PRN_005, PRN_006, PRN_007) under the form.
+- Opened while the selected printer is a printer of the user, the dialog opens on that printer, in edition (lot 71). The top of the form says what Save does: "Edit: Brand Model" for a printer of the user, "New printer" for a new printer or a copy.
+- Errors are shown under their field: an invalid value as soon as it is typed, a required field left empty when the field is left or at Save; Save is disabled while an error is shown (lot 71). Errors of the main process (PRN_005, PRN_006, PRN_007) are shown under the form.
 - Delete asks for a confirmation ("Delete Brand Model?"). When the printer deleted is the selected printer, no printer is selected and the saved choice is cleared. A change of the selected printer updates the Printer Section and the build plate at once.
 - Changes of printers are not part of Undo / Redo (UNDO_REDO_SPEC.md: transforms only in Phase 6).
 
@@ -1469,7 +1470,8 @@ End side: form of the filament chosen, Save, Delete
 - Form (DATA_SCHEMA.md, Filament Schema): Brand, Name, Material (one of the families loaded, the selected family for a new filament) and Diameter (1.75 or 2.85 mm) are required; Color and Price per kg are entered by the user (empty: "Not specified", null); Density, the temperature ranges of the manufacturer (nozzle and bed, minimum and maximum) and the values of the manufacturer (nozzle and bed temperature, fan, retraction distance and speed) left empty are null, shown as "Not published". A minimum is never above its maximum; the fan is 0 to 100 %.
 - Numbers accept a comma as decimal separator.
 - In the lists, a filament is named "Brand Name (Color)".
-- Errors are shown under their field; errors of the main process (FIL_001, FIL_003, FIL_004, FIL_005) under the form. Two filaments with the same brand, name and color are refused.
+- Opened while the selected filament is a filament of the user, the dialog opens on that filament, in edition. The top of the form says what Save does: "Edit: Brand Name (Color)" for a filament of the user, "New filament" for a new filament or a copy.
+- Errors are shown under their field: an invalid value as soon as it is typed, a required field left empty when the field is left or at Save; Save is disabled while an error is shown. Errors of the main process (FIL_001, FIL_003, FIL_004, FIL_005) are shown under the form. Two filaments with the same brand, name and color are refused.
 - Delete asks for a confirmation ("Delete Brand Name?"). When the filament deleted is the selected filament, no filament is selected and the saved choice is cleared; the material stays selected. A change of the selected filament updates the Filament Section at once, and its family when the family changed.
 - Changes of filaments are not part of Undo / Redo (UNDO_REDO_SPEC.md: transforms only in Phase 6).
 

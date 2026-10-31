@@ -2593,17 +2593,19 @@ Date:
 - IPC channels filament:add, filament:update and filament:remove (API_SPEC.md, FilamentIPC Channels); allow list: 28 channels
 - Filament Manager (src/gui/dialogs/FilamentManagerDialog.tsx, filamentForm.ts), opened by Filament > Manage Filaments and by the "Manage…" button of the Filament section: list of the filaments of the user, New filament, Copy a filament (any loaded filament, Official included, named "Name (copy)"), form (brand, name, material among the loaded families, color, diameter 1.75 or 2.85, price per kg, density, temperature ranges, values of the manufacturer), Save, Delete with a confirmation
 - Values left empty are null ("Not published"), never 0; an empty color is null; a minimum above its maximum and a fan speed over 100 % are refused in the form, and again by FilamentSchema in the main process
+- Filament Manager and Printer Manager (after the checks of Noam, 2026-10-31): an invalid value is shown under its field as soon as it is typed (a required field left empty, when the field is left or at Save), and Save is disabled while an error is shown; "Manage…" and the menu open the dialog on the selected filament or printer when it is one of the user, in edition; the top of the form shows "Edit: name" or "New filament" / "New printer" (2 translation keys)
 - src/filament_database/FilamentManager.ts: addUserFilament, updateUserFilament, removeUserFilament; one file per filament in filaments/ of the user data folder (Repository Data Schema envelope, type filament, source Local Custom); id user_ + random UUID without dashes
 - ERROR_CODES_SPEC.md: FIL_003 Filament Not Editable, FIL_004 Filament Already Exists (same brand, name and color), FIL_005 Filament Not Saved
 - Filament section: price per kg ("Not specified" when it is null) and "Manage…" button
-- 34 translation keys (en, fr, he): 368 keys
-- Tests: tests/unit/material_database/UserFilaments.test.ts (10 tests), tests/unit/gui/dialogs/filamentForm.test.ts (4 tests), tests/unit/electron/MaterialIPC.test.ts (3 tests), tests/unit/services/MaterialSelection.test.ts (3 tests), tests/e2e/material.spec.ts (1 test: copy of Prusament PETG with color and price, file written, "My filaments", choice kept at the next start, deletion; 26 end-to-end tests)
+- 36 translation keys (en, fr, he): 370 keys
+- Tests: tests/unit/material_database/UserFilaments.test.ts (10 tests), tests/unit/gui/dialogs/filamentForm.test.ts (4 tests), tests/unit/electron/MaterialIPC.test.ts (3 tests), tests/unit/services/MaterialSelection.test.ts (3 tests), tests/e2e/material.spec.ts (1 test: copy of Prusament PETG with color and price, error shown at once and Save disabled, file written, "My filaments", choice kept at the next start, opened by "Manage…" in edition and changed with the same file and id, deletion; 26 end-to-end tests); tests/e2e/printer.spec.ts: the printer of the user opened by "Manage…" in edition, error shown at once, changed with the same file and id
 
 ## Changed
 
 - src/electron/ipc/FilamentIPC.ts, src/electron/ipc/IpcChannels.ts, src/services/FilamentService.ts
 - src/services/MaterialSelectionService.ts: addFilament, updateFilament, removeFilament; the selected filament follows its update (and its family), and is cleared with the saved choice when it is removed
 - src/gui/sidebar/FilamentSection.tsx, src/gui/sidebar/profileRows.tsx, src/gui/menus/MenuBar.tsx, src/gui/App.tsx
+- src/gui/dialogs/PrinterManagerDialog.tsx: errors shown as soon as a value is typed, Save disabled while an error is shown, opened on the selected printer of the user, "Edit: name" or "New printer" at the top of the form
 - tests/e2e/printer.spec.ts: expected settings with the default material section (see 0.1.72)
 - API_SPEC.md (FilamentIPC Channels, Allowed IPC Channels), ERROR_CODES_SPEC.md (Filament Errors), SECURITY_SPEC.md (Material and Filament Profile Files), GUI_SPEC.md (Filament Menu, Filament Section, Filament Manager), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md (progress), PASSATION.md
 

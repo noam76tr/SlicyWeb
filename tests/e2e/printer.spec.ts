@@ -351,6 +351,35 @@ test("enters a printer of the user, uses it and deletes it", async ({
 
   await again.getByRole("button", { name: en["printer.manageButton"] }).click();
   const manager = again.getByRole("dialog", { name: en["printer.manage"] });
+
+  // "Manage…" opens the selected printer of the user, in edition
+  await expect(
+    manager.getByRole("heading", {
+      name: en["printerManager.editing"].replace("{name}", "Test Home"),
+    }),
+  ).toBeVisible();
+  const zBox = manager.getByRole("textbox", { name: "Z (mm)", exact: true });
+  await zBox.fill("0");
+  await expect(
+    manager.getByText(en["printerManager.error.positive"]),
+  ).toBeVisible();
+  await expect(
+    manager.getByRole("button", { name: en["action.save"] }),
+  ).toBeDisabled();
+  await zBox.fill("150");
+  await manager.getByRole("button", { name: en["action.save"] }).click();
+  await expect(manager.getByRole("status")).toHaveText(
+    en["printerManager.saved"],
+  );
+
+  // The same file and the same id: the printer was changed, not added
+  expect(fs.readdirSync(path.join(userDataDir, "printers"))).toEqual(files);
+  const changed = JSON.parse(
+    fs.readFileSync(path.join(userDataDir, "printers", files[0]), "utf8"),
+  ) as { id: string; data: typeof printer };
+  expect(changed.id).toBe(saved.data.id);
+  expect(changed.data.buildVolume.z).toBe(150);
+
   await manager.getByRole("button", { name: "Test Home" }).click();
   await manager.getByRole("button", { name: en["action.delete"] }).click();
   await expect(

@@ -462,9 +462,9 @@ Every file should be placed in the directory that matches its responsibility.
 
 | File | Role |
 |------|------|
-| `FilamentManagerDialog.tsx` | Filament Manager (GUI_SPEC.md, Filament Manager, Phase 8 lot 71): list of the filaments of the user, New filament, Copy a filament, form, Save, Delete with a confirmation; opened by Filament > Manage Filaments and by "Manage…" (openFilamentManager); calls MaterialSelectionService |
+| `FilamentManagerDialog.tsx` | Filament Manager (GUI_SPEC.md, Filament Manager, Phase 8 lot 71): list of the filaments of the user, New filament, Copy a filament, form ("Edit: name" or "New filament" at its top; errors shown as soon as a value is typed, Save disabled while an error is shown), Save, Delete with a confirmation; opened by Filament > Manage Filaments and by "Manage…" (openFilamentManager), on the selected filament when it is one of the user; calls MaterialSelectionService |
 | `filamentForm.ts` | Values of the form of the Filament Manager and their conversion to a filament: required fields, empty value = null, empty color = null, comma as decimal separator, minimum not above its maximum, fan 0 to 100 %, errors by field (translation keys) |
-| `PrinterManagerDialog.tsx` | Printer Manager (GUI_SPEC.md, Printer Manager, Phase 7): list of the printers of the user, New printer, Copy a printer, form, Save, Delete with a confirmation; opened by Printer > Manage Printers and by "Manage…" (openPrinterManager); calls PrinterSelectionService |
+| `PrinterManagerDialog.tsx` | Printer Manager (GUI_SPEC.md, Printer Manager, Phase 7): list of the printers of the user, New printer, Copy a printer, form ("Edit: name" or "New printer" at its top; errors shown as soon as a value is typed, Save disabled while an error is shown; lot 71), Save, Delete with a confirmation; opened by Printer > Manage Printers and by "Manage…" (openPrinterManager), on the selected printer when it is one of the user; calls PrinterSelectionService |
 | `printerForm.ts` | Values of the form of the Printer Manager and their conversion to a printer: required fields, empty limit = null, comma as decimal separator, lists, errors by field (translation keys) |
 
 ---

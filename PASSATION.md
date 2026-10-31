@@ -80,7 +80,7 @@ Date : 2026-10-31. Lot 70 (sections Material et Filament) sur `main` (bdf6d3c), 
 ### Ce que fait l'application aujourd'hui
 
 - **Fenêtre :** Electron avec React ; barre de menus (9 menus de GUI_SPEC) ; barre d'outils (11 boutons) ; panneaux latéraux redimensionnables et repliables ; barre d'état ; thème sombre.
-- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 368 clés de traduction.
+- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 370 clés de traduction.
 - **Vue 3D :**
   - repère en mm, X à droite, Y vers l'arrière, Z vers le haut, origine au centre du plateau (ADR-028) ;
   - grille adaptative et axes ;
@@ -204,7 +204,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 68 | Phase 8, chargement : MaterialSchema et FilamentSchema avec `null` et `.strict()`, fichiers lus par le processus principal (MAT_002, FIL_002), `material:getAll` et `filament:getAll` (25 canaux) ; `MaterialValidator.ts` et `FilamentValidator.ts` supprimés (D11) | 0.1.70 |
 | 69 | Phase 8, données : 5 matériaux et 11 filaments (fiches lues le 2026-10-30), SOURCES.md ; Elegoo PLA non livré ; `DefaultMaterial.ts` supprimé (D11) | 0.1.71 |
 | 70 | Phase 8, interface : sections Material et Filament, avertissement (alias Flex = TPU, NYLON = PA), réglages `material`, 16 clés (334) ; `MaterialPanel.tsx` et `FilamentPanel.tsx` supprimés (D11) | 0.1.72 |
-| 71 | Phase 8 : filaments saisis par l'utilisateur (`filament:add`, `update`, `remove`, 28 canaux), fenêtre Manage Filaments, prix au kg ; FIL_003 à FIL_005 ; 34 clés (368) ; attendu de `printer.spec.ts` corrigé | 0.1.73 |
+| 71 | Phase 8 : filaments saisis par l'utilisateur (`filament:add`, `update`, `remove`, 28 canaux), fenêtre Manage Filaments, prix au kg ; FIL_003 à FIL_005 ; 36 clés (370) ; attendu de `printer.spec.ts` corrigé ; dans Manage Filaments et Manage Printers : erreurs affichées dès la saisie, Save bloqué, ouverture sur l'élément choisi, « Edit: nom » ou « New … » en haut du formulaire | 0.1.73 |
 
 ---
 

@@ -202,13 +202,38 @@ test("enters a filament of the user, uses it and deletes it", async ({
   await box(en["filamentManager.name"]).fill("PETG Jet Black");
   await box(en["filament.color"]).fill("Black");
   await box(en["filament.pricePerKg"]).fill("29,99");
-  await dialog.getByRole("button", { name: en["action.save"] }).click();
+  await expect(
+    dialog.getByRole("heading", { name: en["filamentManager.new"] }),
+  ).toBeVisible();
+
+  // An invalid value is shown at once, and Save waits for its correction
+  const save = dialog.getByRole("button", { name: en["action.save"] });
+  await box(`${en["filamentManager.maxBed"]} (°C)`).fill("60");
+  await box(`${en["filamentManager.minBed"]} (°C)`).fill("70");
+  await expect(
+    dialog.getByText(en["filamentManager.error.minAboveMax"]),
+  ).toBeVisible();
+  await expect(save).toBeDisabled();
+  await box(`${en["filamentManager.minBed"]} (°C)`).fill("70");
+  await box(`${en["filamentManager.maxBed"]} (°C)`).fill("90");
+  await expect(
+    dialog.getByText(en["filamentManager.error.minAboveMax"]),
+  ).toHaveCount(0);
+  await save.click();
 
   await expect(dialog.getByRole("status")).toHaveText(
     en["filamentManager.saved"],
   );
   await expect(
     dialog.getByRole("button", { name: "Prusament PETG Jet Black (Black)" }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole("heading", {
+      name: en["filamentManager.editing"].replace(
+        "{name}",
+        "Prusament PETG Jet Black (Black)",
+      ),
+    }),
   ).toBeVisible();
 
   const folder = path.join(userDataDir, "filaments");
@@ -224,7 +249,7 @@ test("enters a filament of the user, uses it and deletes it", async ({
     material: "PETG",
     color: "Black",
     pricePerKg: 29.99,
-    temperature: { minNozzle: 240, maxNozzle: 260 },
+    temperature: { minNozzle: 240, maxNozzle: 260, minBed: 70, maxBed: 90 },
   });
 
   await page.keyboard.press("Escape");
@@ -250,11 +275,35 @@ test("enters a filament of the user, uses it and deletes it", async ({
     saved.data.id,
   );
 
+  // "Manage…" opens the selected filament of the user, in edition
   await again.getByRole("button", { name: en["filament.manage"] }).click();
   const manager = again.getByRole("dialog", { name: en["filament.manage"] });
+  await expect(
+    manager.getByRole("heading", {
+      name: en["filamentManager.editing"].replace(
+        "{name}",
+        "Prusament PETG Jet Black (Black)",
+      ),
+    }),
+  ).toBeVisible();
   await manager
-    .getByRole("button", { name: "Prusament PETG Jet Black (Black)" })
-    .click();
+    .getByRole("textbox", { name: en["filament.pricePerKg"], exact: true })
+    .fill("31");
+  await manager.getByRole("button", { name: en["action.save"] }).click();
+  await expect(manager.getByRole("status")).toHaveText(
+    en["filamentManager.saved"],
+  );
+
+  // The same file and the same id: the filament was changed, not added
+  expect(fs.readdirSync(folder)).toEqual(files);
+  const changed = JSON.parse(
+    fs.readFileSync(path.join(folder, files[0]), "utf8"),
+  ) as { id: string; data: typeof filament };
+  expect(changed.id).toBe(saved.data.id);
+  expect(changed.data).toMatchObject({ id: saved.data.id, pricePerKg: 31 });
+  await expect(
+    again.locator("dl").filter({ hasText: en["filament.brand"] }),
+  ).toContainText("31");
   await manager.getByRole("button", { name: en["action.delete"] }).click();
   await expect(
     manager.getByText(

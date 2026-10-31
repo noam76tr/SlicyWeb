@@ -4,13 +4,19 @@
  *
  * Filaments entered by the user (GUI_SPEC.md, Filament Manager; Phase 8
  * lot 71, ADR-033 D10). Opened by Filament > Manage Filaments and by the
- * "Manage…" button of the Filament section (openFilamentManager):
+ * "Manage…" button of the Filament section (openFilamentManager), on the
+ * selected filament when it is a filament of the user:
  * - on the start side, the list of the filaments of the user, "New" and
  *   "Copy a filament" (any loaded filament, Official included: the copy
  *   is a new filament of the user named "Name (copy)");
  * - on the end side, the form of the filament (filamentForm.ts): the
  *   family is one of the loaded materials; color and price per kg are
  *   entered by the user; a value left empty is "Not published" (null);
+ * - the top of the form says what Save does: "Edit: name" for a
+ *   filament of the user, "New filament" for a new one or a copy;
+ * - an invalid value is shown under its field as soon as it is typed;
+ *   a required field left empty, when the field is left or at Save.
+ *   Save is disabled while an error is shown;
  * - Save adds or replaces the filament, Delete removes it after a
  *   confirmation. Official filaments are never shown in the list, so
  *   they are never changed.
@@ -30,7 +36,7 @@
  * - DECISIONS.md (ADR-033, D10)
  */
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { create } from "zustand";
 
 import { MaterialSelectionService } from "../../services/MaterialSelectionService";
@@ -59,12 +65,28 @@ import {
   type FilamentFormField,
 } from "./filamentForm";
 
-const useManagerStore = create<{ open: boolean }>(() => ({ open: false }));
+/** Open state, and the filament of the user to edit when it opens */
+const useManagerStore = create<{ open: boolean; editId: string | null }>(
+  () => ({ open: false, editId: null }),
+);
 
-/** Opens the Filament Manager (menu, Filament section) */
+/**
+ * Opens the Filament Manager (menu, Filament section), on the selected
+ * filament when it is a filament of the user
+ */
 export function openFilamentManager(): void {
-  useManagerStore.setState({ open: true });
+  const { selectedFilament, userFilamentIds } = useFilamentStore.getState();
+
+  useManagerStore.setState({
+    open: true,
+    editId:
+      selectedFilament && userFilamentIds.includes(selectedFilament.id)
+        ? selectedFilament.id
+        : null,
+  });
 }
+
+const REQUIRED = "filamentManager.error.required";
 
 const ERROR_CODES = ["FIL_001", "FIL_003", "FIL_004", "FIL_005"];
 
@@ -130,13 +152,17 @@ export default function FilamentManagerDialog(): JSX.Element {
   const { t } = useTranslation();
 
   const open = useManagerStore((state) => state.open);
+  const editId = useManagerStore((state) => state.editId);
   const filaments = useFilamentStore((state) => state.filaments);
   const userFilamentIds = useFilamentStore((state) => state.userFilamentIds);
   const materials = useMaterialStore((state) => state.materials);
   const selectedMaterial = useMaterialStore((state) => state.selectedMaterial);
 
   const [editing, setEditing] = useState<Editing | null>(null);
-  const [errors, setErrors] = useState<FilamentFormErrors>({});
+  const [touched, setTouched] = useState<ReadonlySet<FilamentFormField>>(
+    new Set(),
+  );
+  const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState<Message>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -146,17 +172,54 @@ export default function FilamentManagerDialog(): JSX.Element {
     [filaments, userFilamentIds],
   );
 
+  /**
+   * Errors shown: an invalid value at once; a required field left empty
+   * once it was left, or after Save
+   */
+  const errors = useMemo<FilamentFormErrors>(() => {
+    if (!editing) return {};
+
+    const result = formToFilament(editing.form, editing.id ?? NEW_FILAMENT_ID);
+    if (result.ok) return {};
+
+    return Object.fromEntries(
+      Object.entries(result.errors).filter(
+        ([field, key]) =>
+          key !== REQUIRED ||
+          submitted ||
+          touched.has(field as FilamentFormField),
+      ),
+    );
+  }, [editing, submitted, touched]);
+
+  const hasErrors = Object.keys(errors).length > 0;
+
   const start = (next: Editing | null): void => {
     setEditing(next);
-    setErrors({});
+    setTouched(new Set());
+    setSubmitted(false);
     setMessage(null);
     setConfirmDelete(false);
   };
 
   const close = (): void => {
-    useManagerStore.setState({ open: false });
+    useManagerStore.setState({ open: false, editId: null });
     start(null);
   };
+
+  // Opened on a filament of the user: its form, in edition
+  useEffect(() => {
+    if (!open || editId === null) return;
+
+    const filament = useFilamentStore
+      .getState()
+      .filaments.find((item) => item.id === editId);
+
+    if (filament) {
+      start({ id: filament.id, form: filamentToForm(filament) });
+    }
+    useManagerStore.setState({ editId: null });
+  }, [open, editId]);
 
   const copy = (filament: Filament): void => {
     const form = filamentToForm(filament);
@@ -175,8 +238,11 @@ export default function FilamentManagerDialog(): JSX.Element {
   ): void => {
     if (!editing) return;
     setEditing({ ...editing, form: { ...editing.form, [field]: value } });
-    setErrors((current) => ({ ...current, [field]: undefined }));
     setMessage(null);
+  };
+
+  const leave = (field: FilamentFormField): void => {
+    setTouched((current) => new Set(current).add(field));
   };
 
   const save = async (): Promise<void> => {
@@ -185,7 +251,7 @@ export default function FilamentManagerDialog(): JSX.Element {
     const result = formToFilament(editing.form, editing.id ?? NEW_FILAMENT_ID);
 
     if (!result.ok) {
-      setErrors(result.errors);
+      setSubmitted(true);
       setMessage({ kind: "error", key: "filamentManager.error.form" });
       return;
     }
@@ -203,8 +269,7 @@ export default function FilamentManagerDialog(): JSX.Element {
     }
 
     const saved = change.filament ?? result.filament;
-    setEditing({ id: saved.id, form: filamentToForm(saved) });
-    setErrors({});
+    start({ id: saved.id, form: filamentToForm(saved) });
     setMessage({ kind: "status", key: "filamentManager.saved" });
   };
 
@@ -259,6 +324,7 @@ export default function FilamentManagerDialog(): JSX.Element {
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? errorId : undefined}
             onChange={(event) => setField(name, event.target.value)}
+            onBlur={() => leave(name)}
             className={INPUT_CLASS}
           />
         </label>
@@ -274,6 +340,15 @@ export default function FilamentManagerDialog(): JSX.Element {
   const editedName = editing
     ? `${editing.form.brand.trim()} ${editing.form.name.trim()}`.trim()
     : "";
+
+  /** The filament of the user being edited, as it is saved */
+  const edited =
+    editing?.id != null
+      ? filaments.find((filament) => filament.id === editing.id)
+      : undefined;
+  const formTitle = edited
+    ? t("filamentManager.editing", { name: filamentLabel(edited) })
+    : t("filamentManager.new");
 
   return (
     <Dialog
@@ -370,7 +445,7 @@ export default function FilamentManagerDialog(): JSX.Element {
           {/* Form of the filament */}
           {editing ? (
             <form
-              aria-label={editedName || t("filamentManager.new")}
+              aria-label={formTitle}
               noValidate
               onSubmit={(event) => {
                 event.preventDefault();
@@ -378,6 +453,8 @@ export default function FilamentManagerDialog(): JSX.Element {
               }}
               className="flex min-h-0 flex-col gap-3"
             >
+              <h3 className="font-medium text-foreground">{formTitle}</h3>
+
               <div className="min-h-0 space-y-4 overflow-y-auto pe-1">
                 <div className="grid grid-cols-2 gap-2">
                   {field("brand", t("filament.brand"), { required: true })}
@@ -404,6 +481,7 @@ export default function FilamentManagerDialog(): JSX.Element {
                         onChange={(event) =>
                           setField("material", event.target.value)
                         }
+                        onBlur={() => leave("material")}
                         className={INPUT_CLASS}
                       >
                         <option value="">
@@ -552,7 +630,7 @@ export default function FilamentManagerDialog(): JSX.Element {
                       {t("action.delete")}
                     </Button>
                   )}
-                  <Button type="submit" size="sm" disabled={busy}>
+                  <Button type="submit" size="sm" disabled={busy || hasErrors}>
                     {t("action.save")}
                   </Button>
                 </div>
