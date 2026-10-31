@@ -20,7 +20,7 @@ export const SELECT_CLASS =
   "h-7 w-full rounded border border-input bg-background px-1.5 text-xs text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50";
 
 /** Value shown: 2 decimals at most */
-function format(value: number): string {
+export function formatNumber(value: number): string {
   return String(Math.round(value * 100) / 100);
 }
 
@@ -43,7 +43,9 @@ export function useValue(): (value: number | null, unit: string) => string {
   const { t } = useTranslation();
 
   return (value, unit) =>
-    value === null ? t("printer.notPublished") : `${format(value)} ${unit}`;
+    value === null
+      ? t("printer.notPublished")
+      : `${formatNumber(value)} ${unit}`;
 }
 
 /** A range "min – max unit"; a bound not published is named as such */
@@ -58,7 +60,7 @@ export function useRange(): (
   return (min, max, unit) =>
     min === null && max === null
       ? notPublished
-      : `${min === null ? notPublished : format(min)} – ${
-          max === null ? notPublished : format(max)
+      : `${min === null ? notPublished : formatNumber(min)} – ${
+          max === null ? notPublished : formatNumber(max)
         } ${unit}`;
 }

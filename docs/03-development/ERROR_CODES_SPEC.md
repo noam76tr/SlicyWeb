@@ -417,7 +417,7 @@ Unsupported Material
 
 # Filament Errors
 
-Phase 8, ADR-033. The errors of the filaments entered by the user (Manage Filaments) are added with lot 71.
+Phase 8, ADR-033. FIL_003 to FIL_005: filaments entered by the user (Manage Filaments, lot 71).
 
 ## FIL_001
 
@@ -434,6 +434,30 @@ Invalid Filament Profile
 ```
 
 A filament file that cannot be read, is larger than the size limit (1 MB), fails the Repository Data Schema or Filament Schema validation (for a shipped filament: the four temperatures are required, color and pricePerKg are null), has a source other than the source of its folder, or whose id is already loaded. The file is refused; the other filaments are loaded (Phase 8 lot 68).
+
+## FIL_003
+
+```text
+Filament Not Editable
+```
+
+filament:update or filament:remove on a filament that was not entered by the user (Official filament). Official filaments are never changed.
+
+## FIL_004
+
+```text
+Filament Already Exists
+```
+
+filament:add or filament:update with the brand, the name and the color of another loaded filament (case and outer spaces ignored; no color matches no color).
+
+## FIL_005
+
+```text
+Filament Not Saved
+```
+
+The file of a filament of the user could not be written or deleted (disk full, no right to write). Nothing is changed. The message gives the system error code, never a path.
 
 ---
 

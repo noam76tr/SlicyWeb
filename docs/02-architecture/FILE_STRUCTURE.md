@@ -337,7 +337,7 @@ src/electron/
 ├── preload.ts
 
 └── ipc/
-    ├── FilamentIPC.ts         = filament:getAll (Phase 8)
+    ├── FilamentIPC.ts         = filament:getAll, filament:add, filament:update, filament:remove (Phase 8)
     ├── ImportIPC.ts
     ├── IpcChannels.ts         = allow list of the IPC channels (API_SPEC.md)
     ├── MaterialIPC.ts         = material:getAll (Phase 8)
@@ -408,6 +408,8 @@ src/gui/
 ├── layouts/
 ├── windows/
 ├── dialogs/
+│   ├── FilamentManagerDialog.tsx = Filament Manager: filaments entered by the user (Phase 8)
+│   ├── filamentForm.ts        = form of the Filament Manager and its conversion to a filament
 │   ├── PrinterManagerDialog.tsx = Printer Manager: printers entered by the user (Phase 7)
 │   └── printerForm.ts         = form of the Printer Manager and its conversion to a printer
 ├── menus/
@@ -629,7 +631,7 @@ src/material_database/
 ```text
 src/filament_database/
 
-├── FilamentManager.ts         = loading of the filament profile files (Phase 8)
+├── FilamentManager.ts         = loading of the filament profile files, filaments of the user (Phase 8)
 ├── FilamentRepository.ts
 ├── FilamentCache.ts
 └── FilamentImporter.ts        = not used yet (Import Filament, Phase 15)
@@ -913,16 +915,18 @@ tests/
 
 ├── unit/
 │   ├── electron/
-│   │   ├── MaterialIPC.test.ts = material:getAll, filament:getAll (Phase 8)
+│   │   ├── MaterialIPC.test.ts = material:getAll, filament:* channels (Phase 8)
 │   │   └── PrinterIPC.test.ts = printer:* channels (Phase 7)
 │   ├── gui/
 │   │   ├── dialogs/
+│   │   │   ├── filamentForm.test.ts = form of the Filament Manager (Phase 8)
 │   │   │   └── printerForm.test.ts = form of the Printer Manager (Phase 7)
 │   │   └── hooks/
 │   │       └── UndoRedoShortcuts.test.ts = keys of undo and redo (Phase 6)
 │   ├── material_database/
 │   │   ├── MaterialLoading.test.ts = material and filament profile files, MaterialSchema, FilamentSchema (Phase 8)
-│   │   └── MaterialProfiles.test.ts = the profiles of data/materials/ and data/filaments/ (Phase 8)
+│   │   ├── MaterialProfiles.test.ts = the profiles of data/materials/ and data/filaments/ (Phase 8)
+│   │   └── UserFilaments.test.ts = filaments entered by the user (Phase 8)
 │   ├── printer_database/
 │   │   ├── PrinterLoading.test.ts = printer profile files, PrinterSchema (Phase 7)
 │   │   ├── PrinterProfiles.test.ts = the profiles of data/printers/ and their index.json (Phase 7)

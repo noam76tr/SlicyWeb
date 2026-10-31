@@ -13,7 +13,9 @@
  *   manufacturer, its single values (manufacturerSettings) and its color;
  *   a value not published (null) is shown as "Not published", never as 0
  *   (DATA_SCHEMA.md 3.7.0). A shipped filament is a product line: its
- *   color is "Not specified".
+ *   color and its price per kg are "Not specified";
+ * - "Manage…" opens the Filament Manager (FilamentManagerDialog, Phase 8
+ *   lot 71).
  *
  * The choice goes through MaterialSelectionService, which saves it as the
  * last filament. Filament > Select Filament (menu) moves the focus to
@@ -22,7 +24,7 @@
  * No business logic.
  *
  * Based on:
- * - GUI_SPEC.md (Filament Section)
+ * - GUI_SPEC.md (Filament Section, Filament Manager)
  * - DATA_SCHEMA.md (Filament Schema 3.7.0)
  * - DECISIONS.md (ADR-033, D9)
  */
@@ -33,9 +35,17 @@ import { MaterialSelectionService } from "../../services/MaterialSelectionServic
 import { useFilamentStore } from "../../state/filamentStore";
 import { useMaterialStore } from "../../state/materialStore";
 import type { Filament } from "../../types/Filament";
+import { Button } from "../components/ui/button";
+import { openFilamentManager } from "../dialogs/FilamentManagerDialog";
 import { useTranslation } from "../hooks/useTranslation";
 
-import { ProfileRow, SELECT_CLASS, useRange, useValue } from "./profileRows";
+import {
+  formatNumber,
+  ProfileRow,
+  SELECT_CLASS,
+  useRange,
+  useValue,
+} from "./profileRows";
 
 export const FILAMENT_SELECTOR_ID = "filament-selector";
 
@@ -125,6 +135,15 @@ export default function FilamentSection(): JSX.Element {
         </select>
       </label>
 
+      <Button
+        variant="outline"
+        size="xs"
+        aria-label={t("filament.manage")}
+        onClick={openFilamentManager}
+      >
+        {t("filament.manageButton")}
+      </Button>
+
       {selected ? (
         <>
           <dl className="space-y-1">
@@ -132,6 +151,14 @@ export default function FilamentSection(): JSX.Element {
             <ProfileRow
               label={t("filament.color")}
               value={selected.color ?? t("filament.colorNotSpecified")}
+            />
+            <ProfileRow
+              label={t("filament.pricePerKg")}
+              value={
+                selected.pricePerKg === null
+                  ? t("filament.priceNotSpecified")
+                  : formatNumber(selected.pricePerKg)
+              }
             />
             <ProfileRow
               label={t("material.nozzleTemperature")}

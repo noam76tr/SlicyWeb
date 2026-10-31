@@ -2531,7 +2531,7 @@ Date:
 
 ## Validation Result
 
-- Windows 11 (2026-10-30): lot 69 on GitHub (004881c, identical to the lot; DefaultMaterial.ts deleted in 8af179c); npm run check:locales: 318 keys; npm run check:ipc: 25 channels; typecheck and lint without error; npm run test:e2e: 24 tests passed; data checked against SOURCES.md and the sheets for Bambu Lab PETG HF, Prusament ASA, Bambu Lab ABS and Polymaker PolyLite PLA; Elegoo PLA left out as written in SOURCES.md (Noam). npm test: 241 tests passed on the same files on Linux (240 and 1 skipped expected on Windows); the total of Noam (215 passed, 1 skipped) is to be confirmed
+- Windows 11 (2026-10-30): lot 69 on GitHub (004881c, identical to the lot; DefaultMaterial.ts deleted in 8af179c); npm run check:locales: 318 keys; npm run check:ipc: 25 channels; typecheck and lint without error; npm run test:e2e: 24 tests passed; data checked against SOURCES.md and the sheets for Bambu Lab PETG HF, Prusament ASA, Bambu Lab ABS and Polymaker PolyLite PLA; Elegoo PLA left out as written in SOURCES.md (Noam). npm test: 241 tests passed on the same files on Linux (240 and 1 skipped expected on Windows); the total of Noam (215 passed, 1 skipped) is confirmed indirectly by lot 70: 249 passed and 1 skipped on Windows, which is the total of lot 69 and the 9 tests of lot 70
 
 ---
 
@@ -2541,7 +2541,7 @@ Release Type:
 Material Database
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-30
@@ -2568,6 +2568,50 @@ Date:
 ## Removed
 
 - src/gui/panels/MaterialPanel.tsx and src/gui/panels/FilamentPanel.tsx: never used, hardcoded English text (KI-015); replaced by the Material and Filament sections (ADR-033 D11)
+
+## Validation Result
+
+- Windows 11 (2026-10-31): lot 70 on GitHub (bdf6d3c, identical to the lot; MaterialPanel.tsx and FilamentPanel.tsx deleted in dcb427f and 02dda0c); npm run check:locales: 334 keys; npm run check:ipc: 25 channels; typecheck and lint without error; npm test: 249 tests passed, 1 skipped (link test); npm run test:e2e: 25 tests passed with the corrected tests/e2e/printer.spec.ts (Noam)
+- tests/e2e/printer.spec.ts ("keeps the language of a settings.json without printer"): its expected settings did not have the default material section added by lot 70; only the expected value is corrected (no change of the application). The corrected file is part of lot 71 (0.1.73)
+
+---
+
+# VERSION 0.1.73
+
+Release Type:
+Material Database
+
+Status:
+In Progress
+
+Date:
+2026-10-31
+
+## Added
+
+- Phase 8 lot 71 (ADR-033, D10; GUI_SPEC.md, Filament Manager): filaments entered by the user, as the printers of the user (lot 61)
+- IPC channels filament:add, filament:update and filament:remove (API_SPEC.md, FilamentIPC Channels); allow list: 28 channels
+- Filament Manager (src/gui/dialogs/FilamentManagerDialog.tsx, filamentForm.ts), opened by Filament > Manage Filaments and by the "Manage…" button of the Filament section: list of the filaments of the user, New filament, Copy a filament (any loaded filament, Official included, named "Name (copy)"), form (brand, name, material among the loaded families, color, diameter 1.75 or 2.85, price per kg, density, temperature ranges, values of the manufacturer), Save, Delete with a confirmation
+- Values left empty are null ("Not published"), never 0; an empty color is null; a minimum above its maximum and a fan speed over 100 % are refused in the form, and again by FilamentSchema in the main process
+- src/filament_database/FilamentManager.ts: addUserFilament, updateUserFilament, removeUserFilament; one file per filament in filaments/ of the user data folder (Repository Data Schema envelope, type filament, source Local Custom); id user_ + random UUID without dashes
+- ERROR_CODES_SPEC.md: FIL_003 Filament Not Editable, FIL_004 Filament Already Exists (same brand, name and color), FIL_005 Filament Not Saved
+- Filament section: price per kg ("Not specified" when it is null) and "Manage…" button
+- 34 translation keys (en, fr, he): 368 keys
+- Tests: tests/unit/material_database/UserFilaments.test.ts (10 tests), tests/unit/gui/dialogs/filamentForm.test.ts (4 tests), tests/unit/electron/MaterialIPC.test.ts (3 tests), tests/unit/services/MaterialSelection.test.ts (3 tests), tests/e2e/material.spec.ts (1 test: copy of Prusament PETG with color and price, file written, "My filaments", choice kept at the next start, deletion; 26 end-to-end tests)
+
+## Changed
+
+- src/electron/ipc/FilamentIPC.ts, src/electron/ipc/IpcChannels.ts, src/services/FilamentService.ts
+- src/services/MaterialSelectionService.ts: addFilament, updateFilament, removeFilament; the selected filament follows its update (and its family), and is cleared with the saved choice when it is removed
+- src/gui/sidebar/FilamentSection.tsx, src/gui/sidebar/profileRows.tsx, src/gui/menus/MenuBar.tsx, src/gui/App.tsx
+- tests/e2e/printer.spec.ts: expected settings with the default material section (see 0.1.72)
+- API_SPEC.md (FilamentIPC Channels, Allowed IPC Channels), ERROR_CODES_SPEC.md (Filament Errors), SECURITY_SPEC.md (Material and Filament Profile Files), GUI_SPEC.md (Filament Menu, Filament Section, Filament Manager), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md (progress), PASSATION.md
+
+## Known Limitations
+
+- The price per kg has no currency yet: DATA_SCHEMA.md gives it the currency of the user preferences, which do not have one before the Cost Engine (Phase 12)
+- Import Filament and Export Filament stay disabled (Phase 15)
+- Changes of filaments are not part of Undo / Redo (UNDO_REDO_SPEC.md)
 
 ---
 

@@ -23,7 +23,9 @@
  * At start, the printers loaded by the main process are read, and the
  * last printer is selected again (PrinterSelectionService, Phase 7).
  * The Printer Manager (PrinterManagerDialog) adds, changes and removes
- * the printers entered by the user (Phase 7 lot 61).
+ * the printers entered by the user (Phase 7 lot 61); the Filament
+ * Manager (FilamentManagerDialog) the filaments entered by the user
+ * (Phase 8 lot 71).
  *
  * Based on:
  * - ARCHITECTURE.md
@@ -40,6 +42,7 @@ import { TransformService } from "../services/TransformService";
 import { usePrinterStore } from "../state/printerStore";
 
 import MainLayout from "./MainLayout";
+import FilamentManagerDialog from "./dialogs/FilamentManagerDialog";
 import PrinterManagerDialog from "./dialogs/PrinterManagerDialog";
 import { useTranslation } from "./hooks/useTranslation";
 import { useSelectAllShortcut } from "./hooks/useSelectAllShortcut";
@@ -113,6 +116,7 @@ export default function App(): JSX.Element {
         statusBar={<StatusBar />}
       />
       <PrinterManagerDialog />
+      <FilamentManagerDialog />
     </DirectionProvider>
   );
 }

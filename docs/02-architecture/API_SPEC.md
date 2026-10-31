@@ -269,8 +269,13 @@ Filaments (DATA_SCHEMA.md, Filament Schema), loaded at start by the main process
 | Channel | Payload | Response data |
 |---|---|---|
 | `filament:getAll` | none | `{ filaments, userFilamentIds }`: userFilamentIds = ids of the filaments entered by the user (Local Custom) |
+| `filament:add` | a filament (FilamentSchema); its id is ignored | `{ filament }`: the filament added, with the id chosen by the main process (`user_` + random UUID without dashes); same brand, name and color as a loaded filament: `FIL_004 Filament Already Exists` |
+| `filament:update` | a filament (FilamentSchema) | `{ filament }`; unknown id: `FIL_001 Filament Not Found`; filament not entered by the user: `FIL_003 Filament Not Editable`; same brand, name and color as another filament: `FIL_004 Filament Already Exists` |
+| `filament:remove` | `{ filamentId }` | `{ filamentId }`; unknown id: `FIL_001`; filament not entered by the user: `FIL_003` |
 
-density, pricePerKg, the values of temperature and of manufacturerSettings of a filament may be null (not published, never 0). A refused profile file (FIL_002) is left out of the filaments and reported in the log of the main process. filament:add, filament:update and filament:remove come with Manage Filaments (Phase 8 lot 71).
+density, pricePerKg, the values of temperature and of manufacturerSettings of a filament may be null (not published, never 0). An invalid payload returns `success: false` with the validation errors ("path: message"). A refused profile file (FIL_002) is left out of the filaments and reported in the log of the main process.
+
+filament:add, filament:update and filament:remove change only the filaments entered by the user (Local Custom, Manage Filaments, Phase 8 lot 71): the main process writes or deletes their file in the filaments/ folder of the user data folder (one file per filament, Repository Data Schema envelope, type filament, source Local Custom), then changes the filaments. The brand, name and color are compared with case and outer spaces ignored; a filament without color has the color null. A file that cannot be written or deleted returns `FIL_005 Filament Not Saved`, and nothing is changed. The renderer never gives a path.
 
 ---
 
@@ -280,7 +285,7 @@ The preload bridge (src/electron/preload.ts, window.slicyWeb) accepts only the c
 
 | Bridge method | Allow list | Channels |
 |---|---|---|
-| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle: `filament:getAll`, `import:3mf`, `import:stl`, `import:validate`, `material:getAll`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:refresh`, `printer:remove`, `printer:update`, `project:create`, `project:delete`, `project:load`, `project:save`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
+| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle: `filament:add`, `filament:getAll`, `filament:remove`, `filament:update`, `import:3mf`, `import:stl`, `import:validate`, `material:getAll`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:refresh`, `printer:remove`, `printer:update`, `project:create`, `project:delete`, `project:load`, `project:save`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
 | `send(channel, data)` | SEND_CHANNELS | none yet |
 | `on(channel, callback)` | RECEIVE_CHANNELS | none yet |
 

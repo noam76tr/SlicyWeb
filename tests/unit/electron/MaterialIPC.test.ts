@@ -5,13 +5,16 @@
  * material:getAll and filament:getAll (API_SPEC.md, MaterialIPC and
  * FilamentIPC Channels) serve the materials and filaments loaded by the
  * main process; filament:getAll also gives the ids of the filaments of
- * the user.
+ * the user. filament:add, filament:update and filament:remove change the
+ * filaments of the user (Phase 8 lot 71), never an Official filament
+ * (FIL_003); an invalid payload is refused without throwing.
  *
  * The material and filaments of these tests are test data, not real
  * products.
  *
  * Based on:
  * - API_SPEC.md (MaterialIPC Channels, FilamentIPC Channels)
+ * - ERROR_CODES_SPEC.md (FIL_001, FIL_003, FIL_004)
  * - TEST_PLAN.md
  */
 
@@ -38,8 +41,10 @@ vi.mock("electron", () => ({
 
 const { FilamentIPC } = await import("../../../src/electron/ipc/FilamentIPC");
 const { MaterialIPC } = await import("../../../src/electron/ipc/MaterialIPC");
-const { FilamentService } = await import("../../../src/services/FilamentService");
-const { MaterialService } = await import("../../../src/services/MaterialService");
+const { FilamentService } =
+  await import("../../../src/services/FilamentService");
+const { MaterialService } =
+  await import("../../../src/services/MaterialService");
 
 const temperature = { minNozzle: 190, maxNozzle: 230, minBed: 35, maxBed: 65 };
 
@@ -102,10 +107,10 @@ function write(
 
 let root: string;
 
-function invoke(channel: string): Promise<unknown> {
+function invoke(channel: string, payload?: unknown): Promise<unknown> {
   const handler = handlers.get(channel);
   if (!handler) throw new Error(`No handler for ${channel}`);
-  return handler({}, "request-1");
+  return handler({}, "request-1", payload);
 }
 
 beforeEach(() => {
@@ -119,8 +124,18 @@ beforeEach(() => {
   ]);
 
   const filaments = new FilamentService();
-  write(path.join(root, "filaments"), "filament", "Official", filament("official", null));
-  write(path.join(root, "user"), "filament", "Local Custom", filament("mine", "Red"));
+  write(
+    path.join(root, "filaments"),
+    "filament",
+    "Official",
+    filament("official", null),
+  );
+  write(
+    path.join(root, "user"),
+    "filament",
+    "Local Custom",
+    filament("mine", "Red"),
+  );
   filaments.loadProfiles([
     { folder: path.join(root, "filaments"), source: "Official" },
     { folder: path.join(root, "user"), source: "Local Custom" },
@@ -155,4 +170,92 @@ it("filament:getAll serves the loaded filaments and the ids of the user", async 
     },
     errors: [],
   });
+});
+
+it("adds, updates and removes a filament of the user", async () => {
+  const added = (await invoke("filament:add", {
+    ...filament("new", "Blue"),
+    name: "Mine 2",
+  })) as { success: boolean; data: { filament: { id: string } } };
+
+  expect(added.success).toBe(true);
+  const id = added.data.filament.id;
+  expect(id).toMatch(/^user_[0-9a-f]{32}$/);
+  expect(await invoke("filament:getAll")).toMatchObject({
+    data: { userFilamentIds: ["mine", id] },
+  });
+  expect(fs.readdirSync(path.join(root, "user")).sort()).toEqual(
+    [`${id}.json`, "mine.json"].sort(),
+  );
+
+  expect(
+    await invoke("filament:update", {
+      ...filament(id, "Blue"),
+      name: "Mine 2",
+      pricePerKg: 22,
+    }),
+  ).toMatchObject({
+    success: true,
+    data: { filament: { id, pricePerKg: 22 } },
+  });
+
+  expect(await invoke("filament:remove", { filamentId: id })).toMatchObject({
+    success: true,
+    data: { filamentId: id },
+  });
+  expect(fs.readdirSync(path.join(root, "user"))).toEqual(["mine.json"]);
+});
+
+it("never changes a filament that is not of the user (FIL_003)", async () => {
+  expect(
+    await invoke("filament:update", { ...filament("official", "Red") }),
+  ).toMatchObject({
+    success: false,
+    errors: ["FIL_003 Filament Not Editable"],
+  });
+  expect(
+    await invoke("filament:remove", { filamentId: "official" }),
+  ).toMatchObject({
+    success: false,
+    errors: ["FIL_003 Filament Not Editable"],
+  });
+  expect(
+    await invoke("filament:remove", { filamentId: "unknown" }),
+  ).toMatchObject({
+    success: false,
+    errors: ["FIL_001 Filament Not Found"],
+  });
+});
+
+it("refuses an invalid filament or the same brand, name and color", async () => {
+  expect(
+    await invoke("filament:add", { ...filament("x", "Red"), diameter: 3 }),
+  ).toMatchObject({
+    success: false,
+    errors: [expect.stringMatching(/^diameter: /)],
+  });
+  expect(
+    await invoke("filament:add", { ...filament("x", "Red"), extra: true }),
+  ).toMatchObject({ success: false });
+  expect(
+    await invoke("filament:add", {
+      ...filament("x", "Red"),
+      temperature: {
+        minNozzle: 240,
+        maxNozzle: 200,
+        minBed: null,
+        maxBed: null,
+      },
+    }),
+  ).toMatchObject({ success: false });
+  expect(await invoke("filament:remove", "../settings.json")).toMatchObject({
+    success: false,
+  });
+  expect(
+    await invoke("filament:add", { ...filament("mine", "red") }),
+  ).toMatchObject({
+    success: false,
+    errors: ["FIL_004 Filament Already Exists"],
+  });
+  expect(fs.readdirSync(path.join(root, "user"))).toEqual(["mine.json"]);
 });

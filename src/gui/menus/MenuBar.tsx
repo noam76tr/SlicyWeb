@@ -27,6 +27,8 @@
  * - Material > Select Material, Filament > Select Filament (Phase 8 lot
  *   70): move the focus to the selectors of the Material and Filament
  *   sections, like Printer > Select Printer;
+ * - Filament > Manage Filaments (Phase 8 lot 71): opens the Filament
+ *   Manager (FilamentManagerDialog);
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -65,6 +67,7 @@ import {
 } from "../components/ui/menubar";
 import { LANGUAGE_NAME_KEYS, useTranslation } from "../hooks/useTranslation";
 import { IMPORT_ACCEPT, openImportDialog } from "../import/openImportDialog";
+import { openFilamentManager } from "../dialogs/FilamentManagerDialog";
 import { openPrinterManager } from "../dialogs/PrinterManagerDialog";
 import { FILAMENT_SELECTOR_ID } from "../sidebar/FilamentSection";
 import { MATERIAL_SELECTOR_ID } from "../sidebar/MaterialSection";
@@ -207,7 +210,7 @@ const MENUS: MenuDefinition[] = [
     groups: [
       [
         { key: "filament.select", focusId: FILAMENT_SELECTOR_ID },
-        { key: "filament.manage" },
+        { key: "filament.manage", action: openFilamentManager },
       ],
       [{ key: "filament.import" }, { key: "filament.export" }],
     ],

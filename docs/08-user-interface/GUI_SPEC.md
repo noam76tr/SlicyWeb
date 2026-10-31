@@ -542,6 +542,9 @@ Import Filament
 
 Export Filament
 ```
+
+Select Filament (Phase 8 lot 70) moves the focus to the Filament Selector of the Properties Panel. Manage Filaments (Phase 8 lot 71) opens the Filament Manager. Import Filament and Export Filament stay disabled until the phase that provides their action.
+
 ---
 
 # Tools Menu
@@ -1447,7 +1450,28 @@ Cooling Overrides
 Retraction Profile
 ```
 
-Phase 8 (ADR-033 D9; lot 70): a selector of the filaments of the selected family (all the filaments when no material is selected), with "No filament" first, grouped by brand ("My filaments" first for the filaments of the user); choosing a filament also chooses its family. Then the brand, the color ("Not specified" for a shipped filament, a product line), the temperature ranges of the manufacturer and its single values (manufacturerSettings, "Values of the manufacturer"); a value not published shows "Not published". Filament > Select Filament opens this selector; Filament > Manage Filaments opens the Filament Manager (lot 71). The last choice is kept in the settings.
+Phase 8 (ADR-033 D9; lot 70): a selector of the filaments of the selected family (all the filaments when no material is selected), with "No filament" first, grouped by brand ("My filaments" first for the filaments of the user); choosing a filament also chooses its family. Then the brand, the color and the price per kg ("Not specified" when they are null, as for a shipped filament, a product line; lot 71), the temperature ranges of the manufacturer and its single values (manufacturerSettings, "Values of the manufacturer"); a value not published shows "Not published". Filament > Select Filament opens this selector; Filament > Manage Filaments and a "Manage…" button under the selector open the Filament Manager (lot 71). The last choice is kept in the settings.
+
+---
+
+# Filament Manager
+
+Phase 8 (ADR-033 D10; lot 71). A dialog opened by Filament > Manage Filaments and by the "Manage…" button of the Filament Section. It adds, changes and removes the filaments entered by the user (Local Custom, FILAMENT_SETTINGS_SPEC.md), as the Printer Manager does for the printers.
+
+Structure:
+
+```text
+Start side: My filaments (list), New filament, Copy a filament…
+End side: form of the filament chosen, Save, Delete
+```
+
+- Copy a filament: any loaded filament, Official included; the copy is a new filament of the user, named "Name (copy)". Official filaments are never listed in My filaments, so they are never changed.
+- Form (DATA_SCHEMA.md, Filament Schema): Brand, Name, Material (one of the families loaded, the selected family for a new filament) and Diameter (1.75 or 2.85 mm) are required; Color and Price per kg are entered by the user (empty: "Not specified", null); Density, the temperature ranges of the manufacturer (nozzle and bed, minimum and maximum) and the values of the manufacturer (nozzle and bed temperature, fan, retraction distance and speed) left empty are null, shown as "Not published". A minimum is never above its maximum; the fan is 0 to 100 %.
+- Numbers accept a comma as decimal separator.
+- In the lists, a filament is named "Brand Name (Color)".
+- Errors are shown under their field; errors of the main process (FIL_001, FIL_003, FIL_004, FIL_005) under the form. Two filaments with the same brand, name and color are refused.
+- Delete asks for a confirmation ("Delete Brand Name?"). When the filament deleted is the selected filament, no filament is selected and the saved choice is cleared; the material stays selected. A change of the selected filament updates the Filament Section at once, and its family when the family changed.
+- Changes of filaments are not part of Undo / Redo (UNDO_REDO_SPEC.md: transforms only in Phase 6).
 
 ---
 

@@ -8,13 +8,15 @@
  * - FILAMENT_SETTINGS_SPEC.md
  * - DECISIONS.md (ADR-033, D6): the main process loads the profiles
  *   (loadProfiles) and serves them through the filament:getAll IPC
- *   channel.
+ *   channel; the filaments of the user are changed through
+ *   filament:add, filament:update and filament:remove (Phase 8 lot 71).
  */
 
 import type { Filament } from "../types/Filament";
 
 import {
   FilamentManager,
+  type FilamentChangeResult,
   type FilamentLoadResult,
   type FilamentProfileFolder,
 } from "../filament_database/FilamentManager";
@@ -34,6 +36,30 @@ export class FilamentService {
 
   public getUserFilamentIds(): string[] {
     return this.filamentManager.getUserFilamentIds();
+  }
+
+  public addUserFilament(
+    filament: Filament
+  ): FilamentChangeResult {
+    return this.filamentManager.addUserFilament(
+      filament
+    );
+  }
+
+  public updateUserFilament(
+    filament: Filament
+  ): FilamentChangeResult {
+    return this.filamentManager.updateUserFilament(
+      filament
+    );
+  }
+
+  public removeUserFilament(
+    filamentId: string
+  ): FilamentChangeResult {
+    return this.filamentManager.removeUserFilament(
+      filamentId
+    );
   }
 
   public addFilament(

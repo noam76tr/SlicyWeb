@@ -12,7 +12,12 @@
  * material.defaultMaterial and defaultFilament); an invalid response is
  * refused; outside Electron nothing happens. The aliases of the
  * families (Flex = TPU, NYLON = PA) give the warning "Not listed by the
- * printer manufacturer" only when the printer lists materials.
+ * printer manufacturer" only when the printer lists materials. The
+ * filaments of the user (Phase 8 lot 71) are changed through
+ * filament:add, filament:update and filament:remove, then read again:
+ * the selected filament follows its update and its family, and is
+ * cleared (with the saved choice) when it is removed; a refused change
+ * gives the errors of the main process.
  *
  * The bridge window.slicyWeb is replaced by a fake one: the tests run in
  * Node.js, without Electron. The materials and filaments are test data.
@@ -22,6 +27,7 @@
  *   Preferences Schema 3.7.0)
  * - MATERIAL_PROFILE_SPEC.md (Material Families, aliases)
  * - API_SPEC.md (MaterialIPC, FilamentIPC and SettingsIPC Channels)
+ * - ERROR_CODES_SPEC.md (FIL_003)
  * - TEST_PLAN.md
  */
 
@@ -86,6 +92,7 @@ const alphaPla = makeFilament("alpha_pla", "Alpha", "PLA");
 const alphaPetg = makeFilament("alpha_petg", "Alpha", "PETG");
 
 let materials: unknown[];
+let filaments: Filament[];
 let preferences: MaterialPreferences;
 let invoke: ReturnType<typeof vi.fn>;
 
@@ -99,6 +106,7 @@ function settingsResponse(): unknown {
 
 beforeEach(() => {
   materials = [petg, pla];
+  filaments = [zetaPla, alphaPetg, alphaPla];
   preferences = {
     defaultMaterial: null,
     defaultFilament: null,
@@ -116,13 +124,39 @@ beforeEach(() => {
         return Promise.resolve({
           success: true,
           data: {
-            filaments: [zetaPla, alphaPetg, alphaPla],
+            filaments,
             userFilamentIds: ["zeta_pla"],
           },
           errors: [],
         });
       case "settings:get":
         return Promise.resolve(settingsResponse());
+      case "filament:update": {
+        const filament = payload as Filament;
+        if (filament.id !== "zeta_pla") {
+          return Promise.resolve({
+            success: false,
+            errors: ["FIL_003 Filament Not Editable"],
+          });
+        }
+        filaments = filaments.map((item) =>
+          item.id === filament.id ? filament : item,
+        );
+        return Promise.resolve({
+          success: true,
+          data: { filament },
+          errors: [],
+        });
+      }
+      case "filament:remove": {
+        const { filamentId } = payload as { filamentId: string };
+        filaments = filaments.filter((item) => item.id !== filamentId);
+        return Promise.resolve({
+          success: true,
+          data: { filamentId },
+          errors: [],
+        });
+      }
       case "settings:update":
         preferences = (payload as { material: MaterialPreferences }).material;
         return Promise.resolve(settingsResponse());
@@ -242,6 +276,56 @@ describe("Material selection", () => {
       "settings:update",
       expect.anything(),
     );
+  });
+});
+
+describe("Filaments of the user", () => {
+  it("follows the update of the selected filament and its family", async () => {
+    await MaterialSelectionService.load();
+    await MaterialSelectionService.selectFilament("zeta_pla");
+
+    const changed = { ...zetaPla, material: "PETG", color: "Blue" };
+    await expect(
+      MaterialSelectionService.updateFilament(changed),
+    ).resolves.toEqual({ ok: true, filament: changed });
+
+    expect(useFilamentStore.getState().selectedFilament).toEqual(changed);
+    expect(useMaterialStore.getState().selectedMaterial?.id).toBe("petg");
+    expect(preferences).toMatchObject({
+      defaultMaterial: "petg",
+      defaultFilament: "zeta_pla",
+    });
+  });
+
+  it("clears the selected filament and the saved choice when it is removed", async () => {
+    await MaterialSelectionService.load();
+    await MaterialSelectionService.selectFilament("zeta_pla");
+
+    await expect(
+      MaterialSelectionService.removeFilament("zeta_pla"),
+    ).resolves.toEqual({ ok: true, filament: null });
+
+    expect(useFilamentStore.getState().filaments.map(({ id }) => id)).toEqual([
+      "alpha_petg",
+      "alpha_pla",
+    ]);
+    expect(useFilamentStore.getState().selectedFilament).toBeNull();
+    expect(useMaterialStore.getState().selectedMaterial?.id).toBe("pla");
+    expect(preferences).toMatchObject({
+      defaultMaterial: "pla",
+      defaultFilament: null,
+    });
+  });
+
+  it("gives the errors of a refused change", async () => {
+    await MaterialSelectionService.load();
+
+    await expect(
+      MaterialSelectionService.updateFilament(alphaPla),
+    ).resolves.toEqual({
+      ok: false,
+      errors: ["FIL_003 Filament Not Editable"],
+    });
   });
 });
 

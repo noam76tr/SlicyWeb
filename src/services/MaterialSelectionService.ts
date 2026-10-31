@@ -17,6 +17,12 @@
  *   its family (ADR-033, D9).
  * Each choice is saved as the last choice (settings:update,
  * material.defaultMaterial and material.defaultFilament).
+ * - addFilament(), updateFilament(), removeFilament(): filaments of the
+ *   user (Local Custom, Manage Filaments, Phase 8 lot 71) through
+ *   filament:add, filament:update and filament:remove, then the filaments
+ *   are read again. The selected filament follows its update (and its
+ *   family, when the family changed); when it is removed, no filament is
+ *   selected and the saved choice is cleared.
  *
  * The window never reads a profile file: materials and filaments come
  * only through the material:* and filament:* channels (ADR-033, D6).
@@ -29,6 +35,7 @@
  * - DECISIONS.md (ADR-033, D6, D9)
  * - API_SPEC.md (MaterialIPC Channels, FilamentIPC Channels, SettingsIPC
  *   Channels)
+ * - ERROR_CODES_SPEC.md (FIL_001, FIL_003, FIL_004, FIL_005)
  * - DATA_SCHEMA.md (Complete Material Schema, Filament Schema, User
  *   Preferences Schema 3.7.0)
  * - USER_SETTINGS_SPEC.md (Material Settings)
@@ -59,6 +66,27 @@ const FilamentsResponseSchema = z.object({
     userFilamentIds: z.array(z.string()).default([]),
   }),
 });
+
+const FilamentResponseSchema = z.object({
+  success: z.literal(true),
+  data: z.object({ filament: FilamentSchema }),
+});
+
+const ErrorResponseSchema = z.object({
+  errors: z.array(z.string()).default([]),
+});
+
+/** Result of a change of a filament of the user */
+export type FilamentChange =
+  { ok: true; filament: Filament | null } | { ok: false; errors: string[] };
+
+/** Errors of a refused response: "FIL_00X Name" or "path: message" */
+function errorsOf(response: unknown): string[] {
+  const result = ErrorResponseSchema.safeParse(response);
+  const errors = result.success ? result.data.errors : [];
+
+  return errors.length > 0 ? errors : ["Unknown error"];
+}
 
 const SettingsResponseSchema = z.object({
   success: z.literal(true),
@@ -128,6 +156,28 @@ function sortFilaments(filaments: Filament[]): Filament[] {
   );
 }
 
+/**
+ * Reads the filaments (filament:getAll) into the store; null when the
+ * response is refused.
+ */
+async function readFilaments(bridge: Bridge): Promise<Filament[] | null> {
+  const result = FilamentsResponseSchema.safeParse(
+    await bridge.invoke("filament:getAll"),
+  );
+
+  if (!result.success) {
+    console.error("Filaments could not be read.", result.error.issues);
+    return null;
+  }
+
+  const filaments = sortFilaments(result.data.data.filaments);
+  const store = useFilamentStore.getState();
+  store.setFilaments(filaments);
+  store.setUserFilamentIds(result.data.data.userFilamentIds);
+
+  return filaments;
+}
+
 /** Material of a family, among the loaded materials */
 function materialOfFamily(family: string): Material | null {
   return (
@@ -152,6 +202,66 @@ async function selectBoth(
   }
 }
 
+/**
+ * Keeps the selected filament up to date with the filaments read: its
+ * new version (with its family), or no filament (and the saved choice
+ * cleared) when it is no longer loaded.
+ */
+async function followSelection(filaments: Filament[]): Promise<void> {
+  const selected = useFilamentStore.getState().selectedFilament;
+
+  if (!selected) {
+    return;
+  }
+
+  const current = filaments.find((item) => item.id === selected.id);
+
+  if (!current) {
+    await MaterialSelectionService.selectFilament(null);
+  } else if (current.material !== selected.material) {
+    await MaterialSelectionService.selectFilament(current.id);
+  } else {
+    useFilamentStore.getState().setSelectedFilament(current);
+  }
+}
+
+/**
+ * Sends a change of a filament of the user, then reads the filaments
+ * again and keeps the selection up to date.
+ */
+async function change(
+  channel: "filament:add" | "filament:update" | "filament:remove",
+  payload: unknown,
+): Promise<FilamentChange> {
+  const bridge = getBridge();
+
+  if (!bridge) {
+    return { ok: false, errors: ["Filaments are not available"] };
+  }
+
+  try {
+    const response = await bridge.invoke(channel, payload);
+
+    if ((response as { success?: unknown } | null)?.success !== true) {
+      return { ok: false, errors: errorsOf(response) };
+    }
+
+    const changed = FilamentResponseSchema.safeParse(response);
+    await followSelection((await readFilaments(bridge)) ?? []);
+
+    return {
+      ok: true,
+      filament: changed.success ? changed.data.data.filament : null,
+    };
+  } catch (error) {
+    console.error("Filament could not be changed.", error);
+    return {
+      ok: false,
+      errors: [error instanceof Error ? error.message : "Unknown error"],
+    };
+  }
+}
+
 export const MaterialSelectionService = {
   async load(): Promise<void> {
     const bridge = getBridge();
@@ -164,23 +274,19 @@ export const MaterialSelectionService = {
       const materials = MaterialsResponseSchema.safeParse(
         await bridge.invoke("material:getAll"),
       );
-      const filaments = FilamentsResponseSchema.safeParse(
-        await bridge.invoke("filament:getAll"),
-      );
 
-      if (!materials.success || !filaments.success) {
-        console.error(
-          "Materials could not be read.",
-          materials.error?.issues ?? filaments.error?.issues,
-        );
+      if (!materials.success) {
+        console.error("Materials could not be read.", materials.error.issues);
         return;
       }
 
       const materialStore = useMaterialStore.getState();
       const filamentStore = useFilamentStore.getState();
       materialStore.setMaterials(sortMaterials(materials.data.data.materials));
-      filamentStore.setFilaments(sortFilaments(filaments.data.data.filaments));
-      filamentStore.setUserFilamentIds(filaments.data.data.userFilamentIds);
+
+      if (!(await readFilaments(bridge))) {
+        return;
+      }
 
       const settings = await readMaterialSettings(bridge);
 
@@ -257,6 +363,21 @@ export const MaterialSelectionService = {
     }
 
     await selectBoth(materialOfFamily(filament.material), filament);
+  },
+
+  /** Adds a filament of the user; its id is chosen by the main process */
+  addFilament(filament: Filament): Promise<FilamentChange> {
+    return change("filament:add", filament);
+  },
+
+  /** Replaces a filament of the user */
+  updateFilament(filament: Filament): Promise<FilamentChange> {
+    return change("filament:update", filament);
+  },
+
+  /** Removes a filament of the user */
+  removeFilament(filamentId: string): Promise<FilamentChange> {
+    return change("filament:remove", { filamentId });
   },
 };
 

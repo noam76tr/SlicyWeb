@@ -20,7 +20,10 @@
  */
 
 export const INVOKE_CHANNELS = [
+  "filament:add",
   "filament:getAll",
+  "filament:remove",
+  "filament:update",
   "import:3mf",
   "import:stl",
   "import:validate",

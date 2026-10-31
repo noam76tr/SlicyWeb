@@ -213,6 +213,19 @@ A refused file (MAT_002, FIL_002) never stops the loading of the other files
 Results name a file by its name only, never by its path
 ```
 
+The filaments entered by the user (Phase 8 lot 71) are written by the main process only, with the rules of the printers of the user:
+
+```text
+Only in filaments/ of the user data folder (Local Custom)
+The renderer sends a filament (validated with FilamentSchema) or an id, never a path
+A file name is the id of the filament chosen by the main process (user_ + random UUID without dashes),
+or the name of the file loaded; only letters, digits, "_" and "-" with .json are accepted
+Written to a temporary file, then renamed: never left half written
+At most 1 MB per file
+Official filaments are never written or deleted (FIL_003)
+A failed write or delete changes nothing (FIL_005); the error gives no path
+```
+
 ---
 
 # Printer Profile Download
