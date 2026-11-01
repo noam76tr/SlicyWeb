@@ -2,30 +2,39 @@
  * SlicyWeb
  * Profile Index Generator
  *
- * Writes data/printers/index.json, the index of the SlicyWeb profile
+ * Writes the index.json of a list of profiles of the SlicyWeb profile
  * repository noam76tr/slicyweb-profiles (DATA_SCHEMA.md, Profile
- * Repository Index Schema; ADR-032, D5): the tag of the release, then,
- * for each profile file of data/printers/, its file name, the id of its
- * printer and the SHA-256 of the file as it is on the disk.
+ * Repository Index Schema; ADR-032, D5; ADR-033, D7): the tag of the
+ * release, then, for each profile file of the folder, its file name, the
+ * id of its profile and the SHA-256 of the file as it is on the disk.
+ *
+ * Lists: printers (data/printers/index.json, type printer-index, root of
+ * the repository), materials (data/materials/index.json, material-index,
+ * folder materials/ of the repository), filaments
+ * (data/filaments/index.json, filament-index, folder filaments/).
  *
  * Usage (any platform, including Windows PowerShell), with the tag of
- * the release to create on GitHub:
+ * the release to create on GitHub, then the list (printers when left
+ * out):
  *   npm run profiles:index -- v1.0.0
+ *   npm run profiles:index -- v1.1.0 materials
+ *   npm run profiles:index -- v1.1.0 filaments
  *
- * Then send the profile files and index.json to slicyweb-profiles, and
- * create the release with the same tag. Send the files exactly as they
+ * Then send the profile files and index.json to slicyweb-profiles (in
+ * the folder of the list), and create the release with the same tag. Send the files exactly as they
  * are: a change after this script (even an end of line) changes the
  * SHA-256, and the application refuses the update.
  *
- * Checks each file: valid JSON, type "printer", source "Official", id of
- * the file = id of its printer = file name without .json, 1 MB at most;
+ * Checks each file: valid JSON, type of the list ("printer", "material"
+ * or "filament"), source "Official", id of the file = id of its profile =
+ * file name without .json, 1 MB at most;
  * 1 to 500 profiles, 20 MB at most in all; the tag is vX.Y.Z and never
  * older than the tag of the current index.json. Exit code 0
  * when index.json is written, 1 otherwise (nothing written).
  *
  * Based on:
  * - DATA_SCHEMA.md (Profile Repository Index Schema)
- * - DECISIONS.md (ADR-032, D5)
+ * - DECISIONS.md (ADR-032, D5; ADR-033, D7)
  */
 
 import { createHash } from "node:crypto";
@@ -51,15 +60,16 @@ function compareTags(a, b) {
 }
 const FILE_NAME = /^[A-Za-z0-9_-]+\.json$/;
 
-const folder = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "..",
-  "data",
-  "printers",
-);
+/** Type of the profiles and of the index of each list */
+const LISTS = {
+  printers: { type: "printer", index: "printer-index" },
+  materials: { type: "material", index: "material-index" },
+  filaments: { type: "filament", index: "filament-index" },
+};
 
 const tag = process.argv[2];
+const listName = process.argv[3] ?? "printers";
+const list = LISTS[listName];
 
 if (!tag || !TAG.test(tag)) {
   console.error(
@@ -67,6 +77,21 @@ if (!tag || !TAG.test(tag)) {
   );
   process.exit(1);
 }
+
+if (!Object.hasOwn(LISTS, listName)) {
+  console.error(
+    `Unknown list ${listName}: printers, materials or filaments (npm run profiles:index -- v1.1.0 materials).`,
+  );
+  process.exit(1);
+}
+
+const folder = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "data",
+  listName,
+);
 
 // The applications keep the most recent list: a tag older than the
 // current one would never be used
@@ -119,8 +144,8 @@ for (const file of files) {
   if (!FILE_NAME.test(file)) {
     console.error(`${file}: only letters, digits, "_" and "-" in a file name`);
     errors++;
-  } else if (profile?.type !== "printer" || profile?.source !== "Official") {
-    console.error(`${file}: not an Official printer profile`);
+  } else if (profile?.type !== list.type || profile?.source !== "Official") {
+    console.error(`${file}: not an Official ${list.type} profile`);
     errors++;
   } else if (profile.id !== id || profile.data?.id !== id) {
     console.error(`${file}: the id must be "${id}"`);
@@ -135,7 +160,7 @@ for (const file of files) {
 }
 
 if (profiles.length === 0 || profiles.length > MAX_PROFILES) {
-  console.error(`1 to ${MAX_PROFILES} profiles are needed in data/printers/`);
+  console.error(`1 to ${MAX_PROFILES} profiles are needed in data/${listName}/`);
   errors++;
 }
 
@@ -152,7 +177,9 @@ if (errors > 0) {
 
 writeFileSync(
   join(folder, "index.json"),
-  `${JSON.stringify({ type: "printer-index", version: INDEX_VERSION, tag, profiles }, null, 2)}\n`,
+  `${JSON.stringify({ type: list.index, version: INDEX_VERSION, tag, profiles }, null, 2)}\n`,
 );
 
-console.log(`index.json written: tag ${tag}, ${profiles.length} profiles.`);
+console.log(
+  `data/${listName}/index.json written: tag ${tag}, ${profiles.length} profiles.`,
+);

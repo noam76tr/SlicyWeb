@@ -1,38 +1,49 @@
 /**
  * SlicyWeb
- * Filament Repository Sync Definition
+ * Filament Repository Sync
+ *
+ * RepositorySync of the filament profiles (DOMAINS_DEPENDENCY_MATRIX.md,
+ * RepositorySync Domain; Phase 8 lot 72): the list of the filaments of the
+ * SlicyWeb profile repository noam76tr/slicyweb-profiles (ADR-033, D7),
+ * read with ProfileRepositorySync with the rules of the printers:
+ * filaments/index.json on main (type filament-index), profile files of the
+ * filaments/ folder at its tag, validated with FilamentProfileFileSchema
+ * (source Official, id of the index).
+ *
+ * Replaces the model of Phase 0, which read the repository through
+ * GitHubRepository and was never used (ADR-033, D11).
+ *
+ * No dependency on Electron or Node.js (KI-024, option B).
  *
  * Based on:
  * - ARCHITECTURE.md
- * - API_SPEC.md
  * - FILAMENT_SETTINGS_SPEC.md
+ * - DECISIONS.md (ADR-033, D7, D11)
+ * - DATA_SCHEMA.md (Profile Repository Index Schema, Repository Data
+ *   Schema, Filament Schema)
+ * - SECURITY_SPEC.md (Material and Filament Profile Download)
  */
 
-import { GitHubRepository } from "./GitHubRepository";
+import {
+  FilamentProfileFileSchema,
+  type FilamentProfileFile,
+} from "../schemas/FilamentSchema";
+import { FilamentIndexSchema } from "../schemas/ProfileRepositorySchema";
 
-export class FilamentRepositorySync {
-  private readonly repository =
-    new GitHubRepository();
+import {
+  ProfileRepositorySync,
+  type ProfileRepositorySyncOptions,
+} from "./ProfileRepositorySync";
 
-  public setRepositoryUrl(
-    url: string
-  ): void {
-    this.repository.setBaseUrl(
-      url
-    );
-  }
-
-  public async sync():
-    Promise<unknown> {
-    return this.repository.fetch(
-      "filaments"
-    );
-  }
-
-  public async exists():
-    Promise<boolean> {
-    return this.repository.exists(
-      "filaments"
+export class FilamentRepositorySync extends ProfileRepositorySync<FilamentProfileFile> {
+  public constructor(options: ProfileRepositorySyncOptions = {}) {
+    super(
+      {
+        folder: "filaments/",
+        indexSchema: FilamentIndexSchema,
+        fileSchema: FilamentProfileFileSchema,
+      },
+      options,
     );
   }
 }

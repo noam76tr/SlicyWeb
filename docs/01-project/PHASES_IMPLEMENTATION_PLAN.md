@@ -1431,6 +1431,7 @@ Progress:
 - Data (lot 69, CHANGELOG 0.1.71): 5 materials and 11 filaments (Elegoo PLA not shipped: no sheet with a bed temperature), SOURCES.md
 - Interface (lot 70, CHANGELOG 0.1.72): Material and Filament sections, selectors, warning, last choice kept, Select Material and Select Filament
 - Filaments of the user (lot 71, CHANGELOG 0.1.73): Filament Manager, filament:add, filament:update, filament:remove, FIL_003 to FIL_005
+- Synchronization (lot 72, CHANGELOG 0.1.74): materials/index.json and filaments/index.json (v1.1.0), caches cache/materials/ and cache/filaments/, Refresh Profiles and the check at start cover the three lists, DATA_SCHEMA.md 3.8.0; MaterialCache.ts and FilamentCache.ts deleted (D11)
 
 
 

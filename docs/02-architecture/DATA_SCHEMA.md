@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.7.0
+Version: 3.8.0
 
 Status: Approved
 
@@ -1933,11 +1933,15 @@ critical
 
 Printer profile cache (3.6.0, ADR-032 D5): cache.json of the cache of the SlicyWeb profile repository (cache/printers/ of the user data folder) is this object. source is the repository (noam76tr/slicyweb-profiles), version is the tag of the profiles, checksum is the SHA-256 of their index.json (64 lowercase hexadecimal characters), createdAt is the date of the download and expiresAt the date of the next check (ISO 8601). An expired cache stays usable offline until the next successful check. The cache is used only when cache.json, index.json and each profile file are valid and unchanged.
 
+Material and filament profile caches (3.8.0, ADR-033 D7): the same cache.json, in cache/materials/ and cache/filaments/ of the user data folder, each for its own list; the index.json of a cache is valid only with the type of its list (material-index or filament-index).
+
 ---
 
 # Profile Repository Index Schema
 
 index.json of the SlicyWeb profile repository noam76tr/slicyweb-profiles (3.6.0, ADR-032 D5), on its main branch. It names the published tag of the printer profiles and the SHA-256 of each profile file. The application ships a copy in data/printers/index.json, written by npm run profiles:index.
+
+Materials and filaments (3.8.0, ADR-033 D7): the folders materials/ and filaments/ of the same repository each have their own index.json, of the same format, with the type "material-index" or "filament-index"; file is a file name of that folder, and the profile files are read at the tag in that folder. The application ships copies in data/materials/index.json and data/filaments/index.json (npm run profiles:index -- vX.Y.Z materials, or filaments). Each list has its own tag and is checked on its own: a list refused does not change the others. The printer index (root of the repository) does not change.
 
 ```json
 {
@@ -1969,7 +1973,7 @@ profiles[].sha256
 Rules:
 
 ```text
-type is "printer-index"
+type is "printer-index" (root), "material-index" (materials/) or "filament-index" (filaments/), the type of the folder where it is read
 version is the version of the index format
 tag is the Git tag where the profile files are read: "v" and three numbers, vX.Y.Z (as v1.0.0); each number has 6 digits at most and no leading zero
 profiles has 1 to 500 entries; no other field is accepted
@@ -1979,9 +1983,9 @@ sha256 is the SHA-256 of the file, 64 lowercase hexadecimal characters
 A file or an id is listed once
 ```
 
-Version rule: tags are ordered by their three numbers (v1.0.10 is more recent than v1.0.9). The application uses the profiles of the repository only when their tag is the same as, or more recent than, the tag of its own copy (data/printers/index.json): a list shipped with a new version of the application is never replaced by an older one.
+Version rule: tags are ordered by their three numbers (v1.0.10 is more recent than v1.0.9). The application uses the profiles of the repository only when their tag is the same as, or more recent than, the tag of its own copy (data/printers/index.json, data/materials/index.json or data/filaments/index.json): a list shipped with a new version of the application is never replaced by an older one.
 
-The index is refused, and no profile is used, when one of these rules fails, when index.json and the profiles exceed 20 MB in all, when a file of the index cannot be read at the tag, or when a file differs from its sha256, fails the Repository Data Schema and Printer Schema validation, is not of source Official or has another id.
+The index is refused, and no profile is used, when one of these rules fails, when index.json and the profiles exceed 20 MB in all, when a file of the index cannot be read at the tag, or when a file differs from its sha256, fails the Repository Data Schema and the schema of its list (Printer Schema, Complete Material Schema or Filament Schema), is not of the type of the list or of source Official, or has another id.
 
 ---
 

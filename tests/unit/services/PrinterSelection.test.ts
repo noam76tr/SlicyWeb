@@ -15,7 +15,10 @@
  * result; updated profiles are read again, and a printer no longer
  * listed is no longer selected; with the setting autoCheckProfiles off,
  * load() does not check, and the setting is saved with the other
- * printer settings.
+ * printer settings. Materials and filaments (Phase 8 lot 72): the
+ * same check covers them; updated lists are read again
+ * (MaterialSelectionService.reload) and the message gives the combined
+ * status.
  *
  * The bridge window.slicyWeb is replaced by a fake one: the tests run in
  * Node.js, without Electron.
@@ -28,6 +31,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { MaterialSelectionService } from "../../../src/services/MaterialSelectionService";
 import { PrinterSelectionService } from "../../../src/services/PrinterSelectionService";
 import { usePrinterStore } from "../../../src/state/printerStore";
 
@@ -447,6 +451,64 @@ describe("PrinterSelectionService.refresh", () => {
     await PrinterSelectionService.refresh(true);
     expect(usePrinterStore.getState().profilesMessage?.key).toBe(
       "printer.profiles.notPublished",
+    );
+  });
+
+  it("reads the materials and filaments again when they were updated", async () => {
+    const reload = vi
+      .spyOn(MaterialSelectionService, "reload")
+      .mockResolvedValue(undefined);
+    const listProfiles = { ...fromRepository, tag: "v1.1.0" };
+
+    refreshResponse = {
+      success: true,
+      data: {
+        status: "upToDate",
+        profiles: fromRepository,
+        materials: { status: "upToDate", profiles: listProfiles },
+        filaments: { status: "notPublished", profiles: listProfiles },
+      },
+      errors: [],
+    };
+    await PrinterSelectionService.refresh(true);
+    expect(reload).not.toHaveBeenCalled();
+    expect(usePrinterStore.getState().profilesMessage).toEqual({
+      key: "printer.profiles.upToDate",
+      tag: "v1.0.1",
+    });
+
+    refreshResponse = {
+      success: true,
+      data: {
+        status: "upToDate",
+        profiles: fromRepository,
+        materials: { status: "upToDate", profiles: listProfiles },
+        filaments: { status: "updated", profiles: listProfiles },
+      },
+      errors: [],
+    };
+    await PrinterSelectionService.refresh(false);
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(usePrinterStore.getState().profilesMessage).toEqual({
+      key: "printer.profiles.updated",
+      tag: "v1.1.0",
+    });
+
+    // A list refused: the message of the failure, even with an update
+    refreshResponse = {
+      success: false,
+      data: {
+        status: "updated",
+        profiles: fromRepository,
+        materials: { status: "failed", profiles: listProfiles },
+        filaments: { status: "upToDate", profiles: listProfiles },
+      },
+      errors: ["SYNC_004 Remote Data Validation Failed"],
+    };
+    await PrinterSelectionService.refresh(true);
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(usePrinterStore.getState().profilesMessage?.key).toBe(
+      "printer.profiles.refused",
     );
   });
 

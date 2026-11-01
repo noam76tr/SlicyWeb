@@ -17,7 +17,10 @@
  * filament:add, filament:update and filament:remove, then read again:
  * the selected filament follows its update and its family, and is
  * cleared (with the saved choice) when it is removed; a refused change
- * gives the errors of the main process.
+ * gives the errors of the main process. After a synchronization of the
+ * profile repository (Phase 8 lot 72), reload() reads both lists again:
+ * the selection follows the new profiles, and a material no longer
+ * listed is cleared with its filament.
  *
  * The bridge window.slicyWeb is replaced by a fake one: the tests run in
  * Node.js, without Electron. The materials and filaments are test data.
@@ -325,6 +328,42 @@ describe("Filaments of the user", () => {
     ).resolves.toEqual({
       ok: false,
       errors: ["FIL_003 Filament Not Editable"],
+    });
+  });
+});
+
+describe("Materials and filaments synchronized", () => {
+  it("reads both lists again and keeps the selection still listed", async () => {
+    await MaterialSelectionService.load();
+    await MaterialSelectionService.selectFilament("alpha_pla");
+
+    const recolored = { ...alphaPla, color: "Red" };
+    materials = [pla, petg, makeMaterial("ASA")];
+    filaments = [recolored, zetaPla];
+
+    await MaterialSelectionService.reload();
+
+    expect(useMaterialStore.getState().materials).toHaveLength(3);
+    expect(useMaterialStore.getState().selectedMaterial?.id).toBe("pla");
+    expect(useFilamentStore.getState().selectedFilament).toEqual(recolored);
+  });
+
+  it("clears the filament no longer listed, then the material no longer listed", async () => {
+    await MaterialSelectionService.load();
+    await MaterialSelectionService.selectFilament("alpha_petg");
+
+    filaments = [zetaPla, alphaPla];
+    await MaterialSelectionService.reload();
+    expect(useFilamentStore.getState().selectedFilament).toBeNull();
+    expect(useMaterialStore.getState().selectedMaterial?.id).toBe("petg");
+
+    await MaterialSelectionService.selectFilament(null);
+    materials = [pla];
+    await MaterialSelectionService.reload();
+    expect(useMaterialStore.getState().selectedMaterial).toBeNull();
+    expect(preferences).toMatchObject({
+      defaultMaterial: null,
+      defaultFilament: null,
     });
   });
 });

@@ -36,6 +36,13 @@
  * printer:refresh checks the repository (ProfileSyncService), now when
  * force is true, otherwise at most once a day. A failed check keeps the
  * profiles in use (SYNC_001 to SYNC_004).
+ *
+ * printer:refresh also checks the materials and the filaments of the
+ * repository (ADR-033, D7; Phase 8 lot 72), with their own
+ * ProfileSyncService: status and profiles stay those of the printers;
+ * materials and filaments give the result of their lists. success is
+ * false when one of the lists failed, with the errors of each failed
+ * list.
  */
 
 import { ipcMain } from "electron";
@@ -46,6 +53,7 @@ import { PrinterSchema } from "../../schemas/PrinterSchema";
 import type { PrinterService } from "../../services/PrinterService";
 import {
   syncError,
+  type ProfileCheck,
   type ProfileSyncService,
 } from "../../services/ProfileSyncService";
 import type { ProfilesStatus } from "../../types/ProfileSync";
@@ -86,6 +94,21 @@ const UserPrinterSchema = PrinterSchema.refine(
 
 type IPCResponse = z.infer<typeof IPCResponseSchema>;
 
+/** The other lists checked by printer:refresh */
+export interface OtherProfileSyncs {
+  materials?: ProfileSyncService;
+  filaments?: ProfileSyncService;
+}
+
+/** Logs the result of a check of one list */
+function logCheck(list: string, result: ProfileCheck): void {
+  if (result.status === "failed") {
+    console.warn(`${syncError(result.code)} (${list}): ${result.reason}`);
+  } else if (result.status === "notPublished") {
+    console.info(`${list} profiles: no version published yet`);
+  }
+}
+
 const ERROR_NAMES: Record<
   Extract<PrinterChangeResult, { ok: false }>["code"],
   string
@@ -118,6 +141,7 @@ export class PrinterIPC {
   public constructor(
     private readonly printerService: PrinterService,
     private readonly profileSync: ProfileSyncService | null = null,
+    private readonly otherSyncs: OtherProfileSyncs = {},
   ) {}
   private createResponse(
     channel: string,
@@ -352,20 +376,40 @@ export class PrinterIPC {
             );
           }
 
-          const result = await this.profileSync.check(force);
+          const [result, materials, filaments] = await Promise.all([
+            this.profileSync.check(force),
+            this.otherSyncs.materials?.check(force),
+            this.otherSyncs.filaments?.check(force),
+          ]);
 
-          if (result.status === "failed") {
-            console.warn(`${syncError(result.code)}: ${result.reason}`);
-          } else if (result.status === "notPublished") {
-            console.info("Printer profiles: no version published yet");
-          }
+          logCheck("Printer", result);
+          if (materials) logCheck("Material", materials);
+          if (filaments) logCheck("Filament", filaments);
+
+          const checks = [result, materials, filaments];
+          const errors = [
+            ...new Set(
+              checks.flatMap((check) =>
+                check?.status === "failed" ? [syncError(check.code)] : [],
+              ),
+            ),
+          ];
+          const list = ({ status, profiles }: ProfileCheck) => ({
+            status,
+            profiles,
+          });
 
           const response = this.createResponse(
             "printer:refresh",
             requestId,
-            result.status !== "failed",
-            { status: result.status, profiles: result.profiles },
-            result.status === "failed" ? [syncError(result.code)] : [],
+            errors.length === 0,
+            {
+              status: result.status,
+              profiles: result.profiles,
+              ...(materials ? { materials: list(materials) } : {}),
+              ...(filaments ? { filaments: list(filaments) } : {}),
+            },
+            errors,
           );
 
           return IPCResponseSchema.parse(response);

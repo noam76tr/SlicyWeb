@@ -292,7 +292,7 @@ System
 
 defaultPrinter: id of the last printer selected, or null (none selected yet). With autoloadLastPrinter true, this printer is selected again at startup (Phase 7, ADR-032; DATA_SCHEMA.md, User Preferences Schema).
 
-autoCheckProfiles: "Check for profile updates automatically", true by default (Phase 7 lot 62, DATA_SCHEMA.md 3.6.0). When true, the SlicyWeb profile repository is checked at start, in the background, at most once every 24 hours. When false, it is checked only with Printer > Refresh Profiles. The setting is a check box in the Printer section (GUI_SPEC.md), until a Preferences window exists.
+autoCheckProfiles: "Check for profile updates automatically", true by default (Phase 7 lot 62, DATA_SCHEMA.md 3.6.0). When true, the SlicyWeb profile repository is checked at start, in the background, at most once every 24 hours (the printers, and since Phase 8 lot 72 the materials and the filaments, each list on its own). When false, it is checked only with Printer > Refresh Profiles. The setting is a check box in the Printer section (GUI_SPEC.md), until a Preferences window exists.
 
 
 

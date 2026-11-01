@@ -9,7 +9,9 @@
  * ranges of a family are the smallest minimum and the largest maximum of
  * its filaments, and its density is the density of its filaments when
  * they are all the same (null otherwise); the loaders of the main process
- * load them all, without refused file.
+ * load them all, without refused file; the index.json of each folder
+ * (material-index, filament-index; ADR-033, D7, lot 72) lists each file
+ * with its id and its SHA-256, at the same tag.
  *
  * Based on:
  * - DATA_SCHEMA.md (Complete Material Schema and Filament Schema 3.7.0,
@@ -18,6 +20,7 @@
  * - TEST_PLAN.md
  */
 
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -30,6 +33,10 @@ import {
   type FilamentSchemaType,
 } from "../../../src/schemas/FilamentSchema";
 import { MaterialProfileFileSchema } from "../../../src/schemas/MaterialSchema";
+import {
+  FilamentIndexSchema,
+  MaterialIndexSchema,
+} from "../../../src/schemas/ProfileRepositorySchema";
 
 const MATERIALS = path.resolve(__dirname, "../../../data/materials");
 const FILAMENTS = path.resolve(__dirname, "../../../data/filaments");
@@ -146,6 +153,30 @@ describe("Material and filament profiles of data/", () => {
       expect(filamentSources).toContain(`(${name})`);
       expect(materialSources).toContain(name.replace(".json", ""));
     }
+  });
+
+  it("lists each profile in the index.json of its folder, with its SHA-256", () => {
+    const lists = [
+      { folder: MATERIALS, files: materialFiles, schema: MaterialIndexSchema },
+      { folder: FILAMENTS, files: filamentFiles, schema: FilamentIndexSchema },
+    ];
+    const tags = new Set<string>();
+
+    for (const { folder, files, schema } of lists) {
+      const index = schema.parse(read(folder, "index.json"));
+      tags.add(index.tag);
+
+      expect(index.profiles.map(({ file }) => file)).toEqual(files);
+      for (const { file, id, sha256 } of index.profiles) {
+        expect(`${id}.json`).toBe(file);
+        expect(
+          createHash("sha256")
+            .update(fs.readFileSync(path.join(folder, file)))
+            .digest("hex"),
+        ).toBe(sha256);
+      }
+    }
+    expect([...tags]).toEqual(["v1.1.0"]);
   });
 
   it("loads all the profiles in the main process, none refused", () => {

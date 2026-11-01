@@ -25,7 +25,10 @@
  *   again (a printer no longer listed is no longer selected). The
  *   origin and tag of the profiles and the message of the last check
  *   are kept in the printer store; a failed check in the background
- *   shows nothing.
+ *   shows nothing. The same check updates the materials and the
+ *   filaments (ADR-033, D7; Phase 8 lot 72): when one of them was
+ *   updated, they are read again (MaterialSelectionService.reload); the
+ *   message is the one of the three lists together.
  *
  * The window never reads a profile file: printers come only through the
  * printer:* channels (ADR-032, D4). Outside Electron (no window.slicyWeb),
@@ -44,6 +47,7 @@
 import { z } from "zod";
 
 import { PrinterSchema } from "../schemas/PrinterSchema";
+import { MaterialSelectionService } from "./MaterialSelectionService";
 import { PrinterPreferencesSchema } from "../schemas/UserPreferencesSchema";
 import { usePrinterStore, type ProfilesMessage } from "../state/printerStore";
 import type { Printer } from "../types/Printer";
@@ -66,23 +70,53 @@ const PrintersResponseSchema = z.object({
   }),
 });
 
+const CheckStatusSchema = z.enum([
+  "skipped",
+  "upToDate",
+  "updated",
+  "notPublished",
+  "failed",
+]);
+
+type CheckStatus = z.infer<typeof CheckStatusSchema>;
+
+/** Result of the check of the materials or of the filaments */
+const ListCheckSchema = z.object({
+  status: CheckStatusSchema,
+  profiles: ProfilesStatusSchema,
+});
+
 const RefreshResponseSchema = z.object({
   success: z.boolean(),
   data: z
     .object({
-      status: z.enum([
-        "skipped",
-        "upToDate",
-        "updated",
-        "notPublished",
-        "failed",
-      ]),
+      status: CheckStatusSchema,
       profiles: ProfilesStatusSchema,
+      materials: ListCheckSchema,
+      filaments: ListCheckSchema,
     })
     .partial()
     .default({}),
   errors: z.array(z.string()).default([]),
 });
+
+/**
+ * Status of the check of the three lists, for its message: a failed
+ * list first, then an updated one, then the others (Phase 8 lot 72)
+ */
+const STATUS_ORDER: CheckStatus[] = [
+  "failed",
+  "updated",
+  "upToDate",
+  "skipped",
+  "notPublished",
+];
+
+function combinedStatus(
+  statuses: (CheckStatus | undefined)[],
+): CheckStatus | undefined {
+  return STATUS_ORDER.find((status) => statuses.includes(status));
+}
 
 const PrinterResponseSchema = z.object({
   success: z.literal(true),
@@ -317,21 +351,40 @@ export const PrinterSelectionService = {
         return;
       }
 
-      const { status, profiles } = result.data.data;
+      const { status, profiles, materials, filaments } = result.data.data;
 
       if (status === "updated") {
         await followSelection((await readPrinters(bridge)) ?? []);
+      }
+
+      if (materials?.status === "updated" || filaments?.status === "updated") {
+        await MaterialSelectionService.reload();
       }
 
       if (profiles) {
         usePrinterStore.getState().setProfiles(profiles);
       }
 
-      if (force || status === "updated") {
+      const combined = combinedStatus([
+        status,
+        materials?.status,
+        filaments?.status,
+      ]);
+
+      if (force || combined === "updated") {
+        // The tag of the first list updated, the printers first
+        const updated = [{ status, profiles }, materials, filaments].find(
+          (list) => list?.status === "updated",
+        );
+
         usePrinterStore
           .getState()
           .setProfilesMessage(
-            refreshMessage(status, profiles?.tag ?? null, result.data.errors),
+            refreshMessage(
+              combined,
+              (updated ?? { profiles })?.profiles?.tag ?? null,
+              result.data.errors,
+            ),
           );
       }
     } catch (error) {

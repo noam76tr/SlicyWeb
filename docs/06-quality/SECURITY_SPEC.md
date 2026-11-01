@@ -267,6 +267,28 @@ The SHA-256 of index.json checks the integrity of the files, not their author: a
 
 The logic of the download and of the check (src/repositories/PrinterRepositorySync.ts, src/services/ProfileSyncService.ts) uses no Electron and no Node.js module (KI-024, option B): fetch and Web Crypto only, and the cache through the ProfileCacheStore contract, so that a future web version keeps the same rules.
 
+# Material and Filament Profile Download
+
+The Official materials and filaments are updated from the same profile repository, with the same rules as the printers (DECISIONS.md, ADR-033, D7; Phase 8 lot 72):
+
+```text
+materials/index.json and filaments/index.json read on the main branch, each profile file read
+at the tag of its index, in the folder of its list (vX.Y.Z/materials/, vX.Y.Z/filaments/)
+Same addresses, limits, timeout, SHA-256 and all-or-nothing rules as Printer Profile Download
+The index must have the type of its folder (material-index, filament-index); each file is
+validated with the schema of its list (Complete Material Schema, Filament Schema), source Official
+Each list is checked, cached and refused on its own: a list refused does not change the others
+Caches in cache/materials/ and cache/filaments/ of the user data folder, written and validated
+again at each start as the printer cache; a cache that fails is not used and data/materials/ or
+data/filaments/ is loaded instead
+Version rule: the tag of the copy of the application is data/materials/index.json or
+data/filaments/index.json
+The same setting printer.autoCheckProfiles and Printer > Refresh Profiles check the three lists
+Filaments entered by the user are never changed
+```
+
+The generic logic (src/repositories/ProfileRepositorySync.ts, with MaterialRepositorySync.ts and FilamentRepositorySync.ts) uses no Electron and no Node.js module (KI-024, option B).
+
 ---
 
 # Zero Trust Rule

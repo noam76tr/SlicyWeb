@@ -2582,7 +2582,7 @@ Release Type:
 Material Database
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-31
@@ -2614,6 +2614,51 @@ Date:
 - The price per kg has no currency yet: DATA_SCHEMA.md gives it the currency of the user preferences, which do not have one before the Cost Engine (Phase 12)
 - Import Filament and Export Filament stay disabled (Phase 15)
 - Changes of filaments are not part of Undo / Redo (UNDO_REDO_SPEC.md)
+
+## Validation Result
+
+- Windows 11 (2026-10-31): lot 71 on GitHub (6d6c612, identical to the lot); npm run check:locales: 370 keys; npm run check:ipc: 28 channels; typecheck and lint without error; npm test: 269 tests passed, 1 skipped (link test); npm run test:e2e: 26 tests passed; manual checks of the Filament Manager and of the Printer Manager OK (Noam)
+
+---
+
+# VERSION 0.1.74
+
+Release Type:
+Material Database
+
+Status:
+In Progress
+
+Date:
+2026-10-31
+
+## Added
+
+- Phase 8 lot 72 (ADR-033, D7): the materials and the filaments are updated from the SlicyWeb profile repository noam76tr/slicyweb-profiles, with the rules of the printers (ADR-032): folders materials/ and filaments/, each with its own index.json (types material-index and filament-index, DATA_SCHEMA.md 3.8.0), tag vX.Y.Z, SHA-256, 1 MB per file and 20 MB in all, all or nothing, the most recent list wins; the index of the printers does not change
+- src/repositories/ProfileRepositorySync.ts: download of one list of profiles (folder, index type, profile schema), without Electron (KI-024, option B); PrinterRepositorySync, MaterialRepositorySync and FilamentRepositorySync use it
+- data/materials/index.json and data/filaments/index.json (tag v1.1.0), written by npm run profiles:index -- v1.1.0 materials (or filaments)
+- Caches cache/materials/ and cache/filaments/ of the user data folder, each with its own last check (sync.json) and its own 24 hours
+- printer:refresh: the response also gives materials and filaments ({ status, profiles }); success false when one list failed (API_SPEC.md)
+- Printer > Refresh Profiles and the check at start (printer.autoCheckProfiles) check the three lists; one message for the three lists; updated materials and filaments are read again at once, and a material or filament no longer listed is no longer selected
+- Tests: tests/unit/repositories/MaterialRepositorySync.test.ts (5 tests), tests/unit/material_database/MaterialProfiles.test.ts (1 test: index.json of each folder), tests/unit/electron/PrinterIPC.test.ts (1 test), tests/unit/services/PrinterSelection.test.ts (1 test), tests/unit/services/MaterialSelection.test.ts (2 tests)
+
+## Changed
+
+- src/schemas/ProfileRepositorySchema.ts: MaterialIndexSchema and FilamentIndexSchema (same format, other type)
+- src/repositories/PrinterRepositorySync.ts, MaterialRepositorySync.ts, FilamentRepositorySync.ts
+- src/services/ProfileSyncService.ts (list to download given by the caller), src/storage/PrinterProfileCache.ts (schema of the index of the list), src/electron/main.ts (one synchronization per list), src/electron/ipc/PrinterIPC.ts
+- src/services/PrinterSelectionService.ts (combined status), src/services/MaterialSelectionService.ts (reload)
+- scripts/build/generate-profile-index.mjs: list printers, materials or filaments
+- DATA_SCHEMA.md 3.8.0 (Profile Repository Index Schema, Cache Schema), API_SPEC.md (printer:refresh), SECURITY_SPEC.md (Material and Filament Profile Download), GUI_SPEC.md (Printer Section, profiles), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md (progress), PASSATION.md
+
+## Removed
+
+- src/material_database/MaterialCache.ts and src/filament_database/FilamentCache.ts (in-memory caches never used by the application; ADR-033 D11): the caches are kept by PrinterProfileCache
+
+## Known Limitations
+
+- Until materials/ and filaments/ are published in slicyweb-profiles with the release v1.1.0, the check answers "No published version" for these lists and the copies of the application are used
+- The profiles line of the Printer section gives only the tag of the printer profiles
 
 ---
 

@@ -11,7 +11,7 @@
  * - DECISIONS.md (ADR-032, D4: printer profiles loaded by the main process;
  *   D5: profiles synchronized with the SlicyWeb profile repository;
  *   ADR-033, D6: material and filament profiles loaded by the main
- *   process)
+ *   process; D7: synchronized with the same repository)
  */
 
 import { app, BrowserWindow } from "electron";
@@ -21,7 +21,13 @@ import path from "node:path";
 import { FilamentService } from "../services/FilamentService";
 import { MaterialService } from "../services/MaterialService";
 import { PrinterService } from "../services/PrinterService";
-import { compareTags } from "../schemas/ProfileRepositorySchema";
+import { FilamentRepositorySync } from "../repositories/FilamentRepositorySync";
+import { MaterialRepositorySync } from "../repositories/MaterialRepositorySync";
+import {
+  FilamentIndexSchema,
+  MaterialIndexSchema,
+  compareTags,
+} from "../schemas/ProfileRepositorySchema";
 import { ProfileSyncService } from "../services/ProfileSyncService";
 import { StorageService } from "../services/StorageService";
 import {
@@ -55,12 +61,17 @@ let mainWindow: BrowserWindow | null = null;
  */
 const BUNDLED_PRINTERS = path.join(__dirname, "../../data/printers");
 
-function loadPrinters(
-  printerService: PrinterService,
+/**
+ * Folder of an Official list: the cache of the repository when it is
+ * valid and not older than the copy of the application, otherwise that
+ * copy (CACHE_001 when a cache exists but fails).
+ */
+function officialFolder(
   cache: PrinterProfileCache,
+  bundled: string,
   applicationTag: string | null,
-): LoadedProfiles {
-  const bundled = BUNDLED_PRINTERS;
+  kind: "printer" | "material" | "filament",
+): { folder: string; loaded: LoadedProfiles } {
   const cached = cache.readValid();
   const valid =
     cached &&
@@ -69,12 +80,29 @@ function loadPrinters(
       : null;
 
   if (!cached && cache.exists()) {
-    console.warn("CACHE_001 Cache Corrupted: printer profiles of the application used");
+    console.warn(`CACHE_001 Cache Corrupted: ${kind} profiles of the application used`);
   }
+
+  return valid
+    ? { folder: valid.folder, loaded: { origin: "repository", tag: valid.tag } }
+    : { folder: bundled, loaded: { origin: "application", tag: applicationTag } };
+}
+
+function loadPrinters(
+  printerService: PrinterService,
+  cache: PrinterProfileCache,
+  applicationTag: string | null,
+): LoadedProfiles {
+  const official = officialFolder(
+    cache,
+    BUNDLED_PRINTERS,
+    applicationTag,
+    "printer",
+  );
 
   const result = printerService.loadProfiles([
     {
-      folder: valid?.folder ?? bundled,
+      folder: official.folder,
       source: "Official",
     },
     {
@@ -87,16 +115,18 @@ function loadPrinters(
     console.warn(`${code} ${source} printer profile refused: ${fileName} (${reason})`);
   }
 
-  return valid
-    ? { origin: "repository", tag: valid.tag }
-    : { origin: "application", tag: applicationTag };
+  return official.loaded;
 }
 
 /**
- * Material and filament profiles (Phase 8 lot 68): the materials of
- * data/materials/ (Official, read only); the filaments of data/filaments/
- * (Official, read only), then the filaments of the user
+ * Material and filament profiles (Phase 8 lots 68 and 72): the Official
+ * materials, then the Official filaments and the filaments of the user
  * (<user data folder>/filaments/, Local Custom). No other folder is read.
+ * Each Official list is the cache of the SlicyWeb profile repository
+ * (<user data folder>/cache/materials/profiles/,
+ * cache/filaments/profiles/) when it is valid and not older than the copy
+ * of the application, otherwise that copy (data/materials/,
+ * data/filaments/, read only), as for the printers (ADR-033, D7).
  * A refused file is reported in the log (MAT_002, FIL_002).
  */
 const BUNDLED_MATERIALS = path.join(__dirname, "../../data/materials");
@@ -104,27 +134,52 @@ const BUNDLED_FILAMENTS = path.join(__dirname, "../../data/filaments");
 
 function loadMaterials(
   materialService: MaterialService,
-  filamentService: FilamentService,
-): void {
-  const materials = materialService.loadProfiles([
-    { folder: BUNDLED_MATERIALS, source: "Official" },
+  cache: PrinterProfileCache,
+  applicationTag: string | null,
+): LoadedProfiles {
+  const official = officialFolder(
+    cache,
+    BUNDLED_MATERIALS,
+    applicationTag,
+    "material",
+  );
+
+  const result = materialService.loadProfiles([
+    { folder: official.folder, source: "Official" },
   ]);
 
-  const filaments = filamentService.loadProfiles([
-    { folder: BUNDLED_FILAMENTS, source: "Official" },
+  for (const { code, source, fileName, reason } of result.rejected) {
+    console.warn(`${code} ${source} material profile refused: ${fileName} (${reason})`);
+  }
+
+  return official.loaded;
+}
+
+function loadFilaments(
+  filamentService: FilamentService,
+  cache: PrinterProfileCache,
+  applicationTag: string | null,
+): LoadedProfiles {
+  const official = officialFolder(
+    cache,
+    BUNDLED_FILAMENTS,
+    applicationTag,
+    "filament",
+  );
+
+  const result = filamentService.loadProfiles([
+    { folder: official.folder, source: "Official" },
     {
       folder: path.join(app.getPath("userData"), "filaments"),
       source: "Local Custom",
     },
   ]);
 
-  for (const { code, source, fileName, reason } of [
-    ...materials.rejected,
-    ...filaments.rejected,
-  ]) {
-    const kind = code === "MAT_002" ? "material" : "filament";
-    console.warn(`${code} ${source} ${kind} profile refused: ${fileName} (${reason})`);
+  for (const { code, source, fileName, reason } of result.rejected) {
+    console.warn(`${code} ${source} filament profile refused: ${fileName} (${reason})`);
   }
+
+  return official.loaded;
 }
 
 async function registerIPCHandlers(): Promise<void> {
@@ -146,12 +201,38 @@ async function registerIPCHandlers(): Promise<void> {
   );
   await profileSync.start();
 
-  const printerIPC = new PrinterIPC(printerService, profileSync);
-  printerIPC.register();
-
   const materialService = new MaterialService();
+  const materialCache = new PrinterProfileCache(
+    path.join(app.getPath("userData"), "cache", "materials"),
+    MaterialIndexSchema,
+  );
+  const materialTag = readIndexTag(BUNDLED_MATERIALS, MaterialIndexSchema);
+  const materialSync = new ProfileSyncService(
+    materialCache,
+    () => loadMaterials(materialService, materialCache, materialTag),
+    { applicationTag: materialTag, sync: new MaterialRepositorySync() },
+  );
+  await materialSync.start();
+
   const filamentService = new FilamentService();
-  loadMaterials(materialService, filamentService);
+  const filamentCache = new PrinterProfileCache(
+    path.join(app.getPath("userData"), "cache", "filaments"),
+    FilamentIndexSchema,
+  );
+  const filamentTag = readIndexTag(BUNDLED_FILAMENTS, FilamentIndexSchema);
+  const filamentSync = new ProfileSyncService(
+    filamentCache,
+    () => loadFilaments(filamentService, filamentCache, filamentTag),
+    { applicationTag: filamentTag, sync: new FilamentRepositorySync() },
+  );
+  await filamentSync.start();
+
+  // Printer > Refresh Profiles checks the three lists (ADR-033, D7)
+  const printerIPC = new PrinterIPC(printerService, profileSync, {
+    materials: materialSync,
+    filaments: filamentSync,
+  });
+  printerIPC.register();
 
   const materialIPC = new MaterialIPC(materialService);
   materialIPC.register();

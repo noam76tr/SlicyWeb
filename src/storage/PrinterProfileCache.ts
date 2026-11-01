@@ -20,6 +20,12 @@
  * application are loaded instead. The profile files are then validated
  * by the Printer Database when they are loaded (PrinterSchema).
  *
+ * The same cache keeps the materials and the filaments of the repository
+ * (ADR-033, D7; Phase 8 lot 72), in cache/materials/ and
+ * cache/filaments/, with the schema of their index.json
+ * (MaterialIndexSchema, FilamentIndexSchema); the files are validated
+ * when they are loaded (MaterialSchema, FilamentSchema).
+ *
  * Writing: the new profiles are written in a temporary folder, then the
  * folder replaces the old one; files are written to a temporary file,
  * then renamed. Main process only (Node.js file system). It implements
@@ -28,7 +34,7 @@
  * validation schemas.
  *
  * Based on:
- * - DECISIONS.md (ADR-032, D5)
+ * - DECISIONS.md (ADR-032, D5; ADR-033, D7)
  * - DATA_SCHEMA.md (Cache Schema, RepositorySync Result Schema,
  *   Profile Repository Index Schema)
  * - SECURITY_SPEC.md (Cache Security)
@@ -44,6 +50,7 @@ import {
   ProfileIndexSchema,
   RepositorySyncResultSchema,
   type CacheMetadata,
+  type ProfileIndexParser,
   type RepositorySyncResult,
 } from "../schemas/ProfileRepositorySchema";
 import type {
@@ -88,10 +95,13 @@ function readJson(file: string): unknown {
  * Tag of index.json of a folder of profiles (the copy of the
  * application, data/printers/), or null when it is missing or invalid.
  */
-export function readIndexTag(folder: string): string | null {
+/** Tag of the index.json of a folder, read with the schema of its list */
+export function readIndexTag(
+  folder: string,
+  indexSchema: ProfileIndexParser = ProfileIndexSchema,
+): string | null {
   try {
-    return ProfileIndexSchema.parse(readJson(path.join(folder, "index.json")))
-      .tag;
+    return indexSchema.parse(readJson(path.join(folder, "index.json"))).tag;
   } catch {
     return null;
   }
@@ -102,7 +112,11 @@ export class PrinterProfileCache implements ProfileCacheStore {
   private readonly metadataFile: string;
   private readonly syncFile: string;
 
-  public constructor(private readonly folder: string) {
+  public constructor(
+    private readonly folder: string,
+    /** Schema of the index.json of the list kept */
+    private readonly indexSchema: ProfileIndexParser = ProfileIndexSchema,
+  ) {
     this.profilesFolder = path.join(folder, "profiles");
     this.metadataFile = path.join(folder, "cache.json");
     this.syncFile = path.join(folder, "sync.json");
@@ -130,7 +144,7 @@ export class PrinterProfileCache implements ProfileCacheStore {
         return null;
       }
 
-      const index = ProfileIndexSchema.parse(JSON.parse(indexText) as unknown);
+      const index = this.indexSchema.parse(JSON.parse(indexText) as unknown);
       if (index.tag !== metadata.version) {
         return null;
       }

@@ -1,0 +1,32 @@
+{
+  "type": "material-index",
+  "version": "1.0.0",
+  "tag": "v1.1.0",
+  "profiles": [
+    {
+      "file": "abs.json",
+      "id": "abs",
+      "sha256": "5eeb9c1ef4b774c150b49dd9ce9841fb42f9e3c096ee1bc47fd1a0a886723ddd"
+    },
+    {
+      "file": "asa.json",
+      "id": "asa",
+      "sha256": "22fceda14dffbaece0b0920bdc4ddba97b325121b013b2c062b5f39013ee3149"
+    },
+    {
+      "file": "petg.json",
+      "id": "petg",
+      "sha256": "ae6cf8771ff1b95ddb624a6259536d3ea04d19972ec4603323876d600662c5e5"
+    },
+    {
+      "file": "pla.json",
+      "id": "pla",
+      "sha256": "ba6f77fe176f319297c8f775900abf8da696543892a37c183c10e54a2dab4b90"
+    },
+    {
+      "file": "tpu.json",
+      "id": "tpu",
+      "sha256": "d64d5ba6412387b0e40689af2d7b900375096010e9acbea84b84a7fdf187ef1f"
+    }
+  ]
+}

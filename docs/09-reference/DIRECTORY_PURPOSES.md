@@ -696,7 +696,6 @@ Until the project owner decides otherwise:
 
 | File | Role |
 |------|------|
-| `MaterialCache.ts` | Cache storage for material profiles |
 | `MaterialImporter.ts` | Imports material profiles from JSON, validated with MaterialSchema (not used yet: Import Material, Phase 15) |
 | `MaterialManager.ts` | Material profile management (add, remove, retrieve); loads the material profile files of data/materials/ (MaterialProfileFileSchema, MAT_002 for a refused file; Phase 8 lot 68) |
 | `MaterialFamilies.ts` | Words of the materials of a printer compared with the families (aliases of MATERIAL_PROFILE_SPEC.md: Flex = TPU, NYLON = PA); warning when a printer that lists materials does not list the family (Phase 8 lot 70) |
@@ -724,7 +723,6 @@ MaterialValidator.ts was replaced by MaterialSchema and deleted (Phase 8 lot 68,
 
 | File | Role |
 |------|------|
-| `FilamentCache.ts` | Cache storage for filament profiles |
 | `FilamentImporter.ts` | Imports filament profiles, validated with FilamentSchema (not used yet: Import Filament, Phase 15) |
 | `FilamentManager.ts` | Filament profile management (add, remove, retrieve); loads the filament profile files of data/filaments/ and of the filaments of the user (FilamentProfileFileSchema, FIL_002 for a refused file; Phase 8 lot 68); ids of the filaments of the user; add, update and remove of the filaments of the user in their files (FIL_001, FIL_003, FIL_004, FIL_005; lot 71) |
 | `FilamentRepository.ts` | In-memory storage and retrieval of filament profiles |
@@ -900,11 +898,12 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 
 | File | Role |
 |------|------|
-| `FilamentRepositorySync.ts` | Synchronizes filament profiles with a remote repository |
+| `FilamentRepositorySync.ts` | Downloads the filaments of the SlicyWeb profile repository with ProfileRepositorySync: filaments/index.json (filament-index) on main, then each file at the tag in filaments/, FilamentProfileFileSchema (Phase 8 lot 72) |
 | `GitHubRepository.ts` | Access to remote repositories (GitHub) |
-| `MaterialRepositorySync.ts` | Synchronizes material profiles with a remote repository |
+| `MaterialRepositorySync.ts` | Downloads the materials of the SlicyWeb profile repository with ProfileRepositorySync: materials/index.json (material-index) on main, then each file at the tag in materials/, MaterialProfileFileSchema (Phase 8 lot 72) |
 | `PresetRepositorySync.ts` | Synchronizes preset profiles with a remote repository |
-| `PrinterRepositorySync.ts` | Downloads the printer profiles of the SlicyWeb profile repository (noam76tr/slicyweb-profiles): index.json on main, then each file at the tag of the index; HTTPS under the allowed address only, no redirection, 15 s and 1 MB per file, 20 MB in all; SHA-256, Repository Data Schema envelope, PrinterSchema, source Official, id of the index; all or nothing (SYNC_002, SYNC_003, SYNC_004); HTTP 404 is reported as notPublished (no version published yet). No Electron or Node.js module (fetch and Web Crypto; KI-024, option B) |
+| `ProfileRepositorySync.ts` | Download of one list of profiles of the SlicyWeb profile repository (folder, index type and profile schema given by the list; Phase 8 lot 72): the rules below, the reasons of a refusal named with the folder. No Electron or Node.js module (KI-024, option B) |
+| `PrinterRepositorySync.ts` | Downloads the printer profiles of the SlicyWeb profile repository (with ProfileRepositorySync since Phase 8 lot 72) (noam76tr/slicyweb-profiles): index.json on main, then each file at the tag of the index; HTTPS under the allowed address only, no redirection, 15 s and 1 MB per file, 20 MB in all; SHA-256, Repository Data Schema envelope, PrinterSchema, source Official, id of the index; all or nothing (SYNC_002, SYNC_003, SYNC_004); HTTP 404 is reported as notPublished (no version published yet). No Electron or Node.js module (fetch and Web Crypto; KI-024, option B) |
 
 ---
 
@@ -928,7 +927,7 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 | File | Role |
 |------|------|
 | `CacheStorage.ts` | Generic cache storage using a Map |
-| `PrinterProfileCache.ts` | Cache of the downloaded printer profiles in cache/printers/ of the user data folder: profile files and index.json (folder replaced at once), cache.json (Cache Schema), sync.json (last check, RepositorySync Result Schema); validated again before use (CACHE_001 when it fails); main process only |
+| `PrinterProfileCache.ts` | Cache of the downloaded profiles of one list in cache/printers/, cache/materials/ or cache/filaments/ of the user data folder (index valid only with the type of its list, Phase 8 lot 72): profile files and index.json (folder replaced at once), cache.json (Cache Schema), sync.json (last check, RepositorySync Result Schema); validated again before use (CACHE_001 when it fails); main process only |
 | `PrinterProfileStorage.ts` | Reads the *.json printer profile files of a folder, and the material and filament profile files the same way (Phase 8 lot 68) (1 MB at most, links and subfolders not followed; index.json is not a profile); writes (temporary file, then renamed) and deletes a file of the printers of the user, by file name only; main process only |
 | `ProjectStorage.ts` | Project-specific storage |
 | `SettingsStorage.ts` | Reads and writes the user preferences in settings.json (user data folder), printer settings included; main process only |
@@ -1192,7 +1191,7 @@ No other store keeps a copy of a selection.
 | `FilamentSchema.ts` | Zod schema of a filament (DATA_SCHEMA.md 3.7.0: null = not published, the five manufacturerSettings, recommendedProfile {}, unknown fields refused) and of a filament profile file (shipped filament: four temperatures, color and pricePerKg null) |
 | `MaterialSchema.ts` | Zod schema of a material (DATA_SCHEMA.md 3.7.0: null = not published, min not above max, unknown fields refused) and of a material profile file (shipped material: four temperatures); reference list of the families (MATERIAL_PROFILE_SPEC.md, Material Families) |
 | `PrintPresetSchema.ts` | Zod schema for runtime validation of print preset data |
-| `ProfileRepositorySchema.ts` | Zod schemas of index.json of the profile repository (Profile Repository Index Schema: tag vX.Y.Z, file names, ids, SHA-256; compareTags orders two tags), of cache.json (Cache Schema) and of the last check (RepositorySync Result Schema) |
+| `ProfileRepositorySchema.ts` | Zod schemas of index.json of the profile repository (Profile Repository Index Schema, printer-index, material-index and filament-index: tag vX.Y.Z, file names, ids, SHA-256; compareTags orders two tags), of cache.json (Cache Schema) and of the last check (RepositorySync Result Schema) |
 | `PrinterSchema.ts` | Zod schemas of a printer (null for an unknown value of motion or thermal) and of a printer profile file (Repository Data Schema envelope) |
 | `ProjectSchema.ts` | Zod schemas for runtime validation of the project (Project Schema) and of the WYPROJ file container (Project File Schema), including Object Reference Rules 3 to 5 (ADR-026) |
 | `RecommendationSchema.ts` | Zod schema for runtime validation of recommendation data |
@@ -1350,7 +1349,7 @@ One file per printer, `<id>.json`: a Repository Data Schema envelope (type print
 - TPU Materials
 - Other Material Types
 
-One file per family, `<id>.json` (pla, petg, abs, asa, tpu): a Repository Data Schema envelope (type material, source Official) whose data is the material (Complete Material Schema). Read only, loaded by the main process (ADR-033, D6). The ranges of a family come from its shipped filaments (ADR-033, D2); `SOURCES.md` lists the filaments used for each family. DefaultMaterial.ts (values without a source) was deleted in Phase 8 lot 69.
+One file per family, `<id>.json` (pla, petg, abs, asa, tpu): a Repository Data Schema envelope (type material, source Official) whose data is the material (Complete Material Schema). Read only, loaded by the main process (ADR-033, D6). The ranges of a family come from its shipped filaments (ADR-033, D2); `SOURCES.md` lists the filaments used for each family. DefaultMaterial.ts (values without a source) was deleted in Phase 8 lot 69. `index.json` (Profile Repository Index Schema, type material-index; Phase 8 lot 72) lists each file with its SHA-256 and the tag of the published version; it is written by `npm run profiles:index -- vX.Y.Z materials` and sent with the profiles to the folder materials/ of noam76tr/slicyweb-profiles.
 
 ---
 
@@ -1364,7 +1363,7 @@ One file per family, `<id>.json` (pla, petg, abs, asa, tpu): a Repository Data S
 - Filament Definitions
 - Brand Profiles
 
-One file per product line, `<id>.json` (11 lines in lot 69): a Repository Data Schema envelope (type filament, source Official) whose data is the filament (Filament Schema; color and pricePerKg null). Read only, loaded by the main process (ADR-033, D6). `SOURCES.md` gives, for each filament, the technical data sheet of the manufacturer and the date of verification; no value is copied from a slicer profile, and a value not published is null.
+One file per product line, `<id>.json` (11 lines in lot 69): a Repository Data Schema envelope (type filament, source Official) whose data is the filament (Filament Schema; color and pricePerKg null). Read only, loaded by the main process (ADR-033, D6). `SOURCES.md` gives, for each filament, the technical data sheet of the manufacturer and the date of verification; no value is copied from a slicer profile, and a value not published is null. `index.json` (type filament-index; Phase 8 lot 72) is written by `npm run profiles:index -- vX.Y.Z filaments` and sent with the profiles to the folder filaments/ of noam76tr/slicyweb-profiles.
 
 ---
 
@@ -1602,7 +1601,7 @@ One file per product line, `<id>.json` (11 lines in lot 69): a Repository Data S
 |------|------|
 | `check-locales.mjs` | Checks that the dictionaries of public/locales/ have the same keys as en.json and no empty value (`npm run check:locales`) |
 | `check-ipc-channels.mjs` | Checks that the IPC allow list (src/electron/ipc/IpcChannels.ts) matches the ipcMain.handle registrations (`npm run check:ipc`) |
-| `generate-profile-index.mjs` | Checks each printer profile of data/printers/ (envelope, source Official, file name = id, 1 MB, 20 MB in all) and refuses a tag older than the current one, and writes data/printers/index.json with the tag given (`npm run profiles:index -- vX.Y.Z`) |
+| `generate-profile-index.mjs` | Checks each profile of data/printers/, data/materials/ or data/filaments/ (envelope, type of the list, source Official, file name = id, 1 MB, 20 MB in all) and refuses a tag older than the current one, and writes the index.json of the list with the tag given (`npm run profiles:index -- vX.Y.Z`, `-- vX.Y.Z materials`, `-- vX.Y.Z filaments`) |
 
 ---
 
@@ -1715,22 +1714,23 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 
 | File | Tests |
 |------|-------|
-| `electron/PrinterIPC.test.ts` | printer:getAll (with userPrinterIds and profiles), printer:get (PRN_001), printer:count; invalid payload refused; printer:add, update and remove of a printer of the user; Official printer never changed (PRN_005); default nozzle not in the list, unknown field, same brand and model (PRN_006) refused; printer:refresh (force, failure SYNC_002, invalid payload, SYNC_001 without synchronization) |
+| `electron/PrinterIPC.test.ts` | printer:getAll (with userPrinterIds and profiles), printer:get (PRN_001), printer:count; invalid payload refused; printer:add, update and remove of a printer of the user; Official printer never changed (PRN_005); default nozzle not in the list, unknown field, same brand and model (PRN_006) refused; printer:refresh (force, failure SYNC_002, invalid payload, SYNC_001 without synchronization; materials and filaments checked with the printers, failed list) |
 | `electron/MaterialIPC.test.ts` | material:getAll serves the loaded materials; filament:getAll serves the loaded filaments with the ids of the filaments of the user; filament:add, update and remove of a filament of the user; Official filament never changed (FIL_003), unknown id (FIL_001); other diameter, unknown field, inverted range, path, same brand, name and color (FIL_004) refused |
 | `gui/dialogs/filamentForm.test.ts` | Form of the Filament Manager: empty value and empty color = null (never 0), comma as decimal separator, required and invalid fields, fan over 100 %, maximum below its minimum, filament unchanged through the form |
 | `gui/dialogs/printerForm.test.ts` | Form of the Printer Manager: empty limit = null (never 0), comma as decimal separator, lists of nozzles and materials, required and invalid fields, default nozzle in the list, printer unchanged through the form |
 | `gui/hooks/UndoRedoShortcuts.test.ts` | Keys of undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z, Cmd, AZERTY letter, Hebrew layout (key position), Alt and other keys ignored |
 | `material_database/MaterialLoading.test.ts` | MaterialSchema and FilamentSchema (null kept apart from 0; unknown field, family not listed, inverted range, sixth manufacturer setting, other diameter refused); Importers through the schemas; material files (MAT_002: damaged, too large, no temperature for a shipped material, wrong source, duplicate); missing folder; filaments of both folders, user filament never over an Official one; shipped filament with a color, a price or a missing temperature refused (FIL_002) |
 | `material_database/UserFilaments.test.ts` | Filaments of the user: file written in the user folder (envelope filament, Local Custom), id chosen by the main process (valid profile id), loaded again at the next start; update and remove of the file; Official filament never changed (FIL_003), unknown id (FIL_001), same brand, name and color (FIL_004; another color accepted), file not written (FIL_005, no path) |
-| `material_database/MaterialProfiles.test.ts` | The 5 materials and 11 filaments of data/: schema, file name = id, source Official, listed in SOURCES.md; each filament in a shipped family; ranges of a family = smallest minimum and largest maximum of its filaments, density null when they differ; loaded without refused file |
+| `material_database/MaterialProfiles.test.ts` | The 5 materials and 11 filaments of data/: schema, file name = id, source Official, listed in SOURCES.md and in the index.json of its folder with its SHA-256; each filament in a shipped family; ranges of a family = smallest minimum and largest maximum of its filaments, density null when they differ; loaded without refused file |
 | `printer_database/PrinterProfiles.test.ts` | The 79 profiles of data/printers/ (v1.0.1, with the 10 first printers): schema, file name = id, source Official, listed in SOURCES.md, all loaded; index.json lists each profile with its SHA-256 |
+| `repositories/MaterialRepositorySync.test.ts` | Download of the materials and filaments with a fake network: index.json of the folder on main, files at the tag in the folder; index of another list or profile of another type refused, SHA-256 differs (SYNC_004); HTTP 404 notPublished; cache of the materials valid again, never as filaments |
 | `repositories/PrinterRepositorySync.test.ts` | Download of the profile repository with a fake network: index.json on main then files at the tag, allowed address, no redirection; SHA-256 differs, invalid index or tag, profile not Official, file or download too large, tag not vX.Y.Z (SYNC_004), order of the tags; missing tag (HTTP 404: notPublished), HTTP 503 and network error (SYNC_002); no answer (SYNC_003) |
 | `printer_database/PrinterLoading.test.ts` | PrinterSchema (null kept, unknown field refused, no crash); profile files of both folders; missing folder; other files and subfolders ignored; damaged, invalid, too large, wrong source and duplicate files refused with PRN_002; links not followed; no path in the results |
 | `printer_database/UserPrinters.test.ts` | Printers of the user: file written in the user folder (envelope Local Custom), id chosen by the main process, loaded again at the next start; update and remove of the file; Official printer never changed (PRN_005), unknown id (PRN_001), same brand and model (PRN_006), file not written (PRN_007, no path); only a file name accepted, size limit |
 | `renderer/ObjectRenderer.test.ts` | Selection rectangle: objects touched (not only inside), turned objects, hidden objects |
 | `services/GroupTransform.test.ts` | Several objects: Ctrl+click and Ctrl+A selection; group moved, turned and scaled around its center, objects on the plate; one undo per change of the group |
-| `services/MaterialSelection.test.ts` | Materials and filaments of the window: order, last choice selected again or ignored, filament selects its family, other family clears the filament, choice saved, invalid response refused; families of a printer with the aliases and the warning; filaments of the user: the selected filament follows its update and its family, is cleared when removed, errors of a refused change |
-| `services/PrinterSelection.test.ts` | Printers of the window: sorted by brand and model, last printer chosen again, autoload off, last printer no longer loaded ignored, invalid response refused, nothing outside Electron; choice saved, autoloadLastPrinter kept, "No printer", unknown printer ignored; printers of the user added, updated (selected printer follows) and removed (selection and saved choice cleared), refused change; profiles checked in the background at start without a message (not when autoCheckProfiles is off), setting saved with the other printer settings, updated profiles read again (printer no longer listed cleared), result of Refresh Profiles (no version published included), failure in the background silent |
+| `services/MaterialSelection.test.ts` | Materials and filaments of the window: order, last choice selected again or ignored, filament selects its family, other family clears the filament, choice saved, invalid response refused; families of a printer with the aliases and the warning; filaments of the user: the selected filament follows its update and its family, is cleared when removed, errors of a refused change; reload after a synchronization (selection kept, or cleared when no longer listed) |
+| `services/PrinterSelection.test.ts` | Printers of the window: sorted by brand and model, last printer chosen again, autoload off, last printer no longer loaded ignored, invalid response refused, nothing outside Electron; choice saved, autoloadLastPrinter kept, "No printer", unknown printer ignored; printers of the user added, updated (selected printer follows) and removed (selection and saved choice cleared), refused change; profiles checked in the background at start without a message (not when autoCheckProfiles is off), setting saved with the other printer settings, updated profiles read again (printer no longer listed cleared), result of Refresh Profiles (no version published included), failure in the background silent; materials and filaments updated read again, combined message |
 | `services/ProfileSync.test.ts` | Check of the profile repository: new index.json written then printers reloaded, once a day unless forced (also after a restart), damaged cache rebuilt, profiles older than the application never kept, failed download keeps the profiles (SYNC_002), repository without a published version (notPublished), cache not written (SYNC_001), one check at a time; cache used only when complete and unchanged, file name with a folder refused, tag of data/printers/index.json |
 | `services/UndoRedo.test.ts` | Undo and redo: one action per change and per gesture, redo cleared by a new action, 50 actions at most, object selected, object removed, no action when a field is left after an undo |
 | `services/TransformService.test.ts` | Transform changes: object always on the plate, scale with and without the lock, size in mm, Center On Bed, Reset actions, refused values |

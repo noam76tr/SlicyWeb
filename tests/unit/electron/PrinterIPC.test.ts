@@ -8,7 +8,8 @@
  * refused without throwing; printer:add, printer:update and
  * printer:remove change the printers of the user (Phase 7 lot 61) and
  * never an Official printer (PRN_005); printer:refresh checks the
- * profile repository (Phase 7 lot 62).
+ * profile repository (Phase 7 lot 62), with the materials and the
+ * filaments (Phase 8 lot 72).
  *
  * Based on:
  * - API_SPEC.md (PrinterIPC Channels)
@@ -227,6 +228,54 @@ describe("Printer IPC", () => {
       success: false,
     });
     expect(check).toHaveBeenCalledTimes(2);
+    warn.mockRestore();
+  });
+
+  it("checks the materials and the filaments with the printers", async () => {
+    const profiles = { origin: "application", tag: "v1.0.1", checkedAt: null };
+    const listProfiles = {
+      origin: "repository",
+      tag: "v1.1.1",
+      checkedAt: null,
+    };
+    const printers = vi
+      .fn()
+      .mockResolvedValue({ status: "upToDate", profiles });
+    const materials = vi
+      .fn()
+      .mockResolvedValue({ status: "updated", profiles: listProfiles });
+    const filaments = vi.fn().mockResolvedValue({
+      status: "failed",
+      profiles: listProfiles,
+      code: "SYNC_004",
+      reason: "filaments/x.json: SHA-256 differs",
+    });
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    handlers.clear();
+    new PrinterIPC(
+      service,
+      { check: printers, status: () => profiles } as never,
+      {
+        materials: { check: materials } as never,
+        filaments: { check: filaments } as never,
+      },
+    ).register();
+
+    expect(await invoke("printer:refresh", { force: true })).toMatchObject({
+      success: false,
+      data: {
+        status: "upToDate",
+        profiles,
+        materials: { status: "updated", profiles: listProfiles },
+        filaments: { status: "failed", profiles: listProfiles },
+      },
+      errors: ["SYNC_004 Remote Data Validation Failed"],
+    });
+    expect(materials).toHaveBeenCalledWith(true);
+    expect(filaments).toHaveBeenCalledWith(true);
+    expect(warn).toHaveBeenCalledWith(
+      "SYNC_004 Remote Data Validation Failed (Filament): filaments/x.json: SHA-256 differs",
+    );
     warn.mockRestore();
   });
 

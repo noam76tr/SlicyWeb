@@ -1,0 +1,62 @@
+{
+  "type": "filament-index",
+  "version": "1.0.0",
+  "tag": "v1.1.0",
+  "profiles": [
+    {
+      "file": "bambu_abs.json",
+      "id": "bambu_abs",
+      "sha256": "88d7484ac40bbe371f293da2a48020717673f844c438c8cb272509c38d40f91a"
+    },
+    {
+      "file": "bambu_petg_hf.json",
+      "id": "bambu_petg_hf",
+      "sha256": "b32d71cb6ea341b9f9fcd94e5bef1a0cf03a3dbdb606aa2c04c913dab7bf4503"
+    },
+    {
+      "file": "bambu_pla_basic.json",
+      "id": "bambu_pla_basic",
+      "sha256": "d2e39db61fdc6e024b3178aaa0f6ae26164187d40cb6a55387a2f6b88079485b"
+    },
+    {
+      "file": "bambu_pla_matte.json",
+      "id": "bambu_pla_matte",
+      "sha256": "5797ec52381228b4dcd2b765909b1eed46d4c9dc60fa29cfc9ea739dabe22b16"
+    },
+    {
+      "file": "bambu_tpu_95a_hf.json",
+      "id": "bambu_tpu_95a_hf",
+      "sha256": "fcf3d8695a54d335254a03c43678b2e5fbbbbf39f20310699e115f0c125d0e0d"
+    },
+    {
+      "file": "esun_pla_plus.json",
+      "id": "esun_pla_plus",
+      "sha256": "641571f816a00abcb934f6fe9f99e0a88c53d9d297a85d7cc3568c98de9c8387"
+    },
+    {
+      "file": "polymaker_polylite_petg.json",
+      "id": "polymaker_polylite_petg",
+      "sha256": "87ff05c94887da1e6ba293a17bc45480ed89748e1af3490f62f13ee6ca918912"
+    },
+    {
+      "file": "polymaker_polylite_pla.json",
+      "id": "polymaker_polylite_pla",
+      "sha256": "dce1875368df336458d8d690a7fe57aa94eb399b9fb751bb514768dc5353b8ec"
+    },
+    {
+      "file": "prusament_asa.json",
+      "id": "prusament_asa",
+      "sha256": "b2565afa0da852917dcc97771ae0b9c40b675a9dcfbcdee89ce399df3e5bf326"
+    },
+    {
+      "file": "prusament_petg.json",
+      "id": "prusament_petg",
+      "sha256": "c45462998f544c14972afd5037e1b5ccab824ac9b787f7cbba7e620250b48f3d"
+    },
+    {
+      "file": "prusament_pla.json",
+      "id": "prusament_pla",
+      "sha256": "bd799d456662fd3288b2df346bbc639746873da0b7fd9b3fa4812f0938c20519"
+    }
+  ]
+}

@@ -82,8 +82,8 @@ SlicyWeb/
 ```text
 data/
 │   ├── cache/
-│   ├── filaments/                      = profils de filaments Official (un fichier JSON par gamme, SOURCES.md)
-│   ├── materials/                      = profils de matériaux Official (un fichier JSON par famille, SOURCES.md)
+│   ├── filaments/                      = profils de filaments Official (un fichier JSON par gamme, SOURCES.md, index.json)
+│   ├── materials/                      = profils de matériaux Official (un fichier JSON par famille, SOURCES.md, index.json)
 │   ├── presets/
 │   ├── printers/                       = profils d'imprimantes Official (un fichier JSON par imprimante, SOURCES.md, index.json)
 │   └── templates/
@@ -475,9 +475,10 @@ Structure:
 src/repositories/
 
 ├── GitHubRepository.ts
-├── PrinterRepositorySync.ts   = download of the profiles of noam76tr/slicyweb-profiles, without Electron (Phase 7)
-├── MaterialRepositorySync.ts
-├── FilamentRepositorySync.ts
+├── ProfileRepositorySync.ts   = download of one list of profiles of noam76tr/slicyweb-profiles, without Electron (Phase 8)
+├── PrinterRepositorySync.ts   = the printers, root of the repository (Phase 7)
+├── MaterialRepositorySync.ts  = the materials, folder materials/ (Phase 8)
+├── FilamentRepositorySync.ts  = the filaments, folder filaments/ (Phase 8)
 └── PresetRepositorySync.ts
 ```
 
@@ -531,7 +532,7 @@ src/schemas/
 ├── MaterialSchema.ts
 ├── PrintPresetSchema.ts
 ├── PrinterSchema.ts
-├── ProfileRepositorySchema.ts = index.json of the profile repository, cache.json, last check (Phase 7)
+├── ProfileRepositorySchema.ts = index.json of the profile repository (printers, materials, filaments), cache.json, last check (Phases 7 and 8)
 ├── ProjectSchema.ts
 ├── RecommendationSchema.ts
 └── UserPreferencesSchema.ts
@@ -621,7 +622,6 @@ src/material_database/
 ├── MaterialManager.ts         = loading of the material profile files (Phase 8)
 ├── MaterialFamilies.ts        = words of a printer compared with the families, aliases (Phase 8)
 ├── MaterialRepository.ts
-├── MaterialCache.ts
 └── MaterialImporter.ts        = not used yet (Import Material, Phase 15)
 ```
 
@@ -633,7 +633,6 @@ src/filament_database/
 
 ├── FilamentManager.ts         = loading of the filament profile files, filaments of the user (Phase 8)
 ├── FilamentRepository.ts
-├── FilamentCache.ts
 └── FilamentImporter.ts        = not used yet (Import Filament, Phase 15)
 ```
 
@@ -870,7 +869,7 @@ src/events/
 src/storage/
 
 ├── CacheStorage.ts
-├── PrinterProfileCache.ts     = cache of the downloaded profiles, cache/printers/ (Phase 7)
+├── PrinterProfileCache.ts     = cache of the downloaded profiles, cache/printers/ (Phase 7), cache/materials/ and cache/filaments/ (Phase 8)
 ├── PrinterProfileStorage.ts
 ├── ProjectStorage.ts
 ├── SettingsStorage.ts
@@ -932,6 +931,7 @@ tests/
 │   │   ├── PrinterProfiles.test.ts = the profiles of data/printers/ and their index.json (Phase 7)
 │   │   └── UserPrinters.test.ts = printers entered by the user (Phase 7)
 │   ├── repositories/
+│   │   ├── MaterialRepositorySync.test.ts = download of the materials and filaments of the profile repository (Phase 8)
 │   │   └── PrinterRepositorySync.test.ts = download of the profile repository (Phase 7)
 │   ├── renderer/
 │   │   └── ObjectRenderer.test.ts = selection rectangle (Phase 6)
@@ -999,7 +999,7 @@ scripts/
 ├── build/
 │   ├── check-locales.mjs      = checks that en, fr and he dictionaries share the same keys
 │   ├── check-ipc-channels.mjs = checks the IPC allow list against the registered handlers
-│   └── generate-profile-index.mjs = writes data/printers/index.json (npm run profiles:index -- vX.Y.Z)
+│   └── generate-profile-index.mjs = writes data/printers/index.json (npm run profiles:index -- vX.Y.Z), data/materials/ or data/filaments/index.json (-- vX.Y.Z materials, filaments)
 ├── migration/
 ├── release/
 └── setup/

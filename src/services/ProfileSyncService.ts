@@ -2,8 +2,10 @@
  * SlicyWeb
  * Profile Sync Service
  *
- * Synchronization of the Official printer profiles with the SlicyWeb
- * profile repository (ADR-032, D5; Phase 7 lot 62):
+ * Synchronization of one list of Official profiles with the SlicyWeb
+ * profile repository (ADR-032, D5; Phase 7 lot 62): the printers, and
+ * with the same rules the materials and the filaments (ADR-033, D7;
+ * Phase 8 lot 72), one ProfileSyncService per list:
  * - check(): at most once every CHECK_INTERVAL_MS, unless forced
  *   (Printer > Refresh Profiles); downloads the profiles
  *   (PrinterRepositorySync), keeps them in the cache when index.json
@@ -36,11 +38,12 @@
  * - ERROR_CODES_SPEC.md (SYNC_001 to SYNC_004)
  */
 
+import { PrinterRepositorySync } from "../repositories/PrinterRepositorySync";
 import {
   PROFILE_REPOSITORY_URL,
-  PrinterRepositorySync,
   sha256Hex,
-} from "../repositories/PrinterRepositorySync";
+  type ProfileDownload,
+} from "../repositories/ProfileRepositorySync";
 import {
   PROFILE_REPOSITORY_NAME,
   compareTags,
@@ -78,6 +81,11 @@ export function syncError(code: keyof typeof ERROR_NAMES): string {
   return `${code} ${ERROR_NAMES[code]}`;
 }
 
+/** Download of one list of profiles (PrinterRepositorySync…) */
+export interface ProfileListSync {
+  download(): Promise<ProfileDownload>;
+}
+
 export interface ProfileSyncOptions {
   /**
    * Tag of the profiles of the application (data/printers/index.json):
@@ -85,7 +93,8 @@ export interface ProfileSyncOptions {
    * list wins).
    */
   applicationTag?: string | null;
-  sync?: PrinterRepositorySync;
+  /** The list to download; the printers by default */
+  sync?: ProfileListSync;
   now?: () => Date;
 }
 
@@ -94,7 +103,7 @@ export class ProfileSyncService {
   private checkedAt: string | null = null;
   private running: Promise<ProfileCheck> | null = null;
   private readonly applicationTag: string | null;
-  private readonly sync: PrinterRepositorySync;
+  private readonly sync: ProfileListSync;
   private readonly now: () => Date;
 
   public constructor(

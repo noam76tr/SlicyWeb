@@ -157,6 +157,26 @@ function sortFilaments(filaments: Filament[]): Filament[] {
 }
 
 /**
+ * Reads the materials (material:getAll) into the store; null when the
+ * response is refused.
+ */
+async function readMaterials(bridge: Bridge): Promise<Material[] | null> {
+  const result = MaterialsResponseSchema.safeParse(
+    await bridge.invoke("material:getAll"),
+  );
+
+  if (!result.success) {
+    console.error("Materials could not be read.", result.error.issues);
+    return null;
+  }
+
+  const materials = sortMaterials(result.data.data.materials);
+  useMaterialStore.getState().setMaterials(materials);
+
+  return materials;
+}
+
+/**
  * Reads the filaments (filament:getAll) into the store; null when the
  * response is refused.
  */
@@ -271,22 +291,12 @@ export const MaterialSelectionService = {
     }
 
     try {
-      const materials = MaterialsResponseSchema.safeParse(
-        await bridge.invoke("material:getAll"),
-      );
-
-      if (!materials.success) {
-        console.error("Materials could not be read.", materials.error.issues);
+      if (!(await readMaterials(bridge)) || !(await readFilaments(bridge))) {
         return;
       }
 
       const materialStore = useMaterialStore.getState();
       const filamentStore = useFilamentStore.getState();
-      materialStore.setMaterials(sortMaterials(materials.data.data.materials));
-
-      if (!(await readFilaments(bridge))) {
-        return;
-      }
 
       const settings = await readMaterialSettings(bridge);
 
@@ -311,6 +321,46 @@ export const MaterialSelectionService = {
           ? filament
           : null,
       );
+    } catch (error) {
+      console.error("Materials could not be read.", error);
+    }
+  },
+
+  /**
+   * Reads the materials and the filaments again, after an update of the
+   * profiles (Printer > Refresh Profiles, Phase 8 lot 72). The selected
+   * material and filament follow their new version; a material or a
+   * filament no longer loaded is no longer selected, and the saved
+   * choice is cleared.
+   */
+  async reload(): Promise<void> {
+    const bridge = getBridge();
+
+    if (!bridge) {
+      return;
+    }
+
+    try {
+      const materials = await readMaterials(bridge);
+      const filaments = await readFilaments(bridge);
+
+      if (!materials || !filaments) {
+        return;
+      }
+
+      const selected = useMaterialStore.getState().selectedMaterial;
+      const material = selected
+        ? (materials.find((item) => item.id === selected.id) ?? null)
+        : null;
+
+      if (selected && !material) {
+        // Its filament belongs to the family: it goes with it
+        await selectBoth(null, null);
+        return;
+      }
+
+      useMaterialStore.getState().setSelectedMaterial(material);
+      await followSelection(filaments);
     } catch (error) {
       console.error("Materials could not be read.", error);
     }

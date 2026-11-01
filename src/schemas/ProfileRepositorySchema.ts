@@ -7,7 +7,11 @@
  *
  * ProfileIndexSchema: index.json of the repository (DATA_SCHEMA.md,
  * Profile Repository Index Schema):
- * - type "printer-index", version of the index format;
+ * - type "printer-index" (index.json at the root of the repository),
+ *   "material-index" (materials/index.json) or "filament-index"
+ *   (filaments/index.json; ADR-033, D7; Phase 8 lot 72), version of the
+ *   index format. ProfileIndexSchema accepts the printer index;
+ *   MaterialIndexSchema and FilamentIndexSchema the two others;
  * - tag: the Git tag where the profile files are read, "vX.Y.Z"
  *   (compareTags: the most recent list of profiles is used);
  * - profiles: one entry per profile file, with its file name, the id of
@@ -24,7 +28,7 @@
  * Based on:
  * - DATA_SCHEMA.md (Profile Repository Index Schema, Cache Schema,
  *   RepositorySync Result Schema)
- * - DECISIONS.md (ADR-032, D5)
+ * - DECISIONS.md (ADR-032, D5; ADR-033, D7)
  * - SECURITY_SPEC.md (Printer Profile Download)
  */
 
@@ -65,6 +69,8 @@ export function compareTags(a: string, b: string): number {
   return 0;
 }
 
+export type ProfileIndexEntry = z.infer<typeof ProfileIndexEntrySchema>;
+
 export const ProfileIndexEntrySchema = z
   .object({
     file: z
@@ -76,30 +82,53 @@ export const ProfileIndexEntrySchema = z
   })
   .strict();
 
-export const ProfileIndexSchema = z
-  .object({
-    type: z.literal("printer-index"),
-    version: z.string().trim().min(1),
-    tag: z.string().regex(TAG, "The tag must be vX.Y.Z"),
-    profiles: z.array(ProfileIndexEntrySchema).min(1).max(MAX_INDEX_PROFILES),
-  })
-  .strict()
-  .refine(
-    (index) =>
-      new Set(index.profiles.map(({ file }) => file.toLowerCase())).size ===
-      index.profiles.length,
-    { message: "A file is listed twice", path: ["profiles"] },
-  )
-  .refine(
-    (index) =>
-      new Set(index.profiles.map(({ id }) => id)).size ===
-      index.profiles.length,
-    { message: "An id is listed twice", path: ["profiles"] },
-  );
+/** Type of an index.json of the repository, one per list of profiles */
+export type ProfileIndexType =
+  "printer-index" | "material-index" | "filament-index";
 
-export type ProfileIndex = z.infer<typeof ProfileIndexSchema>;
+/** Schema of an index.json of the given type */
+export function createProfileIndexSchema<T extends ProfileIndexType>(type: T) {
+  return z
+    .object({
+      type: z.literal(type),
+      version: z.string().trim().min(1),
+      tag: z.string().regex(TAG, "The tag must be vX.Y.Z"),
+      profiles: z.array(ProfileIndexEntrySchema).min(1).max(MAX_INDEX_PROFILES),
+    })
+    .strict()
+    .refine(
+      (index) =>
+        new Set(index.profiles.map(({ file }) => file.toLowerCase())).size ===
+        index.profiles.length,
+      { message: "A file is listed twice", path: ["profiles"] },
+    )
+    .refine(
+      (index) =>
+        new Set(index.profiles.map(({ id }) => id)).size ===
+        index.profiles.length,
+      { message: "An id is listed twice", path: ["profiles"] },
+    );
+}
 
-export type ProfileIndexEntry = z.infer<typeof ProfileIndexEntrySchema>;
+/** index.json of the printers (root of the repository) */
+export const ProfileIndexSchema = createProfileIndexSchema("printer-index");
+
+/** materials/index.json (ADR-033, D7) */
+export const MaterialIndexSchema = createProfileIndexSchema("material-index");
+
+/** filaments/index.json (ADR-033, D7) */
+export const FilamentIndexSchema = createProfileIndexSchema("filament-index");
+
+/** An index.json of any type */
+export interface ProfileIndex {
+  type: ProfileIndexType;
+  version: string;
+  tag: string;
+  profiles: ProfileIndexEntry[];
+}
+
+/** A schema that reads an index.json */
+export type ProfileIndexParser = z.ZodType<ProfileIndex, z.ZodTypeDef, unknown>;
 
 /** Cache Schema (DATA_SCHEMA.md): metadata of the cached profiles */
 export const CacheMetadataSchema = z
