@@ -2627,7 +2627,7 @@ Release Type:
 Material Database
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-10-31
@@ -2659,6 +2659,40 @@ Date:
 
 - Until materials/ and filaments/ are published in slicyweb-profiles with the release v1.1.0, the check answers "No published version" for these lists and the copies of the application are used
 - The profiles line of the Printer section gives only the tag of the printer profiles
+
+## Validation Result
+
+- Windows 11 (2026-11-01): lot 72 on GitHub (8610b71, identical to the lot; MaterialCache.ts and FilamentCache.ts deleted in 5393e46 and bd88bcd, and in the local folder); npm run check:locales: 370 keys; npm run check:ipc: 28 channels; typecheck and lint without error; npm test: 279 tests passed, 1 skipped (link test); npm run test:e2e: 26 tests passed; materials/ and filaments/ published in noam76tr/slicyweb-profiles and release v1.1.0 created on main (a88a142), the 95 SHA-256 of the repository checked; manual checks 1 to 3 passed; after the publication, cache\materials\profiles and cache\filaments\profiles hold the downloaded files (Noam)
+- The message "Profiles updated (v1.1.0)" was not seen after Refresh Profiles: the check at start had already downloaded v1.1.0, so Refresh Profiles found nothing new (expected; the check at start shows its message only once)
+- A first tag "V1.1.0" (uppercase) was replaced by "v1.1.0": the files are read at the tag written in index.json, so the publication steps now say to write the tag exactly so (0.1.75)
+
+---
+
+# VERSION 0.1.75
+
+Release Type:
+Material Database
+
+Status:
+In Progress
+
+Date:
+2026-11-01
+
+## Added
+
+- Technical Phase 8 - Material Database closed (PHASES_IMPLEMENTATION_PLAN.md: progress and validation result, from the checks and manual controls of Noam for lots 68 to 72)
+
+## Changed
+
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 8 Completed
+- PASSATION.md: Phase 8 Completed; next: navigation cube, then Phase 9 - Model Analysis; publication steps: the release tag is written exactly as in index.json (lowercase "v"), newer than every tag of noam76tr/slicyweb-profiles
+- scripts/build/generate-profile-index.mjs: the same rule in its header, and a reminder printed after index.json is written
+- DIRECTORY_PURPOSES.md: MaterialCache.ts and FilamentCache.ts noted as deleted (lot 72)
+
+## Known Limitations
+
+- No file removed in this lot: the deletions of the ADR-033 D11 table were made in lots 68 to 72; MaterialImporter.ts and FilamentImporter.ts are kept for Import Material and Import Filament (Phase 15)
 
 ---
 

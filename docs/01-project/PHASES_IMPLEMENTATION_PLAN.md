@@ -1394,9 +1394,9 @@ Plate Updates
 
 # MATERIAL DATABASE
 
-Status: In Progress
+Status: Completed
 
-Date: 2026-10-28
+Date: 2026-11-01
 
 Decisions (ADR-033, decisions D1 to D11 of Noam, 2026-10-28; analysis of lot 65):
 
@@ -1421,7 +1421,7 @@ Order of the lots:
 - Lot 70: Material and Filament sections, selectors, warning, last choice kept
 - Lot 71: filaments entered by the user (Manage Filaments)
 - Lot 72: synchronization of the materials and filaments from noam76tr/slicyweb-profiles
-- Lot 73: closure of Phase 8
+- Lot 73: closure of Phase 8; no file left to remove (the deletions of the D11 table were made in lots 68 to 72; MaterialImporter.ts and FilamentImporter.ts kept for Import Material and Import Filament, Phase 15)
 - After the closure of Phase 8 (decision of Noam, 2026-10-30): navigation cube in a corner of the 3D viewport (translated faces that turn with the camera, a click on a face gives its view, colored X, Y, Z axes), in place of the axes at the center of the plate
 
 Progress:
@@ -1431,7 +1431,18 @@ Progress:
 - Data (lot 69, CHANGELOG 0.1.71): 5 materials and 11 filaments (Elegoo PLA not shipped: no sheet with a bed temperature), SOURCES.md
 - Interface (lot 70, CHANGELOG 0.1.72): Material and Filament sections, selectors, warning, last choice kept, Select Material and Select Filament
 - Filaments of the user (lot 71, CHANGELOG 0.1.73): Filament Manager, filament:add, filament:update, filament:remove, FIL_003 to FIL_005
-- Synchronization (lot 72, CHANGELOG 0.1.74): materials/index.json and filaments/index.json (v1.1.0), caches cache/materials/ and cache/filaments/, Refresh Profiles and the check at start cover the three lists, DATA_SCHEMA.md 3.8.0; MaterialCache.ts and FilamentCache.ts deleted (D11)
+- Synchronization (lot 72, CHANGELOG 0.1.74): materials/index.json and filaments/index.json (v1.1.0), caches cache/materials/ and cache/filaments/, Refresh Profiles and the check at start cover the three lists, DATA_SCHEMA.md 3.8.0; MaterialCache.ts and FilamentCache.ts deleted (D11); materials/ and filaments/ published in noam76tr/slicyweb-profiles, release v1.1.0 (2026-11-01)
+- Closure (lot 73, CHANGELOG 0.1.75)
+
+Validation result (Windows 11, checks and manual controls of Noam, lots 68 to 72, 2026-10-30 to 2026-11-01; all passed):
+
+- Material Loads: the 5 Official materials and the 11 Official filaments of data/materials/ and data/filaments/, and the filaments of the user, are loaded by the main process and listed in the Material and Filament sections; a damaged filament file of the user is refused without stopping the application (FIL_002); the last material and filament are chosen again at the next start
+- Profiles Valid: the values of the materials and filaments checked against SOURCES.md and the technical data sheets (Bambu Lab PETG HF, Prusament ASA, Bambu Lab ABS, Polymaker PolyLite PLA); values not published shown as "Not published", never 0; Elegoo PLA left out (no sheet with a bed temperature)
+- Filament Profiles Valid: the Filament Manager refuses a range whose maximum is below its minimum and a fan speed over 100 % at once (Save disabled), a filament of the user is created, copied from an Official filament, edited with the same file and id, and deleted
+- Synchronization: materials/ and filaments/ published in noam76tr/slicyweb-profiles with the release v1.1.0, the 95 SHA-256 of the repository checked; the lists are downloaded, kept in cache/materials/ and cache/filaments/ and used after a restart
+- With lot 72 (CHANGELOG 0.1.74): npm run check:locales (370 keys), npm run check:ipc (28 channels), npm run typecheck and npm run lint with no errors, npm test 279 tests passed and 1 skipped (link test, Windows), npm run test:e2e 26 tests passed
+
+Open issues after the closure: KI-023 (legal review of the profiles, materials and filaments, Phase 16), KI-025 (signature of index.json, Phase 16), KI-026 (zod 4, Phase 16). The price per kg has no currency before the Cost Engine (Phase 12). Import Material, Import Filament and Export Filament come with Phase 15. The profiles line of the Printer section gives only the tag of the printer profiles. Next: navigation cube (decision of Noam, 2026-10-30), then Phase 9.
 
 
 

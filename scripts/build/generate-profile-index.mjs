@@ -21,9 +21,12 @@
  *   npm run profiles:index -- v1.1.0 filaments
  *
  * Then send the profile files and index.json to slicyweb-profiles (in
- * the folder of the list), and create the release with the same tag. Send the files exactly as they
- * are: a change after this script (even an end of line) changes the
- * SHA-256, and the application refuses the update.
+ * the folder of the list), and create the release with the same tag,
+ * written exactly as in index.json: a lowercase "v" (v1.1.0, never
+ * V1.1.0); the files are read at this tag, and another spelling gives
+ * HTTP 404. Send the files exactly as they are: a change after this
+ * script (even an end of line) changes the SHA-256, and the application
+ * refuses the update.
  *
  * Checks each file: valid JSON, type of the list ("printer", "material"
  * or "filament"), source "Official", id of the file = id of its profile =
@@ -182,4 +185,7 @@ writeFileSync(
 
 console.log(
   `data/${listName}/index.json written: tag ${tag}, ${profiles.length} profiles.`,
+);
+console.log(
+  `Release tag: ${tag}, written exactly so (lowercase "v"); a new tag must be newer than every tag already in slicyweb-profiles.`,
 );

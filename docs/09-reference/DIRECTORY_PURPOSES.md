@@ -701,7 +701,7 @@ Until the project owner decides otherwise:
 | `MaterialFamilies.ts` | Words of the materials of a printer compared with the families (aliases of MATERIAL_PROFILE_SPEC.md: Flex = TPU, NYLON = PA); warning when a printer that lists materials does not list the family (Phase 8 lot 70) |
 | `MaterialRepository.ts` | In-memory storage and retrieval of material profiles |
 
-MaterialValidator.ts was replaced by MaterialSchema and deleted (Phase 8 lot 68, ADR-033 D11). MaterialPanel.tsx and FilamentPanel.tsx (src/gui/panels/) were replaced by the Material and Filament sections and deleted (Phase 8 lot 70).
+MaterialValidator.ts was replaced by MaterialSchema and deleted (Phase 8 lot 68, ADR-033 D11). MaterialPanel.tsx and FilamentPanel.tsx (src/gui/panels/) were replaced by the Material and Filament sections and deleted (Phase 8 lot 70). MaterialCache.ts (never used) was deleted in Phase 8 lot 72: the downloaded materials are kept by PrinterProfileCache (src/storage/).
 
 ---
 
@@ -727,7 +727,7 @@ MaterialValidator.ts was replaced by MaterialSchema and deleted (Phase 8 lot 68,
 | `FilamentManager.ts` | Filament profile management (add, remove, retrieve); loads the filament profile files of data/filaments/ and of the filaments of the user (FilamentProfileFileSchema, FIL_002 for a refused file; Phase 8 lot 68); ids of the filaments of the user; add, update and remove of the filaments of the user in their files (FIL_001, FIL_003, FIL_004, FIL_005; lot 71) |
 | `FilamentRepository.ts` | In-memory storage and retrieval of filament profiles |
 
-FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68, ADR-033 D11).
+FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68, ADR-033 D11). FilamentCache.ts (never used) was deleted in Phase 8 lot 72: the downloaded filaments are kept by PrinterProfileCache (src/storage/).
 
 ---
 
