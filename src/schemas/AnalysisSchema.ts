@@ -3,9 +3,13 @@
  * Analysis Schema Definition
  *
  * Based on:
- * - DATA_SCHEMA.md
+ * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules,
+ *   Object Classification Schema)
+ * - DECISIONS.md (ADR-034)
  * - AI_ENGINE_SPEC.md
  * - OBJECT_CLASSIFICATION_SPEC.md
+ *
+ * Every object is strict: a field that is not in DATA_SCHEMA.md is refused.
  */
 
 import { z } from "zod";
@@ -39,6 +43,15 @@ export const AnalysisClassificationSchema = z.object({
   classificationVersion: z.string().min(1)
 });
 
+/** Length, area or volume: finite and not negative (mm, mm², mm³). */
+const MeasureSchema = z.number().finite().min(0);
+
+/** Count: whole number, not negative. */
+const CountSchema = z.number().int().min(0);
+
+/** Percentage: 0 to 100. */
+const PercentageSchema = z.number().finite().min(0).max(100);
+
 export const AnalysisSchema = z.object({
   analysisId: z.string().min(1),
 
@@ -46,66 +59,80 @@ export const AnalysisSchema = z.object({
 
   status: ResultStatusSchema,
 
-  dimensions: z.record(
-    z.string(),
-    z.unknown()
-  ),
+  /** Size of the placed object along X, Y, Z, in mm. */
+  dimensions: z.object({
+    width: MeasureSchema,
 
+    depth: MeasureSchema,
+
+    height: MeasureSchema
+  }).strict(),
+
+  /** Same size as dimensions (Known Duplication), volume, surface area. */
   geometry: z.object({
-    width: z.number(),
+    width: MeasureSchema,
 
-    depth: z.number(),
+    depth: MeasureSchema,
 
-    height: z.number(),
+    height: MeasureSchema,
 
-    volume: z.number(),
+    volume: MeasureSchema,
 
-    surfaceArea: z.number()
-  }),
+    surfaceArea: MeasureSchema
+  }).strict(),
 
   mesh: z.object({
-    vertices: z.number(),
+    vertices: CountSchema,
 
-    triangles: z.number()
-  }),
+    triangles: CountSchema
+  }).strict(),
 
   stability: z.object({
-    contactArea: z.number(),
+    contactArea: MeasureSchema,
 
-    heightRatio: z.number(),
+    heightRatio: MeasureSchema,
 
-    centerOfGravity: z.record(
-      z.string(),
-      z.unknown()
-    ),
+    /** Relative to the center of the object, axes of the plate, in mm. */
+    centerOfGravity: z.object({
+      x: z.number().finite(),
 
-    riskScore: z.number()
-  }),
+      y: z.number().finite(),
+
+      z: z.number().finite()
+    }).strict(),
+
+    riskScore: z.number().int().min(0).max(100)
+  }).strict(),
 
   overhangs: z.object({
     detected: z.boolean(),
 
-    maxAngle: z.number(),
+    /** Degrees from the vertical. */
+    maxAngle: z.number().finite().min(0).max(90),
 
-    percentage: z.number()
-  }),
+    percentage: PercentageSchema
+  }).strict(),
 
   bridges: z.object({
     detected: z.boolean(),
 
-    count: z.number(),
+    count: CountSchema,
 
-    longestBridge: z.number()
-  }),
+    longestBridge: MeasureSchema
+  }).strict(),
 
   thinWalls: z.object({
     detected: z.boolean(),
 
-    minimumThickness: z.number()
-  }),
+    minimumThickness: MeasureSchema
+  }).strict(),
 
-  classification: AnalysisClassificationSchema
-});
+  /**
+   * null = not yet classified (Phase 10, ADR-034 D1). Strict here only:
+   * RecommendationSchema keeps its own rule for its copy.
+   */
+  classification: AnalysisClassificationSchema.strict().nullable()
+}).strict();
 
 export type AnalysisSchemaType =
   z.infer<typeof AnalysisSchema>;

@@ -1738,6 +1738,7 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 | `services/UndoRedo.test.ts` | Undo and redo: one action per change and per gesture, redo cleared by a new action, 50 actions at most, object selected, object removed, no action when a field is left after an undo |
 | `services/TransformService.test.ts` | Transform changes: object always on the plate, scale with and without the lock, size in mm, Center On Bed, Reset actions, refused values |
 | `storage/SettingsStorage.test.ts` | settings.json without printer: language kept, default printer; invalid field of printer; missing or damaged file |
+| `schemas/AnalysisSchema.test.ts` | Complete Analysis Schema (DATA_SCHEMA.md 3.9.0): classification null accepted, classification object accepted (WYPROJ 3.0.0), classification missing refused; unknown field refused at any level; dimensions and centerOfGravity with their three values; negative center of gravity accepted, negative volume refused; angle, percentage and risk out of range, counts and risk not whole, values not finite refused |
 | `scene/ObjectTransform.test.ts` | Transform Rules (ADR-031): degrees, right-hand rule, order X then Y then Z around the plate axes, scale along the object axes, placement on the plate, 3MF export transform |
 
 **Contains:**

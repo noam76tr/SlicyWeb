@@ -1515,11 +1515,35 @@ Filament Profiles Valid
 
 # MODEL ANALYSIS
 
-### Object Classification
+Status: In Progress
 
-### Category Detection
+Decisions (ADR-034, decisions D1 to D10 of Noam, 2026-11-01; analysis of lot 75):
 
-### Confidence Score
+- Geometry only: Object Classification, Category Detection and Confidence Score are in Phase 10 (the table above); analysis.classification is null until then (DATA_SCHEMA.md 3.9.0)
+- The analysis is made on the object as placed on the build plate (scale and rotation, not position); units mm, mm², mm³, degrees, percentage; definitions of each value in DATA_SCHEMA.md 3.9.0 (Analysis Rules)
+- Overhangs: angle from the vertical, threshold 45 degrees; bridges: flat region facing down with at least two supports
+- Stability: contactArea = real area of the faces lying on the plate; tip test and heightRatio on the convex hull of the contact points (correction of Noam: an object on legs is stable)
+- Thin walls: rays towards the inside with three-mesh-bvh 0.9.17 (installed by Noam in lot 79), at most 200 000 points, detected below 0.8 mm, independent of the printer
+- A mesh not closed is analyzed anyway, with a non-blocking warning (ANA_002); an empty mesh gives ANA_001
+- Automatic start after the import and after a rotation or a scale, in a Web Worker; Tools > Analyze Models and Recompute Analysis; "Analyzing…" in the status bar
+- Analysis section of the Properties panel (volume in cm³, area in cm²); AnalysisPanel.tsx deleted
+- The files of src/model_analysis/ and AnalysisService.ts rewritten under the same names (ADR-034 D9)
+- Target: 1 million triangles in less than 5 seconds (PERFORMANCE_SPEC.md)
+
+Order of the lots:
+
+- Lot 75: analysis (inventory, definitions and methods, decisions)
+- Lot 76: ADR-034, DATA_SCHEMA.md 3.9.0, GUI_SPEC.md, ERROR_CODES_SPEC.md (ANA_002 non-blocking), PERFORMANCE_SPEC.md, TEST_PLAN.md (documentation); AnalysisSchema strict, classification null
+- Lot 77: base computation in a Web Worker: welded vertices, dimensions, volume, surface area, mesh, open edges, center of gravity, stability (contact hull)
+- Lot 78: overhangs and bridges
+- Lot 79: thin walls (Noam installs three-mesh-bvh@0.9.17 first)
+- Lot 80: interface: automatic start, Tools menu, status bar, Analysis section, ANA_* messages, texts in three languages; AnalysisPanel.tsx deleted
+- Lot 81: closure of Phase 9
+- After the closure of Phase 9 (decision of Noam, 2026-11-01, D8 option B): a separate lot that shows the overhanging faces in red in the 3D viewport, with a button to turn it on (GUI_SPEC.md, Future GUI Features)
+
+Progress:
+
+- Analysis (lot 75) and documentation (lot 76, CHANGELOG 0.1.77): ADR-034, DATA_SCHEMA.md 3.9.0
 
 
 
@@ -1624,6 +1648,14 @@ Repeatable Results
 
 
 # AI RECOMMENDATION ENGINE
+
+### Object Classification
+
+### Category Detection
+
+### Confidence Score
+
+Moved from Phase 9 (ADR-034 D1): the classification fills analysis.classification, null until then (DATA_SCHEMA.md 3.9.0); the recommendation needs it (REC_002 while it is null).
 
 
 

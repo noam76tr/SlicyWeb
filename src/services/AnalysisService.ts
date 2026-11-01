@@ -96,8 +96,9 @@ export class AnalysisService {
     }
 
     if (
-      analysis.classification.confidenceScore < 0 ||
-      analysis.classification.confidenceScore > 100
+      analysis.classification !== null &&
+      (analysis.classification.confidenceScore < 0 ||
+        analysis.classification.confidenceScore > 100)
     ) {
       return false;
     }
@@ -119,23 +120,29 @@ export class AnalysisService {
 
   /**
    * Returns the classification confidence level
-   * (OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels).
+   * (OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels),
+   * or null when the object is not classified yet (ADR-034 D1).
    */
   public getConfidenceLevel(
     analysis: Analysis,
-  ): ConfidenceLevel {
+  ): ConfidenceLevel | null {
+    if (analysis.classification === null) {
+      return null;
+    }
+
     return ConfidenceScorer.getLevel(
       analysis.classification.confidenceScore,
     );
   }
 
   /**
-   * Returns the classification confidence.
+   * Returns the classification confidence,
+   * or null when the object is not classified yet (ADR-034 D1).
    */
   public getConfidenceScore(
     analysis: Analysis,
-  ): number {
+  ): number | null {
     return analysis.classification
-      .confidenceScore;
+      ?.confidenceScore ?? null;
   }
 }

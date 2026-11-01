@@ -144,32 +144,34 @@ export default function AnalysisPanel({
         </div>
       </section>
 
-      <section className="rounded border border-neutral-800 p-3">
-        <h3 className="mb-2 font-medium">
-          Classification
-        </h3>
+      {analysis.classification && (
+        <section className="rounded border border-neutral-800 p-3">
+          <h3 className="mb-2 font-medium">
+            Classification
+          </h3>
 
-        <div>
-          Category:{" "}
-          {analysis.classification.category}
-        </div>
-
-        <div>
-          Confidence:{" "}
-          {
-            analysis.classification
-              .confidenceScore
-          }
-          %
-        </div>
-
-        {confidenceLevel && (
           <div>
-            Level:{" "}
-            {confidenceLevel}
+            Category:{" "}
+            {analysis.classification.category}
           </div>
-        )}
-      </section>
+
+          <div>
+            Confidence:{" "}
+            {
+              analysis.classification
+                .confidenceScore
+            }
+            %
+          </div>
+
+          {confidenceLevel && (
+            <div>
+              Level:{" "}
+              {confidenceLevel}
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }

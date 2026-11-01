@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-11-01. Lot 74 (cube de navigation) sur `main` (f40f35b), vérifié identique et validé par Noam (376 clés, 28 canaux, 291 tests + 1 ignoré, 28 tests e2e, contrôles manuels 1 à 10 réussis). Lot 75 (analyse de la phase 9, décisions D1 à D10) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.76 (lot 74, Completed).
+Date : 2026-11-01. Lot 75 (analyse de la phase 9) sur `main` (9f4cbf9), vérifié identique ; réponses de Noam aux décisions D1 à D10 reçues le 2026-11-01. Lot 76 (documentation de la phase 9 : ADR-034, DATA_SCHEMA 3.9.0, AnalysisSchema strict) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.77 (lot 76, In Progress).
 
 ---
 
@@ -19,7 +19,7 @@ Date : 2026-11-01. Lot 74 (cube de navigation) sur `main` (f40f35b), vérifié i
 - **« Sans autre changement » :** quand Noam l'écrit, ne rien toucher d'autre. Signaler les incohérences restantes en une ligne.
 - **CHANGELOG :** une entrée par lot, insérée avant « # VERSION 0.2.0 ». La version suivante reçoit les résultats de validation de Noam (« Validation Result ») et passe en « Completed ». Un Known Issue est retiré dans la version qui le résout.
 - **Fins de ligne à préserver :**
-  - CRLF : CHANGELOG.md, DECISIONS.md, PHASES_IMPLEMENTATION_PLAN.md, FILE_STRUCTURE.md, DATA_SCHEMA.md, API_SPEC.md, GUI_SPEC.md, SECURITY_SPEC.md, TECH_STACK.md, USER_SETTINGS_SPEC.md, ERROR_CODES_SPEC.md, PRINTER_PROFILE_SPEC.md, UNDO_REDO_SPEC.md.
+  - CRLF : CHANGELOG.md, DECISIONS.md, PHASES_IMPLEMENTATION_PLAN.md, FILE_STRUCTURE.md, DATA_SCHEMA.md, API_SPEC.md, GUI_SPEC.md, SECURITY_SPEC.md, TECH_STACK.md, USER_SETTINGS_SPEC.md, ERROR_CODES_SPEC.md, PRINTER_PROFILE_SPEC.md, UNDO_REDO_SPEC.md, PERFORMANCE_SPEC.md, TEST_PLAN.md.
   - LF : DIRECTORY_PURPOSES.md, DOMAINS_DEPENDENCY_MATRIX.md, ARCHITECTURE_DECISION_MATRIX.md, IMPORT_EXPORT_SPEC.md, SLICER_EXPORT_SPEC.md, PASSATION.md et tout `src/`.
   - En cas de doute, garder les fins de ligne du fichier existant.
 - **Langue :** réponses en français.
@@ -76,7 +76,7 @@ Date : 2026-11-01. Lot 74 (cube de navigation) sur `main` (f40f35b), vérifié i
 | 6 | Transform System | Completed (2026-10-21) | 0.1.47 à 0.1.56 |
 | 7 | Printer Database | Completed (2026-10-27) | 0.1.59 à 0.1.66 |
 | 8 | Material Database | Completed (2026-11-01) | 0.1.67 à 0.1.75 |
-| 9 | Model Analysis | Analyse faite (lot 75), en attente des décisions D1 à D10 de Noam | — |
+| 9 | Model Analysis | In Progress (décisions D1 à D10 de Noam, ADR-034) | 0.1.77 à … |
 | 10 à 16 | Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
@@ -118,15 +118,16 @@ Date : 2026-11-01. Lot 74 (cube de navigation) sur `main` (f40f35b), vérifié i
 
 | Document | Version |
 |---|---|
-| DATA_SCHEMA.md | 3.8.0 (index `material-index` et `filament-index`, caches des matériaux et filaments) |
+| DATA_SCHEMA.md | 3.9.0 (règles de l'analyse : définitions, unités ; `classification` à `null` jusqu'à la phase 10) |
 | Format WYPROJ | 3.0.0 (les fichiers 2.0.0 sont refusés) |
 | IMPORT_EXPORT_SPEC.md | 3.0.0 |
-| ERROR_CODES_SPEC.md | 2.2.0 (PRN_005, PRN_006, PRN_007) |
-| ARCHITECTURE_DECISION_MATRIX.md | 2.3.0 |
+| ERROR_CODES_SPEC.md | 2.3.0 (ANA_001 ; ANA_002 avertissement non bloquant) |
+| PERFORMANCE_SPEC.md | 1.1.0 (analyse : 1 million de triangles en moins de 5 s) |
+| ARCHITECTURE_DECISION_MATRIX.md | 2.6.0 |
 | API_SPEC.md | 2.1.0 (voir §5, points en attente) |
 | SLICER_EXPORT_SPEC.md | 1.0.0 |
 | UNDO_REDO_SPEC.md | 2.2.0 (50 étapes ; phase 6 : transformations seulement ; Ctrl+Z dans un champ) |
-| Dernier ADR | ADR-033 ; dernier ADM : ADM-029 |
+| Dernier ADR | ADR-034 ; dernier ADM : ADM-030 |
 
 ---
 
@@ -212,6 +213,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 73 | Clôture de la phase 8 ; aucun fichier à supprimer (tableau D11 fait aux lots 68 à 72) ; règle d'écriture du tag de publication (minuscule, comme dans `index.json`) | 0.1.75 |
 | 74 | Cube de navigation (décisions 76 et 78) : `NavigationCube.ts`, `NavigationCube.tsx`, axes retirés du centre du plateau, 6 clés (376) ; 2 tests e2e (28) ; règle « aucune commande git chez Noam » (§1) | 0.1.76 |
 | 75 | Analyse seule : phase 9 (Model Analysis), inventaire, définitions et méthodes de calcul, décisions D1 à D10 (`lot75-phase9-analyse/PHASE9-ANALYSE.md`) ; 0.1.76 passe en « Completed » | — |
+| 76 | Phase 9, documentation : ADR-034, DATA_SCHEMA 3.9.0, plan (classification en phase 10), GUI_SPEC, ERROR_CODES_SPEC 2.3.0, PERFORMANCE_SPEC 1.1.0, TEST_PLAN ; AnalysisSchema strict avec `classification` à `null` (9 tests) | 0.1.77 |
 
 ---
 
@@ -319,6 +321,10 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 77. **Clôture de la phase 8 (lot 73) :** aucun fichier à supprimer ; `MaterialImporter.ts` et `FilamentImporter.ts` gardés pour Import Material et Import Filament (phase 15) ; la ligne « Profiles v… » sous le sélecteur d'imprimante reste celle des imprimantes (compris par Noam, 2026-11-01).
 78. **Cube de navigation (lot 74, Noam, 2026-11-01) :** en bas à droite de la vue 3D (seul coin libre), en bas à gauche en hébreu comme le reste de l'interface, le cube lui-même jamais inversé (X à droite) ; zone de 120 px ; noms courts des faces (en Top… ; fr Dessus, Dessous, Avant, Arrière, Gauche, Droite ; he עליון, תחתון, חזית, אחור, שמאל, ימין) ; la face Avant correspond au repère avant du plateau (côté −Y) ; le cube tourne en même temps que la caméra ; clic sur les 6 faces seulement (pas d'arêtes ni de coins), même vue que le menu View, passage immédiat (sans animation) ; face survolée éclairée ; axes X, Y, Z en couleur depuis un coin du cube, avec leur lettre ; test e2e qui clique sur Dessus et vérifie que la vue change.
 
+79. **Phase 9, décisions D1 à D10 (Noam, 2026-11-01, ADR-034 ; option A partout, avec les corrections des décisions 80 et 81) :** géométrie seule en phase 9, classification en phase 10 et `classification` à `null` d'ici là (D1) ; analyse de l'objet tel qu'il est posé (rotation et échelle, pas la position), mm, mm², mm³, degrés, %, `dimensions {width, depth, height}`, centre de gravité `{x, y, z}` par rapport au centre de l'objet (D2) ; surplombs depuis la verticale, seuil 45°, faces posées exclues ; pont = zone plate (> 80°) avec au moins deux appuis, portée = plus courte distance entre deux appuis (D3) ; parois fines par rayons vers l'intérieur avec `three-mesh-bvh@0.9.17` (Noam l'installe au lot 79), 200 000 points au plus, détectées sous 0,8 mm, sans dépendre de l'imprimante (D5) ; maillage non fermé analysé quand même, ANA_002 non bloquant, aucun champ ajouté (D6) ; lancement automatique dans un Web Worker, menus Tools activés, « Analyzing… » (D7) ; section Analysis en cm³ et cm² (D8) ; fichiers de `src/model_analysis/` et `AnalysisService.ts` réécrits, `AnalysisPanel.tsx` supprimé au lot 80 (D9) ; cible 1 million de triangles en moins de 5 s, sans blocage (D10).
+80. **Stabilité (D4 corrigé par Noam) :** le test de bascule et `heightRatio` utilisent l'**enveloppe convexe des points de contact** avec le plateau (sommets à Z ≤ 0,01 mm) ; `heightRatio` = hauteur ÷ √(aire de l'enveloppe) ; risque = (rapport − 1) × 20, arrondi, borné à 0 et 100, 100 si le centre de gravité vu de dessus est hors de l'enveloppe ou sans contact. `contactArea` reste l'aire réelle des faces posées (adhérence). Tests demandés : tabouret à 4 pieds à risque faible ; cube plein de 20 mm qui donne une épaisseur minimale de 20 mm (D5).
+81. **Surplombs en rouge dans la vue 3D (D8 option B) :** accepté, dans un lot séparé **après la clôture de la phase 9** (noté dans le plan et dans GUI_SPEC, Future GUI Features).
+
 **Méthode**
 
 27. Règle de décision (§1) : l'option « Recommandé » peut être appliquée sans demander, hors des 5 cas listés.
@@ -334,7 +340,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 3. **Phase 7 : Printer Database** (Completed, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue (fait) ; 61 imprimantes saisies par l'utilisateur (fait) ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (fait, v1.0.0 publiée) ; 63 « aucune version publiée » et sécurité des dépendances (fait) ; 64 clôture (fait). Close le 2026-10-27, lot 64 validé par Noam.
 4. **Phase 8 : Material Database** (Completed, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (fait, validé) ; 68 chargement (fait, validé) ; 69 données (fait, validé) ; 70 interface (fait, validé) ; 71 filaments de l'utilisateur (fait, validé) ; 72 synchronisation (fait, validé ; release v1.1.0 de `slicyweb-profiles`) ; 73 clôture (fait, validé). Close le 2026-11-01. (Lot 67 : plateau, hors phase 8.)
 5. **Cube de navigation** (décisions 76 et 78) : lot 74 fait, validé par Noam le 2026-11-01.
-6. **Phase 9 : Model Analysis** : analyse au lot 75 (inventaire, 10 décisions D1 à D10 dans `lot75-phase9-analyse/PHASE9-ANALYSE.md`). Après les réponses de Noam, découpage proposé : 76 documentation (ADR-034, DATA_SCHEMA 3.9.0), 77 calcul de base dans un Worker (dimensions, volume, surface, centre de gravité, stabilité), 78 surplombs et ponts, 79 parois fines, 80 interface (lancement, section Analysis, menus Tools), 81 clôture. Contradiction signalée : PHASES_IMPLEMENTATION_PLAN met la classification en tête de la phase 9 et dans la phase 10 de son tableau (D1).
+6. **Phase 9 : Model Analysis** (In Progress, ADR-034) : analyse au lot 75 (fait) ; réponses de Noam (décisions 79 à 81) ; 76 documentation (ADR-034, DATA_SCHEMA 3.9.0, AnalysisSchema strict) ; 77 calcul de base dans un Worker (dimensions, volume, surface, maillage, arêtes ouvertes, centre de gravité, stabilité avec l'enveloppe des contacts) ; 78 surplombs et ponts ; 79 parois fines (Noam installe `three-mesh-bvh@0.9.17` avant) ; 80 interface (lancement automatique, section Analysis, menus Tools, barre d'état, ANA_*, `AnalysisPanel.tsx` supprimé) ; 81 clôture ; puis le lot « surplombs en rouge » (décision 81). La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
 7. **Phases 10 à 16**, dans l'ordre du plan technique.
 8. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 

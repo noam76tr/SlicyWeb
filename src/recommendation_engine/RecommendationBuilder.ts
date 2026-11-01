@@ -9,6 +9,7 @@
  */
 
 import type { Analysis } from "../types/Analysis";
+import type { Classification } from "../types/Classification";
 
 import type {
   RecommendedProfile,
@@ -32,9 +33,12 @@ export class RecommendationBuilder {
    * the given analysis (ADR-026, Object Reference Rules 2 and 5),
    * for the selected printer, material and filament
    * (API_SPEC.md, Generate Recommendation input).
+   * classification: the classification of the analysis, never null
+   * (DATA_SCHEMA.md 3.9.0, Object Classification Schema).
    */
   public build(
     analysis: Analysis,
+    classification: Classification,
     selection: RecommendationSelection,
     profile: RecommendedProfile,
     warnings: Warning[]
@@ -53,8 +57,7 @@ export class RecommendationBuilder {
 
       analysisId: analysis.analysisId,
 
-      classification:
-        analysis.classification,
+      classification,
 
       recommendedProfile: profile,
 

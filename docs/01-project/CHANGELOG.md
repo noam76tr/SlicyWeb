@@ -2740,6 +2740,45 @@ Date:
 
 ---
 
+# VERSION 0.1.77
+
+Release Type:
+Architecture Decision
+
+Status:
+In Progress
+
+Date:
+2026-11-01
+
+## Added
+
+- ADR-034 (DECISIONS.md) and ADM-030 (ARCHITECTURE_DECISION_MATRIX.md 2.6.0): definitions and methods of the model analysis (decisions D1 to D10 of Noam, 2026-11-01, analysis of lot 75): geometry only in Phase 9, classification in Phase 10; analysis of the object as placed on the build plate (scale and rotation, not position); overhangs from the vertical with a threshold of 45 degrees; bridges = flat regions facing down with at least two supports; stability with the tip test and the height ratio on the convex hull of the contact points (correction of Noam: an object on legs is stable), contactArea = real area of the faces lying on the plate; thin walls with rays towards the inside (three-mesh-bvh 0.9.17, installed in lot 79), 0.8 mm, independent of the printer; non-blocking warning for a mesh not closed; automatic start in a Web Worker; Analysis section; target 1M triangles < 5 s
+- DATA_SCHEMA.md 3.9.0: Complete Analysis Schema: dimensions {width, depth, height}, stability.centerOfGravity {x, y, z}, classification null = not yet classified; Analysis Rules (frame, units, ranges, definition of each value, Known Duplication of dimensions and geometry, mesh not closed, strict validation, compatibility); units Angle and Percentage; Object Classification Schema: no recommendation while the classification is null (REC_002)
+- tests/unit/schemas/AnalysisSchema.test.ts (9 tests)
+
+## Changed
+
+- src/schemas/AnalysisSchema.ts: every part strict (no field outside DATA_SCHEMA.md); dimensions and centerOfGravity with their three values; finite values, not negative except the center of gravity; whole numbers for vertices, triangles, bridge count and risk; maxAngle at most 90; percentage and riskScore at most 100; classification nullable (RecommendationSchema unchanged)
+- src/types/Analysis.ts: classification is Classification or null; meaning of Dimensions and CenterOfGravity
+- src/recommendation_engine/RecommendationEngine.ts, RecommendationBuilder.ts: REC_002 when the classification of the analysis is null; the builder receives the classification
+- src/services/AnalysisService.ts, src/gui/panels/AnalysisPanel.tsx (both unused, rewritten or deleted later, ADR-034 D9): classification null handled
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 9 In Progress, its decisions and the order of the lots 75 to 81; Object Classification, Category Detection and Confidence Score moved to Phase 10; lot "overhangs in red" after the closure of Phase 9 (D8 option B)
+- GUI_SPEC.md: Tools Menu (Analyze Models, Recompute Analysis, automatic start), Analysis Section (Phase 9 content, cm³ and cm²), Status Bar (Analyzing…), Error Handling UI (ANA_001, ANA_002), Future GUI Features (Overhang Display)
+- ERROR_CODES_SPEC.md 2.3.0: ANA_001 (no analysis) and ANA_002 (warning, non-blocking: mesh not closed); ANA_003 and ANA_004 not used in Phase 9
+- PERFORMANCE_SPEC.md 1.1.0: Analysis Performance (Web Worker, 1M triangles < 5 s, at most 200 000 points for the thin walls)
+- TEST_PLAN.md: Analysis Engine Unit Tests (built models: cube of 20 mm with a thickness of 20 mm, tower, sphere, stool on four legs with a low risk, bridges, cantilever, thin plate, mesh not closed, empty mesh), Scene To Analysis, Large Mesh Tests
+- API_SPEC.md: Analysis Result follows DATA_SCHEMA.md 3.9.0, classification null until Phase 10
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: tests/unit/schemas/AnalysisSchema.test.ts
+- PASSATION.md: lot 76, decisions 79 to 81, Phase 9 in "Travail restant"
+
+## Known Limitations
+
+- No analysis is computed yet (lots 77 to 80); three-mesh-bvh is not installed yet (lot 79)
+- Bridges, and the volume and the thickness of a mesh that is not closed, are approximations (ADR-034)
+
+---
+
 # VERSION 0.2.0
 
 Release Type:

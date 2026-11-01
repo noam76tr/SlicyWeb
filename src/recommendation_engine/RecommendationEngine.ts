@@ -44,9 +44,19 @@ export class RecommendationEngine {
     selection: RecommendationSelection,
     presets: PrintPreset[]
   ): Recommendation {
+    // DATA_SCHEMA.md 3.9.0: no recommendation while the object is
+    // not classified (classification null, ADR-034 D1).
+    const classification = analysis.classification;
+
+    if (classification === null) {
+      throw new Error(
+        "REC_002 Insufficient Data: the object is not classified yet."
+      );
+    }
+
     const presetSelection =
       this.decisionEngine.selectPreset(
-        analysis.classification,
+        classification,
         presets
       );
 
@@ -76,6 +86,7 @@ export class RecommendationEngine {
 
     return this.recommendationBuilder.build(
       analysis,
+      classification,
       selection,
       validatedProfile,
       warnings

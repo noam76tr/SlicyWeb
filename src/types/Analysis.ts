@@ -3,13 +3,17 @@
  * Analysis Type Definition
  *
  * Based on:
- * - DATA_SCHEMA.md
+ * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules)
+ * - DECISIONS.md (ADR-034)
  * - AI_ENGINE_SPEC.md
  * - OBJECT_CLASSIFICATION_SPEC.md
  */
 
 import type { Classification } from "./Classification";
 
+/**
+ * Size of the object as placed on the build plate along X, Y, Z, in mm.
+ */
 export interface Dimensions {
   width: number;
   depth: number;
@@ -29,6 +33,10 @@ export interface MeshStatistics {
   triangles: number;
 }
 
+/**
+ * Center of gravity of the solid, relative to the center of the object
+ * (transform.position), along the axes of the build plate, in mm.
+ */
 export interface CenterOfGravity {
   x: number;
   y: number;
@@ -88,5 +96,8 @@ export interface Analysis {
 
   thinWalls: ThinWalls;
 
-  classification: Classification;
+  /**
+   * null = not yet classified (Phase 10, ADR-034 D1).
+   */
+  classification: Classification | null;
 }

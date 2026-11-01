@@ -2,7 +2,7 @@
 
 # ARCHITECTURE DECISION MATRIX
 
-Version: 2.5.0
+Version: 2.6.0
 
 Status: Approved
 
@@ -181,6 +181,7 @@ Requires:
 | ADM-027 | Object Transform Meaning (Rotation Unit, Order, Pivot, Scale) | Scene | High | Approved |
 | ADM-028 | Printer Profile Sources, Licences and Profile Repository | Printer Database | High | Approved |
 | ADM-029 | Material and Filament Profile Sources | Material Database | High | Approved |
+| ADM-030 | Model Analysis Definitions and Methods | Analysis | High | Approved |
 
 ---
 
@@ -855,6 +856,31 @@ Benefits:
 
 - One rule for printers, materials and filaments
 - Each number checked against its source
+
+---
+
+ADM-030
+
+Title:
+
+Model Analysis Definitions and Methods
+
+Decision:
+
+Phase 9 computes the geometry only (classification in Phase 10, analysis.classification null until then); the analysis is made on the object as placed on the build plate (scale and rotation, not position), in mm, mm², mm³, degrees and percentages; definitions of dimensions, center of gravity, overhangs (angle from the vertical, 45 degrees), bridges (flat region with two supports), stability (contact area of the faces lying on the plate, tip test and height ratio on the convex hull of the contact points) and thin walls (rays towards the inside, three-mesh-bvh, 0.8 mm, independent of the printer); computed automatically in a Web Worker; a mesh not closed gives a non-blocking warning (ANA_002).
+
+Rationale:
+
+DATA_SCHEMA.md gave the fields without their meaning; the analysis must stay deterministic, repeatable and testable (DOMAIN_BOUNDARIES.md, Analysis Domain), and independent of the printer and the material.
+
+Reference:
+
+ADR-034 (DECISIONS.md)
+
+Benefits:
+
+- Each value defined and tested on built models
+- An analysis outdated only by a rotation or a scale (ADR-026)
 
 ---
 

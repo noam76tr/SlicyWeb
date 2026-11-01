@@ -2520,6 +2520,93 @@ Reason:
 
 ---
 
+# ADR-034
+
+Title: Model Analysis Definitions and Methods
+
+Status: Accepted
+
+Date: 2026-11-01
+
+## Context
+
+Phase 9 (Model Analysis) computes the analysis of each object (Complete Analysis Schema, ADR-026). DATA_SCHEMA.md 3.8.0 gave the names of the fields, but not their meaning, their units or the content of dimensions and stability.centerOfGravity ({}). PHASES_IMPLEMENTATION_PLAN.md put Object Classification at the top of Phase 9, while its own table puts classification in Phase 10. The store of the analyses is ready (ADR-026), but nothing computes an analysis: the six files of src/model_analysis/ are templates of Phase 0 with wrong values (volume of the bounding box, angle always 45 degrees). No dependency of the project gives fast ray casting (BVH). Analysis: lot 75 (PHASE9-ANALYSE.md), decisions D1 to D10 of Noam (2026-11-01).
+
+## Decision
+
+- Scope (D1): Phase 9 computes the geometry only. Object Classification, Category Detection and Confidence Score move to Phase 10 (Classification and Recommendation Engine), with the recommendation. Until then, analysis.classification is null = "not yet classified" (DATA_SCHEMA.md 3.9.0), the same rule as the selections not yet made. A WYPROJ 3.0.0 file whose analysis has a classification stays valid: no change of the WYPROJ format. A recommendation is not generated while the classification is null (REC_002).
+- Frame and units (D2): the analysis is made on the object as placed on the build plate: scale and rotation applied, position ignored (Object Reference Rules, rule 8). Units: mm, mm², mm³, degrees, percentage 0 to 100. dimensions {width, depth, height} = size on the plate along X, Y, Z; geometry = the same size, plus volume and surfaceArea after scale (Known Duplication); mesh = triangles and distinct vertices; stability.centerOfGravity {x, y, z} = center of gravity of a full and homogeneous solid, relative to the center of the object (transform.position), along the axes of the plate.
+- Overhangs (D3): angle of a triangle facing down measured from the vertical (0 = vertical wall, 90 = flat ceiling), as the thresholds of SUPPORT_GENERATION_SPEC.md; triangles lying on the plate excluded; maxAngle = largest angle; percentage = area beyond 45 degrees (limit "Safe" of SUPPORT_GENERATION_SPEC.md) divided by the total area; detected = at least one triangle beyond 45 degrees.
+- Bridges (D3): a flat region facing down (beyond 80 degrees), not on the plate, made of triangles joined by their edges; on its border, a triangle that goes down is a support (a wall that carries it), a triangle that goes up is a free edge. The region is a bridge when it has at least two separate supports; with one support it is an overhang only. count = number of bridges; longestBridge = the largest span, the span of a bridge being the shortest distance between two of its supports (the direction in which a slicer draws a bridge). This is an approximation: a curved or slanted bridge can be counted wrongly.
+- Stability (D4, corrected by Noam): contactArea = real area of the triangles lying on the plate (at 0.01 mm), used for adhesion. The tip test and heightRatio use the convex hull, seen from above, of the contact points with the plate (the vertices at Z <= 0.01 mm), not only the area of the faces lying on the plate: an object on legs (chair, table, tripod, stool) is stable when its center of gravity is inside the hull of its legs. heightRatio = height divided by the square root of the area of the hull (0 when this area is 0); riskScore = (heightRatio - 1) x 20, rounded, limited to 0 and 100; 100 when the center of gravity, seen from above, is outside the hull, or when there is no contact area (a point or a line). Examples: cube of 20 mm: 0; tower of 20 x 20 x 100 mm: 80 (High); sphere: 100; stool on four legs: low. Levels of AI_ENGINE_SPEC.md (already in AnalysisConstants.ts). The coefficients are a first setting, which can be adjusted in Phase 10.
+- Thin walls (D5): new dependency three-mesh-bvh (MIT, version 0.9.17, needs three >= 0.159), installed by Noam in lot 79, used in the Web Worker of the analysis. From points of the surface (at most 200 000, spread in proportion to the area, the same points at each computation), a ray goes towards the inside; the distance to the next face met is the thickness. A point is taken inside its triangle, never on an edge, and the ray ignores its own triangle, so that it never meets its own face or a neighbouring face at its start (test: a full cube of 20 mm gives 20 mm). minimumThickness = the smallest thickness, in mm; detected = below 0.8 mm (two lines of a 0.4 mm nozzle), whatever the printer: the comparison with the nozzle stays a recommendation (RECOMMENDATION_RULES.md, Phase 10).
+- Meshes not closed (D6): the analysis is computed anyway. When an edge is not shared by exactly two triangles, a non-blocking message is shown (ANA_002, "Mesh not closed: volume and wall thickness are approximate"), like the messages of the import. No field is added to DATA_SCHEMA.md. Only an empty or unreadable mesh gives ANA_001 (no analysis).
+- Start (D7): automatic, after the import of each object, and when an analysis becomes outdated (rotation or scale), once the gesture is over or the value confirmed (never while dragging). In a Web Worker (no Electron, KI-024), one object at a time; a computation that is no longer needed (object removed, or turned again) is dropped. Tools > Analyze Models (all objects without an analysis up to date) and Tools > Recompute Analysis (selected objects, computation forced) are enabled. The status bar shows "Analyzing…" during the computation.
+- Analysis section (D8, option A): one selected object: status (Up to date, Outdated, Analyzing), dimensions L x W x H mm, volume in cm³ and area in cm² (the units of the slicers), mesh, overhangs, bridges, thin walls, stability with the level of the risk. Several objects: "Select a single object". Texts in the three languages. Option B (overhanging triangles in red in the 3D view) is accepted for a separate lot after the closure of Phase 9.
+- Unused files (D9): GeometryAnalyzer.ts, StabilityAnalyzer.ts, PrintabilityAnalyzer.ts, MeshValidator.ts, MeshAnalyzer.ts and ModelAnalyzer.ts (src/model_analysis/) are rewritten with the real computations, under the same names (ModelAnalyzer builds the analysis; getPrintabilityScore disappears: no field in DATA_SCHEMA.md); AnalysisService.ts is rewritten (it starts the analysis, validates the result with AnalysisSchema and stores it; serialize, deserialize and isPrintable removed); src/gui/panels/AnalysisPanel.tsx is deleted when the Analysis section is done (lot 80). Each deletion is recalled in the LOTN.md of its lot.
+- Size and time (D10): target added to PERFORMANCE_SPEC.md: 1 million triangles analyzed in less than 5 seconds on the computer of Noam, the interface staying fluid. Larger models are analyzed too (no new limit; the limits of the import stay), with "Analyzing…". The target is checked, it does not block.
+
+## Consequences
+
+Advantages:
+
+- Each value of the analysis has a definition, a unit and a method that can be tested on models built in the tests
+- The analysis does not depend on the printer or the material: changing them never makes it outdated
+- Phase 9 stays limited to the geometry; classification gets its own rules in Phase 10
+
+Disadvantages:
+
+- One more dependency (three-mesh-bvh) to follow
+- Bridges, and the volume and the thickness of a mesh that is not closed, are approximations
+- The coefficients of the tip risk are a first setting
+
+## Alternatives Considered
+
+Analysis in the coordinate system of the imported file (without rotation or scale)
+
+Rejected
+
+Reason:
+
+- The overhangs would not match the object as it will be printed (ADR-026)
+
+Tip test on the faces lying on the plate only
+
+Rejected (correction of Noam)
+
+Reason:
+
+- An object on legs would get a risk of 100 while it is stable
+
+Threshold of the thin walls from the nozzle of the selected printer
+
+Rejected
+
+Reason:
+
+- Changing the printer would make the analysis outdated (a new Object Reference Rule)
+
+Search grid written for SlicyWeb instead of three-mesh-bvh
+
+Rejected
+
+Reason:
+
+- More code to maintain and test for an equivalent result
+
+## Related Documents
+
+- DATA_SCHEMA.md (Complete Analysis Schema, Analysis Rules, Object Classification Schema)
+- PHASES_IMPLEMENTATION_PLAN.md (Phase 9, Phase 10)
+- SUPPORT_GENERATION_SPEC.md (Overhang Angle Thresholds), AI_ENGINE_SPEC.md (risk levels), RECOMMENDATION_RULES.md
+- GUI_SPEC.md (Tools Menu, Analysis Section, Status Bar)
+- ERROR_CODES_SPEC.md (Analysis Errors)
+- PERFORMANCE_SPEC.md (Analysis Performance), TEST_PLAN.md (Analysis Engine Unit Tests)
+- ADR-026, ADR-028, ADR-031
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-030)
+
+---
+
 # Future Decision Template
 
 Copy and complete:

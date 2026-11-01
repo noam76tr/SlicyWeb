@@ -940,6 +940,8 @@ tests/
 │   │   └── ObjectRenderer.test.ts = selection rectangle (Phase 6)
 │   ├── scene/
 │   │   └── ObjectTransform.test.ts = Transform Rules (ADR-031)
+│   ├── schemas/
+│   │   └── AnalysisSchema.test.ts = Complete Analysis Schema, classification null (Phase 9)
 │   ├── storage/
 │   │   └── SettingsStorage.test.ts = settings.json, printer and material settings (Phases 7 and 8)
 │   └── services/

@@ -565,6 +565,8 @@ Optimize Orientation
 
 ```
 
+Phase 9 (ADR-034 D7; lot 80): Analyze Models analyzes all the objects without an analysis up to date (no analysis, or outdated); Recompute Analysis analyzes the selected objects again, even when their analysis is up to date. Both are disabled while the scene has no object (Recompute Analysis: while no object is selected). The analysis also starts by itself after the import of each object, and when its analysis becomes outdated (rotation or scale), once the gesture is over or the value confirmed, never while dragging. Generate Recommendations and Optimize Orientation stay disabled (Phases 10 and 11).
+
 
 
 ---
@@ -1686,6 +1688,28 @@ Stability
 
 ```
 
+Phase 9 (ADR-034 D8, option A; lot 80). Values from the analysis of the object (DATA_SCHEMA.md, Complete Analysis Schema, Analysis Rules):
+
+```text
+Status: Up to date, Outdated, Analyzing…, or No analysis
+Dimensions: W x D x H mm (dimensions)
+Volume: cm³ (geometry.volume / 1000)
+Surface Area: cm² (geometry.surfaceArea / 100)
+Mesh Statistics: triangles, vertices
+Overhangs: maximum angle (degrees) and % of the surface beyond 45 degrees, or "None"
+Bridges: count and longest span (mm), or "None"
+Thin Walls: minimum thickness (mm), "Thin walls detected" below 0.8 mm
+Stability: contact area (cm²), height ratio, tip risk out of 100 with its level
+           (Very low, Low, Moderate, High, Critical; AI_ENGINE_SPEC.md)
+```
+
+- One selected object: its analysis. Several selected objects: "Select a single object". No selected object: the section shows nothing else.
+- An outdated analysis keeps its values, with the status Outdated, until it is computed again.
+- A mesh not closed shows the warning of ANA_002 in the section (volume and wall thickness are approximate).
+- Numbers follow the language (decimal separator); the volume and the areas are shown in cm³ and cm² (the units of the slicers), the stored values stay in mm³ and mm² (DATA_SCHEMA.md).
+- Texts in the three languages. The classification is not shown before Phase 10.
+- src/gui/panels/AnalysisPanel.tsx (unused, text in English in the code, KI-015) is deleted (ADR-034 D9).
+
 
 
 ---
@@ -1800,6 +1824,8 @@ Current Language
 
 Project Status
 ```
+
+Analysis Status (Phase 9, ADR-034 D7; lot 80): "Analyzing…" while an analysis is computed.
 
 
 
@@ -2124,6 +2150,8 @@ Analysis Failure
 
 No technical stack traces visible to user.
 
+Analysis messages (Phase 9, ADR-034 D6; lot 80): ANA_001 (no analysis: empty or unreadable mesh, or failure of the computation) is an error; ANA_002 ("Mesh not closed: volume and wall thickness are approximate") is a warning that does not block: the analysis is shown. Both are translated and shown like the messages of the import.
+
 
 
 The import messages shown over the 3D viewport (progress, confirmation, error) never stop the clicks in the viewport under them: only their Cancel and Close buttons receive the pointer (decision of Noam, lot 55).
@@ -2219,7 +2247,11 @@ Preset Library
 
 Profile Repository Browser
 
+Overhang Display
+
 ```
+
+Overhang Display (decision of Noam, 2026-11-01, ADR-034 D8 option B): the triangles of the selected object beyond 45 degrees shown in red in the 3D viewport, with a button to turn it on. A separate lot after the closure of Phase 9 (PHASES_IMPLEMENTATION_PLAN.md, Phase 9).
 
 
 

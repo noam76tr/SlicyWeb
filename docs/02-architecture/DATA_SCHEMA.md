@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.8.0
+Version: 3.9.0
 
 Status: Approved
 
@@ -81,6 +81,10 @@ Length: mm
 Volume: mm³
 
 Area: mm²
+
+Angle: degrees
+
+Percentage: 0 to 100
 
 Time: seconds
 
@@ -1275,7 +1279,15 @@ mesh: vertices of the object in its own coordinate system (relative to the
 
    "heightRatio": 0,
 
-   "centerOfGravity": {},
+   "centerOfGravity": {
+
+     "x": 0,
+
+     "y": 0,
+
+     "z": 0
+
+   },
 
    "riskScore": 0
 
@@ -1385,7 +1397,15 @@ mesh: vertices of the object in its own coordinate system (relative to the
 
  "status": "generated",
 
- "dimensions": {},
+ "dimensions": {
+
+   "width": 0,
+
+   "depth": 0,
+
+   "height": 0
+
+ },
 
  "geometry": {},
 
@@ -1399,7 +1419,7 @@ mesh: vertices of the object in its own coordinate system (relative to the
 
  "thinWalls": {},
 
- "classification": {}
+ "classification": null
 
 }
 
@@ -1412,6 +1432,122 @@ generated = Computed for the current geometry, rotation and scale of the object
 
 outdated = The object was rotated or scaled after computation; must be recomputed
 ```
+
+Analysis Rules (3.9.0, DECISIONS.md, ADR-034):
+
+```text
+Frame:
+  the object as placed on the build plate: scale and rotation of the
+  Transform Schema applied (Point on the plate = R · (S · point of the
+  object)), position ignored; axes of the build plate (ADR-028); the lowest
+  point of the object at Z = 0 (Placement on the plate)
+  a change of position alone does not change the analysis (Object Reference
+  Rules, rule 8)
+
+Units:
+  lengths mm, areas mm², volumes mm³, angles degrees, percentages 0 to 100
+
+Numbers:
+  every number is finite; every number is >= 0, except centerOfGravity x, y
+  and z; mesh.vertices, mesh.triangles, bridges.count and riskScore are
+  whole numbers;
+  maxAngle is at most 90; percentage and riskScore are at most 100
+
+Solid:
+  the material is full and homogeneous (no infill at this stage)
+```
+
+Fields:
+
+```text
+dimensions.width, depth, height:
+  size of the object on the build plate along X, Y and Z, in mm (bounding box
+  of the placed object)
+
+geometry.width, depth, height:
+  the same values as dimensions (Known Duplication below)
+geometry.volume:
+  volume enclosed by the mesh after scale, in mm³
+geometry.surfaceArea:
+  sum of the areas of the triangles after scale, in mm²
+
+mesh.triangles:
+  number of triangles
+mesh.vertices:
+  number of distinct vertices (a position shared by several triangles is
+  counted once)
+
+stability.contactArea:
+  area of the triangles lying on the build plate (facing down, the three
+  vertices at Z <= 0.01 mm), in mm²; used for adhesion
+stability.centerOfGravity {x, y, z}:
+  center of gravity of the solid, relative to the center of the object
+  (transform.position), along the axes of the build plate, in mm; it does not
+  change when the object is moved
+  when the enclosed volume is 0 (flat or open mesh), the center of the
+  surface (area weighted) is used
+stability.heightRatio:
+  dimensions.height divided by the square root of the area of the contact
+  hull; 0 when the area of the contact hull is 0
+stability.riskScore:
+  tip risk, 0 to 100: (heightRatio - 1) x 20, rounded to the nearest whole
+  number and limited to 0 and 100; 100 when
+  the center of gravity, seen from above, is outside the contact hull, or
+  when the area of the contact hull is 0 (no contact, a point or a line)
+  levels: AI_ENGINE_SPEC.md (0-20 very low, 21-40 low, 41-60 moderate,
+  61-80 high, 81-100 critical)
+contact hull (not stored):
+  convex hull, seen from above, of the contact points: the vertices at
+  Z <= 0.01 mm; an object on legs is stable when its center of gravity is
+  inside the hull of its legs, even when its contactArea is small
+
+overhangs (each triangle facing down, triangles lying on the build plate
+excluded):
+  angle of a triangle: measured from the vertical, 0 = vertical wall,
+  90 = flat ceiling (SUPPORT_GENERATION_SPEC.md, Overhang Angle Thresholds)
+  maxAngle: the largest angle, 0 when no triangle faces down
+  percentage: area of the triangles beyond 45 degrees divided by
+    geometry.surfaceArea, x 100
+  detected: at least one triangle beyond 45 degrees
+
+bridges:
+  flat region: triangles facing down beyond 80 degrees, not lying on the
+    build plate, joined by their edges
+  support of a region: a part of its border where the next triangle goes
+    down (a wall that carries it); a part where it goes up is a free edge
+  bridge: a flat region with at least two separate supports; a region with
+    one support is an overhang only
+  count: number of bridges
+  longestBridge: the largest span, in mm; the span of a bridge is the
+    shortest distance between two of its supports; 0 when there is no bridge
+  detected: count > 0
+
+thinWalls:
+  thickness at a point of the surface: distance from this point, towards the
+    inside of the object, to the next face met
+  minimumThickness: the smallest thickness measured (at most 200 000 points,
+    spread over the surface in proportion to the area, the same points at
+    each computation), in mm; 0 when no thickness can be measured (open or
+    flat mesh)
+  detected: minimumThickness below 0.8 mm (two lines of a 0.4 mm nozzle);
+    false when no thickness can be measured; it does not depend on the
+    selected printer (the comparison with the nozzle is a recommendation,
+    RECOMMENDATION_RULES.md, Phase 10)
+
+classification:
+  null = not yet classified (Phase 10, Classification and Recommendation
+  Engine); otherwise the Object Classification Schema
+```
+
+Known Duplication:
+
+The width, depth and height of the object exist both in dimensions and in geometry. They always have the same values. This duplication is known and is kept: both fields come from the Complete Analysis Schema.
+
+Mesh not closed: when an edge is not shared by exactly two triangles, the analysis is still computed and stored; volume, center of gravity and thickness are then approximate, and the message ANA_002 (warning, non-blocking) is shown (ERROR_CODES_SPEC.md). An empty or unreadable mesh gives ANA_001 and no analysis.
+
+Validation: AnalysisSchema (Zod) refuses any field that is not in this schema, in the analysis and in each of its parts.
+
+Compatibility: a WYPROJ 3.0.0 file whose analysis has a classification object stays valid. No version of the application before 3.9.0 computed an analysis.
 
 ---
 
@@ -1435,6 +1571,8 @@ category: stored value (Classification Categories).
 classificationVersion: version of OBJECT_CLASSIFICATION_SPEC.md applied by the classification.
 
 The confidence level is not stored. It is computed from confidenceScore (OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels).
+
+Not yet classified (3.9.0, ADR-034): the classification of an analysis is null until the object is classified (Phase 10). recommendation.classification is the classification of the analysis used: a recommendation is not generated while the classification of the analysis is null (ERROR_CODES_SPEC.md, REC_002 Insufficient Data).
 
 
 ---

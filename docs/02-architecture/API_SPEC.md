@@ -1522,6 +1522,8 @@ POST
 
 ```
 
+The result follows the Complete Analysis Schema (DATA_SCHEMA.md 3.9.0, Analysis Rules); classification is null until the object is classified (Phase 10, ADR-034).
+
 
 
 ---

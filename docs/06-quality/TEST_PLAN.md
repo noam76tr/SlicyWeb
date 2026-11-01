@@ -543,6 +543,34 @@ Confidence Scoring
 
 ```
 
+Phase 9 (ADR-034; DATA_SCHEMA.md, Analysis Rules): Object Classification and Confidence Scoring move to Phase 10. The analysis is tested on models built in the tests (no model file), each value with a tolerance:
+
+```text
+Cube 20 mm: dimensions 20 x 20 x 20, volume 8000 mm³, area 2400 mm²,
+  8 vertices, 12 triangles, contact area 400 mm², center of gravity 0, 0, 0,
+  height ratio 1, risk 0, no overhang, no bridge, minimum thickness 20 mm
+  (the ray meets neither its own face nor a neighbouring face at its start)
+Cube 20 mm rotated and scaled (200 % in X, then +90 degrees around Z):
+  dimensions 20 x 40 x 20, volume 16000 mm³
+Cube rotated 45 degrees around X: overhang angle 45, percentage 0 (only
+  beyond 45 degrees counts); not detected
+Tower 20 x 20 x 100 mm: height ratio 5, risk 80 (High)
+Sphere: no contact area, risk 100 (Critical)
+Stool on four legs: contact area = the four legs only, center of gravity
+  inside the hull of the legs, low risk: at most 40 (correction of Noam, D4;
+  seat 40 x 40 x 5 mm on four legs of 4 x 4 x 40 mm at its corners: height
+  45 mm, hull 40 x 40 mm, height ratio 1.125, risk 3)
+Object whose center of gravity is outside its contact hull: risk 100
+Two pillars and a slab: 1 bridge, longest span = distance between the pillars
+Cantilever (slab with one support): 0 bridges, overhang detected, angle 90
+Plate 0.5 mm thick: thin walls detected, minimum thickness 0.5 mm
+Mesh not closed (cube without one face): analysis computed, warning ANA_002
+Empty mesh: ANA_001, no analysis
+Repeatable: the same object analyzed twice gives the same analysis
+AnalysisSchema: classification null accepted, a classification object
+  accepted (WYPROJ 3.0.0), unknown field refused, values out of range refused
+```
+
 
 
 ---
@@ -757,6 +785,8 @@ Analysis Stored
 ```
 
 Must succeed.
+
+Phase 9 (ADR-034 D7): the analysis is computed in a Web Worker, validated with AnalysisSchema and stored by objectId; a rotation or a scale makes it outdated, then it is computed again once the gesture is over; an object removed during its computation gets no analysis. End-to-end tests (Playwright, lot 80): import a model, then its analysis is shown in the Analysis section; rotate it, then the analysis is computed again.
 
 ---
 
@@ -1577,6 +1607,8 @@ Test
 5M Triangles
 
 ```
+
+Analysis (Phase 9, PERFORMANCE_SPEC.md): 1M triangles analyzed in less than 5 seconds, the interface staying fluid.
 
 
 

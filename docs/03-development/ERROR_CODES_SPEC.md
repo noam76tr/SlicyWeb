@@ -3,7 +3,7 @@
 # ERROR CODES SPECIFICATION
 
 
-Version: 2.2.0
+Version: 2.3.0
 
 Status: Approved
 
@@ -493,7 +493,7 @@ Invalid Project Data
 
 # Analysis Errors
 
-
+Phase 9, ADR-034. The analysis is computed in a Web Worker; its messages are translated and shown like the messages of the import (GUI_SPEC.md, Error Handling UI). In Phase 9, a failure of any part of the computation (volume, overhangs...) is reported as ANA_001; ANA_003 and ANA_004 are not used yet.
 
 ---
 
@@ -509,7 +509,7 @@ Analysis Failed
 
 ```
 
-
+Severity: Error. The mesh of the object is empty or cannot be read, or the computation fails. No analysis is stored for the object (an outdated analysis stays outdated).
 
 ---
 
@@ -524,6 +524,8 @@ Analysis Failed
 Mesh Validation Failed
 
 ```
+
+Severity: Warning, non-blocking (ADR-034 D6). The mesh is not closed: an edge is not shared by exactly two triangles. The analysis is computed and stored anyway; message: "Mesh not closed: volume and wall thickness are approximate". No field of DATA_SCHEMA.md keeps it: it is found again at each computation.
 
 
 

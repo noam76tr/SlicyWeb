@@ -4,7 +4,7 @@
 
 
 
-Version: 1.0.0
+Version: 1.1.0
 
 
 
@@ -203,6 +203,18 @@ Analysis should run asynchronously.
 
 
 GUI must remain responsive.
+
+Phase 9 (ADR-034 D7, D10): the analysis runs in a Web Worker, one object at a time; a computation that is no longer needed (object removed, or turned again) is dropped.
+
+Target:
+
+```text
+1M Triangles Analyzed < 5 seconds
+```
+
+on the Windows 11 computer used for the validation, the interface staying fluid. Larger models are analyzed too (no limit of the analysis; the limits of the import stay), with "Analyzing…" in the status bar. The target is checked at the closure of Phase 9; it does not block.
+
+Thin walls: at most 200 000 measured points per object, with a BVH (three-mesh-bvh).
 
 
 
