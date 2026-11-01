@@ -2706,7 +2706,7 @@ Release Type:
 3D Viewport
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-01
@@ -2733,6 +2733,10 @@ Date:
 
 - Only the six faces can be clicked (no edge, no corner); the view changes at once (no animation)
 - The cube shows the rotation of the camera only (drawn without perspective, whatever the projection)
+
+## Validation Result
+
+- Windows 11 (2026-11-01): lot 74 on GitHub (f40f35b, identical to the lot); npm run check:locales: 376 keys; npm run check:ipc: 28 channels; typecheck and lint without error; npm test: 291 tests passed, 1 skipped (link test); npm run test:e2e: 28 tests passed; manual controls 1 to 10 passed (Noam)
 
 ---
 

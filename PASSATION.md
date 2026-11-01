@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-11-01. Lot 73 (clôture de la phase 8) sur `main` (a31698f), vérifié identique et validé par Noam (370 clés, 28 canaux, 279 tests + 1 ignoré, tests e2e réussis) ; phase 8 close. Lot 74 (cube de navigation) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.76 (lot 74).
+Date : 2026-11-01. Lot 74 (cube de navigation) sur `main` (f40f35b), vérifié identique et validé par Noam (376 clés, 28 canaux, 291 tests + 1 ignoré, 28 tests e2e, contrôles manuels 1 à 10 réussis). Lot 75 (analyse de la phase 9, décisions D1 à D10) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.76 (lot 74, Completed).
 
 ---
 
@@ -76,7 +76,8 @@ Date : 2026-11-01. Lot 73 (clôture de la phase 8) sur `main` (a31698f), vérifi
 | 6 | Transform System | Completed (2026-10-21) | 0.1.47 à 0.1.56 |
 | 7 | Printer Database | Completed (2026-10-27) | 0.1.59 à 0.1.66 |
 | 8 | Material Database | Completed (2026-11-01) | 0.1.67 à 0.1.75 |
-| 9 à 16 | Model Analysis, Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
+| 9 | Model Analysis | Analyse faite (lot 75), en attente des décisions D1 à D10 de Noam | — |
+| 10 à 16 | Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
 
@@ -125,7 +126,7 @@ Date : 2026-11-01. Lot 73 (clôture de la phase 8) sur `main` (a31698f), vérifi
 | API_SPEC.md | 2.1.0 (voir §5, points en attente) |
 | SLICER_EXPORT_SPEC.md | 1.0.0 |
 | UNDO_REDO_SPEC.md | 2.2.0 (50 étapes ; phase 6 : transformations seulement ; Ctrl+Z dans un champ) |
-| Dernier ADR | ADR-031 ; dernier ADM : ADM-027 |
+| Dernier ADR | ADR-033 ; dernier ADM : ADM-029 |
 
 ---
 
@@ -210,6 +211,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 72 | Phase 8 : synchronisation des matériaux et filaments depuis `slicyweb-profiles` (`materials/index.json`, `filaments/index.json`, tag v1.1.0, caches `cache/materials/` et `cache/filaments/`), Refresh Profiles et la vérification au démarrage sur les trois listes ; `ProfileRepositorySync.ts` commun ; DATA_SCHEMA 3.8.0 ; `MaterialCache.ts` et `FilamentCache.ts` supprimés (D11) | 0.1.74 |
 | 73 | Clôture de la phase 8 ; aucun fichier à supprimer (tableau D11 fait aux lots 68 à 72) ; règle d'écriture du tag de publication (minuscule, comme dans `index.json`) | 0.1.75 |
 | 74 | Cube de navigation (décisions 76 et 78) : `NavigationCube.ts`, `NavigationCube.tsx`, axes retirés du centre du plateau, 6 clés (376) ; 2 tests e2e (28) ; règle « aucune commande git chez Noam » (§1) | 0.1.76 |
+| 75 | Analyse seule : phase 9 (Model Analysis), inventaire, définitions et méthodes de calcul, décisions D1 à D10 (`lot75-phase9-analyse/PHASE9-ANALYSE.md`) ; 0.1.76 passe en « Completed » | — |
 
 ---
 
@@ -331,9 +333,10 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 2. **Tests automatiques avec Playwright** (lots 54, 55, 58, 60, 61, 62, 63, 67, 68, 70, 71 et 74) : 28 tests sur l'application compilée (démarrage, langues, import, transformations, Annuler / Rétablir, sélection multiple, imprimantes, matériaux, cube de navigation). À compléter à chaque phase (TEST_PLAN, scénarios E2E 1 à 6 quand les projets, imprimantes et matériaux existeront).
 3. **Phase 7 : Printer Database** (Completed, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue (fait) ; 61 imprimantes saisies par l'utilisateur (fait) ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (fait, v1.0.0 publiée) ; 63 « aucune version publiée » et sécurité des dépendances (fait) ; 64 clôture (fait). Close le 2026-10-27, lot 64 validé par Noam.
 4. **Phase 8 : Material Database** (Completed, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (fait, validé) ; 68 chargement (fait, validé) ; 69 données (fait, validé) ; 70 interface (fait, validé) ; 71 filaments de l'utilisateur (fait, validé) ; 72 synchronisation (fait, validé ; release v1.1.0 de `slicyweb-profiles`) ; 73 clôture (fait, validé). Close le 2026-11-01. (Lot 67 : plateau, hors phase 8.)
-5. **Cube de navigation** (décisions 76 et 78) : lot 74 livré, à valider ; ensuite la phase 9.
-6. **Phases 9 à 16**, dans l'ordre du plan technique.
-7. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
+5. **Cube de navigation** (décisions 76 et 78) : lot 74 fait, validé par Noam le 2026-11-01.
+6. **Phase 9 : Model Analysis** : analyse au lot 75 (inventaire, 10 décisions D1 à D10 dans `lot75-phase9-analyse/PHASE9-ANALYSE.md`). Après les réponses de Noam, découpage proposé : 76 documentation (ADR-034, DATA_SCHEMA 3.9.0), 77 calcul de base dans un Worker (dimensions, volume, surface, centre de gravité, stabilité), 78 surplombs et ponts, 79 parois fines, 80 interface (lancement, section Analysis, menus Tools), 81 clôture. Contradiction signalée : PHASES_IMPLEMENTATION_PLAN met la classification en tête de la phase 9 et dans la phase 10 de son tableau (D1).
+7. **Phases 10 à 16**, dans l'ordre du plan technique.
+8. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
    | KI | Sujet | À régler avant |
    |---|---|---|
@@ -347,7 +350,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    | KI-025 | Signature d'`index.json` (clé privée de Noam, clé publique dans l'application) : le SHA-256 vérifie l'intégrité, pas l'auteur | Phase 16 |
    | KI-026 | npm audit : zod 3 (GHSA-mrhx-c7xc-m3w5), correction seulement en zod 4 (version majeure) ; ne pas lancer `npm audit fix --force` | Phase 16 |
 
-8. **Points signalés, en attente d'une décision de Noam :**
+9. **Points signalés, en attente d'une décision de Noam :**
    - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (lié à KI-007).
    - SLICER_EXPORT_SPEC.md : version restée en 1.0.0, pas de code d'erreur pour les contrôles de scène (proposés : EXP_013 hors volume, EXP_014 collision).
    - Duplication projet/scène des 4 sélections dans DATA_SCHEMA (décision 4) : choisir la source de vérité.
@@ -359,7 +362,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot73-cloture-phase8/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 73 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot75-phase9-analyse/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 75 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.
