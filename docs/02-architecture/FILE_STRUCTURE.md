@@ -645,12 +645,16 @@ src/filament_database/
 ```text
 src/model_analysis/
 
-├── GeometryAnalyzer.ts
-├── MeshAnalyzer.ts
-├── MeshValidator.ts
-├── ModelAnalyzer.ts
+├── AnalysisError.ts           = analysis errors with their code (ANA_001), computation dropped
+├── AnalysisRunner.ts          = one analysis in the worker, cancel (ADR-034 D7)
+├── GeometryAnalyzer.ts        = dimensions, volume, surface area, center of gravity
+├── MeshAnalyzer.ts            = welded vertices, object as placed (scale and rotation), mesh
+├── MeshValidator.ts           = mesh readable (ANA_001), open edges (ANA_002)
+├── ModelAnalyzer.ts           = analysis of one object, messages of the worker
 ├── PrintabilityAnalyzer.ts
-└── StabilityAnalyzer.ts
+├── StabilityAnalyzer.ts       = contact area, contact hull, height ratio, tip risk (ADR-034 D4)
+└── workers/
+    └── modelAnalysis.worker.ts = Web Worker of the analysis (ADR-034 D7)
 ```
 
 ---
@@ -928,6 +932,8 @@ tests/
 │   │   ├── MaterialLoading.test.ts = material and filament profile files, MaterialSchema, FilamentSchema (Phase 8)
 │   │   ├── MaterialProfiles.test.ts = the profiles of data/materials/ and data/filaments/ (Phase 8)
 │   │   └── UserFilaments.test.ts = filaments entered by the user (Phase 8)
+│   ├── model_analysis/
+│   │   └── ModelAnalyzer.test.ts = base of the model analysis, stability, worker (Phase 9)
 │   ├── printer_database/
 │   │   ├── PrinterLoading.test.ts = printer profile files, PrinterSchema (Phase 7)
 │   │   ├── PrinterProfiles.test.ts = the profiles of data/printers/ and their index.json (Phase 7)

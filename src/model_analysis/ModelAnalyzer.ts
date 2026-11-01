@@ -1,77 +1,160 @@
 /**
  * SlicyWeb
- * Model Analyzer Definition
+ * Model Analyzer
+ *
+ * Computes the analysis of one object, as placed on the build plate
+ * (DATA_SCHEMA.md 3.9.0, Analysis Rules; ADR-034):
+ * 1. checks the triangle data (ANA_001 when empty or unreadable);
+ * 2. welds the vertices (mesh.vertices = distinct vertices);
+ * 3. applies scale and rotation, position ignored;
+ * 4. dimensions, geometry (volume, area), center of gravity;
+ * 5. stability (contact area, contact hull, height ratio, risk);
+ * 6. open edges: meshClosed false = warning ANA_002 (non-blocking).
+ *
+ * Phase 9, lot 77: the base of the analysis. Overhangs and bridges come
+ * with lot 78, thin walls with lot 79; the Complete Analysis Schema
+ * (analysisId, objectId, status, classification null) is built and
+ * validated with AnalysisSchema by AnalysisService (lot 80).
+ *
+ * Pure functions, no state, deterministic: the same object gives the same
+ * result. Runs in the Web Worker of the analysis (no Electron, KI-024).
+ *
+ * Domain: Analysis.
  *
  * Based on:
- * - ARCHITECTURE.md
- * - DATA_SCHEMA.md
- * - AI_ENGINE_SPEC.md
+ * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules)
+ * - DECISIONS.md (ADR-034 D2, D4, D6, D7)
+ * - ERROR_CODES_SPEC.md (ANA_001, ANA_002)
  */
 
-import type { Object3D } from "../types/Object3D";
+import type {
+  Dimensions,
+  Geometry,
+  MeshStatistics,
+  Stability,
+} from "../types/Analysis";
 
-import { MeshAnalyzer } from "./MeshAnalyzer";
-import { MeshValidator } from "./MeshValidator";
+import { AnalysisError } from "./AnalysisError";
+import { analyzeGeometry } from "./GeometryAnalyzer";
+import {
+  meshStatistics,
+  placeVertices,
+  weldVertices,
+  type AnalysisTransform,
+} from "./MeshAnalyzer";
+import { checkMeshData, countOpenEdges } from "./MeshValidator";
+import { analyzeStability } from "./StabilityAnalyzer";
 
+/** Result of the computation of one object (lot 77) */
 export interface ModelAnalysisResult {
-  valid: boolean;
+  dimensions: Dimensions;
 
-  vertices: number;
+  geometry: Geometry;
 
-  triangles: number;
+  mesh: MeshStatistics;
 
-  width: number;
+  stability: Stability;
 
-  depth: number;
-
-  height: number;
-
-  volume: number;
-
-  surfaceArea: number;
+  /**
+   * false: an edge is not shared by exactly two triangles; the message
+   * ANA_002 is shown (not stored, DATA_SCHEMA.md: Mesh not closed).
+   */
+  meshClosed: boolean;
 }
 
-export class ModelAnalyzer {
-  private readonly meshAnalyzer =
-    new MeshAnalyzer();
+/**
+ * Analysis of one object.
+ * positions: x, y, z of the 3 corners of each triangle, coordinates of the
+ * object (GeometryRegistry); transform: its scale and rotation.
+ * Throws AnalysisError ANA_001 when the mesh is empty or cannot be read.
+ */
+export function analyzeModel(
+  positions: Float32Array,
+  transform: AnalysisTransform,
+): ModelAnalysisResult {
+  checkMeshData(positions);
+  checkTransform(transform);
 
-  private readonly meshValidator =
-    new MeshValidator();
+  const welded = weldVertices(positions);
+  const placed = placeVertices(welded.vertices, welded.vertexCount, transform);
+  const { dimensions, geometry, centerOfGravity, lowestZ } = analyzeGeometry(
+    placed,
+    welded.corners,
+  );
+  const stability = analyzeStability(
+    placed,
+    welded.corners,
+    lowestZ,
+    dimensions.height,
+    centerOfGravity,
+  );
 
-  public analyze(
-    object: Object3D
-  ): ModelAnalysisResult {
-    const meshAnalysis =
-      this.meshAnalyzer.analyze(
-        object
-      );
+  return {
+    dimensions,
+    geometry,
+    mesh: meshStatistics(welded),
+    stability,
+    meshClosed: countOpenEdges(welded.corners, welded.vertexCount) === 0,
+  };
+}
+
+/** Scale and rotation must be finite numbers, the scale above 0 */
+function checkTransform(transform: AnalysisTransform): void {
+  const { rotation, scale } = transform;
+  const values = [
+    rotation.x,
+    rotation.y,
+    rotation.z,
+    scale.x,
+    scale.y,
+    scale.z,
+  ];
+
+  if (
+    !values.every((value) => Number.isFinite(value)) ||
+    scale.x <= 0 ||
+    scale.y <= 0 ||
+    scale.z <= 0
+  ) {
+    throw new AnalysisError(
+      "ANA_001",
+      "The transform of the object cannot be used for the analysis.",
+    );
+  }
+}
+
+/** Message sent to the Web Worker of the analysis */
+export interface AnalysisRequest {
+  /** Copy of the triangle data of the object (transferred) */
+  positions: Float32Array;
+
+  transform: AnalysisTransform;
+}
+
+/** Message returned by the Web Worker of the analysis */
+export type AnalysisResponse =
+  | { type: "result"; result: ModelAnalysisResult }
+  | { type: "error"; code: "ANA_001"; message: string };
+
+/**
+ * Answer to one request of the worker; never throws: any failure of the
+ * computation is ANA_001 (ERROR_CODES_SPEC.md, Analysis Errors).
+ */
+export function runAnalysisRequest(request: AnalysisRequest): AnalysisResponse {
+  try {
+    if (!(request?.positions instanceof Float32Array) || !request.transform) {
+      throw new AnalysisError("ANA_001", "The analysis request is not valid.");
+    }
 
     return {
-      valid:
-        this.meshValidator.validate(
-          object
-        ),
-
-      vertices:
-        meshAnalysis.vertices,
-
-      triangles:
-        meshAnalysis.triangles,
-
-      width:
-        object.geometry.width,
-
-      depth:
-        object.geometry.depth,
-
-      height:
-        object.geometry.height,
-
-      volume:
-        meshAnalysis.volume,
-
-      surfaceArea:
-        meshAnalysis.surfaceArea
+      type: "result",
+      result: analyzeModel(request.positions, request.transform),
+    };
+  } catch (error) {
+    return {
+      type: "error",
+      code: "ANA_001",
+      message: error instanceof Error ? error.message : String(error),
     };
   }
 }

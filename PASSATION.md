@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-11-01. Lot 75 (analyse de la phase 9) sur `main` (9f4cbf9), vérifié identique ; réponses de Noam aux décisions D1 à D10 reçues le 2026-11-01. Lot 76 (documentation de la phase 9 : ADR-034, DATA_SCHEMA 3.9.0, AnalysisSchema strict) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.77 (lot 76, In Progress).
+Date : 2026-11-01. Lot 76 (documentation de la phase 9 : ADR-034, DATA_SCHEMA 3.9.0, AnalysisSchema strict) sur `main` (ea4862f), vérifié identique, validé par Noam (0.1.77 Completed). Lot 77 (calcul de base de l'analyse dans un Web Worker) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.78 (lot 77, In Progress).
 
 ---
 
@@ -214,6 +214,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 74 | Cube de navigation (décisions 76 et 78) : `NavigationCube.ts`, `NavigationCube.tsx`, axes retirés du centre du plateau, 6 clés (376) ; 2 tests e2e (28) ; règle « aucune commande git chez Noam » (§1) | 0.1.76 |
 | 75 | Analyse seule : phase 9 (Model Analysis), inventaire, définitions et méthodes de calcul, décisions D1 à D10 (`lot75-phase9-analyse/PHASE9-ANALYSE.md`) ; 0.1.76 passe en « Completed » | — |
 | 76 | Phase 9, documentation : ADR-034, DATA_SCHEMA 3.9.0, plan (classification en phase 10), GUI_SPEC, ERROR_CODES_SPEC 2.3.0, PERFORMANCE_SPEC 1.1.0, TEST_PLAN ; AnalysisSchema strict avec `classification` à `null` (9 tests) | 0.1.77 |
+| 77 | Phase 9, calcul de base (`src/model_analysis/`, réécrit) : sommets soudés, dimensions, volume, surface, maillage, arêtes ouvertes (ANA_002), centre de gravité, stabilité avec l'enveloppe des contacts ; Web Worker `modelAnalysis.worker.ts` et `AnalysisRunner.ts` (pas encore lancés par l'interface, lot 80) ; 23 tests ; 1 million de triangles en 0,5 s environ (Linux) | 0.1.78 |
 
 ---
 
@@ -340,7 +341,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 3. **Phase 7 : Printer Database** (Completed, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue (fait) ; 61 imprimantes saisies par l'utilisateur (fait) ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (fait, v1.0.0 publiée) ; 63 « aucune version publiée » et sécurité des dépendances (fait) ; 64 clôture (fait). Close le 2026-10-27, lot 64 validé par Noam.
 4. **Phase 8 : Material Database** (Completed, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (fait, validé) ; 68 chargement (fait, validé) ; 69 données (fait, validé) ; 70 interface (fait, validé) ; 71 filaments de l'utilisateur (fait, validé) ; 72 synchronisation (fait, validé ; release v1.1.0 de `slicyweb-profiles`) ; 73 clôture (fait, validé). Close le 2026-11-01. (Lot 67 : plateau, hors phase 8.)
 5. **Cube de navigation** (décisions 76 et 78) : lot 74 fait, validé par Noam le 2026-11-01.
-6. **Phase 9 : Model Analysis** (In Progress, ADR-034) : analyse au lot 75 (fait) ; réponses de Noam (décisions 79 à 81) ; 76 documentation (ADR-034, DATA_SCHEMA 3.9.0, AnalysisSchema strict) ; 77 calcul de base dans un Worker (dimensions, volume, surface, maillage, arêtes ouvertes, centre de gravité, stabilité avec l'enveloppe des contacts) ; 78 surplombs et ponts ; 79 parois fines (Noam installe `three-mesh-bvh@0.9.17` avant) ; 80 interface (lancement automatique, section Analysis, menus Tools, barre d'état, ANA_*, `AnalysisPanel.tsx` supprimé) ; 81 clôture ; puis le lot « surplombs en rouge » (décision 81). La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
+6. **Phase 9 : Model Analysis** (In Progress, ADR-034) : analyse au lot 75 (fait) ; réponses de Noam (décisions 79 à 81) ; 76 documentation (fait, validé) ; 77 calcul de base dans un Worker (fait : dimensions, volume, surface, maillage, arêtes ouvertes, centre de gravité, stabilité avec l'enveloppe des contacts ; rien n'est encore affiché) ; 78 surplombs et ponts ; 79 parois fines (Noam installe `three-mesh-bvh@0.9.17` avant) ; 80 interface (lancement automatique, section Analysis, menus Tools, barre d'état, ANA_*, `AnalysisPanel.tsx` supprimé) ; 81 clôture ; puis le lot « surplombs en rouge » (décision 81). La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
 7. **Phases 10 à 16**, dans l'ordre du plan technique.
 8. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 

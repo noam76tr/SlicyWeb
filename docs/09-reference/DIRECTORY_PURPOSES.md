@@ -750,12 +750,15 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 
 | File | Role |
 |------|------|
-| `GeometryAnalyzer.ts` | Analyzes geometric dimensions (bounding box, volume, surface area) |
-| `MeshAnalyzer.ts` | Analyzes mesh properties (vertices, triangles, volume, surface area) |
-| `MeshValidator.ts` | Validates mesh integrity (vertices, triangles, geometry) |
-| `ModelAnalyzer.ts` | Orchestrates the complete 3D model analysis |
-| `PrintabilityAnalyzer.ts` | Analyzes printability (overhangs, bridges, thin walls, score) |
-| `StabilityAnalyzer.ts` | Analyzes stability (base area, height ratio, scores) |
+| `AnalysisError.ts` | Analysis errors with their code of ERROR_CODES_SPEC.md (ANA_001); AnalysisCancelledError when a computation is no longer needed |
+| `AnalysisRunner.ts` | Runs the analysis of one object in the Web Worker: copy of the triangle data transferred, worker terminated at the end, AbortSignal to drop the computation (ADR-034 D7); used by AnalysisService from lot 80 |
+| `GeometryAnalyzer.ts` | Dimensions (bounding box of the placed object), volume enclosed by the mesh, surface area, center of gravity relative to the center of the object (center of the surface when the volume is 0) |
+| `MeshAnalyzer.ts` | Welded vertices (same stored coordinates = one vertex), object as placed on the build plate (scale and rotation, position ignored), mesh vertices and triangles |
+| `MeshValidator.ts` | Triangle data readable (ANA_001 when empty, not 9 numbers per triangle, or not finite); open edges, not shared by exactly two triangles (ANA_002, non-blocking) |
+| `ModelAnalyzer.ts` | Analysis of one object (Phase 9: dimensions, geometry, mesh, stability, mesh closed or not), answer to the messages of the worker |
+| `PrintabilityAnalyzer.ts` | Template of Phase 0, rewritten in lots 78 (overhangs, bridges) and 79 (thin walls) |
+| `StabilityAnalyzer.ts` | Contact area, convex hull of the contact points, height ratio and tip risk (ADR-034 D4) |
+| `workers/modelAnalysis.worker.ts` | Web Worker running ModelAnalyzer (ADR-034 D7; no Electron, KI-024) |
 
 ---
 
@@ -1724,6 +1727,7 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 | `material_database/MaterialLoading.test.ts` | MaterialSchema and FilamentSchema (null kept apart from 0; unknown field, family not listed, inverted range, sixth manufacturer setting, other diameter refused); Importers through the schemas; material files (MAT_002: damaged, too large, no temperature for a shipped material, wrong source, duplicate); missing folder; filaments of both folders, user filament never over an Official one; shipped filament with a color, a price or a missing temperature refused (FIL_002) |
 | `material_database/UserFilaments.test.ts` | Filaments of the user: file written in the user folder (envelope filament, Local Custom), id chosen by the main process (valid profile id), loaded again at the next start; update and remove of the file; Official filament never changed (FIL_003), unknown id (FIL_001), same brand, name and color (FIL_004; another color accepted), file not written (FIL_005, no path) |
 | `material_database/MaterialProfiles.test.ts` | The 5 materials and 11 filaments of data/: schema, file name = id, source Official, listed in SOURCES.md and in the index.json of its folder with its SHA-256; each filament in a shipped family; ranges of a family = smallest minimum and largest maximum of its filaments, density null when they differ; loaded without refused file |
+| `model_analysis/ModelAnalyzer.test.ts` | Base of the model analysis on built models (DATA_SCHEMA.md 3.9.0, Analysis Rules): cube of 20 mm (dimensions, volume, area, 8 vertices, 12 triangles, contact area, center of gravity, ratio 1, risk 0), same position = one vertex (-0 = 0), repeatable, data not changed; cube scaled and turned (20 x 40 x 20, 16000 mm³), center of gravity turned with the object, cube turned 45 degrees (contact on an edge, risk 100); tower (ratio 5, risk 80), sphere (no contact area, risk 100), stool on four legs (contact area of the legs, ratio 1.125, risk 3), center of gravity outside the contact hull (risk 100), rounding of the risk, contact hull; cube without one face (mesh not closed, ANA_002), open edges, flat mesh (center of the surface); empty and unreadable meshes (ANA_001); worker request, run in a worker with a copy, ANA_001 from the worker, computation dropped |
 | `printer_database/PrinterProfiles.test.ts` | The 79 profiles of data/printers/ (v1.0.1, with the 10 first printers): schema, file name = id, source Official, listed in SOURCES.md, all loaded; index.json lists each profile with its SHA-256 |
 | `repositories/MaterialRepositorySync.test.ts` | Download of the materials and filaments with a fake network: index.json of the folder on main, files at the tag in the folder; index of another list or profile of another type refused, SHA-256 differs (SYNC_004); HTTP 404 notPublished; cache of the materials valid again, never as filaments |
 | `repositories/PrinterRepositorySync.test.ts` | Download of the profile repository with a fake network: index.json on main then files at the tag, allowed address, no redirection; SHA-256 differs, invalid index or tag, profile not Official, file or download too large, tag not vX.Y.Z (SYNC_004), order of the tags; missing tag (HTTP 404: notPublished), HTTP 503 and network error (SYNC_002); no answer (SYNC_003) |

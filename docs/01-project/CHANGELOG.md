@@ -2746,7 +2746,7 @@ Release Type:
 Architecture Decision
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-01
@@ -2776,6 +2776,43 @@ Date:
 
 - No analysis is computed yet (lots 77 to 80); three-mesh-bvh is not installed yet (lot 79)
 - Bridges, and the volume and the thickness of a mesh that is not closed, are approximations (ADR-034)
+
+## Validation Result
+
+- Windows 11 (2026-11-01): lot 76 on GitHub (ea4862f, identical to the lot); npm run check:locales: 376 keys; npm run check:ipc: 28 channels; typecheck and lint without error; npm test: 300 tests passed, 1 skipped (link test); npm run test:e2e: 28 tests passed (Noam)
+
+---
+
+# VERSION 0.1.78
+
+Release Type:
+Model Analysis
+
+Status:
+In Progress
+
+Date:
+2026-11-01
+
+## Added
+
+- Base computation of the model analysis (Phase 9, lot 77; ADR-034 D2, D4, D6, D7; DATA_SCHEMA.md 3.9.0, Analysis Rules), on the object as placed on the build plate (scale and rotation applied, position ignored): distinct vertices (welded), dimensions, geometry (volume enclosed by the mesh, surface area), mesh (vertices, triangles), center of gravity relative to the center of the object (center of the surface when the volume is 0), stability (contactArea = area of the triangles lying on the plate; height ratio and tip risk on the convex hull of the contact points, risk 100 when the center of gravity is outside the hull or without contact area), open edges (mesh not closed = warning ANA_002, non-blocking); empty or unreadable mesh = ANA_001
+- src/model_analysis/AnalysisError.ts: AnalysisError (ANA_001) and AnalysisCancelledError (computation no longer needed)
+- src/model_analysis/workers/modelAnalysis.worker.ts: Web Worker of the analysis (no Electron, KI-024)
+- src/model_analysis/AnalysisRunner.ts: runs one analysis in a worker (copy of the triangle data transferred, worker terminated at the end, AbortSignal to drop a computation); used by AnalysisService in lot 80
+- tests/unit/model_analysis/ModelAnalyzer.test.ts (23 tests): cube of 20 mm, cube scaled and turned, center of gravity turned with the object, cube turned 45 degrees (contact on an edge), tower (risk 80), sphere (risk 100), stool on four legs (ratio 1.125, risk 3), center of gravity outside the hull (risk 100), contact hull, cube without one face (ANA_002), flat mesh, empty and unreadable meshes (ANA_001), repeatable, worker messages and cancel
+
+## Changed
+
+- src/model_analysis/MeshAnalyzer.ts, MeshValidator.ts, GeometryAnalyzer.ts, StabilityAnalyzer.ts, ModelAnalyzer.ts: templates of Phase 0 rewritten with the real computations, under the same names (ADR-034 D9); nothing used them; PrintabilityAnalyzer.ts unchanged until lot 78
+- PHASES_IMPLEMENTATION_PLAN.md: progress of Phase 9 (lot 77)
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: the files of src/model_analysis/ and the new test
+- PASSATION.md: lot 77
+
+## Known Limitations
+
+- Nothing starts the analysis yet and nothing is shown: automatic start, Analysis section and ANA_* messages come with lot 80; overhangs and bridges with lot 78, thin walls with lot 79
+- Two corners are the same vertex only when their stored coordinates are equal (no tolerance): a mesh with tiny gaps is reported as not closed (ANA_002)
 
 ---
 

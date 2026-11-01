@@ -1544,6 +1544,7 @@ Order of the lots:
 Progress:
 
 - Analysis (lot 75) and documentation (lot 76, CHANGELOG 0.1.77): ADR-034, DATA_SCHEMA.md 3.9.0
+- Lot 77 (CHANGELOG 0.1.78): base computation in a Web Worker (src/model_analysis/), not started by the interface yet (lot 80)
 
 
 
