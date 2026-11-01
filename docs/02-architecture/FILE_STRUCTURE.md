@@ -384,6 +384,7 @@ src/gui/
 ├── App.tsx
 ├── MainLayout.tsx
 ├── viewport/
+│   ├── NavigationCube.tsx     = navigation cube in the corner of the viewport (lot 74)
 │   └── Viewport.tsx
 ├── sidebar/
 │   ├── LeftSidebar.tsx
@@ -444,9 +445,10 @@ src/renderer/
 ├── ObjectRenderer.ts          = meshes of the scene objects in the viewport
 ├── ObjectInteraction.ts       = click to select, drag an object on the build plate (Phase 6)
 ├── TransformGizmo.ts          = Move, Rotate and Scale gizmos of the selected object (Phase 6)
+├── NavigationCube.ts          = layout of the navigation cube from the camera orientation (lot 74)
 ├── SelectionRenderer.ts
 └── helpers/
-    └── WorkspaceHelpers.ts    = grid, axes and build plate of the viewport (ADR-028)
+    └── WorkspaceHelpers.ts    = grid and build plate of the viewport (ADR-028)
 ```
 
 ---
@@ -934,6 +936,7 @@ tests/
 │   │   ├── MaterialRepositorySync.test.ts = download of the materials and filaments of the profile repository (Phase 8)
 │   │   └── PrinterRepositorySync.test.ts = download of the profile repository (Phase 7)
 │   ├── renderer/
+│   │   ├── NavigationCube.test.ts = navigation cube: faces, axes, face looked at (lot 74)
 │   │   └── ObjectRenderer.test.ts = selection rectangle (Phase 6)
 │   ├── scene/
 │   │   └── ObjectTransform.test.ts = Transform Rules (ADR-031)
@@ -953,7 +956,8 @@ tests/
     ├── import.spec.ts = STL and 3MF import, refused files
     ├── material.spec.ts = materials and filaments served by the main process (Phase 8)
     ├── printer.spec.ts = printers served by the main process, Printer section, Printer Manager, profiles (Phase 7)
-    └── transform.spec.ts = transforms, undo and redo, several objects (Phase 6)
+    ├── transform.spec.ts = transforms, undo and redo, several objects (Phase 6)
+    └── viewport.spec.ts = navigation cube (lot 74)
 ```
 
 ---

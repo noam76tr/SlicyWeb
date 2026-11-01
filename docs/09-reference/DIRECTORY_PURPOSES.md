@@ -374,7 +374,8 @@ Every file should be placed in the directory that matches its responsibility.
 
 | File | Role |
 |------|------|
-| `Viewport.tsx` | 3D viewport (Viewport Domain, ADR-028): creates the renderer, camera, lights, grid, axes and build plate; follows the size of its container, the View menu (viewport store), the selected printer and the Home key; shows the size of the plate of the selected printer at the bottom ("Plate: X × Y mm", GUI_SPEC.md, Plate Display) |
+| `NavigationCube.tsx` | Navigation cube (lot 74, GUI_SPEC.md, Navigation Cube): area of 120 px in the bottom corner on the end side of the viewport (bottom left in Hebrew); one button per face with its translated name, turned like the camera (layout from renderer/NavigationCube.ts); a click on a face asks for its view; face under the mouse highlighted; axes X, Y, Z in SVG from the front-left-bottom corner; data-camera-face for the end-to-end tests |
+| `Viewport.tsx` | 3D viewport (Viewport Domain, ADR-028): creates the renderer, camera, lights, grid, build plate and navigation cube; follows the size of its container, the View menu (viewport store), the selected printer and the Home key; shows the size of the plate of the selected printer at the bottom ("Plate: X × Y mm", GUI_SPEC.md, Plate Display) |
 
 ---
 
@@ -493,8 +494,9 @@ Every file should be placed in the directory that matches its responsibility.
 | `ObjectRenderer.ts` | One mesh per scene object (GeometryRegistry): transform (ObjectTransform.ts), visibility, selected object in the accent color; object under the pointer (pick) objects touched by a selection rectangle (objectsInRect); |
 | `ObjectInteraction.ts` | Left mouse in the viewport: click to select or clear the selection, drag an object on the build plate after a threshold of 4 pixels (GUI_SPEC.md, Viewport Controls) Ctrl+click adds or removes an object; dragging an object of a group moves the group; drag in the empty space: selection rectangle (Ctrl adds); |
 | `TransformGizmo.ts` | Move, Rotate and Scale gizmos of the selected object (Three.js TransformControls); Rotate: free rotation around the center during the gesture, placed on the plate on release; Scale: one handle per axis (X right, Y front, Z top) and the center, uniform when the lock is closed; each change goes to TransformService through a callback given by the GUI several objects: gizmo at the center of the group; |
+| `NavigationCube.ts` | Layout of the navigation cube from the orientation of the camera (lot 74): CSS transform of each face and faces turned towards the viewer (Front on the side -Y), axes on the screen (over or behind the faces, not drawn when seen end-on), face the camera looks straight at |
 | `SceneRenderer.ts` | Render loop (frame callback, then drawing) and scene objects |
-| `helpers/WorkspaceHelpers.ts` | Grid with adaptive spacing, axes (X red, Y green, Z blue) and build plate of the selected printer (magnetic sheet with a front tab, printer name) |
+| `helpers/WorkspaceHelpers.ts` | Grid with adaptive spacing and build plate of the selected printer (magnetic sheet with a front tab, printer name) |
 | `SelectionRenderer.ts` | Visual rendering of object selection (BoxHelper) |
 
 ---
@@ -1727,6 +1729,7 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 | `repositories/PrinterRepositorySync.test.ts` | Download of the profile repository with a fake network: index.json on main then files at the tag, allowed address, no redirection; SHA-256 differs, invalid index or tag, profile not Official, file or download too large, tag not vX.Y.Z (SYNC_004), order of the tags; missing tag (HTTP 404: notPublished), HTTP 503 and network error (SYNC_002); no answer (SYNC_003) |
 | `printer_database/PrinterLoading.test.ts` | PrinterSchema (null kept, unknown field refused, no crash); profile files of both folders; missing folder; other files and subfolders ignored; damaged, invalid, too large, wrong source and duplicate files refused with PRN_002; links not followed; no path in the results |
 | `printer_database/UserPrinters.test.ts` | Printers of the user: file written in the user folder (envelope Local Custom), id chosen by the main process, loaded again at the next start; update and remove of the file; Official printer never changed (PRN_005), unknown id (PRN_001), same brand and model (PRN_006), file not written (PRN_007, no path); only a file name accepted, size limit |
+| `renderer/NavigationCube.test.ts` | Navigation cube: each view preset looks at its face, shown upright, opposite face hidden; isometric view shows Top, Front, Right; axes X to the right and Z up in the front view, Y behind the faces in the isometric view, Z not drawn in the top view; letters beyond the axes; the cube turns with the camera |
 | `renderer/ObjectRenderer.test.ts` | Selection rectangle: objects touched (not only inside), turned objects, hidden objects |
 | `services/GroupTransform.test.ts` | Several objects: Ctrl+click and Ctrl+A selection; group moved, turned and scaled around its center, objects on the plate; one undo per change of the group |
 | `services/MaterialSelection.test.ts` | Materials and filaments of the window: order, last choice selected again or ignored, filament selects its family, other family clears the filament, choice saved, invalid response refused; families of a printer with the aliases and the warning; filaments of the user: the selected filament follows its update and its family, is cleared when removed, errors of a refused change; reload after a synchronization (selection kept, or cleared when no longer listed) |
@@ -1788,6 +1791,7 @@ Run with Playwright (`npm run test:e2e`: builds the application, then starts it 
 | `material.spec.ts` | The 5 materials and the 11 filaments of data/ served; the filament of the user served by filament:getAll with its id in userFilamentIds; damaged filament file refused without error in the window |
 | `printer.spec.ts` | The 79 printers of data/printers/ and the printer of the user served by printer:getAll; printer:get, damaged file refused without error in the window, PRN_001; settings.json without printer keeps the language; Printer section: Bambu Lab X1 Carbon chosen, limits ("Not published"), plate "256 × 256 mm" in the viewport, status bar, Printer > Select Printer gives the focus to the selector, printer chosen again at the next start, "No printer" saved; Printer Manager: required fields, printer entered and saved in printers/, listed in "My printers", plate, kept at the next start, deleted after a confirmation; profiles: line "Profiles v1.0.1", Printer > Refresh Profiles shows the result, printers still available, setting "Check for profile updates automatically" checked by default and saved |
 | `transform.spec.ts` | Fields of the Transform section; undo and redo (toolbar, Ctrl+Z and Ctrl+Y in a field, no extra action); modes G, R, S, Escape; Ctrl+A, Shift+click, selection rectangle from the top corner (under the import messages) and the bottom corner, group moved |
+| `viewport.spec.ts` | Navigation cube: isometric view at the start (Top, Front, Right shown); a click on Top gives the top view and turns the cube; Home gives the isometric view again; a click on Front gives the front view; bottom right, bottom left in Hebrew |
 
 ---
 

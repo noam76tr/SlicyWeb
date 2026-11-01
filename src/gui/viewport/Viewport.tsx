@@ -7,10 +7,12 @@
  * - 3D viewport hosting
  * - Renderer lifecycle
  *
- * The viewport shows the coordinate grid, the axes and, when a
- * printer is selected, its build plate with its name (WorkspaceHelpers),
- * and the
- * objects of the scene (ObjectRenderer, object store).
+ * The viewport shows the coordinate grid and, when a printer is
+ * selected, its build plate with its name (WorkspaceHelpers), and the
+ * objects of the scene (ObjectRenderer, object store). The navigation
+ * cube (NavigationCube), in the bottom corner on the end side, turns with
+ * the camera and carries the axes X, Y, Z; a click on a face asks for its
+ * view, like the View menu (viewport store).
  * Camera: mouse controls of GUI_SPEC.md (CameraManager); projection
  * and view presets come from the View menu (viewport store);
  * the Home key resets the view (GUI_SPEC.md, Keyboard Shortcuts).
@@ -38,7 +40,7 @@
  *
  * Based on:
  * - ARCHITECTURE.md
- * - GUI_SPEC.md (3D Viewport, Viewport Controls, Camera Views)
+ * - GUI_SPEC.md (3D Viewport, Viewport Controls, Camera Views, Navigation Cube)
  * - FILE_STRUCTURE.md
  * - DECISIONS.md (ADR-027, ADR-031)
  */
@@ -66,7 +68,10 @@ import {
   type TransformMode,
 } from "../../state/viewportStore";
 
+import type { CubeFace } from "../../renderer/NavigationCube";
 import type { Object3D, Transform } from "../../types/Object3D";
+
+import NavigationCube, { type NavigationCubeHandle } from "./NavigationCube";
 
 /** Keys of the gizmos (GUI_SPEC.md, Keyboard Shortcuts: G, R, S), by key position */
 const TRANSFORM_KEYS: Record<string, TransformMode> = {
@@ -120,6 +125,9 @@ interface ViewportProps {
    */
   printerName: string | null;
 
+  /** Names of the faces of the navigation cube, already translated */
+  cubeLabels: Record<CubeFace, string>;
+
   /**
    * Applies transforms to one object or a group, by objectId
    * (TransformService); returns false when they are refused. live: step
@@ -143,12 +151,14 @@ export default function Viewport({
   unavailableMessage,
   plateLabel,
   printerName,
+  cubeLabels,
   onTransformObjects,
   onTransformGesture,
 }: ViewportProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [unavailable, setUnavailable] = useState(false);
   const workspaceRef = useRef<WorkspaceHelpers | null>(null);
+  const cubeRef = useRef<NavigationCubeHandle | null>(null);
   const printerNameRef = useRef(printerName);
   printerNameRef.current = printerName;
 
@@ -250,6 +260,7 @@ export default function Viewport({
 
     sceneRenderer.start(() => {
       cameraManager.update();
+      cubeRef.current?.update(cameraManager.getCamera().quaternion);
       workspace.updateGridSpacing(
         cameraManager.getPixelsPerMillimeter(rendererManager.getHeight()),
       );
@@ -385,24 +396,35 @@ export default function Viewport({
     }
   }, [printerName, plateLabel]);
 
+  // The cube is a sibling of the image of the 3D view: its faces are
+  // buttons, which must stay reachable (not inside role="img")
   return (
-    <div
-      ref={containerRef}
-      id="renderer-container"
-      role="img"
-      aria-label={label}
-      className="relative flex h-full w-full items-center justify-center overflow-hidden bg-viewport"
-    >
-      {plateLabel && !unavailable && (
-        <p className="pointer-events-none absolute start-3 bottom-3 rounded bg-card/80 px-2 py-0.5 text-xs text-muted-foreground tabular-nums">
-          {plateLabel}
-        </p>
+    <>
+      <div
+        ref={containerRef}
+        id="renderer-container"
+        role="img"
+        aria-label={label}
+        className="relative flex h-full w-full items-center justify-center overflow-hidden bg-viewport"
+      >
+        {plateLabel && !unavailable && (
+          <p className="pointer-events-none absolute start-3 bottom-3 rounded bg-card/80 px-2 py-0.5 text-xs text-muted-foreground tabular-nums">
+            {plateLabel}
+          </p>
+        )}
+        {unavailable && (
+          <p className="px-4 text-center text-sm text-muted-foreground">
+            {unavailableMessage}
+          </p>
+        )}
+      </div>
+      {!unavailable && (
+        <NavigationCube
+          ref={cubeRef}
+          labels={cubeLabels}
+          onSelectFace={(face) => useViewportStore.getState().requestView(face)}
+        />
       )}
-      {unavailable && (
-        <p className="px-4 text-center text-sm text-muted-foreground">
-          {unavailableMessage}
-        </p>
-      )}
-    </div>
+    </>
   );
 }

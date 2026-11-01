@@ -86,8 +86,20 @@ export const PLATE_NAME_FONT =
 export const OBJECT_COLOR = 0xb4b8c0;
 export const SELECTED_OBJECT_COLOR = 0x4fa3ff;
 
-/** Length of the axes at the origin, as a fraction of the workspace side */
-export const AXES_LENGTH_RATIO = 0.15;
+/**
+ * Navigation cube (GUI_SPEC.md, Navigation Cube): square area in the
+ * bottom corner on the end side of the viewport, edge of the cube, axes
+ * from its front-left-bottom corner (GUI_SPEC.md, Axis Display).
+ */
+export const NAVIGATION_CUBE_AREA_PX = 120;
+export const NAVIGATION_CUBE_EDGE_PX = 54;
+export const NAVIGATION_CUBE_AXIS_LENGTH_RATIO = 1.2;
+export const NAVIGATION_CUBE_LABEL_OFFSET_PX = 8;
+
+/** Colors of the axes X, Y, Z (GUI_SPEC.md, Axis Display: red, green, blue) */
+export const AXIS_X_COLOR = "#e5484d";
+export const AXIS_Y_COLOR = "#46a758";
+export const AXIS_Z_COLOR = "#3e83f8";
 
 /** Perspective camera vertical field of view, in degrees */
 export const CAMERA_FOV_DEGREES = 45;

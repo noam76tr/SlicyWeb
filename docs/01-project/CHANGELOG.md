@@ -2674,7 +2674,7 @@ Release Type:
 Material Database
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-01
@@ -2693,6 +2693,46 @@ Date:
 ## Known Limitations
 
 - No file removed in this lot: the deletions of the ADR-033 D11 table were made in lots 68 to 72; MaterialImporter.ts and FilamentImporter.ts are kept for Import Material and Import Filament (Phase 15)
+
+## Validation Result
+
+- Windows 11 (2026-11-01): lot 73 on GitHub (a31698f, identical to the lot); npm run check:locales: 370 keys; npm run check:ipc: 28 channels; typecheck and lint without error; npm test: 279 tests passed, 1 skipped (link test); npm run test:e2e: passed (number of tests not given); npm run profiles:index -- v1.1.0 materials run again: index.json identical to the one on GitHub (same SHA-256) (Noam)
+
+---
+
+# VERSION 0.1.76
+
+Release Type:
+3D Viewport
+
+Status:
+In Progress
+
+Date:
+2026-11-01
+
+## Added
+
+- Navigation cube (decision of Noam, 2026-10-30, after the closure of Phase 8; visible choices validated by Noam on 2026-11-01): area of 120 px in the bottom corner of the 3D viewport on the end side (bottom right; bottom left in Hebrew, like the rest of the interface; the cube itself is never mirrored); the cube turns with the camera; six faces with their translated names, the Front face on the side -Y (tab of the build plate); a click on a face gives the same view as the View menu (same framing, projection kept, change at once); the face under the mouse is highlighted; axes X (red), Y (green), Z (blue) from the front-left-bottom corner of the cube, with their letter (GUI_SPEC.md, Navigation Cube, Axis Display)
+- src/renderer/NavigationCube.ts: layout of the cube from the orientation of the camera (transform of each face, faces turned towards the viewer, axes on the screen, face looked at)
+- src/gui/viewport/NavigationCube.tsx: the cube drawn with HTML (one button per face) and SVG (axes); data-camera-face gives the face the camera looks straight at (end-to-end tests)
+- 6 translation keys viewCube.top, viewCube.bottom, viewCube.front, viewCube.back, viewCube.left, viewCube.right (376 keys)
+- Tests: tests/unit/renderer/NavigationCube.test.ts (12 tests); tests/e2e/viewport.spec.ts (2 tests: a click on Top changes the view and the cube turns, Home and Front; position bottom right, bottom left in Hebrew)
+
+## Changed
+
+- src/gui/viewport/Viewport.tsx: mounts the navigation cube (next to the image of the 3D view, so that its buttons stay reachable) and turns it at each frame; a click on a face asks for the view (viewport store, requestView)
+- src/gui/App.tsx: translated names of the faces
+- src/renderer/helpers/WorkspaceHelpers.ts: no axes at the center of the plate any more (they are on the navigation cube); src/constants/ViewportConstants.ts: AXES_LENGTH_RATIO removed, constants of the navigation cube and colors of the axes added
+- GUI_SPEC.md: section Navigation Cube; Axis Display (axes on the navigation cube)
+- PASSATION.md: rule of work "no git command on the computer of Noam" (§1); lot 74; decision 78
+- PHASES_IMPLEMENTATION_PLAN.md: navigation cube delivered (lot 74); next: Phase 9
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: NavigationCube.ts, NavigationCube.tsx, viewport.spec.ts
+
+## Known Limitations
+
+- Only the six faces can be clicked (no edge, no corner); the view changes at once (no animation)
+- The cube shows the rotation of the camera only (drawn without perspective, whatever the projection)
 
 ---
 

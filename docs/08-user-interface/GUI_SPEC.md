@@ -946,6 +946,8 @@ Z = Blue
 
 ```
 
+Lot 74 (decision of Noam, 2026-10-30): the axes are drawn on the navigation cube (Navigation Cube), from its front-left-bottom corner, each with its letter; there are no axes at the center of the build plate.
+
 
 
 ---
@@ -1041,6 +1043,25 @@ Back
 Isometric
 
 ```
+
+
+
+---
+
+
+
+# Navigation Cube
+
+
+
+Lot 74 (decision of Noam, 2026-10-30; visible choices validated by Noam on 2026-11-01):
+
+- position: a square area of 120 px in the bottom corner of the 3D viewport on the end side: bottom right, bottom left in Hebrew (like the rest of the interface); the cube itself is never mirrored (X stays on the right, as in the 3D view);
+- the cube turns with the camera (it shows the rotation of the camera only, without perspective, whatever the projection);
+- six faces with their translated names: Top, Bottom, Front, Back, Left, Right (fr: Dessus, Dessous, Avant, Arrière, Gauche, Droite; he: עליון, תחתון, חזית, אחור, שמאל, ימין); the Front face is on the side -Y, the side of the tab of the build plate; each face reads upright from its own view;
+- a click on a face gives the same view as the View menu (Camera Views: same framing, projection kept); the view changes at once (no animation); only the faces can be clicked (no edge, no corner);
+- the face under the mouse is highlighted;
+- axes X (red), Y (green), Z (blue) from the front-left-bottom corner of the cube, with their letter (Axis Display); an axis seen end-on is not drawn.
 
 
 

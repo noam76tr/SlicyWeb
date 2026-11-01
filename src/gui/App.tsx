@@ -99,6 +99,14 @@ export default function App(): JSX.Element {
                   : null
               }
               printerName={printer ? `${printer.brand} ${printer.model}` : null}
+              cubeLabels={{
+                top: t("viewCube.top"),
+                bottom: t("viewCube.bottom"),
+                front: t("viewCube.front"),
+                back: t("viewCube.back"),
+                left: t("viewCube.left"),
+                right: t("viewCube.right"),
+              }}
               onTransformObjects={(transforms, live) =>
                 TransformService.applyMany(transforms, { live })
               }

@@ -1422,7 +1422,7 @@ Order of the lots:
 - Lot 71: filaments entered by the user (Manage Filaments)
 - Lot 72: synchronization of the materials and filaments from noam76tr/slicyweb-profiles
 - Lot 73: closure of Phase 8; no file left to remove (the deletions of the D11 table were made in lots 68 to 72; MaterialImporter.ts and FilamentImporter.ts kept for Import Material and Import Filament, Phase 15)
-- After the closure of Phase 8 (decision of Noam, 2026-10-30): navigation cube in a corner of the 3D viewport (translated faces that turn with the camera, a click on a face gives its view, colored X, Y, Z axes), in place of the axes at the center of the plate
+- After the closure of Phase 8 (decision of Noam, 2026-10-30): navigation cube in a corner of the 3D viewport (translated faces that turn with the camera, a click on a face gives its view, colored X, Y, Z axes), in place of the axes at the center of the plate: delivered in lot 74 (CHANGELOG 0.1.76; GUI_SPEC.md, Navigation Cube)
 
 Progress:
 
@@ -1442,7 +1442,7 @@ Validation result (Windows 11, checks and manual controls of Noam, lots 68 to 72
 - Synchronization: materials/ and filaments/ published in noam76tr/slicyweb-profiles with the release v1.1.0, the 95 SHA-256 of the repository checked; the lists are downloaded, kept in cache/materials/ and cache/filaments/ and used after a restart
 - With lot 72 (CHANGELOG 0.1.74): npm run check:locales (370 keys), npm run check:ipc (28 channels), npm run typecheck and npm run lint with no errors, npm test 279 tests passed and 1 skipped (link test, Windows), npm run test:e2e 26 tests passed
 
-Open issues after the closure: KI-023 (legal review of the profiles, materials and filaments, Phase 16), KI-025 (signature of index.json, Phase 16), KI-026 (zod 4, Phase 16). The price per kg has no currency before the Cost Engine (Phase 12). Import Material, Import Filament and Export Filament come with Phase 15. The profiles line of the Printer section gives only the tag of the printer profiles. Next: navigation cube (decision of Noam, 2026-10-30), then Phase 9.
+Open issues after the closure: KI-023 (legal review of the profiles, materials and filaments, Phase 16), KI-025 (signature of index.json, Phase 16), KI-026 (zod 4, Phase 16). The price per kg has no currency before the Cost Engine (Phase 12). Import Material, Import Filament and Export Filament come with Phase 15. The profiles line of the Printer section gives only the tag of the printer profiles. Next: navigation cube (decision of Noam, 2026-10-30; lot 74, CHANGELOG 0.1.76), then Phase 9.
 
 
 

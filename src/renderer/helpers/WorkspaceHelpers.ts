@@ -5,8 +5,6 @@
  * Visual references of the 3D viewport (GUI_SPEC.md, Viewport Purpose):
  * - coordinate grid on the plane Z = 0, always visible, with adaptive
  *   spacing (Coordinate Grid);
- * - axes at the origin, always visible, X red, Y green, Z blue
- *   (Axis Display);
  * - build plate and build volume limits of the selected printer,
  *   sized from its build volume (Build Plate, Plate Display), drawn as
  *   a magnetic print sheet: rounded corners, grain, and a tab centered
@@ -14,6 +12,9 @@
  *   stays inside the sheet; the name of the printer is written along
  *   the front edge. Without a selected printer, no plate is shown: the
  *   grid covers a default workspace.
+ *
+ * The axes X, Y, Z are shown by the navigation cube (NavigationCube),
+ * not at the center of the plate (GUI_SPEC.md, Axis Display).
  *
  * Coordinates (ADR-027): millimeters, Z up, origin at the center of
  * the build plate, Z = 0 on the plate surface.
@@ -28,7 +29,6 @@
 import * as THREE from "three";
 
 import {
-  AXES_LENGTH_RATIO,
   BUILD_PLATE_COLOR,
   BUILD_PLATE_CORNER_MAX_MM,
   BUILD_PLATE_CORNER_MIN_MM,
@@ -61,10 +61,9 @@ import {
 import type { BuildVolume } from "../../types/Printer";
 import type { FramingBox } from "../CameraManager";
 
-/** Render order: plate first, then grid, then axes on top */
+/** Render order: plate first, then grid */
 const PLATE_RENDER_ORDER = 0;
 const GRID_RENDER_ORDER = 1;
-const AXES_RENDER_ORDER = 10;
 const NAME_RENDER_ORDER = 2;
 
 /** Pixels of the grain texture tile, and of a text line of the name */
@@ -224,8 +223,6 @@ export class WorkspaceHelpers {
 
   private grid: THREE.LineSegments | null = null;
 
-  private axes: THREE.AxesHelper | null = null;
-
   private plate: THREE.Group | null = null;
 
   private printerName: string | null = null;
@@ -332,7 +329,6 @@ export class WorkspaceHelpers {
 
   public dispose(): void {
     this.removeGrid();
-    this.removeAxes();
     this.removePlate();
     this.removeName();
   }
@@ -359,7 +355,6 @@ export class WorkspaceHelpers {
     }
 
     this.rebuildGrid();
-    this.rebuildAxes();
     this.rebuildPlate();
     this.rebuildName();
   }
@@ -435,24 +430,6 @@ export class WorkspaceHelpers {
     this.grid.name = "workspace-grid";
     this.grid.renderOrder = GRID_RENDER_ORDER;
     this.scene.add(this.grid);
-  }
-
-  private rebuildAxes(): void {
-    this.removeAxes();
-
-    const { width, depth } = this.getExtent();
-    const length = Math.min(width, depth) * AXES_LENGTH_RATIO;
-
-    // AxesHelper colors: X red, Y green, Z blue (GUI_SPEC.md, Axis Display)
-    this.axes = new THREE.AxesHelper(length);
-    this.axes.name = "workspace-axes";
-    this.axes.renderOrder = AXES_RENDER_ORDER;
-
-    // Drawn over the grid and the plate: always visible
-    const material = this.axes.material as THREE.LineBasicMaterial;
-    material.depthTest = false;
-
-    this.scene.add(this.axes);
   }
 
   private rebuildPlate(): void {
@@ -555,16 +532,6 @@ export class WorkspaceHelpers {
     this.grid.geometry.dispose();
     (this.grid.material as THREE.Material).dispose();
     this.grid = null;
-  }
-
-  private removeAxes(): void {
-    if (!this.axes) {
-      return;
-    }
-
-    this.scene.remove(this.axes);
-    this.axes.dispose();
-    this.axes = null;
   }
 
   private removePlate(): void {
