@@ -10,10 +10,11 @@
  * 4. dimensions, geometry (volume, area), center of gravity;
  * 5. stability (contact area, contact hull, height ratio, risk);
  * 6. overhangs and bridges (angle from the vertical, ADR-034 D3);
- * 7. open edges: meshClosed false = warning ANA_002 (non-blocking).
+ * 7. thin walls (rays towards the inside, three-mesh-bvh, ADR-034 D5);
+ * 8. open edges: meshClosed false = warning ANA_002 (non-blocking).
  *
- * Phase 9: base of the analysis (lot 77), overhangs and bridges (lot 78);
- * thin walls come with lot 79; the Complete Analysis Schema
+ * Phase 9: base of the analysis (lot 77), overhangs and bridges (lot 78),
+ * thin walls (lot 79); the Complete Analysis Schema
  * (analysisId, objectId, status, classification null) is built and
  * validated with AnalysisSchema by AnalysisService (lot 80).
  *
@@ -24,7 +25,7 @@
  *
  * Based on:
  * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules)
- * - DECISIONS.md (ADR-034 D2, D3, D4, D6, D7)
+ * - DECISIONS.md (ADR-034 D2, D3, D4, D5, D6, D7)
  * - ERROR_CODES_SPEC.md (ANA_001, ANA_002)
  */
 
@@ -35,6 +36,7 @@ import type {
   MeshStatistics,
   Overhangs,
   Stability,
+  ThinWalls,
 } from "../types/Analysis";
 
 import { AnalysisError } from "./AnalysisError";
@@ -49,11 +51,12 @@ import { checkMeshData, countOpenEdges } from "./MeshValidator";
 import {
   analyzeBridges,
   analyzeOverhangs,
+  analyzeThinWalls,
   downAngles,
 } from "./PrintabilityAnalyzer";
 import { analyzeStability } from "./StabilityAnalyzer";
 
-/** Result of the computation of one object (lots 77 and 78) */
+/** Result of the computation of one object (lots 77 to 79) */
 export interface ModelAnalysisResult {
   dimensions: Dimensions;
 
@@ -66,6 +69,8 @@ export interface ModelAnalysisResult {
   overhangs: Overhangs;
 
   bridges: Bridges;
+
+  thinWalls: ThinWalls;
 
   /**
    * false: an edge is not shared by exactly two triangles; the message
@@ -109,6 +114,7 @@ export function analyzeModel(
     stability,
     overhangs: analyzeOverhangs(down, geometry.surfaceArea),
     bridges: analyzeBridges(placed, welded.corners, welded.vertexCount, down),
+    thinWalls: analyzeThinWalls(placed, welded.corners),
     meshClosed: countOpenEdges(welded.corners, welded.vertexCount) === 0,
   };
 }

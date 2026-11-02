@@ -651,7 +651,7 @@ src/model_analysis/
 ├── MeshAnalyzer.ts            = welded vertices, object as placed (scale and rotation), mesh
 ├── MeshValidator.ts           = mesh readable (ANA_001), open edges (ANA_002)
 ├── ModelAnalyzer.ts           = analysis of one object, messages of the worker
-├── PrintabilityAnalyzer.ts    = overhangs and bridges (thin walls: lot 79)
+├── PrintabilityAnalyzer.ts    = overhangs, bridges and thin walls (three-mesh-bvh)
 ├── StabilityAnalyzer.ts       = contact area, contact hull, height ratio, tip risk (ADR-034 D4)
 └── workers/
     └── modelAnalysis.worker.ts = Web Worker of the analysis (ADR-034 D7)
@@ -933,7 +933,7 @@ tests/
 │   │   ├── MaterialProfiles.test.ts = the profiles of data/materials/ and data/filaments/ (Phase 8)
 │   │   └── UserFilaments.test.ts = filaments entered by the user (Phase 8)
 │   ├── model_analysis/
-│   │   └── ModelAnalyzer.test.ts = base of the model analysis, stability, overhangs, bridges, worker (Phase 9)
+│   │   └── ModelAnalyzer.test.ts = base of the model analysis, stability, overhangs, bridges, thin walls, worker (Phase 9)
 │   ├── printer_database/
 │   │   ├── PrinterLoading.test.ts = printer profile files, PrinterSchema (Phase 7)
 │   │   ├── PrinterProfiles.test.ts = the profiles of data/printers/ and their index.json (Phase 7)

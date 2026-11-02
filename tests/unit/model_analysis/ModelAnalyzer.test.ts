@@ -1,11 +1,11 @@
 /**
  * SlicyWeb
- * Model Analyzer tests (Phase 9, lots 77 and 78)
+ * Model Analyzer tests (Phase 9, lots 77 to 79)
  *
  * Base of the analysis on models built in the tests (TEST_PLAN.md,
  * Analysis Engine Unit Tests): dimensions, volume, area, mesh, center of
  * gravity, stability with the contact hull, overhangs and bridges
- * (lot 78), open edges (ANA_002), empty mesh (ANA_001), Web Worker
+ * (lot 78), thin walls (lot 79), open edges (ANA_002), empty mesh (ANA_001), Web Worker
  * messages.
  *
  * Based on:
@@ -14,6 +14,7 @@
  * - TEST_PLAN.md (Analysis Engine Unit Tests)
  */
 
+import { MeshBVH } from "three-mesh-bvh";
 import { describe, expect, it, vi } from "vitest";
 
 import {
@@ -29,6 +30,7 @@ import {
   type AnalysisResponse,
   type ModelAnalysisResult,
 } from "../../../src/model_analysis/ModelAnalyzer";
+import { MAX_THICKNESS_POINTS } from "../../../src/model_analysis/PrintabilityAnalyzer";
 import {
   convexHull,
   isInsideHull,
@@ -525,6 +527,135 @@ describe("ModelAnalyzer: overhangs and bridges (lot 78)", () => {
     expect(result.overhangs.percentage).toBeGreaterThan(10);
     expect(result.overhangs.percentage).toBeLessThan(20);
     expect(result.bridges.count).toBe(0);
+  });
+});
+
+/** The same triangles facing the other way (inside of a hollow) */
+function inverted(triangles: number[]): number[] {
+  const result = triangles.slice();
+
+  for (let i = 0; i < result.length; i += 9) {
+    for (let k = 0; k < 3; k += 1) {
+      result[i + 3 + k] = triangles[i + 6 + k];
+      result[i + 6 + k] = triangles[i + 3 + k];
+    }
+  }
+
+  return result;
+}
+
+describe("ModelAnalyzer: thin walls (lot 79)", () => {
+  it("full cube of 20 mm: 20 mm (the ray meets neither its own face nor a neighbouring face)", () => {
+    expect(analyzeModel(cube20(), IDENTITY).thinWalls).toEqual({
+      detected: false,
+      minimumThickness: expect.closeTo(20, 9),
+    });
+  });
+
+  it("plate 0.5 mm thick: thin walls detected, minimum thickness 0.5 mm", () => {
+    const plate = centered(box([0, 0, 0], [40, 40, 0.5]));
+
+    expect(analyzeModel(plate, IDENTITY).thinWalls).toEqual({
+      detected: true,
+      minimumThickness: expect.closeTo(0.5, 6),
+    });
+  });
+
+  it("the same plate turned on all three axes: the same thickness", () => {
+    const plate = centered(box([0, 0, 0], [40, 40, 0.5]));
+    const result = analyzeModel(plate, {
+      rotation: { x: 30, y: 20, z: 10 },
+      scale: { x: 1, y: 1, z: 1 },
+    });
+
+    expect(result.thinWalls.detected).toBe(true);
+    expect(result.thinWalls.minimumThickness).toBeCloseTo(0.5, 6);
+  });
+
+  it("limit: a wall of 0.8 mm is not thin, a wall of 0.79 mm is", () => {
+    const plate = centered(box([0, 0, 0], [40, 40, 20]));
+    const scaled = (z: number) =>
+      analyzeModel(plate, {
+        rotation: { x: 0, y: 0, z: 0 },
+        scale: { x: 1, y: 1, z },
+      }).thinWalls;
+
+    expect(scaled(0.04)).toEqual({
+      detected: false,
+      minimumThickness: expect.closeTo(0.8, 9),
+    });
+    expect(scaled(0.0395)).toEqual({
+      detected: true,
+      minimumThickness: expect.closeTo(0.79, 9),
+    });
+  });
+
+  it("hollow box: the wall between the outside and the hollow is measured", () => {
+    const hollow = (wall: number) =>
+      centered([
+        ...box([0, 0, 0], [20, 20, 20]),
+        ...inverted(box([wall, wall, wall], [20 - wall, 20 - wall, 20 - wall])),
+      ]);
+    const thick = analyzeModel(hollow(1), IDENTITY).thinWalls;
+    const thin = analyzeModel(hollow(0.6), IDENTITY).thinWalls;
+
+    expect(thick.detected).toBe(false);
+    expect(thick.minimumThickness).toBeCloseTo(1, 5);
+    expect(thin.detected).toBe(true);
+    expect(thin.minimumThickness).toBeCloseTo(0.6, 5);
+  });
+
+  it("the thinnest part of the object wins (block of 20 mm and plate of 0.6 mm)", () => {
+    const shape = centered([
+      ...box([0, 0, 0], [20, 20, 20]),
+      ...box([30, 0, 0], [50, 20, 0.6]),
+    ]);
+    const result = analyzeModel(shape, IDENTITY);
+
+    expect(result.thinWalls.detected).toBe(true);
+    expect(result.thinWalls.minimumThickness).toBeCloseTo(0.6, 5);
+  });
+
+  it("sphere of radius 10: about 20 mm, not thin", () => {
+    const result = analyzeModel(centered(sphere(10, 32, 16)), IDENTITY);
+
+    expect(result.thinWalls.detected).toBe(false);
+    expect(result.thinWalls.minimumThickness).toBeGreaterThan(19);
+    expect(result.thinWalls.minimumThickness).toBeLessThanOrEqual(20);
+  });
+
+  it("at most 200 000 points, spread over the surface, the same at each computation", () => {
+    const raycast = vi.spyOn(MeshBVH.prototype, "raycast");
+    const shape = centered(sphere(10, 64, 32));
+
+    try {
+      const first = analyzeModel(shape, IDENTITY).thinWalls;
+      const calls = raycast.mock.calls.length;
+
+      expect(MAX_THICKNESS_POINTS).toBe(200_000);
+      expect(calls).toBeLessThanOrEqual(MAX_THICKNESS_POINTS);
+      expect(calls).toBeGreaterThan(MAX_THICKNESS_POINTS - 10);
+      expect(analyzeModel(shape, IDENTITY).thinWalls).toEqual(first);
+    } finally {
+      raycast.mockRestore();
+    }
+  });
+
+  it("mesh not closed: still measured; flat mesh: 0, not detected", () => {
+    // Cube without its right face (+X)
+    const open = analyzeModel(cube20().slice(0, 10 * 9), IDENTITY);
+
+    expect(open.meshClosed).toBe(false);
+    expect(open.thinWalls.minimumThickness).toBeCloseTo(20, 6);
+
+    const square = Float32Array.from([
+      0, 0, 0, 10, 0, 0, 10, 10, 0, 0, 0, 0, 10, 10, 0, 0, 10, 0,
+    ]);
+
+    expect(analyzeModel(square, IDENTITY).thinWalls).toEqual({
+      detected: false,
+      minimumThickness: 0,
+    });
   });
 });
 

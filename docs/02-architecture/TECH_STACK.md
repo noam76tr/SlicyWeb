@@ -1395,6 +1395,8 @@ Material Search
 ## three-mesh-bvh
 
 
+Installed since CHANGELOG 0.1.80: three-mesh-bvh 0.9.17 (MIT; needs three 0.159 or later). Used by src/model_analysis/PrintabilityAnalyzer.ts (thin walls, rays towards the inside) in the Web Worker of the analysis (ADR-034 D5).
+
 
 ---
 

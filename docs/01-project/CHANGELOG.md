@@ -2826,7 +2826,7 @@ Release Type:
 Model Analysis
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-01
@@ -2849,6 +2849,46 @@ Date:
 
 - Nothing starts the analysis yet and nothing is shown (lot 80); thin walls with lot 79
 - Bridges are an approximation (ADR-034): a curved or slanted bridge can be counted wrongly; a ceiling carried all around by one wall (one support) is an overhang only
+
+## Validation Result
+
+- Windows 11 (2026-11-02): lot 78 on GitHub (751bfab, identical to the lot); npm run check:locales: 376 keys; npm run check:ipc: 28 channels; typecheck and lint without error; npm test: 331 tests passed, 1 skipped (link test); npm run test:e2e: 28 tests passed (Noam)
+
+---
+
+# VERSION 0.1.80
+
+Release Type:
+Model Analysis
+
+Status:
+In Progress
+
+Date:
+2026-11-02
+
+## Added
+
+- Thin walls of the model analysis (Phase 9, lot 79; ADR-034 D5; DATA_SCHEMA.md 3.9.0, Analysis Rules), on the object as placed on the build plate: at most 200 000 points of the surface, spread in proportion to the area, the same points at each computation, each inside its triangle and never on an edge; from each point a ray goes towards the inside (against the normal of its triangle) and ignores its own triangle; thickness = distance to the next face met (both sides of the faces); thinWalls.minimumThickness = smallest thickness in mm, 0 when no ray meets a face (flat mesh); detected = below 0.8 mm, independent of the printer
+- Dependency three-mesh-bvh 0.9.17 (MIT, needs three >= 0.159), installed by Noam: BVH of the triangles for the rays, in the Web Worker of the analysis (no Electron, KI-024)
+- tests/unit/model_analysis/ModelAnalyzer.test.ts: 9 tests (40 in all): full cube of 20 mm (20 mm), plate 0.5 mm thick (detected, 0.5 mm), the same plate turned on three axes, limit 0.8 mm (not thin) and 0.79 mm (thin), hollow box (walls of 1 mm and 0.6 mm), thinnest part of the object, sphere (about 20 mm), at most 200 000 points and the same result twice, mesh not closed and flat mesh
+
+## Changed
+
+- src/model_analysis/PrintabilityAnalyzer.ts: analyzeThinWalls (thin walls) added to overhangs and bridges
+- src/model_analysis/ModelAnalyzer.ts: the result of the analysis (and of its Web Worker) contains thinWalls
+- package.json, package-lock.json: three-mesh-bvh 0.9.17 (installed and sent to GitHub by Noam, 134fec1)
+- TECH_STACK.md: three-mesh-bvh installed
+- PHASES_IMPLEMENTATION_PLAN.md: progress of Phase 9 (lot 79)
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: PrintabilityAnalyzer.ts and ModelAnalyzer.test.ts
+- PASSATION.md: lot 79
+- 0.1.79 Completed with the results of Noam
+- KNOWN ISSUES: KI-027 (deepmerge) and KI-028 (minimatch) added: npm audit reports them in development tools only (shadcn, eslint, typescript-eslint), not in the application delivered (npm audit of Noam, 2026-11-02: 17 reports, 2 low, 14 moderate, 1 high = KI-026)
+
+## Known Limitations
+
+- Nothing starts the analysis yet and nothing is shown (lot 80)
+- The thickness is measured at points of the surface: a thin part whose area is too small to receive a point can be missed; on a mesh not closed, the thickness is approximate (ANA_002)
 
 ---
 
@@ -3820,6 +3860,38 @@ Issue: npm audit reports GHSA-mrhx-c7xc-m3w5 (high): zod before 4.6.6 can exhaus
 Resolve Before: Phase 16 - Production Validation and Release
 
 Planned Resolution: Migrate the schemas to zod 4 in a dedicated lot (ADR-025 amendment, all tests), then check npm audit. Never run npm audit fix --force: it changes major versions without review.
+
+
+---
+
+
+Identifier: KI-027
+
+Since: 0.1.80
+
+Affected Module: package.json, development dependencies only (deepmerge 4.3.1, through shadcn 4.23.0 and @shadcn/registry)
+
+Issue: npm audit reports GHSA-gcqx-w48m-w2h4 (low): mergeObject() of deepmerge allows prototype poisoning of the returned objects. deepmerge is used only by the shadcn command line tool (adding interface components while developing); it is not in the application built and delivered (not imported by src/ or src-electron/). npm audit fix --force would install shadcn 1.0.0, a major downgrade with breaking changes.
+
+Resolve Before: Phase 16 - Production Validation and Release
+
+Planned Resolution: Update shadcn when a version without the vulnerable deepmerge is published, then check npm audit. Never run npm audit fix --force.
+
+
+---
+
+
+Identifier: KI-028
+
+Since: 0.1.80
+
+Affected Module: package.json, development dependencies only (minimatch 10.2.6, through eslint 10.12.0, @eslint/config-array, typescript-eslint 8.71.2 and ts-morph 26.0.0 of shadcn)
+
+Issue: npm audit reports GHSA-g3hv-75wg-m249 (moderate): minimatch before 11.0.1 can be slowed down (denial of service) by some glob patterns. minimatch is used only by the lint and the shadcn tool on the computer of the developer, with the patterns of the project; it is not in the application built and delivered (not imported by src/ or src-electron/). npm audit counts each package that depends on it (13 of the 17 reports). npm audit fix --force would install eslint 4.0.0, a major downgrade with breaking changes.
+
+Resolve Before: Phase 16 - Production Validation and Release
+
+Planned Resolution: Update eslint, typescript-eslint and shadcn when their versions use minimatch 11.0.1 or later, then check npm audit. Never run npm audit fix --force.
 
 
 ---

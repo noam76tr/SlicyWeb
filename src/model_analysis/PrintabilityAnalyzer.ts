@@ -2,8 +2,8 @@
  * SlicyWeb
  * Printability Analyzer
  *
- * Overhangs and bridges of the object as placed on the build plate
- * (DATA_SCHEMA.md 3.9.0, Analysis Rules; ADR-034 D3):
+ * Overhangs, bridges and thin walls of the object as placed on the build
+ * plate (DATA_SCHEMA.md 3.9.0, Analysis Rules; ADR-034 D3, D5):
  * - angle of a triangle facing down: measured from the vertical,
  *   0 = vertical wall, 90 = flat ceiling (SUPPORT_GENERATION_SPEC.md,
  *   Overhang Angle Thresholds); triangles lying on the build plate
@@ -19,10 +19,10 @@
  *   supports is a bridge; its span is the shortest distance between two of
  *   its supports; longestBridge = the largest span, 0 without bridge.
  *   This is an approximation (ADR-034: a curved or slanted bridge can be
- *   counted wrongly).
+ *   counted wrongly);
+ * - thin walls: see analyzeThinWalls (ADR-034 D5, lot 79).
  *
- * Thin walls come with lot 79. No printability score: no field in
- * DATA_SCHEMA.md (ADR-034 D9).
+ * No printability score: no field in DATA_SCHEMA.md (ADR-034 D9).
  *
  * Pure functions, no state, deterministic. Used in the Web Worker of the
  * analysis (no Electron, KI-024).
@@ -30,12 +30,15 @@
  * Domain: Analysis.
  *
  * Based on:
- * - DATA_SCHEMA.md (3.9.0: Analysis Rules, overhangs, bridges)
- * - DECISIONS.md (ADR-034 D3, D9)
+ * - DATA_SCHEMA.md (3.9.0: Analysis Rules, overhangs, bridges, thinWalls)
+ * - DECISIONS.md (ADR-034 D3, D5, D9)
  * - SUPPORT_GENERATION_SPEC.md (Overhang Angle Thresholds)
  */
 
-import type { Bridges, Overhangs } from "../types/Analysis";
+import * as THREE from "three";
+import { MeshBVH } from "three-mesh-bvh";
+
+import type { Bridges, Overhangs, ThinWalls } from "../types/Analysis";
 
 import { CONTACT_TOLERANCE_MM } from "./StabilityAnalyzer";
 
@@ -486,4 +489,222 @@ class UnionFind {
       else this.parent[x] = y;
     }
   }
+}
+
+/** Below this thickness a wall is thin, in mm (two lines of a 0.4 mm nozzle) */
+export const THIN_WALL_LIMIT_MM = 0.8;
+
+/** Largest number of points measured on the surface of an object */
+export const MAX_THICKNESS_POINTS = 200_000;
+
+/**
+ * Rounding of the computation, in mm: a thickness at most this far from
+ * the limit is on the limit (a wall of exactly 0.8 mm is not thin).
+ */
+const THICKNESS_TOLERANCE_MM = 1e-6;
+
+/**
+ * Smallest share of the triangle kept between a point and an edge: the
+ * point is always inside its triangle, never on an edge.
+ */
+const EDGE_MARGIN = 1e-3;
+
+/**
+ * The BVH stores the vertices as 32-bit numbers: a face it meets is
+ * measured again in 64 bits (planeDistance), and the search goes this far
+ * beyond the smallest thickness, in mm.
+ */
+const SEARCH_MARGIN_MM = 1e-3;
+
+/** Steps of the R2 sequence: points spread evenly inside a triangle */
+const R2_STEP_1 = 0.7548776662466927;
+const R2_STEP_2 = 0.5698402909980532;
+
+/**
+ * Thin walls (DATA_SCHEMA.md 3.9.0, Analysis Rules; ADR-034 D5): from
+ * points of the surface, a ray goes towards the inside (against the normal
+ * of the triangle); the distance to the next face met, in mm, is the
+ * thickness at this point.
+ * - at most MAX_THICKNESS_POINTS points, spread in proportion to the area
+ *   (point k at the area (k + 0.5) x total / number of points), always the
+ *   same points: the result does not change from one computation to the
+ *   next;
+ * - a point is inside its triangle, never on an edge, and the ray ignores
+ *   its own triangle: it never meets its own face or a neighbouring face at
+ *   its start (a full cube of 20 mm gives 20 mm);
+ * - the faces are met from both sides; a ray that meets nothing (open
+ *   mesh) is not counted;
+ * - minimumThickness: the smallest thickness, 0 when no thickness can be
+ *   measured; detected: below THIN_WALL_LIMIT_MM, false without thickness.
+ * The search uses a BVH (three-mesh-bvh, vertices in 32 bits): a ray
+ * stops just beyond the smallest thickness found so far; each face met is
+ * measured again from the 64-bit vertices.
+ *
+ * placed: x, y, z of each vertex (MeshAnalyzer.placeVertices);
+ * corners: vertex of each corner.
+ */
+export function analyzeThinWalls(
+  placed: Float64Array,
+  corners: Uint32Array,
+): ThinWalls {
+  const geometry = new THREE.BufferGeometry();
+
+  geometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(new Float32Array(placed), 3),
+  );
+  // Copy: the BVH sorts the triangles of its index
+  geometry.setIndex(new THREE.BufferAttribute(corners.slice(), 1));
+
+  const bvh = new MeshBVH(geometry);
+  // Triangles in the order of the BVH: the same order at each computation
+  const index = geometry.index!.array as Uint32Array;
+  const triangleCount = index.length / 3;
+  const areas = new Float64Array(triangleCount);
+  let totalArea = 0;
+
+  for (let t = 0; t < triangleCount; t += 1) {
+    const n = triangleNormal(placed, index, t);
+
+    areas[t] = Math.sqrt(n.x * n.x + n.y * n.y + n.z * n.z) / 2;
+    totalArea += areas[t];
+  }
+
+  if (!(totalArea > 0)) {
+    return { detected: false, minimumThickness: 0 };
+  }
+
+  const pointCount = MAX_THICKNESS_POINTS;
+  const spacing = totalArea / pointCount;
+  const ray = new THREE.Ray();
+  let minimum = Infinity;
+  let areaBefore = 0;
+  let firstPoint = 0;
+
+  for (let t = 0; t < triangleCount; t += 1) {
+    areaBefore += areas[t];
+
+    // Points k whose area (k + 0.5) x spacing falls in this triangle
+    const lastPoint = Math.min(
+      pointCount,
+      Math.ceil(areaBefore / spacing - 0.5),
+    );
+    const points = lastPoint - firstPoint;
+
+    firstPoint = lastPoint;
+
+    if (points <= 0 || areas[t] === 0) continue;
+
+    const a = index[t * 3] * 3;
+    const b = index[t * 3 + 1] * 3;
+    const c = index[t * 3 + 2] * 3;
+    const n = triangleNormal(placed, index, t);
+    const length = areas[t] * 2;
+
+    // Towards the inside: against the normal
+    ray.direction.set(-n.x / length, -n.y / length, -n.z / length);
+
+    for (let i = 0; i < points; i += 1) {
+      const r1 = insideEdges(0.5 + i * R2_STEP_1);
+      const r2 = insideEdges(0.5 + i * R2_STEP_2);
+      const s = Math.sqrt(r1);
+      const wa = 1 - s;
+      const wb = s * (1 - r2);
+      const wc = s * r2;
+
+      ray.origin.set(
+        wa * placed[a] + wb * placed[b] + wc * placed[c],
+        wa * placed[a + 1] + wb * placed[b + 1] + wc * placed[c + 1],
+        wa * placed[a + 2] + wb * placed[b + 2] + wc * placed[c + 2],
+      );
+
+      const hits = bvh.raycast(
+        ray,
+        THREE.DoubleSide,
+        0,
+        minimum + SEARCH_MARGIN_MM,
+      );
+
+      for (const hit of hits) {
+        if (hit.faceIndex == null || hit.faceIndex === t) continue;
+
+        const distance = planeDistance(
+          placed,
+          index,
+          hit.faceIndex,
+          ray,
+          hit.distance,
+        );
+
+        if (distance < minimum) {
+          minimum = distance;
+        }
+      }
+    }
+  }
+
+  if (minimum === Infinity) {
+    return { detected: false, minimumThickness: 0 };
+  }
+
+  return {
+    detected: minimum < THIN_WALL_LIMIT_MM - THICKNESS_TOLERANCE_MM,
+    minimumThickness: minimum,
+  };
+}
+
+/** Normal of triangle t (not unit: its length is twice the area) */
+function triangleNormal(
+  placed: Float64Array,
+  index: Uint32Array,
+  t: number,
+): { x: number; y: number; z: number } {
+  const a = index[t * 3] * 3;
+  const b = index[t * 3 + 1] * 3;
+  const c = index[t * 3 + 2] * 3;
+  const ux = placed[b] - placed[a];
+  const uy = placed[b + 1] - placed[a + 1];
+  const uz = placed[b + 2] - placed[a + 2];
+  const vx = placed[c] - placed[a];
+  const vy = placed[c + 1] - placed[a + 1];
+  const vz = placed[c + 2] - placed[a + 2];
+
+  return {
+    x: uy * vz - uz * vy,
+    y: uz * vx - ux * vz,
+    z: ux * vy - uy * vx,
+  };
+}
+
+/**
+ * Distance along the ray to the plane of triangle t, from the 64-bit
+ * vertices (the ray meets the triangle: found by the BVH); bvhDistance
+ * when the ray is almost along the face.
+ */
+function planeDistance(
+  placed: Float64Array,
+  index: Uint32Array,
+  t: number,
+  ray: THREE.Ray,
+  bvhDistance: number,
+): number {
+  const n = triangleNormal(placed, index, t);
+  const a = index[t * 3] * 3;
+  const { origin, direction } = ray;
+  const facing = n.x * direction.x + n.y * direction.y + n.z * direction.z;
+  const distance =
+    (n.x * (placed[a] - origin.x) +
+      n.y * (placed[a + 1] - origin.y) +
+      n.z * (placed[a + 2] - origin.z)) /
+    facing;
+
+  // Ray almost along the face: the distance of the BVH stays
+  return Number.isFinite(distance) ? Math.max(0, distance) : bvhDistance;
+}
+
+/** Fractional part, kept away from 0 and 1 (point away from the edges) */
+function insideEdges(x: number): number {
+  const fraction = x - Math.floor(x);
+
+  return Math.min(1 - EDGE_MARGIN, Math.max(EDGE_MARGIN, fraction));
 }
