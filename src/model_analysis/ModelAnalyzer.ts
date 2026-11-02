@@ -9,10 +9,11 @@
  * 3. applies scale and rotation, position ignored;
  * 4. dimensions, geometry (volume, area), center of gravity;
  * 5. stability (contact area, contact hull, height ratio, risk);
- * 6. open edges: meshClosed false = warning ANA_002 (non-blocking).
+ * 6. overhangs and bridges (angle from the vertical, ADR-034 D3);
+ * 7. open edges: meshClosed false = warning ANA_002 (non-blocking).
  *
- * Phase 9, lot 77: the base of the analysis. Overhangs and bridges come
- * with lot 78, thin walls with lot 79; the Complete Analysis Schema
+ * Phase 9: base of the analysis (lot 77), overhangs and bridges (lot 78);
+ * thin walls come with lot 79; the Complete Analysis Schema
  * (analysisId, objectId, status, classification null) is built and
  * validated with AnalysisSchema by AnalysisService (lot 80).
  *
@@ -23,14 +24,16 @@
  *
  * Based on:
  * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules)
- * - DECISIONS.md (ADR-034 D2, D4, D6, D7)
+ * - DECISIONS.md (ADR-034 D2, D3, D4, D6, D7)
  * - ERROR_CODES_SPEC.md (ANA_001, ANA_002)
  */
 
 import type {
+  Bridges,
   Dimensions,
   Geometry,
   MeshStatistics,
+  Overhangs,
   Stability,
 } from "../types/Analysis";
 
@@ -43,9 +46,14 @@ import {
   type AnalysisTransform,
 } from "./MeshAnalyzer";
 import { checkMeshData, countOpenEdges } from "./MeshValidator";
+import {
+  analyzeBridges,
+  analyzeOverhangs,
+  downAngles,
+} from "./PrintabilityAnalyzer";
 import { analyzeStability } from "./StabilityAnalyzer";
 
-/** Result of the computation of one object (lot 77) */
+/** Result of the computation of one object (lots 77 and 78) */
 export interface ModelAnalysisResult {
   dimensions: Dimensions;
 
@@ -54,6 +62,10 @@ export interface ModelAnalysisResult {
   mesh: MeshStatistics;
 
   stability: Stability;
+
+  overhangs: Overhangs;
+
+  bridges: Bridges;
 
   /**
    * false: an edge is not shared by exactly two triangles; the message
@@ -88,12 +100,15 @@ export function analyzeModel(
     dimensions.height,
     centerOfGravity,
   );
+  const down = downAngles(placed, welded.corners, lowestZ);
 
   return {
     dimensions,
     geometry,
     mesh: meshStatistics(welded),
     stability,
+    overhangs: analyzeOverhangs(down, geometry.surfaceArea),
+    bridges: analyzeBridges(placed, welded.corners, welded.vertexCount, down),
     meshClosed: countOpenEdges(welded.corners, welded.vertexCount) === 0,
   };
 }

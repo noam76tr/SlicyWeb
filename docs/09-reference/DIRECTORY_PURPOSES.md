@@ -755,8 +755,8 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 | `GeometryAnalyzer.ts` | Dimensions (bounding box of the placed object), volume enclosed by the mesh, surface area, center of gravity relative to the center of the object (center of the surface when the volume is 0) |
 | `MeshAnalyzer.ts` | Welded vertices (same stored coordinates = one vertex), object as placed on the build plate (scale and rotation, position ignored), mesh vertices and triangles |
 | `MeshValidator.ts` | Triangle data readable (ANA_001 when empty, not 9 numbers per triangle, or not finite); open edges, not shared by exactly two triangles (ANA_002, non-blocking) |
-| `ModelAnalyzer.ts` | Analysis of one object (Phase 9: dimensions, geometry, mesh, stability, mesh closed or not), answer to the messages of the worker |
-| `PrintabilityAnalyzer.ts` | Template of Phase 0, rewritten in lots 78 (overhangs, bridges) and 79 (thin walls) |
+| `ModelAnalyzer.ts` | Analysis of one object (Phase 9: dimensions, geometry, mesh, stability, overhangs, bridges, mesh closed or not), answer to the messages of the worker |
+| `PrintabilityAnalyzer.ts` | Overhangs (angle from the vertical, threshold 45 degrees, faces on the plate excluded) and bridges (flat regions beyond 80 degrees with at least two separate supports, span) (ADR-034 D3); thin walls in lot 79 |
 | `StabilityAnalyzer.ts` | Contact area, convex hull of the contact points, height ratio and tip risk (ADR-034 D4) |
 | `workers/modelAnalysis.worker.ts` | Web Worker running ModelAnalyzer (ADR-034 D7; no Electron, KI-024) |
 

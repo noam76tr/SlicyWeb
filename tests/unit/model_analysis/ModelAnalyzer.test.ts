@@ -1,11 +1,12 @@
 /**
  * SlicyWeb
- * Model Analyzer tests (Phase 9, lot 77)
+ * Model Analyzer tests (Phase 9, lots 77 and 78)
  *
  * Base of the analysis on models built in the tests (TEST_PLAN.md,
  * Analysis Engine Unit Tests): dimensions, volume, area, mesh, center of
- * gravity, stability with the contact hull, open edges (ANA_002), empty
- * mesh (ANA_001), Web Worker messages.
+ * gravity, stability with the contact hull, overhangs and bridges
+ * (lot 78), open edges (ANA_002), empty mesh (ANA_001), Web Worker
+ * messages.
  *
  * Based on:
  * - DATA_SCHEMA.md (3.9.0: Analysis Rules)
@@ -145,6 +146,58 @@ function sphere(r: number, segments: number, rings: number): number[] {
 }
 
 const cube20 = (): Float32Array => centered(box([0, 0, 0], [20, 20, 20]));
+
+/**
+ * Closed solid made of cubes of 10 mm. Each layer is a slice along Y
+ * (front first), drawn as seen from the front, top row first ("#" =
+ * full). Only the faces between a full and an empty cube are kept, so the
+ * walls and the slabs share their edges (one closed mesh).
+ */
+function blocks(layers: string[][]): number[] {
+  const size = 10;
+  const height = layers[0].length;
+  const full = (i: number, j: number, k: number): boolean =>
+    j >= 0 &&
+    j < layers.length &&
+    k >= 0 &&
+    k < height &&
+    layers[j][height - 1 - k][i] === "#";
+  // Faces of box(): bottom, top, front, back, left, right
+  const neighbours: Vec[] = [
+    [0, 0, -1],
+    [0, 0, 1],
+    [0, -1, 0],
+    [0, 1, 0],
+    [-1, 0, 0],
+    [1, 0, 0],
+  ];
+  const triangles: number[] = [];
+
+  for (let k = 0; k < height; k += 1) {
+    for (let j = 0; j < layers.length; j += 1) {
+      for (let i = 0; i < layers[0][0].length; i += 1) {
+        if (!full(i, j, k)) continue;
+
+        const cell = box(
+          [i * size, j * size, k * size],
+          [(i + 1) * size, (j + 1) * size, (k + 1) * size],
+        );
+
+        neighbours.forEach(([di, dj, dk], face) => {
+          if (!full(i + di, j + dj, k + dk)) {
+            triangles.push(...cell.slice(face * 18, face * 18 + 18));
+          }
+        });
+      }
+    }
+  }
+
+  return triangles;
+}
+
+/** The same drawing over `depth` cubes along Y */
+const extruded = (rows: string[], depth: number): number[] =>
+  blocks(Array.from({ length: depth }, () => rows));
 
 describe("ModelAnalyzer: cube of 20 mm", () => {
   const result = analyzeModel(cube20(), IDENTITY);
@@ -359,6 +412,119 @@ describe("ModelAnalyzer: stability", () => {
         ]),
       ),
     ).toBe(0);
+  });
+});
+
+describe("ModelAnalyzer: overhangs and bridges (lot 78)", () => {
+  it("cube of 20 mm: no overhang, no bridge (the face on the plate is excluded)", () => {
+    const result = analyzeModel(cube20(), IDENTITY);
+
+    expect(result.overhangs).toEqual({
+      detected: false,
+      maxAngle: 0,
+      percentage: 0,
+    });
+    expect(result.bridges).toEqual({
+      detected: false,
+      count: 0,
+      longestBridge: 0,
+    });
+  });
+
+  it("cube turned 45 degrees around X: angle 45, percentage 0, not detected", () => {
+    const result = analyzeModel(cube20(), {
+      rotation: { x: 45, y: 0, z: 0 },
+      scale: { x: 1, y: 1, z: 1 },
+    });
+
+    expect(result.overhangs.maxAngle).toBeCloseTo(45, 6);
+    expect(result.overhangs.percentage).toBe(0);
+    expect(result.overhangs.detected).toBe(false);
+    expect(result.bridges.count).toBe(0);
+  });
+
+  it("two pillars and a slab: 1 bridge, longest span = distance between the pillars", () => {
+    // Pillars 10 mm wide, 20 mm apart, slab 10 mm thick, depth 30 mm
+    const shape = extruded(["####", "#..#", "#..#"], 3);
+    const result = analyzeModel(centered(shape), IDENTITY);
+
+    expect(result.meshClosed).toBe(true);
+    expect(result.bridges).toEqual({
+      detected: true,
+      count: 1,
+      longestBridge: expect.closeTo(20, 6),
+    });
+    // The underside of the slab (20 x 30 mm) is a flat ceiling
+    expect(result.overhangs.detected).toBe(true);
+    expect(result.overhangs.maxAngle).toBe(90);
+    expect(result.overhangs.percentage).toBeCloseTo(
+      (600 / result.geometry.surfaceArea) * 100,
+      6,
+    );
+  });
+
+  it("cantilever (slab with one support): 0 bridges, overhang detected, angle 90", () => {
+    const shape = extruded(["####", "#...", "#..."], 2);
+    const result = analyzeModel(centered(shape), IDENTITY);
+
+    expect(result.meshClosed).toBe(true);
+    expect(result.bridges).toEqual({
+      detected: false,
+      count: 0,
+      longestBridge: 0,
+    });
+    expect(result.overhangs.detected).toBe(true);
+    expect(result.overhangs.maxAngle).toBe(90);
+    expect(result.overhangs.percentage).toBeCloseTo(
+      (600 / result.geometry.surfaceArea) * 100,
+      6,
+    );
+  });
+
+  it("table on four legs: 1 bridge, span = shortest gap between two legs", () => {
+    // Top 50 x 30 mm on legs of 10 x 10 mm at its corners: gaps 30 mm
+    // along X and 10 mm along Y
+    const legs = ["#####", "#...#"];
+    const result = analyzeModel(
+      centered(blocks([legs, ["#####", "....."], legs])),
+      IDENTITY,
+    );
+
+    expect(result.meshClosed).toBe(true);
+    expect(result.bridges.count).toBe(1);
+    expect(result.bridges.longestBridge).toBeCloseTo(10, 6);
+  });
+
+  it("the same bridge turned on the plate (90 degrees around Z) gives the same result", () => {
+    const shape = centered(extruded(["####", "#..#", "#..#"], 2));
+    const turned = analyzeModel(shape, {
+      rotation: { x: 0, y: 0, z: 90 },
+      scale: { x: 1, y: 1, z: 1 },
+    });
+
+    expect(turned.bridges.count).toBe(1);
+    expect(turned.bridges.longestBridge).toBeCloseTo(20, 6);
+    expect(turned.overhangs.maxAngle).toBeCloseTo(90, 9);
+  });
+
+  it("bridge upside down: the slab lies on the plate, no bridge, no overhang", () => {
+    const shape = centered(extruded(["#..#", "#..#", "####"], 2));
+    const result = analyzeModel(shape, IDENTITY);
+
+    expect(result.bridges.count).toBe(0);
+    expect(result.overhangs.detected).toBe(false);
+  });
+
+  it("sphere: overhangs on the lower half, no bridge (a cap that goes up)", () => {
+    const result = analyzeModel(centered(sphere(10, 32, 16)), IDENTITY);
+
+    expect(result.overhangs.detected).toBe(true);
+    expect(result.overhangs.maxAngle).toBeGreaterThan(80);
+    expect(result.overhangs.maxAngle).toBeLessThan(90);
+    // About the area below 45 degrees: (1 - cos 45) / 2 of the sphere
+    expect(result.overhangs.percentage).toBeGreaterThan(10);
+    expect(result.overhangs.percentage).toBeLessThan(20);
+    expect(result.bridges.count).toBe(0);
   });
 });
 

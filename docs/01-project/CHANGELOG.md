@@ -2789,7 +2789,7 @@ Release Type:
 Model Analysis
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-01
@@ -2813,6 +2813,42 @@ Date:
 
 - Nothing starts the analysis yet and nothing is shown: automatic start, Analysis section and ANA_* messages come with lot 80; overhangs and bridges with lot 78, thin walls with lot 79
 - Two corners are the same vertex only when their stored coordinates are equal (no tolerance): a mesh with tiny gaps is reported as not closed (ANA_002)
+
+## Validation Result
+
+- Windows 11 (2026-11-01): lot 77 on GitHub (75861e2, identical to the lot); npm run check:locales: 376 keys; npm run check:ipc: 28 channels; typecheck and lint without error; npm test: 323 tests passed, 1 skipped (link test); npm run test:e2e: 28 tests passed (Noam)
+
+---
+
+# VERSION 0.1.79
+
+Release Type:
+Model Analysis
+
+Status:
+In Progress
+
+Date:
+2026-11-01
+
+## Added
+
+- Overhangs and bridges of the model analysis (Phase 9, lot 78; ADR-034 D3; DATA_SCHEMA.md 3.9.0, Analysis Rules), on the object as placed on the build plate: angle of each triangle facing down measured from the vertical (0 = vertical wall, 90 = flat ceiling), triangles lying on the plate excluded; overhangs.maxAngle = largest angle, percentage = area beyond 45 degrees divided by the surface area, detected = a triangle beyond 45 degrees; flat regions = triangles beyond 80 degrees joined by their edges; support = border edge where the next triangle goes down, supports joined by a vertex count as one; bridge = flat region with at least two separate supports; longestBridge = largest span, span = shortest distance between two supports of the bridge
+- tests/unit/model_analysis/ModelAnalyzer.test.ts: 8 tests (31 in all): cube of 20 mm (no overhang, no bridge), cube turned 45 degrees around X (angle 45, percentage 0, not detected), two pillars and a slab (1 bridge, span 20 mm, angle 90), cantilever (0 bridges, overhang detected, angle 90), table on four legs (1 bridge, shortest gap), bridge turned on the plate, bridge upside down (no bridge), sphere (overhangs, no bridge)
+
+## Changed
+
+- src/model_analysis/PrintabilityAnalyzer.ts: template of Phase 0 rewritten (ADR-034 D9): downAngles, analyzeOverhangs, analyzeBridges, pure functions; the class PrintabilityAnalyzer and getPrintabilityScore removed (no field in DATA_SCHEMA.md; nothing used them); thin walls come with lot 79
+- src/model_analysis/ModelAnalyzer.ts: the result of the analysis (and of its Web Worker) contains overhangs and bridges
+- PHASES_IMPLEMENTATION_PLAN.md: progress of Phase 9 (lot 78)
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: PrintabilityAnalyzer.ts and ModelAnalyzer.test.ts
+- PASSATION.md: lot 78
+- 0.1.78 Completed with the results of Noam
+
+## Known Limitations
+
+- Nothing starts the analysis yet and nothing is shown (lot 80); thin walls with lot 79
+- Bridges are an approximation (ADR-034): a curved or slanted bridge can be counted wrongly; a ceiling carried all around by one wall (one support) is an overhang only
 
 ---
 
