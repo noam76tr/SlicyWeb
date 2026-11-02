@@ -1547,6 +1547,7 @@ Progress:
 - Lot 77 (CHANGELOG 0.1.78): base computation in a Web Worker (src/model_analysis/), not started by the interface yet (lot 80)
 - Lot 78 (CHANGELOG 0.1.79): overhangs and bridges (PrintabilityAnalyzer.ts), part of the result of the Web Worker
 - Lot 79 (CHANGELOG 0.1.80): thin walls (PrintabilityAnalyzer.ts, three-mesh-bvh 0.9.17), part of the result of the Web Worker
+- Lot 80 (CHANGELOG 0.1.81): interface: automatic analysis (AnalysisService), Analysis section, Tools > Analyze Models and Recompute Analysis, "Analyzing…" in the status bar, messages ANA_001 and ANA_002, texts in three languages; AnalysisPanel.tsx deleted
 
 
 

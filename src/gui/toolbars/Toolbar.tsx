@@ -9,7 +9,9 @@
  * Import (Phase 5) opens the system file dialog (STL and 3MF). Undo and
  * Redo (Phase 6) undo and redo the last change of transform
  * (TransformService); they are disabled while their history is empty
- * (UNDO_REDO_SPEC.md, Disabled State). The other buttons are visible and
+ * (UNDO_REDO_SPEC.md, Disabled State). Analyze (Phase 9 lot 80) does the
+ * same as Tools > Analyze Models (AnalysisService); it is disabled while the
+ * scene has no object. The other buttons are visible and
  * disabled until the phase that provides their action. They use aria-disabled
  * instead of disabled, so that their tooltip ("available in a later
  * version") is still shown and they stay reachable with the keyboard.
@@ -34,8 +36,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { AnalysisService } from "../../services/AnalysisService";
 import { TransformService } from "../../services/TransformService";
 import { useHistoryStore } from "../../state/historyStore";
+import { useObjectStore } from "../../state/objectStore";
 import { useTranslation } from "../hooks/useTranslation";
 import { IMPORT_ACCEPT, openImportDialog } from "../import/openImportDialog";
 
@@ -56,6 +60,9 @@ interface ToolbarButtonDefinition {
 
   /** Shortcut shown in the tooltip */
   shortcut?: string;
+
+  /** Enabled only when the scene has objects */
+  needsObjects?: boolean;
 }
 
 /** Groups of buttons, separated by a line */
@@ -92,7 +99,12 @@ const TOOLBAR_GROUPS: ToolbarButtonDefinition[][] = [
   ],
   [{ key: "toolbar.reset", icon: RotateCcw }],
   [
-    { key: "toolbar.analyze", icon: ScanSearch },
+    {
+      key: "toolbar.analyze",
+      icon: ScanSearch,
+      needsObjects: true,
+      action: () => AnalysisService.analyzeModels(),
+    },
     { key: "toolbar.optimize", icon: Sparkles },
     { key: "toolbar.generate", icon: WandSparkles },
   ],
@@ -102,6 +114,7 @@ export default function Toolbar(): JSX.Element {
   const { t } = useTranslation();
   const canUndo = useHistoryStore((state) => state.undoStack.length > 0);
   const canRedo = useHistoryStore((state) => state.redoStack.length > 0);
+  const hasObjects = useObjectStore((state) => state.objects.length > 0);
 
   const notAvailable = t("app.notAvailable");
 
@@ -127,7 +140,8 @@ export default function Toolbar(): JSX.Element {
             const notYet = !button.action;
             const empty =
               (button.history === "undo" && !canUndo) ||
-              (button.history === "redo" && !canRedo);
+              (button.history === "redo" && !canRedo) ||
+              (button.needsObjects === true && !hasObjects);
             const disabled = notYet || empty;
             const title = notYet
               ? `${label} (${notAvailable})`

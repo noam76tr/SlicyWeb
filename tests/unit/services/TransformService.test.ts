@@ -6,7 +6,8 @@
  * stands on the plate, scale with and without the lock, size in mm,
  * Center On Bed, Reset actions, refused values; local origin at the center
  * of the object (DATA_SCHEMA.md 3.4.0): an imported cube turned 90° keeps
- * its position X, Y; free rotation during a gesture of the gizmo.
+ * its position X, Y; free rotation during a gesture of the gizmo; gesture
+ * state for the analysis (lot 80).
  *
  * Based on:
  * - DATA_SCHEMA.md (Transform Rules)
@@ -236,5 +237,25 @@ describe("TransformService", () => {
     expect(cube().transform.position.y).toBe(0);
     expect(cube().transform.position.z).toBeCloseTo(5 * Math.SQRT2, 6);
     expect(worldBounds(cube().transform, CUBE).min.z).toBeCloseTo(0, 6);
+  });
+
+  it("tells when a gesture is active and when it ends (analysis, lot 80)", () => {
+    let ends = 0;
+    const remove = TransformService.onGestureEnd(() => {
+      ends += 1;
+    });
+
+    expect(TransformService.isGestureActive()).toBe(false);
+    TransformService.beginGesture([ID]);
+    expect(TransformService.isGestureActive()).toBe(true);
+    expect(ends).toBe(0);
+    TransformService.endGesture();
+    expect(TransformService.isGestureActive()).toBe(false);
+    expect(ends).toBe(1);
+
+    remove();
+    TransformService.beginGesture([ID]);
+    TransformService.endGesture();
+    expect(ends).toBe(1);
   });
 });

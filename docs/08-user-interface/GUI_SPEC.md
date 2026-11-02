@@ -661,7 +661,7 @@ Generate
 
 ```
 
-Undo and Redo (Phase 6) undo and redo the last change of transform, disabled while their history is empty (UNDO_REDO_SPEC.md). Move, Rotate and Scale are not in the toolbar: they are shown over the 3D viewport only, at the top on the start side (decision of Noam, Phase 6). They choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. They are active only when an object is selected, and grayed out otherwise.
+Undo and Redo (Phase 6) undo and redo the last change of transform, disabled while their history is empty (UNDO_REDO_SPEC.md). Analyze (Phase 9, lot 80) does the same as Tools > Analyze Models, disabled while the scene has no object. Move, Rotate and Scale are not in the toolbar: they are shown over the 3D viewport only, at the top on the start side (decision of Noam, Phase 6). They choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. They are active only when an object is selected, and grayed out otherwise.
 
 
 
@@ -2151,6 +2151,8 @@ Analysis Failure
 No technical stack traces visible to user.
 
 Analysis messages (Phase 9, ADR-034 D6; lot 80): ANA_001 (no analysis: empty or unreadable mesh, or failure of the computation) is an error; ANA_002 ("Mesh not closed: volume and wall thickness are approximate") is a warning that does not block: the analysis is shown. Both are translated and shown like the messages of the import.
+
+Lot 80 details: the messages of the analysis are shown under those of the import and stay until closed. ANA_002 is shown over the viewport once per object (not at each new computation); the Analysis section shows it as long as the last analysis of the object found a mesh not closed. After ANA_001, the object is not analyzed again by itself until its rotation or scale changes; Tools > Analyze Models and Recompute Analysis try again.
 
 
 

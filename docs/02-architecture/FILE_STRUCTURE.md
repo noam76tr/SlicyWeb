@@ -393,6 +393,7 @@ src/gui/
 │   ├── PrinterSection.tsx     = Printer section of the Properties Panel (Phase 7)
 │   ├── MaterialSection.tsx    = Material section of the Properties Panel (Phase 8)
 │   ├── FilamentSection.tsx    = Filament section of the Properties Panel (Phase 8)
+│   ├── AnalysisSection.tsx    = Analysis section of the Properties Panel (Phase 9)
 │   ├── profileRows.tsx        = rows of values of the Material and Filament sections (Phase 8)
 │   ├── TransformSection.tsx   = Transform section of the Properties Panel (Phase 6)
 │   └── objectNames.ts         = display names of the objects (duplicates: "cube (1)")
@@ -400,9 +401,10 @@ src/gui/
 │   ├── openImportDialog.ts    = system file dialog for File > Import STL and the toolbar
 │   ├── ImportDropZone.tsx     = drag and drop of files in the viewport
 │   └── ImportStatus.tsx       = progress, Cancel, confirmation and errors of the imports
+├── analysis/
+│   └── AnalysisMessages.tsx   = messages ANA_001 and ANA_002 over the viewport (Phase 9)
 ├── panels/
 │   ├── PresetPanel.tsx
-│   ├── AnalysisPanel.tsx
 │   └── RecommendationPanel.tsx
 ├── statusbar/
 │   └── StatusBar.tsx
@@ -772,7 +774,7 @@ src/project/
 ```text
 src/services/
 
-├── AnalysisService.ts
+├── AnalysisService.ts         = automatic analysis, Tools menu, validation and storage of the results (Phase 9)
 ├── FilamentService.ts
 ├── MaterialService.ts
 ├── PresetService.ts
@@ -801,6 +803,7 @@ src/state/
 ├── printerStore.ts
 ├── materialStore.ts
 ├── analysisStore.ts
+├── analysisTaskStore.ts       = objects being analyzed, warnings and messages of the analysis (Phase 9)
 ├── recommendationStore.ts
 ├── importStore.ts             = imports in progress and their result
 ├── historyStore.ts            = undo and redo stacks (Phase 6)
@@ -951,15 +954,17 @@ tests/
 │   ├── storage/
 │   │   └── SettingsStorage.test.ts = settings.json, printer and material settings (Phases 7 and 8)
 │   └── services/
+│       ├── AnalysisService.test.ts = automatic analysis, gesture, dropped computation, ANA_001, ANA_002, Tools menu (Phase 9)
 │       ├── GroupTransform.test.ts = several objects selected (Phase 6)
 │       ├── MaterialSelection.test.ts = materials and filaments of the window, last choice, families of a printer (Phase 8)
 │       ├── PrinterSelection.test.ts = printers of the window, last printer, profiles (Phase 7)
 │       ├── ProfileSync.test.ts = check of the profile repository, cache (Phase 7)
-│       ├── TransformService.test.ts = transform changes, object on the plate
+│       ├── TransformService.test.ts = transform changes, object on the plate, gesture state
 │       └── UndoRedo.test.ts = undo and redo of the transform changes
 ├── integration/
 └── e2e/
     ├── fixtures.ts = starts the built application, test files
+    ├── analysis.spec.ts = analysis shown after the import and a change of scale, ANA_002, Tools menu (Phase 9)
     ├── app.spec.ts = main window, languages
     ├── import.spec.ts = STL and 3MF import, refused files
     ├── material.spec.ts = materials and filaments served by the main process (Phase 8)

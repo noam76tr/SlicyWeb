@@ -29,6 +29,10 @@
  *   sections, like Printer > Select Printer;
  * - Filament > Manage Filaments (Phase 8 lot 71): opens the Filament
  *   Manager (FilamentManagerDialog);
+ * - Tools > Analyze Models, Tools > Recompute Analysis (Phase 9 lot 80):
+ *   analysis of the objects without an analysis up to date, analysis of
+ *   the selected objects again (AnalysisService); disabled while the
+ *   scene has no object, Recompute Analysis while no object is selected;
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -45,6 +49,7 @@
 import { Fragment, useRef } from "react";
 
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import { AnalysisService } from "../../services/AnalysisService";
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
 import { TransformService } from "../../services/TransformService";
 import { useHistoryStore } from "../../state/historyStore";
@@ -88,6 +93,9 @@ interface MenuItemDefinition {
 
   /** History read to enable the item (Undo, Redo) */
   history?: "undo" | "redo";
+
+  /** Enabled only when the scene has objects, or objects are selected */
+  needs?: "objects" | "selection";
 }
 
 interface MenuDefinition {
@@ -218,7 +226,21 @@ const MENUS: MenuDefinition[] = [
   {
     key: "menu.tools",
     groups: [
-      [{ key: "tools.analyzeModels" }, { key: "tools.recomputeAnalysis" }],
+      [
+        {
+          key: "tools.analyzeModels",
+          needs: "objects",
+          action: () => AnalysisService.analyzeModels(),
+        },
+        {
+          key: "tools.recomputeAnalysis",
+          needs: "selection",
+          action: () =>
+            AnalysisService.recompute(
+              useObjectStore.getState().selectedObjectIds,
+            ),
+        },
+      ],
       [
         { key: "tools.generateRecommendations" },
         { key: "tools.optimizeOrientation" },
@@ -266,6 +288,10 @@ export default function MenuBar(): JSX.Element {
   const setProjection = useViewportStore((state) => state.setProjection);
   const canUndo = useHistoryStore((state) => state.undoStack.length > 0);
   const canRedo = useHistoryStore((state) => state.redoStack.length > 0);
+  const hasObjects = useObjectStore((state) => state.objects.length > 0);
+  const hasSelection = useObjectStore(
+    (state) => state.selectedObjectIds.length > 0,
+  );
   const focusTarget = useRef<string | null>(null);
 
   /** Element of focusId of the item chosen, otherwise the menu title */
@@ -278,7 +304,9 @@ export default function MenuBar(): JSX.Element {
   const isDisabled = (item: MenuItemDefinition): boolean =>
     (!item.action && !item.focusId) ||
     (item.history === "undo" && !canUndo) ||
-    (item.history === "redo" && !canRedo);
+    (item.history === "redo" && !canRedo) ||
+    (item.needs === "objects" && !hasObjects) ||
+    (item.needs === "selection" && !hasSelection);
 
   const renderMenu = (
     menu: MenuDefinition,

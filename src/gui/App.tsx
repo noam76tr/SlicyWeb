@@ -27,6 +27,10 @@
  * Manager (FilamentManagerDialog) the filaments entered by the user
  * (Phase 8 lot 71).
  *
+ * The analysis of the objects starts by itself (AnalysisService, Phase 9
+ * lot 80): after the import of each object, and when its analysis
+ * becomes outdated (ADR-034 D7).
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - GUI_SPEC.md
@@ -36,6 +40,7 @@
 import { useEffect } from "react";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 
+import { AnalysisService } from "../services/AnalysisService";
 import { MaterialSelectionService } from "../services/MaterialSelectionService";
 import { PrinterSelectionService } from "../services/PrinterSelectionService";
 import { TransformService } from "../services/TransformService";
@@ -70,6 +75,8 @@ export default function App(): JSX.Element {
     void PrinterSelectionService.load();
     void MaterialSelectionService.load();
   }, []);
+
+  useEffect(() => AnalysisService.start(), []);
 
   const header = (
     <header className="shrink-0">

@@ -9,6 +9,8 @@
  * fails (no technical details). Errors stay until closed. An import
  * waiting or in progress has a Cancel button (ImportService.cancel).
  *
+ * Placed over the viewport by ImportDropZone (top end).
+ *
  * The messages never stop the clicks in the viewport under them (bug
  * found by Noam, lot 54): only the Cancel and Close buttons receive the
  * pointer.
@@ -59,10 +61,7 @@ export default function ImportStatus(): JSX.Element | null {
   }
 
   return (
-    <ul
-      className="pointer-events-none absolute end-3 top-3 flex w-80 max-w-[calc(100%-1.5rem)] flex-col gap-2"
-      aria-live="polite"
-    >
+    <ul className="pointer-events-none flex flex-col gap-2" aria-live="polite">
       {tasks.map((task) => {
         const failed = task.status === "error";
         const running = !failed && task.status !== "done";

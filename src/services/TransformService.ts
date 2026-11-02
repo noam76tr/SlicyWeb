@@ -13,6 +13,10 @@
  * transforms of the action and select its object. Selection changes are
  * not recorded.
  *
+ * Gesture state (Phase 9 lot 80): isGestureActive() and onGestureEnd() let
+ * the analysis wait for the end of a gesture before computing again
+ * (ADR-034 D7: never while dragging).
+ *
  * apply():
  * - refuses values that are not finite and scales of 0.1 % or less;
  * - places the object on the plate (lowest point at Z = 0): the position
@@ -179,6 +183,9 @@ function record(
 /** Gesture in progress: one action for all its changes */
 let gesture: { before: Record<string, Transform> } | null = null;
 
+/** Called at the end of each gesture (AnalysisService, ADR-034 D7) */
+const gestureEndListeners = new Set<() => void>();
+
 /** Current transforms of objects, by objectId (missing objects left out) */
 function currentTransforms(objectIds: string[]): Record<string, Transform> {
   const transforms: Record<string, Transform> = {};
@@ -337,6 +344,27 @@ export const TransformService = {
     if (current) {
       record(current.before, currentTransforms(Object.keys(current.before)));
     }
+
+    for (const listener of gestureEndListeners) {
+      listener();
+    }
+  },
+
+  /** True between beginGesture() and endGesture() */
+  isGestureActive(): boolean {
+    return gesture !== null;
+  },
+
+  /**
+   * Calls the listener at the end of each gesture; returns the function
+   * that removes it.
+   */
+  onGestureEnd(listener: () => void): () => void {
+    gestureEndListeners.add(listener);
+
+    return () => {
+      gestureEndListeners.delete(listener);
+    };
   },
 
   /**

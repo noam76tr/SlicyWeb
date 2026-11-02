@@ -6,7 +6,9 @@
  * Selected Material, Selected Object, Object Count, Analysis Status,
  * Selected Filament, Active Preset, Current Language, Project Status.
  *
- * Values come from the stores. Project Status shows "None" until
+ * Values come from the stores. Analysis Status (Phase 9 lot 80):
+ * "Analyzing…" while an analysis is computed, otherwise the status of the
+ * analysis of the selected object. Project Status shows "None" until
  * the project state is available to the GUI.
  *
  * No business logic.
@@ -19,6 +21,7 @@
 import { useMemo } from "react";
 
 import { useAnalysisStore } from "../../state/analysisStore";
+import { useAnalysisTaskStore } from "../../state/analysisTaskStore";
 import { useFilamentStore } from "../../state/filamentStore";
 import { useMaterialStore } from "../../state/materialStore";
 import { useObjectStore } from "../../state/objectStore";
@@ -77,6 +80,10 @@ export default function StatusBar(): JSX.Element {
     selectedObject ? state.analysis[selectedObject.objectId] : undefined,
   );
 
+  const analyzing = useAnalysisTaskStore(
+    (state) => state.pendingObjectIds.length > 0,
+  );
+
   const none = t("statusBar.none");
 
   return (
@@ -99,7 +106,13 @@ export default function StatusBar(): JSX.Element {
       />
       <StatusField
         label={t("statusBar.analysisStatus")}
-        value={analysis ? t(`result.${analysis.status}`) : none}
+        value={
+          analyzing
+            ? t("analysis.analyzing")
+            : analysis
+              ? t(`result.${analysis.status}`)
+              : none
+        }
       />
       <StatusField
         label={t("statusBar.filament")}

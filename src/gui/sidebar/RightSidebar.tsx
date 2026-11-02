@@ -21,6 +21,9 @@
  * family) and the filament and show their values (MaterialSection.tsx,
  * FilamentSection.tsx).
  *
+ * Phase 9: the Analysis section shows the analysis of the selected object
+ * (AnalysisSection.tsx).
+ *
  * No business logic.
  *
  * Based on:
@@ -30,12 +33,12 @@
 
 import { useMemo } from "react";
 
-import { useAnalysisStore } from "../../state/analysisStore";
 import { useObjectStore } from "../../state/objectStore";
 import { usePresetStore } from "../../state/presetStore";
 import { useRecommendationStore } from "../../state/recommendationStore";
 import { useTranslation } from "../hooks/useTranslation";
 
+import AnalysisSection from "./AnalysisSection";
 import FilamentSection from "./FilamentSection";
 import MaterialSection from "./MaterialSection";
 import { getDisplayNames } from "./objectNames";
@@ -60,10 +63,6 @@ export default function RightSidebar(): JSX.Element {
   const selectedName = selectedObject
     ? (names.get(selectedObject.objectId) ?? selectedObject.fileName)
     : "";
-
-  const analysis = useAnalysisStore((state) =>
-    selectedObject ? state.analysis[selectedObject.objectId] : undefined,
-  );
 
   // Several objects selected: the Transform section acts on the group
   const selectedObjectIds = useObjectStore((state) => state.selectedObjectIds);
@@ -121,11 +120,7 @@ export default function RightSidebar(): JSX.Element {
       </SidebarSection>
 
       <SidebarSection title={t("analysis.title")}>
-        {!selectedObject
-          ? noObject
-          : analysis
-            ? t(`result.${analysis.status}`)
-            : t("analysis.none")}
+        <AnalysisSection objectIds={selectedObjectIds} />
       </SidebarSection>
 
       <SidebarSection title={t("recommendation.title")}>

@@ -296,6 +296,8 @@ The Service Domain triggers the import (ImportService, ADR-029); the GUI calls I
 
 The Service Domain changes the transform of the objects (TransformService, Phase 6): it uses the geometry and the meaning of the transform of the Scene Domain (GeometryRegistry, ObjectTransform, ADR-031); the GUI calls TransformService.
 
+The Service Domain starts the model analysis (AnalysisService, Phase 9, ADR-034 D7): it reads the geometry of the Scene Domain (GeometryRegistry), runs the Analysis Domain in its Web Worker (AnalysisRunner), validates the result (AnalysisSchema) and stores it (State Management); it waits for the end of a gesture of TransformService. The GUI calls AnalysisService (Tools menu).
+
 Cannot Depend On:
 
 ```text

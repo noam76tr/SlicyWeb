@@ -2862,7 +2862,7 @@ Release Type:
 Model Analysis
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-02
@@ -2889,6 +2889,64 @@ Date:
 
 - Nothing starts the analysis yet and nothing is shown (lot 80)
 - The thickness is measured at points of the surface: a thin part whose area is too small to receive a point can be missed; on a mesh not closed, the thickness is approximate (ANA_002)
+
+## Validation Result
+
+- Windows 11 (2026-11-02): npm run check:locales: 376 keys; npm run check:ipc: 28 channels; typecheck and lint without error; npm test: 340 tests passed, 1 skipped (link test); npm run test:e2e: 28 tests passed (Noam)
+
+---
+
+# VERSION 0.1.81
+
+Release Type:
+Model Analysis
+
+Status:
+In Progress
+
+Date:
+2026-11-02
+
+## Added
+
+- Interface of the model analysis (Phase 9, lot 80; ADR-034 D6, D7, D8; GUI_SPEC.md: Tools Menu, Analysis Section, Status Bar, Error Handling UI)
+- Automatic analysis (ADR-034 D7): an object without analysis (after its import), or whose analysis became outdated (rotation or scale), is analyzed once the gesture is over or the value confirmed, never during a gesture (drag, gizmo); one object at a time, in the Web Worker of the analysis; a computation no longer needed (object removed, or turned or scaled again) is dropped
+- src/services/AnalysisService.ts rewritten (ADR-034 D9): starts the analysis, builds the Complete Analysis Schema (analysisId kept, status generated, classification null), validates it with AnalysisSchema and stores it in analysisStore; serialize, deserialize, isPrintable, getConfidenceLevel and getConfidenceScore removed (nothing uses them; ConfidenceScorer stays for Phase 10)
+- src/state/analysisTaskStore.ts: objects being analyzed, warnings ANA_002, messages of the analysis (not project data, not saved)
+- src/gui/sidebar/AnalysisSection.tsx: Analysis section of the Properties Panel: status (Up to date, Outdated, Analyzing…, No analysis), dimensions (mm), volume (cm³), surface area (cm²), mesh (triangles, vertices), overhangs, bridges, thin walls (minimum thickness, "Thin walls detected" under 0.8 mm), stability (contact area in cm², height ratio, tip risk out of 100 with its level); warning of a mesh not closed (ANA_002); several selected objects: "Select a single object"; numbers in the format of the language
+- src/gui/analysis/AnalysisMessages.tsx: messages ANA_001 (error) and ANA_002 (warning) over the viewport, under the messages of the import, until closed; the clicks in the viewport go through them (lot 55)
+- Tools > Analyze Models (objects without an analysis up to date, including those whose analysis failed) and Tools > Recompute Analysis (selected objects, even when up to date) enabled; disabled while the scene has no object (Recompute Analysis: no selected object)
+- Toolbar, Analyze: same action as Tools > Analyze Models, disabled while the scene has no object
+- Status bar, Analysis: "Analyzing…" while an analysis is computed, otherwise the status of the analysis of the selected object
+- 31 translation keys (407 in all), in English, French and Hebrew
+- tests/unit/services/AnalysisService.test.ts: 13 tests (import, one object at a time, rotation with analysisId kept, move without new computation, gesture, computation dropped after a new rotation or a removal, ANA_001 and retry by Analyze Models, result refused by AnalysisSchema, object without geometry, ANA_002 shown once, Recompute Analysis, stop); tests/unit/services/TransformService.test.ts: 1 test (gesture state)
+- tests/e2e/analysis.spec.ts: 4 tests (analysis shown after the import with the status bar, new analysis after a change of scale, mesh not closed with ANA_002, Tools menu, Analyze button and several selected objects)
+
+## Changed
+
+- src/services/TransformService.ts: isGestureActive() and onGestureEnd() (the analysis waits for the end of a gesture)
+- src/gui/sidebar/RightSidebar.tsx: the Analysis section shows AnalysisSection
+- src/gui/statusbar/StatusBar.tsx: Analysis Status
+- src/gui/menus/MenuBar.tsx: Analyze Models, Recompute Analysis
+- src/gui/toolbars/Toolbar.tsx: Analyze
+- src/gui/App.tsx: starts the automatic analysis (AnalysisService.start)
+- src/gui/import/ImportDropZone.tsx, src/gui/import/ImportStatus.tsx: one place over the viewport for the messages of the import and of the analysis
+- GUI_SPEC.md: Toolbar Buttons (Analyze); Error Handling UI (ANA_002 shown once per object over the viewport, always in the Analysis section; failed analysis computed again after a new rotation or scale, or by the Tools menu)
+- DOMAINS_DEPENDENCY_MATRIX.md: AnalysisService in the Service Domain
+- PHASES_IMPLEMENTATION_PLAN.md: progress of Phase 9 (lot 80)
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: AnalysisService.ts, analysisTaskStore.ts, AnalysisSection.tsx, AnalysisMessages.tsx, the tests; AnalysisPanel.tsx removed
+- PASSATION.md: lot 80
+- 0.1.80 Completed with the results of Noam
+- KNOWN ISSUES: KI-015 (AnalysisPanel removed) and KI-011 (AnalysisPanel and AnalysisService no longer concerned) updated
+
+## Removed
+
+- src/gui/panels/AnalysisPanel.tsx (never used, English text in the code; replaced by the Analysis section; ADR-034 D9)
+
+## Known Limitations
+
+- The faces in overhang are not shown in red in the 3D view: separate lot after the closure of Phase 9 (decision 81)
+- The analyses are not saved in a project yet (Phase 13, Project Persistence)
 
 ---
 
@@ -3725,13 +3783,13 @@ Identifier: KI-011
 
 Since: 0.1.23
 
-Affected Module: src/classification_engine/ClassificationValidator.ts, src/optimization_engine/ClassificationValidator.ts, src/gui/panels/AnalysisPanel.tsx, src/services/AnalysisService.ts
+Affected Module: src/classification_engine/ClassificationValidator.ts, src/optimization_engine/ClassificationValidator.ts
 
-Issue: ClassificationValidator is not called anywhere since the validated field was removed (0.1.23). AnalysisPanel no longer displays the confidence level: no component passes the confidenceLevel property (AnalysisService.getConfidenceLevel).
+Issue: ClassificationValidator is not called anywhere since the validated field was removed (0.1.23). Since 0.1.81, AnalysisPanel is removed and AnalysisService no longer gives the confidence level: the classification and its confidence level are shown from Phase 10 (ADR-034 D1; ConfidenceScorer).
 
-Planned Resolution: Call ClassificationValidator in the classification workflow; pass the confidence level to AnalysisPanel when the panel is connected.
+Planned Resolution: Call ClassificationValidator in the classification workflow; show the classification and its confidence level when Phase 10 computes them.
 
-Resolve Before: Technical Phase 3 - GUI Foundation (panel); Technical Phase 10 - Classification and Recommendation Engine (validator)
+Resolve Before: Technical Phase 10 - Classification and Recommendation Engine
 
 
 ---
@@ -3757,11 +3815,11 @@ Identifier: KI-015
 
 Since: 0.1.35
 
-Affected Module: src/gui/panels/ (PresetPanel, AnalysisPanel, RecommendationPanel), src/renderer/Renderer.ts
+Affected Module: src/gui/panels/ (PresetPanel, RecommendationPanel), src/renderer/Renderer.ts
 
 Issue: These components are not used by the interface of Phase 3, and some of them contain hardcoded English text, against the Internationalization Rule (CLAUDE.md). The Properties Panel (src/gui/sidebar/RightSidebar.tsx) is used instead of the panels. Since 0.1.36, Viewport.tsx is used (3D viewport); src/renderer/Renderer.ts is no longer used and duplicates RendererManager.
 
-Resolve Before: the phase that displays each component (Phases 7 to 10 for the panels; KI-011 for AnalysisPanel); Renderer.ts can be removed at any time. ViewportToolbar and ViewportStatus removed in 0.1.56 (replaced by the mode buttons over the viewport and the status bar); PrinterPanel removed in 0.1.62 (replaced by the Printer section of the Properties Panel); MaterialPanel and FilamentPanel removed in 0.1.72 (replaced by the Material and Filament sections)
+Resolve Before: the phase that displays each component (Phases 7 to 10 for the panels); Renderer.ts can be removed at any time. ViewportToolbar and ViewportStatus removed in 0.1.56 (replaced by the mode buttons over the viewport and the status bar); PrinterPanel removed in 0.1.62 (replaced by the Printer section of the Properties Panel); MaterialPanel and FilamentPanel removed in 0.1.72 (replaced by the Material and Filament sections); AnalysisPanel removed in 0.1.81 (replaced by the Analysis section)
 
 Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it.
 
