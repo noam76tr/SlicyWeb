@@ -138,4 +138,52 @@ describe("Printer form", () => {
       printer,
     });
   });
+
+  it("shows the numbers with the separator of the language (lot 81)", () => {
+    const printer: Printer = {
+      id: "user_2",
+      brand: "Home",
+      model: "Small",
+      series: "",
+      manufacturer: "",
+      firmware: "",
+      releaseDate: "",
+      supported: true,
+      buildVolume: { x: 180.5, y: 180, z: 1200 },
+      defaultNozzle: 0.4,
+      supportedNozzles: [0.25, 0.4, 0.6],
+      motion: {
+        maxPrintSpeed: 1500,
+        maxTravelSpeed: null,
+        maxAcceleration: 20000,
+        maxJerk: 8.5,
+      },
+      thermal: { maxNozzleTemp: 300, maxBedTemp: 110, maxChamberTemp: null },
+      cooling: { partFan: true, auxFan: false, chamberFan: false },
+      extruder: { type: "bowden", count: 1 },
+      supportedMaterials: ["PLA"],
+      supportedFilaments: [],
+    };
+
+    const french = printerToForm(printer, "fr");
+    expect(french).toMatchObject({
+      buildX: "180,5",
+      buildZ: "1200",
+      defaultNozzle: "0,4",
+      supportedNozzles: "0,25; 0,4; 0,6",
+      maxAcceleration: "20000",
+      maxJerk: "8,5",
+    });
+    expect(printerToForm(printer, "en").supportedNozzles).toBe(
+      "0.25; 0.4; 0.6",
+    );
+    expect(printerToForm(printer, "he").maxJerk).toBe("8.5");
+
+    // Read back unchanged, in each language
+    for (const language of ["en", "fr", "he"] as const) {
+      expect(formToPrinter(printerToForm(printer, language), "user_2")).toEqual(
+        { ok: true, printer },
+      );
+    }
+  });
 });

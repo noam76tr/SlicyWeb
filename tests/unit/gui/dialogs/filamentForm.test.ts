@@ -145,5 +145,19 @@ describe("Filament form", () => {
       ok: true,
       filament,
     });
+
+    // French: comma as decimal separator, read back unchanged (lot 81)
+    const french = filamentToForm(filament, "fr");
+    expect(french).toMatchObject({
+      density: "1,27",
+      pricePerKg: "24,5",
+      retractionDistance: "0,8",
+      diameter: "2.85",
+    });
+    for (const language of ["fr", "he"] as const) {
+      expect(
+        formToFilament(filamentToForm(filament, language), filament.id),
+      ).toEqual({ ok: true, filament });
+    }
   });
 });

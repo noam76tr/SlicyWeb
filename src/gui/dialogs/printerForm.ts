@@ -15,6 +15,8 @@
  * Numbers accept a comma as decimal separator ("0,4"). The list of
  * nozzles is separated by semicolons or spaces ("0,4; 0,6" or
  * "0.4 0.6"); the list of materials by commas or semicolons.
+ * The numbers of a printer are shown with the decimal separator of the
+ * language (lot 81).
  *
  * Errors are translation keys (printerManager.error.*), by field.
  *
@@ -27,6 +29,8 @@
  * - GUI_SPEC.md (Printer Manager)
  */
 
+import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import { formatFieldNumber } from "../../i18n/NumberFormatter";
 import type { ExtruderType, Printer } from "../../types/Printer";
 
 /** Id sent for a new printer: the main process replaces it */
@@ -67,9 +71,12 @@ export type PrinterFormErrors = Partial<Record<PrinterFormField, string>>;
 export type PrinterFormResult =
   { ok: true; printer: Printer } | { ok: false; errors: PrinterFormErrors };
 
-/** Number shown in a field: 2 decimals at most, empty for null */
-function text(value: number | null): string {
-  return value === null ? "" : String(Math.round(value * 100) / 100);
+/**
+ * Number shown in a field: decimal separator of the language, 2 decimals
+ * at most, empty for null
+ */
+function text(value: number | null, language: SupportedLanguage): string {
+  return value === null ? "" : formatFieldNumber(value, language);
 }
 
 function parseNumber(value: string): number {
@@ -128,7 +135,10 @@ export function emptyPrinterForm(): PrinterForm {
 }
 
 /** The form of an existing printer */
-export function printerToForm(printer: Printer): PrinterForm {
+export function printerToForm(
+  printer: Printer,
+  language: SupportedLanguage = "en",
+): PrinterForm {
   return {
     brand: printer.brand,
     model: printer.model,
@@ -136,18 +146,20 @@ export function printerToForm(printer: Printer): PrinterForm {
     manufacturer: printer.manufacturer,
     firmware: printer.firmware,
     releaseDate: printer.releaseDate,
-    buildX: text(printer.buildVolume.x),
-    buildY: text(printer.buildVolume.y),
-    buildZ: text(printer.buildVolume.z),
-    defaultNozzle: text(printer.defaultNozzle),
-    supportedNozzles: printer.supportedNozzles.map(text).join("; "),
-    maxPrintSpeed: text(printer.motion.maxPrintSpeed),
-    maxTravelSpeed: text(printer.motion.maxTravelSpeed),
-    maxAcceleration: text(printer.motion.maxAcceleration),
-    maxJerk: text(printer.motion.maxJerk),
-    maxNozzleTemp: text(printer.thermal.maxNozzleTemp),
-    maxBedTemp: text(printer.thermal.maxBedTemp),
-    maxChamberTemp: text(printer.thermal.maxChamberTemp),
+    buildX: text(printer.buildVolume.x, language),
+    buildY: text(printer.buildVolume.y, language),
+    buildZ: text(printer.buildVolume.z, language),
+    defaultNozzle: text(printer.defaultNozzle, language),
+    supportedNozzles: printer.supportedNozzles
+      .map((nozzle) => text(nozzle, language))
+      .join("; "),
+    maxPrintSpeed: text(printer.motion.maxPrintSpeed, language),
+    maxTravelSpeed: text(printer.motion.maxTravelSpeed, language),
+    maxAcceleration: text(printer.motion.maxAcceleration, language),
+    maxJerk: text(printer.motion.maxJerk, language),
+    maxNozzleTemp: text(printer.thermal.maxNozzleTemp, language),
+    maxBedTemp: text(printer.thermal.maxBedTemp, language),
+    maxChamberTemp: text(printer.thermal.maxChamberTemp, language),
     partFan: printer.cooling.partFan,
     auxFan: printer.cooling.auxFan,
     chamberFan: printer.cooling.chamberFan,

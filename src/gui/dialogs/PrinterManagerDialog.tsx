@@ -135,7 +135,7 @@ function Fieldset({
 }
 
 export default function PrinterManagerDialog(): JSX.Element {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const open = useManagerStore((state) => state.open);
   const editId = useManagerStore((state) => state.editId);
@@ -200,13 +200,13 @@ export default function PrinterManagerDialog(): JSX.Element {
       .printers.find((item) => item.id === editId);
 
     if (printer) {
-      start({ id: printer.id, form: printerToForm(printer) });
+      start({ id: printer.id, form: printerToForm(printer, language) });
     }
     useManagerStore.setState({ editId: null });
-  }, [open, editId]);
+  }, [open, editId, language]);
 
   const copy = (printer: Printer): void => {
-    const form = printerToForm(printer);
+    const form = printerToForm(printer, language);
     start({
       id: null,
       form: {
@@ -253,7 +253,7 @@ export default function PrinterManagerDialog(): JSX.Element {
     }
 
     const saved = change.printer ?? result.printer;
-    start({ id: saved.id, form: printerToForm(saved) });
+    start({ id: saved.id, form: printerToForm(saved, language) });
     setMessage({ kind: "status", key: "printerManager.saved" });
   };
 
@@ -391,7 +391,10 @@ export default function PrinterManagerDialog(): JSX.Element {
                       type="button"
                       aria-pressed={editing?.id === printer.id}
                       onClick={() =>
-                        start({ id: printer.id, form: printerToForm(printer) })
+                        start({
+                          id: printer.id,
+                          form: printerToForm(printer, language),
+                        })
                       }
                       className="w-full truncate rounded px-2 py-1 text-start hover:bg-muted aria-pressed:bg-muted aria-pressed:font-medium"
                     >

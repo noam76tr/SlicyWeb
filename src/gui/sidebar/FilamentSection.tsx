@@ -66,7 +66,7 @@ function groupByBrand(filaments: Filament[]): [string, Filament[]][] {
 }
 
 export default function FilamentSection(): JSX.Element {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const range = useRange();
   const value = useValue();
 
@@ -157,7 +157,7 @@ export default function FilamentSection(): JSX.Element {
               value={
                 selected.pricePerKg === null
                   ? t("filament.priceNotSpecified")
-                  : formatNumber(selected.pricePerKg)
+                  : formatNumber(selected.pricePerKg, language)
               }
             />
             <ProfileRow

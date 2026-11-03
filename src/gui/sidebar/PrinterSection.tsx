@@ -32,6 +32,8 @@
 
 import { useMemo } from "react";
 
+import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import { formatNumber } from "../../i18n/NumberFormatter";
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
 import { usePrinterStore } from "../../state/printerStore";
 import type { Printer } from "../../types/Printer";
@@ -43,9 +45,9 @@ export const PRINTER_SELECTOR_ID = "printer-selector";
 
 const NONE = "";
 
-/** Value shown: 2 decimals at most */
-function format(value: number): string {
-  return String(Math.round(value * 100) / 100);
+/** Value shown: format of the language, 2 decimals at most */
+function format(value: number, language: SupportedLanguage): string {
+  return formatNumber(value, language);
 }
 
 /** Printers grouped by brand, in the order of the store */
@@ -74,7 +76,7 @@ function Row({ label, value }: RowProps): JSX.Element {
 }
 
 export default function PrinterSection(): JSX.Element {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const printers = usePrinterStore((state) => state.printers);
   const userPrinterIds = usePrinterStore((state) => state.userPrinterIds);
@@ -95,7 +97,9 @@ export default function PrinterSection(): JSX.Element {
   );
 
   const limit = (value: number | null, unit: string): string =>
-    value === null ? t("printer.notPublished") : `${format(value)} ${unit}`;
+    value === null
+      ? t("printer.notPublished")
+      : `${format(value, language)} ${unit}`;
 
   return (
     <div className="space-y-3">
@@ -173,17 +177,20 @@ export default function PrinterSection(): JSX.Element {
             <Row label={t("printer.model")} value={selected.model} />
             <Row
               label={t("printer.buildVolume")}
-              value={`${format(selected.buildVolume.x)} × ${format(
+              value={`${format(selected.buildVolume.x, language)} × ${format(
                 selected.buildVolume.y,
-              )} × ${format(selected.buildVolume.z)} mm`}
+                language,
+              )} × ${format(selected.buildVolume.z, language)} mm`}
             />
             <Row
               label={t("printer.nozzle")}
-              value={`${format(selected.defaultNozzle)} mm`}
+              value={`${format(selected.defaultNozzle, language)} mm`}
             />
             <Row
               label={t("printer.supportedNozzles")}
-              value={`${selected.supportedNozzles.map(format).join(" · ")} mm`}
+              value={`${selected.supportedNozzles
+                .map((nozzle) => format(nozzle, language))
+                .join(" · ")} mm`}
             />
           </dl>
 

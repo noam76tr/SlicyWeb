@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-11-02. Lot 79 (parois fines) sur `main` (b7d968a), vérifié identique, validé par Noam (0.1.80 Completed : 376 clés, 28 canaux, 340 + 1 tests, 28 e2e). Lot 80 (interface de l'analyse) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.81 (lot 80, In Progress).
+Date : 2026-11-02. Lot 80 (interface de l'analyse) sur `main` (5fd7494), vérifié identique, validé par Noam (0.1.81 Completed : 407 clés, 28 canaux, 354 + 1 tests, 32 e2e, contrôles 1 à 7). Lot 81 (clôture de la phase 9, format des nombres) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.82 (lot 81, In Progress).
 
 ---
 
@@ -53,7 +53,7 @@ Date : 2026-11-02. Lot 79 (parois fines) sur `main` (b7d968a), vérifié identiq
   1. le format des données ou des fichiers (DATA_SCHEMA, WYPROJ, export slicer) ;
   2. la sécurité (IPC, CSP, accès aux fichiers) ;
   3. un choix visible pour l'utilisateur (interface, comportement, réglages d'impression) ;
-  4. une suppression de code ou de fonctionnalité ;
+  4. une suppression de code ou de fonctionnalité (fichier, fonction, méthode, export) : même quand un tableau de suppressions a été validé, toute suppression qui n'y figure pas est demandée **avant** (Noam, 2026-11-02, après `getConfidenceLevel` et `getConfidenceScore` au lot 80) ; ne jamais la ranger seulement dans « Décisions prises seul » ;
   5. une contradiction entre deux documents de même priorité.
 
   Dans ces cas, Claude pose la question comme avant. Dans chaque lot, le `LOTN.md` liste en haut « Décisions prises seul » : la question, l'option choisie et une ligne de justification, pour que Noam puisse les relire et les annuler.
@@ -76,13 +76,13 @@ Date : 2026-11-02. Lot 79 (parois fines) sur `main` (b7d968a), vérifié identiq
 | 6 | Transform System | Completed (2026-10-21) | 0.1.47 à 0.1.56 |
 | 7 | Printer Database | Completed (2026-10-27) | 0.1.59 à 0.1.66 |
 | 8 | Material Database | Completed (2026-11-01) | 0.1.67 à 0.1.75 |
-| 9 | Model Analysis | In Progress (décisions D1 à D10 de Noam, ADR-034) | 0.1.77 à … |
+| 9 | Model Analysis | Completed (2026-11-02) | 0.1.77 à 0.1.82 |
 | 10 à 16 | Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
 
 - **Fenêtre :** Electron avec React ; barre de menus (9 menus de GUI_SPEC) ; barre d'outils (11 boutons) ; panneaux latéraux redimensionnables et repliables ; barre d'état ; thème sombre.
-- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 407 clés de traduction.
+- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 407 clés de traduction. Tous les nombres affichés suivent le format de la langue (lot 81) : virgule décimale en français, point en anglais et en hébreu.
 - **Vue 3D :**
   - repère en mm, X à droite, Y vers l'arrière, Z vers le haut, origine au centre du plateau (ADR-028) ;
   - grille adaptative ;
@@ -219,6 +219,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 78 | Phase 9, surplombs et ponts (`PrintabilityAnalyzer.ts` réécrit, branché sur `ModelAnalyzer`, donc dans le Worker) : angle depuis la verticale, faces posées exclues, seuil 45° ; ponts = zones plates (> 80°) avec au moins deux appuis séparés, portée = plus courte distance entre deux appuis ; classe `PrintabilityAnalyzer` et `getPrintabilityScore` retirées ; 8 tests (31) ; sphère de 1 million de triangles en 0,8 s environ (Linux) | 0.1.79 |
 | 79 | Phase 9, parois fines (`analyzeThinWalls` dans `PrintabilityAnalyzer.ts`, branché sur `ModelAnalyzer`) : 200 000 points au plus, répartis selon l'aire, toujours les mêmes, jamais sur une arête ; rayon vers l'intérieur qui ignore son propre triangle, BVH de `three-mesh-bvh` 0.9.17 (dépendance ajoutée, `package.json` et `package-lock.json` de Noam) ; détection sous 0,8 mm ; 9 tests (40) ; sphère de 1 million de triangles en 2 s environ en tout (Linux) ; KI-027 (deepmerge) et KI-028 (minimatch) ajoutés (outils de développement) | 0.1.80 |
 | 80 | Phase 9, interface de l'analyse : `AnalysisService.ts` réécrit (lancement automatique, attente de la fin d'un geste, un objet à la fois, calcul abandonné, AnalysisSchema, ANA_001 et ANA_002), `analysisTaskStore.ts`, section Analysis (`AnalysisSection.tsx`), `AnalysisMessages.tsx`, Tools > Analyze Models et Recompute Analysis, bouton Analyze de la barre d'outils, barre d'état ; `TransformService` : `isGestureActive`, `onGestureEnd` ; 31 clés (407) ; 14 tests (354 + 1), 4 e2e (32) ; `AnalysisPanel.tsx` supprimé (D9) | 0.1.81 |
+| 81 | Clôture de la phase 9 ; nombres au format de la langue dans toutes les sections (`src/i18n/NumberFormatter.ts`, GUI_SPEC « Number Format ») ; aucune suppression ; 4 tests (358 + 1), 1 e2e (33) | 0.1.82 |
 
 ---
 
@@ -329,6 +330,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 79. **Phase 9, décisions D1 à D10 (Noam, 2026-11-01, ADR-034 ; option A partout, avec les corrections des décisions 80 et 81) :** géométrie seule en phase 9, classification en phase 10 et `classification` à `null` d'ici là (D1) ; analyse de l'objet tel qu'il est posé (rotation et échelle, pas la position), mm, mm², mm³, degrés, %, `dimensions {width, depth, height}`, centre de gravité `{x, y, z}` par rapport au centre de l'objet (D2) ; surplombs depuis la verticale, seuil 45°, faces posées exclues ; pont = zone plate (> 80°) avec au moins deux appuis, portée = plus courte distance entre deux appuis (D3) ; parois fines par rayons vers l'intérieur avec `three-mesh-bvh@0.9.17` (Noam l'installe au lot 79), 200 000 points au plus, détectées sous 0,8 mm, sans dépendre de l'imprimante (D5) ; maillage non fermé analysé quand même, ANA_002 non bloquant, aucun champ ajouté (D6) ; lancement automatique dans un Web Worker, menus Tools activés, « Analyzing… » (D7) ; section Analysis en cm³ et cm² (D8) ; fichiers de `src/model_analysis/` et `AnalysisService.ts` réécrits, `AnalysisPanel.tsx` supprimé au lot 80 (D9) ; cible 1 million de triangles en moins de 5 s, sans blocage (D10).
 80. **Stabilité (D4 corrigé par Noam) :** le test de bascule et `heightRatio` utilisent l'**enveloppe convexe des points de contact** avec le plateau (sommets à Z ≤ 0,01 mm) ; `heightRatio` = hauteur ÷ √(aire de l'enveloppe) ; risque = (rapport − 1) × 20, arrondi, borné à 0 et 100, 100 si le centre de gravité vu de dessus est hors de l'enveloppe ou sans contact. `contactArea` reste l'aire réelle des faces posées (adhérence). Tests demandés : tabouret à 4 pieds à risque faible ; cube plein de 20 mm qui donne une épaisseur minimale de 20 mm (D5).
 81. **Surplombs en rouge dans la vue 3D (D8 option B) :** accepté, dans un lot séparé **après la clôture de la phase 9** (noté dans le plan et dans GUI_SPEC, Future GUI Features).
+82. **Format des nombres (remarque de Noam sur le lot 80, 2026-11-02) :** toutes les valeurs affichées suivent le format de la langue, dans toutes les sections (virgule décimale en français, point en anglais et en hébreu, 2 décimales au plus) ; une valeur seulement lue a les séparateurs de milliers de la langue (comme la section Analysis), un champ n'en a pas et accepte la virgule ou le point ; les valeurs enregistrées restent des nombres JSON. Clôture de la phase 9 (lot 81) : aucune suppression, tous les fichiers de `src/model_analysis/` sont utilisés.
 
 **Méthode**
 
@@ -345,7 +347,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 3. **Phase 7 : Printer Database** (Completed, ADR-032) : lot 58 chargement par le processus principal (fait) ; 59 les 10 profils et SOURCES.md (fait) ; 60 section Printer, sélecteur, plateau, dernière imprimante retenue (fait) ; 61 imprimantes saisies par l'utilisateur (fait) ; 62 synchronisation depuis `noam76tr/slicyweb-profiles` (fait, v1.0.0 publiée) ; 63 « aucune version publiée » et sécurité des dépendances (fait) ; 64 clôture (fait). Close le 2026-10-27, lot 64 validé par Noam.
 4. **Phase 8 : Material Database** (Completed, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (fait, validé) ; 68 chargement (fait, validé) ; 69 données (fait, validé) ; 70 interface (fait, validé) ; 71 filaments de l'utilisateur (fait, validé) ; 72 synchronisation (fait, validé ; release v1.1.0 de `slicyweb-profiles`) ; 73 clôture (fait, validé). Close le 2026-11-01. (Lot 67 : plateau, hors phase 8.)
 5. **Cube de navigation** (décisions 76 et 78) : lot 74 fait, validé par Noam le 2026-11-01.
-6. **Phase 9 : Model Analysis** (In Progress, ADR-034) : analyse au lot 75 (fait) ; réponses de Noam (décisions 79 à 81) ; 76 documentation (fait, validé) ; 77 calcul de base dans un Worker (fait : dimensions, volume, surface, maillage, arêtes ouvertes, centre de gravité, stabilité avec l'enveloppe des contacts ; validé) ; 78 surplombs et ponts (fait, validé) ; 79 parois fines (fait, validé) ; 80 interface (fait : lancement automatique, section Analysis, menus Tools, barre d'état, ANA_*, `AnalysisPanel.tsx` supprimé) ; 81 clôture ; puis le lot « surplombs en rouge » (décision 81). La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
+6. **Phase 9 : Model Analysis** (Completed, ADR-034) : analyse au lot 75 ; réponses de Noam (décisions 79 à 81) ; 76 documentation ; 77 calcul de base dans un Worker ; 78 surplombs et ponts ; 79 parois fines ; 80 interface (tous validés) ; 81 clôture et format des nombres (décision 82). Close le 2026-11-02 (à confirmer par les contrôles de Noam sur le lot 81). Suite : le lot « surplombs en rouge » (décision 81), puis la phase 10. La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
 7. **Phases 10 à 16**, dans l'ordre du plan technique.
 8. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
@@ -375,7 +377,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot79-parois-fines/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 75 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot81-cloture-phase9/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 75 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

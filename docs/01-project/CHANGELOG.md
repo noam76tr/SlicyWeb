@@ -2902,7 +2902,7 @@ Release Type:
 Model Analysis
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-02
@@ -2947,6 +2947,48 @@ Date:
 
 - The faces in overhang are not shown in red in the 3D view: separate lot after the closure of Phase 9 (decision 81)
 - The analyses are not saved in a project yet (Phase 13, Project Persistence)
+
+## Validation Result
+
+- Windows 11 (2026-11-02): lot 80 on GitHub (5fd7494, identical to the lot; AnalysisPanel.tsx deleted on GitHub in ae893a6 and in the local folder); npm run check:locales: 407 keys; npm run check:ipc: 28 channels; typecheck and lint without error; npm test: 354 tests passed, 1 skipped (link test); npm run test:e2e: 32 tests passed; manual controls 1 to 7 passed (Noam)
+- Remarks of Noam: the other sections kept the point as decimal separator (for example Price per kg 24.99): fixed in 0.1.82; getConfidenceLevel and getConfidenceScore were removed although they were not in the table of ADR-034 D9: accepted, with the rule restated (any removal of code beyond what Noam validated is asked first)
+
+---
+
+# VERSION 0.1.82
+
+Release Type:
+Model Analysis
+
+Status:
+In Progress
+
+Date:
+2026-11-02
+
+## Added
+
+- Technical Phase 9 - Model Analysis closed (PHASES_IMPLEMENTATION_PLAN.md: progress and validation result, from the checks and manual controls of Noam for lots 76 to 80)
+- Number format of the language in every section (remark of Noam on lot 80; GUI_SPEC.md, Localization Support, Number Format): comma as decimal separator in French, point in English and Hebrew, two decimals at most, in the Printer, Material, Filament, Transform and Analysis sections, the status bar, the plate size and the fields of the Printer Manager and the Filament Manager; a value only read uses the digit grouping of the language (as the Analysis section did), a value in a field has none
+- src/i18n/NumberFormatter.ts: formatNumber (value read), formatFieldNumber (value in a field), decimalSeparator
+- tests/unit/i18n/NumberFormatter.test.ts: 3 tests; tests/unit/gui/dialogs/printerForm.test.ts: 1 test (numbers of a printer in the three languages); tests/unit/gui/dialogs/filamentForm.test.ts: French and Hebrew checked in an existing test
+- tests/e2e/app.spec.ts: 1 test (numbers in French in the Printer, Filament, Transform and Analysis sections, value typed with a comma, point again in English)
+
+## Changed
+
+- src/gui/sidebar/profileRows.tsx (formatNumber), PrinterSection.tsx (format), FilamentSection.tsx, TransformSection.tsx (format), AnalysisSection.tsx, RightSidebar.tsx, src/gui/statusbar/StatusBar.tsx, src/gui/App.tsx (plate size), src/gui/dialogs/printerForm.ts and filamentForm.ts (text; printerToForm and filamentToForm take the language, English by default), PrinterManagerDialog.tsx, FilamentManagerDialog.tsx (diameters of the list): numbers through NumberFormatter; no function and no file removed
+- AnalysisSection.tsx: its own Intl.NumberFormat replaced by NumberFormatter (same format; -0 shown as 0)
+- GUI_SPEC.md: Localization Support, Number Format; Printer Manager, Filament Manager, Transform Section and Analysis Section refer to it
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 9 Completed
+- FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md: NumberFormatter.ts and its tests
+- PASSATION.md: Phase 9 Completed; decision 82 (number format); decision rule, removal of code: asked first even after a validated list (Noam, 2026-11-02)
+- 0.1.81 Completed with the results of Noam
+
+## Known Limitations
+
+- No file removed in this lot: the deletions of the ADR-034 D9 table were made in lots 77 to 80 (AnalysisPanel.tsx in lot 80); every file of src/model_analysis/ is used
+- A field of the Printer Manager or of the Filament Manager already open keeps the separator of the language in which it was opened; both separators are accepted
+- The faces in overhang are not shown in red in the 3D view yet: separate lot after this closure (decision 81)
 
 ---
 

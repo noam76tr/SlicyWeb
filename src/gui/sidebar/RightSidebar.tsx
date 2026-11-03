@@ -33,6 +33,7 @@
 
 import { useMemo } from "react";
 
+import { formatNumber } from "../../i18n/NumberFormatter";
 import { useObjectStore } from "../../state/objectStore";
 import { usePresetStore } from "../../state/presetStore";
 import { useRecommendationStore } from "../../state/recommendationStore";
@@ -47,7 +48,7 @@ import SidebarSection from "./SidebarSection";
 import TransformSection from "./TransformSection";
 
 export default function RightSidebar(): JSX.Element {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const preset = usePresetStore((state) => state.selectedPreset);
 
@@ -105,7 +106,9 @@ export default function RightSidebar(): JSX.Element {
 
       <SidebarSection title={t("object.title")}>
         {group
-          ? t("object.multipleSelected", { count: selectedObjects.length })
+          ? t("object.multipleSelected", {
+              count: formatNumber(selectedObjects.length, language),
+            })
           : selectedObject
             ? selectedName
             : noObject}

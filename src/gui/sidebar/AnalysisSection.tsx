@@ -13,9 +13,9 @@
  *
  * Several selected objects: "Select a single object". An outdated
  * analysis keeps its values until it is computed again. Numbers follow
- * the language (decimal separator); the stored values stay in mm³ and mm²
- * (DATA_SCHEMA.md 3.9.0, Analysis Rules). The classification is not shown
- * before Phase 10.
+ * the language (NumberFormatter, as in every section); the stored values
+ * stay in mm³ and mm² (DATA_SCHEMA.md 3.9.0, Analysis Rules). The
+ * classification is not shown before Phase 10.
  *
  * No business logic: values read from the analysis store and the analysis
  * task store (AnalysisService).
@@ -27,9 +27,8 @@
  * - DECISIONS.md (ADR-034 D6, D8)
  */
 
-import { useMemo } from "react";
-
 import { RISK_LEVELS } from "../../constants/AnalysisConstants";
+import { formatNumber } from "../../i18n/NumberFormatter";
 import { useAnalysisStore } from "../../state/analysisStore";
 import { useAnalysisTaskStore } from "../../state/analysisTaskStore";
 import { useTranslation } from "../hooks/useTranslation";
@@ -76,13 +75,8 @@ export default function AnalysisSection({
     objectId ? state.openMeshObjectIds.includes(objectId) : false,
   );
 
-  const number = useMemo(() => {
-    const format = new Intl.NumberFormat(language, {
-      maximumFractionDigits: 2,
-    });
-
-    return (value: number) => format.format(value);
-  }, [language]);
+  // Format of the language, as in every section (NumberFormatter)
+  const number = (value: number): string => formatNumber(value, language);
 
   if (objectIds.length > 1) {
     return <p>{t("analysis.selectSingle")}</p>;

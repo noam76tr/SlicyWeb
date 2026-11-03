@@ -5,23 +5,29 @@
  * Rows of values of the Material and Filament sections (Phase 8 lot 70):
  * a label and its value; a value not published (null) is shown as "Not
  * published", never as 0 (DATA_SCHEMA.md 3.7.0). A range shows its two
- * values ("190 – 230 °C").
+ * values ("190 – 230 °C"). Numbers follow the format of the language
+ * (NumberFormatter, lot 81).
  *
  * No business logic.
  *
  * Based on:
- * - GUI_SPEC.md (Material Section, Filament Section)
+ * - GUI_SPEC.md (Material Section, Filament Section, Localization Support)
  */
 
+import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import { formatNumber as formatLanguageNumber } from "../../i18n/NumberFormatter";
 import { useTranslation } from "../hooks/useTranslation";
 
 /** Class of the selectors of the Properties Panel */
 export const SELECT_CLASS =
   "h-7 w-full rounded border border-input bg-background px-1.5 text-xs text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50";
 
-/** Value shown: 2 decimals at most */
-export function formatNumber(value: number): string {
-  return String(Math.round(value * 100) / 100);
+/** Value shown: format of the language, 2 decimals at most */
+export function formatNumber(
+  value: number,
+  language: SupportedLanguage,
+): string {
+  return formatLanguageNumber(value, language);
 }
 
 interface ProfileRowProps {
@@ -40,12 +46,12 @@ export function ProfileRow({ label, value }: ProfileRowProps): JSX.Element {
 
 /** A single value with its unit, or "Not published" */
 export function useValue(): (value: number | null, unit: string) => string {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   return (value, unit) =>
     value === null
       ? t("printer.notPublished")
-      : `${formatNumber(value)} ${unit}`;
+      : `${formatNumber(value, language)} ${unit}`;
 }
 
 /** A range "min – max unit"; a bound not published is named as such */
@@ -54,13 +60,13 @@ export function useRange(): (
   max: number | null,
   unit: string,
 ) => string {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const notPublished = t("printer.notPublished");
 
   return (min, max, unit) =>
     min === null && max === null
       ? notPublished
-      : `${min === null ? notPublished : formatNumber(min)} – ${
-          max === null ? notPublished : formatNumber(max)
+      : `${min === null ? notPublished : formatNumber(min, language)} – ${
+          max === null ? notPublished : formatNumber(max, language)
         } ${unit}`;
 }

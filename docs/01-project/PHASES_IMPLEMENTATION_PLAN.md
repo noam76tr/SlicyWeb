@@ -1515,7 +1515,9 @@ Filament Profiles Valid
 
 # MODEL ANALYSIS
 
-Status: In Progress
+Status: Completed
+
+Date: 2026-11-02
 
 Decisions (ADR-034, decisions D1 to D10 of Noam, 2026-11-01; analysis of lot 75):
 
@@ -1538,7 +1540,7 @@ Order of the lots:
 - Lot 78: overhangs and bridges
 - Lot 79: thin walls (Noam installs three-mesh-bvh@0.9.17 first)
 - Lot 80: interface: automatic start, Tools menu, status bar, Analysis section, ANA_* messages, texts in three languages; AnalysisPanel.tsx deleted
-- Lot 81: closure of Phase 9
+- Lot 81: closure of Phase 9; numbers in the format of the language in every section (remark of Noam on lot 80); no file left to remove (the deletions of the D9 table were made in lots 77 to 80)
 - After the closure of Phase 9 (decision of Noam, 2026-11-01, D8 option B): a separate lot that shows the overhanging faces in red in the 3D viewport, with a button to turn it on (GUI_SPEC.md, Future GUI Features)
 
 Progress:
@@ -1548,6 +1550,16 @@ Progress:
 - Lot 78 (CHANGELOG 0.1.79): overhangs and bridges (PrintabilityAnalyzer.ts), part of the result of the Web Worker
 - Lot 79 (CHANGELOG 0.1.80): thin walls (PrintabilityAnalyzer.ts, three-mesh-bvh 0.9.17), part of the result of the Web Worker
 - Lot 80 (CHANGELOG 0.1.81): interface: automatic analysis (AnalysisService), Analysis section, Tools > Analyze Models and Recompute Analysis, "Analyzing…" in the status bar, messages ANA_001 and ANA_002, texts in three languages; AnalysisPanel.tsx deleted
+- Closure (lot 81, CHANGELOG 0.1.82): numbers in the format of the language in every section (NumberFormatter, GUI_SPEC.md, Number Format)
+
+Validation result (Windows 11, checks and manual controls of Noam, lots 76 to 80, 2026-11-01 to 2026-11-02; all passed):
+
+- Accurate Results: the unit tests on built models give the expected values: cube of 20 mm (20 x 20 x 20 mm, 8 cm³, 24 cm², risk 0), cube scaled and turned, tower, sphere, stool on four legs (low risk, decision 80), overhangs and bridges (pillars and slab, cantilever, cube turned 45 degrees), thin walls (plate of 0.5 mm detected, full cube of 20 mm gives 20 mm, limit 0.8 mm); in the application, the Analysis section of a cube of 20 mm (end-to-end test) and the manual controls 1 to 7 of lot 80
+- Repeatable Results: the same mesh gives the same analysis twice (same points of the surface for the thin walls); a move does not compute again, a rotation or a scale does, once the gesture is over (unit and end-to-end tests, manual controls 2 and 3 of lot 80)
+- Performance: 1 million triangles analyzed in about 2 s on Linux (PERFORMANCE_SPEC.md: less than 5 s); the window stays fluid during "Analyzing…" on the PC of Noam (manual control 7 of lot 80); the duration on his PC was not measured
+- With lot 80 (CHANGELOG 0.1.81): npm run check:locales (407 keys), npm run check:ipc (28 channels), npm run typecheck and npm run lint with no errors, npm test 354 tests passed and 1 skipped (link test, Windows), npm run test:e2e 32 tests passed
+
+Open issues after the closure: the analyses are not saved in a project yet (Phase 13, Project Persistence); analysis.classification stays null until Phase 10 (Object Classification, ADR-034 D1); the faces in overhang in red in the 3D viewport come in the separate lot that follows (decision of Noam, D8 option B). Next: that lot, then Phase 10.
 
 
 

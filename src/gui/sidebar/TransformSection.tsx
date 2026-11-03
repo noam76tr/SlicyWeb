@@ -29,7 +29,8 @@
  * the plate; Reset Rotation and Reset Scale reset each object.
  *
  * A value is applied with Enter or when the field loses the focus; Escape
- * restores it. A comma is accepted as decimal separator. Every change goes
+ * restores it. A comma is accepted as decimal separator; values are shown
+ * with the decimal separator of the language (lot 81). Every change goes
  * through TransformService (one place for undo and redo).
  *
  * Ctrl+Z in a field (decision of Noam, Phase 6): typing not applied yet is
@@ -56,6 +57,8 @@ import {
   type ReactNode,
 } from "react";
 
+import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import { formatFieldNumber } from "../../i18n/NumberFormatter";
 import { TransformService, type Axis } from "../../services/TransformService";
 import {
   useViewportStore,
@@ -166,9 +169,9 @@ function groupModel(objectIds: string[]): PanelModel {
   };
 }
 
-/** Value shown in a field: 2 decimals at most */
-function format(value: number): string {
-  return String(Math.round(value * 100) / 100);
+/** Value shown in a field: separator of the language, 2 decimals at most */
+function format(value: number, language: SupportedLanguage): string {
+  return formatFieldNumber(value, language);
 }
 
 function parse(text: string): number {
@@ -194,7 +197,8 @@ function NumberField({
   title,
   onCommit,
 }: NumberFieldProps): JSX.Element {
-  const [text, setText] = useState(format(value));
+  const { language } = useTranslation();
+  const [text, setText] = useState(format(value, language));
   // Typed since the value was last applied or shown
   const [dirty, setDirty] = useState(false);
 
@@ -204,12 +208,12 @@ function NumberField({
 
   useEffect(() => {
     if (!dirty) {
-      setText(format(value));
+      setText(format(value, language));
     }
-  }, [value, dirty]);
+  }, [value, dirty, language]);
 
   // Typing not applied yet
-  const pending = dirty && text !== format(value);
+  const pending = dirty && text !== format(value, language);
 
   const commit = (): void => {
     setDirty(false);
@@ -218,10 +222,10 @@ function NumberField({
     if (
       !onCommit ||
       !Number.isFinite(number) ||
-      format(number) === format(value) ||
+      format(number, language) === format(value, language) ||
       !onCommit(number)
     ) {
-      setText(format(value));
+      setText(format(value, language));
     }
   };
 
@@ -244,7 +248,7 @@ function NumberField({
 
       if (pending) {
         if (command === "undo") {
-          setText(format(value));
+          setText(format(value, language));
           setDirty(false);
         }
         return;
@@ -265,7 +269,7 @@ function NumberField({
     } else if (event.key === "Escape") {
       // The value typed is dropped at once, whatever happens next
       event.preventDefault();
-      setText(format(value));
+      setText(format(value, language));
       setDirty(false);
       handled.current = true;
       event.currentTarget.blur();

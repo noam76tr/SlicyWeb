@@ -844,6 +844,7 @@ src/i18n/
 
 ├── LanguageManager.ts
 ├── LocalizationService.ts
+├── NumberFormatter.ts = numbers in the format of the language (lot 81)
 └── TranslationLoader.ts
 ```
 
@@ -931,6 +932,8 @@ tests/
 │   │   │   └── printerForm.test.ts = form of the Printer Manager (Phase 7)
 │   │   └── hooks/
 │   │       └── UndoRedoShortcuts.test.ts = keys of undo and redo (Phase 6)
+│   ├── i18n/
+│   │   └── NumberFormatter.test.ts = numbers in the format of the language (lot 81)
 │   ├── material_database/
 │   │   ├── MaterialLoading.test.ts = material and filament profile files, MaterialSchema, FilamentSchema (Phase 8)
 │   │   ├── MaterialProfiles.test.ts = the profiles of data/materials/ and data/filaments/ (Phase 8)
@@ -965,7 +968,7 @@ tests/
 └── e2e/
     ├── fixtures.ts = starts the built application, test files
     ├── analysis.spec.ts = analysis shown after the import and a change of scale, ANA_002, Tools menu (Phase 9)
-    ├── app.spec.ts = main window, languages
+    ├── app.spec.ts = main window, languages, numbers in the format of the language
     ├── import.spec.ts = STL and 3MF import, refused files
     ├── material.spec.ts = materials and filaments served by the main process (Phase 8)
     ├── printer.spec.ts = printers served by the main process, Printer section, Printer Manager, profiles (Phase 7)

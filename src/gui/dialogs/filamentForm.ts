@@ -13,7 +13,8 @@
  * - the fan speed is a percentage (0 to 100);
  * - recommendedProfile stays {} until the recommendation engine
  *   (Phase 10).
- * Numbers accept a comma as decimal separator ("1,24").
+ * Numbers accept a comma as decimal separator ("1,24"); the numbers of a
+ * filament are shown with the decimal separator of the language (lot 81).
  *
  * Errors are translation keys (filamentManager.error.*), by field.
  *
@@ -27,6 +28,8 @@
  * - GUI_SPEC.md (Filament Manager)
  */
 
+import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import { formatFieldNumber } from "../../i18n/NumberFormatter";
 import type { Filament } from "../../types/Filament";
 
 /** Id sent for a new filament: the main process replaces it */
@@ -64,9 +67,12 @@ export type FilamentFormErrors = Partial<Record<FilamentFormField, string>>;
 export type FilamentFormResult =
   { ok: true; filament: Filament } | { ok: false; errors: FilamentFormErrors };
 
-/** Number shown in a field: 2 decimals at most, empty for null */
-function text(value: number | null): string {
-  return value === null ? "" : String(Math.round(value * 100) / 100);
+/**
+ * Number shown in a field: decimal separator of the language, 2 decimals
+ * at most, empty for null
+ */
+function text(value: number | null, language: SupportedLanguage): string {
+  return value === null ? "" : formatFieldNumber(value, language);
 }
 
 function parseNumber(value: string): number {
@@ -96,24 +102,39 @@ export function emptyFilamentForm(material = ""): FilamentForm {
 }
 
 /** The form of an existing filament */
-export function filamentToForm(filament: Filament): FilamentForm {
+export function filamentToForm(
+  filament: Filament,
+  language: SupportedLanguage = "en",
+): FilamentForm {
   return {
     brand: filament.brand,
     name: filament.name,
     material: filament.material,
     color: filament.color ?? "",
     diameter: filament.diameter === 2.85 ? "2.85" : "1.75",
-    density: text(filament.density),
-    pricePerKg: text(filament.pricePerKg),
-    minNozzle: text(filament.temperature.minNozzle),
-    maxNozzle: text(filament.temperature.maxNozzle),
-    minBed: text(filament.temperature.minBed),
-    maxBed: text(filament.temperature.maxBed),
-    nozzleTemperature: text(filament.manufacturerSettings.nozzleTemperature),
-    bedTemperature: text(filament.manufacturerSettings.bedTemperature),
-    fanSpeed: text(filament.manufacturerSettings.fanSpeed),
-    retractionDistance: text(filament.manufacturerSettings.retractionDistance),
-    retractionSpeed: text(filament.manufacturerSettings.retractionSpeed),
+    density: text(filament.density, language),
+    pricePerKg: text(filament.pricePerKg, language),
+    minNozzle: text(filament.temperature.minNozzle, language),
+    maxNozzle: text(filament.temperature.maxNozzle, language),
+    minBed: text(filament.temperature.minBed, language),
+    maxBed: text(filament.temperature.maxBed, language),
+    nozzleTemperature: text(
+      filament.manufacturerSettings.nozzleTemperature,
+      language,
+    ),
+    bedTemperature: text(
+      filament.manufacturerSettings.bedTemperature,
+      language,
+    ),
+    fanSpeed: text(filament.manufacturerSettings.fanSpeed, language),
+    retractionDistance: text(
+      filament.manufacturerSettings.retractionDistance,
+      language,
+    ),
+    retractionSpeed: text(
+      filament.manufacturerSettings.retractionSpeed,
+      language,
+    ),
   };
 }
 

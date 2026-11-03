@@ -20,6 +20,7 @@
 
 import { useMemo } from "react";
 
+import { formatNumber } from "../../i18n/NumberFormatter";
 import { useAnalysisStore } from "../../state/analysisStore";
 import { useAnalysisTaskStore } from "../../state/analysisTaskStore";
 import { useFilamentStore } from "../../state/filamentStore";
@@ -71,7 +72,9 @@ export default function StatusBar(): JSX.Element {
 
   const selectedName =
     selectedCount > 1
-      ? t("object.multipleSelected", { count: selectedCount })
+      ? t("object.multipleSelected", {
+          count: formatNumber(selectedCount, language),
+        })
       : selectedObject
         ? (names.get(selectedObject.objectId) ?? selectedObject.fileName)
         : "";
@@ -102,7 +105,7 @@ export default function StatusBar(): JSX.Element {
       />
       <StatusField
         label={t("statusBar.objectCount")}
-        value={String(objectCount)}
+        value={formatNumber(objectCount, language)}
       />
       <StatusField
         label={t("statusBar.analysisStatus")}

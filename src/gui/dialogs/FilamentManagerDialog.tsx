@@ -39,6 +39,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { create } from "zustand";
 
+import { formatNumber } from "../../i18n/NumberFormatter";
 import { MaterialSelectionService } from "../../services/MaterialSelectionService";
 import { useFilamentStore } from "../../state/filamentStore";
 import { useMaterialStore } from "../../state/materialStore";
@@ -149,7 +150,7 @@ function filamentLabel(filament: Filament): string {
 }
 
 export default function FilamentManagerDialog(): JSX.Element {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const open = useManagerStore((state) => state.open);
   const editId = useManagerStore((state) => state.editId);
@@ -216,13 +217,13 @@ export default function FilamentManagerDialog(): JSX.Element {
       .filaments.find((item) => item.id === editId);
 
     if (filament) {
-      start({ id: filament.id, form: filamentToForm(filament) });
+      start({ id: filament.id, form: filamentToForm(filament, language) });
     }
     useManagerStore.setState({ editId: null });
-  }, [open, editId]);
+  }, [open, editId, language]);
 
   const copy = (filament: Filament): void => {
-    const form = filamentToForm(filament);
+    const form = filamentToForm(filament, language);
     start({
       id: null,
       form: {
@@ -269,7 +270,7 @@ export default function FilamentManagerDialog(): JSX.Element {
     }
 
     const saved = change.filament ?? result.filament;
-    start({ id: saved.id, form: filamentToForm(saved) });
+    start({ id: saved.id, form: filamentToForm(saved, language) });
     setMessage({ kind: "status", key: "filamentManager.saved" });
   };
 
@@ -391,7 +392,7 @@ export default function FilamentManagerDialog(): JSX.Element {
                       onClick={() =>
                         start({
                           id: filament.id,
-                          form: filamentToForm(filament),
+                          form: filamentToForm(filament, language),
                         })
                       }
                       className="w-full truncate rounded px-2 py-1 text-start hover:bg-muted aria-pressed:bg-muted aria-pressed:font-medium"
@@ -528,7 +529,7 @@ export default function FilamentManagerDialog(): JSX.Element {
                     >
                       {FILAMENT_DIAMETERS.map((diameter) => (
                         <option key={diameter} value={diameter}>
-                          {diameter}
+                          {formatNumber(Number(diameter), language)}
                         </option>
                       ))}
                     </select>

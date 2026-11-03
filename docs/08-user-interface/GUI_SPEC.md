@@ -1417,7 +1417,7 @@ End side: form of the printer chosen, Save, Delete
 
 - Copy a printer: any loaded printer, Official included; the copy is a new printer of the user, named "Model (copy)". Official printers are never listed in My printers, so they are never changed.
 - Form (DATA_SCHEMA.md, Printer Schema): Brand, Model, Build Volume X, Y, Z, Default Nozzle and Nozzles are required (the default nozzle is one of the nozzles); Series, Manufacturer, Firmware, Release Date are free text; Printer Limits left empty are null, shown as "Not published"; part, auxiliary and chamber fans; extruder type (direct drive, bowden, unknown) and number of extruders; materials separated by commas. supported is always true; supportedFilaments stays empty until the filaments exist (Phase 8).
-- Numbers accept a comma as decimal separator. Nozzles are separated by semicolons or spaces.
+- Numbers accept a comma as decimal separator and are shown in the format of the language (Localization Support, Number Format). Nozzles are separated by semicolons or spaces.
 - Opened while the selected printer is a printer of the user, the dialog opens on that printer, in edition (lot 71). The top of the form says what Save does: "Edit: Brand Model" for a printer of the user, "New printer" for a new printer or a copy.
 - Errors are shown under their field: an invalid value as soon as it is typed, a required field left empty when the field is left or at Save; Save is disabled while an error is shown (lot 71). Errors of the main process (PRN_005, PRN_006, PRN_007) are shown under the form.
 - Delete asks for a confirmation ("Delete Brand Model?"). When the printer deleted is the selected printer, no printer is selected and the saved choice is cleared. A change of the selected printer updates the Printer Section and the build plate at once.
@@ -1492,7 +1492,7 @@ End side: form of the filament chosen, Save, Delete
 
 - Copy a filament: any loaded filament, Official included; the copy is a new filament of the user, named "Name (copy)". Official filaments are never listed in My filaments, so they are never changed.
 - Form (DATA_SCHEMA.md, Filament Schema): Brand, Name, Material (one of the families loaded, the selected family for a new filament) and Diameter (1.75 or 2.85 mm) are required; Color and Price per kg are entered by the user (empty: "Not specified", null); Density, the temperature ranges of the manufacturer (nozzle and bed, minimum and maximum) and the values of the manufacturer (nozzle and bed temperature, fan, retraction distance and speed) left empty are null, shown as "Not published". A minimum is never above its maximum; the fan is 0 to 100 %.
-- Numbers accept a comma as decimal separator.
+- Numbers accept a comma as decimal separator and are shown in the format of the language (Localization Support, Number Format).
 - In the lists, a filament is named "Brand Name (Color)".
 - Opened while the selected filament is a filament of the user, the dialog opens on that filament, in edition. The top of the form says what Save does: "Edit: Brand Name (Color)" for a filament of the user, "New filament" for a new filament or a copy.
 - Errors are shown under their field: an invalid value as soon as it is typed, a required field left empty when the field is left or at Save; Save is disabled while an error is shown. Errors of the main process (FIL_001, FIL_003, FIL_004, FIL_005) are shown under the form. Two filaments with the same brand, name and color are refused.
@@ -1569,7 +1569,7 @@ Size X Y Z      mm, along the axes of the object, editable and linked to
                 the scale: changing one updates the other
 ```
 
-A value is applied with Enter or when the field loses the focus; Escape restores it; Ctrl+Z undoes the typing not applied yet, and otherwise undoes in the application (UNDO_REDO_SPEC.md, Keyboard Shortcuts); a comma is accepted as decimal separator; a value that is not a number, or a scale of 0.1 % or less, is refused. Every change of transform (fields, Transform Actions, gizmos) goes through one service (TransformService), where undo and redo are recorded.
+A value is applied with Enter or when the field loses the focus; Escape restores it; Ctrl+Z undoes the typing not applied yet, and otherwise undoes in the application (UNDO_REDO_SPEC.md, Keyboard Shortcuts); a comma is accepted as decimal separator, and the values are shown with the decimal separator of the language (Localization Support, Number Format); a value that is not a number, or a scale of 0.1 % or less, is refused. Every change of transform (fields, Transform Actions, gizmos) goes through one service (TransformService), where undo and redo are recorded.
 
 The rows and the Transform Actions shown follow the mode of the gizmo (decision of Noam, Phase 6):
 
@@ -1706,7 +1706,7 @@ Stability: contact area (cm²), height ratio, tip risk out of 100 with its level
 - One selected object: its analysis. Several selected objects: "Select a single object". No selected object: the section shows nothing else.
 - An outdated analysis keeps its values, with the status Outdated, until it is computed again.
 - A mesh not closed shows the warning of ANA_002 in the section (volume and wall thickness are approximate).
-- Numbers follow the language (decimal separator); the volume and the areas are shown in cm³ and cm² (the units of the slicers), the stored values stay in mm³ and mm² (DATA_SCHEMA.md).
+- Numbers follow the language (Localization Support, Number Format); the volume and the areas are shown in cm³ and cm² (the units of the slicers), the stored values stay in mm³ and mm² (DATA_SCHEMA.md).
 - Texts in the three languages. The classification is not shown before Phase 10.
 - src/gui/panels/AnalysisPanel.tsx (unused, text in English in the code, KI-015) is deleted (ADR-034 D9).
 
@@ -2217,7 +2217,15 @@ Managed By:
 LanguageManager
 LocalizationService
 TranslationLoader
+NumberFormatter
 ```
+
+Number Format (Phase 9 lot 81, request of Noam, 2026-11-02):
+
+- Every number shown in the interface follows the format of the language, in every section (Printer, Material, Filament, Transform, Analysis, status bar, plate size, Printer Manager, Filament Manager): comma as decimal separator in French, point in English and Hebrew; two decimals at most.
+- A value only read uses the digit grouping of the language ("20,000" in English and Hebrew, "20 000" in French), as the Analysis section did first.
+- A value in a field has no digit grouping, so that it can be typed and read again; a comma or a point is accepted as decimal separator in every language.
+- The language never changes the stored values: projects, settings and profiles keep JSON numbers (language-neutral).
 
 ---
 

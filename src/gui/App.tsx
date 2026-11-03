@@ -40,6 +40,7 @@
 import { useEffect } from "react";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 
+import { formatNumber } from "../i18n/NumberFormatter";
 import { AnalysisService } from "../services/AnalysisService";
 import { MaterialSelectionService } from "../services/MaterialSelectionService";
 import { PrinterSelectionService } from "../services/PrinterSelectionService";
@@ -62,7 +63,7 @@ import ImportDropZone from "./import/ImportDropZone";
 import Viewport from "./viewport/Viewport";
 
 export default function App(): JSX.Element {
-  const { t, direction } = useTranslation();
+  const { t, direction, language } = useTranslation();
   const printer = usePrinterStore((state) => state.selectedPrinter);
   const buildVolume = usePrinterStore(
     (state) => state.selectedPrinter?.buildVolume ?? null,
@@ -102,7 +103,10 @@ export default function App(): JSX.Element {
               unavailableMessage={t("viewport.unavailable")}
               plateLabel={
                 buildVolume
-                  ? t("viewport.plate", { x: buildVolume.x, y: buildVolume.y })
+                  ? t("viewport.plate", {
+                      x: formatNumber(buildVolume.x, language),
+                      y: formatNumber(buildVolume.y, language),
+                    })
                   : null
               }
               printerName={printer ? `${printer.brand} ${printer.model}` : null}
