@@ -1077,7 +1077,7 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 | File | Role |
 |------|------|
 | `analysisStore.ts` | Zustand store for analysis state |
-| `analysisTaskStore.ts` | Zustand store of the computation of the analyses (Phase 9 lot 80): objects being analyzed or waiting, objects with a mesh not closed (ANA_002), messages ANA_001 and ANA_002; not saved |
+| `analysisTaskStore.ts` | Zustand store of the computation of the analyses (Phase 9 lot 80): objects being analyzed or waiting, objects with a mesh not closed (ANA_002), messages ANA_001 and ANA_002, triangles beyond 45 degrees of the last analysis of each object (Overhang Display, lot 82); not saved |
 | `filamentStore.ts` | Zustand store for filaments (list and selection) |
 | `materialStore.ts` | Zustand store for materials (list and selection) |
 | `objectStore.ts` | Zustand store for 3D objects (list, selection of one or several objects, add, remove) |
@@ -1086,7 +1086,7 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 | `recommendationStore.ts` | Zustand store for print recommendations |
 | `importStore.ts` | Zustand store for the imports in progress (file, phase, progress, error code) |
 | `sceneStore.ts` | Zustand store for the 3D scene (scene of the project) |
-| `viewportStore.ts` | Zustand store for the viewport (projection, requested view preset, mode of the gizmo, lock of the scale) |
+| `viewportStore.ts` | Zustand store for the viewport (projection, requested view preset, mode of the gizmo, lock of the scale, Overhang Display on or off, lot 82) |
 | `historyStore.ts` | Zustand store of undo and redo: two stacks of actions (UNDO_REDO_SPEC.md, History Entry Schema), 50 actions at most |
 
 **Selection Reference:** each selection is stored once, in the store of its domain, next to its list (KI-014 resolved, CHANGELOG 0.1.41):

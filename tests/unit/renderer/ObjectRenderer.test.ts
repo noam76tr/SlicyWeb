@@ -101,3 +101,66 @@ describe("Selection rectangle", () => {
     ).toEqual(["b"]);
   });
 });
+
+describe("Overhang Display (lot 82)", () => {
+  function red(scene: THREE.Scene, objectId: string): THREE.Mesh | undefined {
+    return scene.getObjectByName(`overhangs-${objectId}`) as
+      THREE.Mesh | undefined;
+  }
+
+  it("draws the triangles given in red, on their object, over its faces", () => {
+    const scene = new THREE.Scene();
+    const objects = new ObjectRenderer(scene);
+    objects.sync([cube("a", -50)], ["a"]);
+
+    // Triangles 6 and 7 of the box (BoxGeometry, indexed): its face -Y
+    expect(
+      objects.syncOverhangs(new Map([["a", new Uint32Array([6, 7])]])),
+    ).toBe(2);
+
+    const mesh = red(scene, "a")!;
+    expect(mesh.parent?.name).toBe("object-a");
+    expect(mesh.geometry.getAttribute("position").count).toBe(6);
+    const box = new THREE.Box3().setFromBufferAttribute(
+      mesh.geometry.getAttribute("position") as THREE.BufferAttribute,
+    );
+    expect(box.min.y).toBeCloseTo(-5, 6);
+    expect(box.max.y).toBeCloseTo(-5, 6);
+    expect((mesh.material as THREE.MeshStandardMaterial).color.getHex()).toBe(
+      0xe5484d,
+    );
+  });
+
+  it("never answers a click: the object under the pointer stays the object", () => {
+    const scene = new THREE.Scene();
+    const objects = new ObjectRenderer(scene);
+    objects.sync([cube("a", 0)], ["a"]);
+    objects.syncOverhangs(new Map([["a", new Uint32Array([6, 7])]]));
+
+    const raycaster = new THREE.Raycaster(
+      new THREE.Vector3(0, -100, 5),
+      new THREE.Vector3(0, 1, 0),
+    );
+    scene.updateMatrixWorld(true);
+    expect(objects.pick(raycaster)).toBe("a");
+  });
+
+  it("removes the red triangles when they are no longer given, and replaces them when they change", () => {
+    const scene = new THREE.Scene();
+    const objects = new ObjectRenderer(scene);
+    objects.sync([cube("a", 0)], ["a"]);
+
+    objects.syncOverhangs(new Map([["a", new Uint32Array([6, 7])]]));
+    const first = red(scene, "a");
+    objects.syncOverhangs(new Map([["a", new Uint32Array([0])]]));
+    expect(red(scene, "a")).not.toBe(first);
+    expect(red(scene, "a")!.geometry.getAttribute("position").count).toBe(3);
+
+    expect(objects.syncOverhangs(new Map())).toBe(0);
+    expect(red(scene, "a")).toBeUndefined();
+
+    // No triangle beyond 45 degrees: nothing is drawn
+    expect(objects.syncOverhangs(new Map([["a", new Uint32Array(0)]]))).toBe(0);
+    expect(red(scene, "a")).toBeUndefined();
+  });
+});

@@ -530,6 +530,79 @@ describe("ModelAnalyzer: overhangs and bridges (lot 78)", () => {
   });
 });
 
+describe("ModelAnalyzer: triangles shown in red (lot 82)", () => {
+  /** Area of the triangles listed, in mm² (triangle data of the object) */
+  function area(positions: Float32Array, triangles: Uint32Array): number {
+    let total = 0;
+
+    for (const t of triangles) {
+      const p = Array.from(positions.subarray(t * 9, t * 9 + 9));
+      const u = [p[3] - p[0], p[4] - p[1], p[5] - p[2]];
+      const v = [p[6] - p[0], p[7] - p[1], p[8] - p[2]];
+      const n = [
+        u[1] * v[2] - u[2] * v[1],
+        u[2] * v[0] - u[0] * v[2],
+        u[0] * v[1] - u[1] * v[0],
+      ];
+      total += Math.hypot(n[0], n[1], n[2]) / 2;
+    }
+
+    return total;
+  }
+
+  it("cube on the plate and cube turned 45 degrees: no triangle in red", () => {
+    expect(analyzeModel(cube20(), IDENTITY).overhangTriangles).toEqual(
+      new Uint32Array(0),
+    );
+    expect(
+      analyzeModel(cube20(), {
+        rotation: { x: 45, y: 0, z: 0 },
+        scale: { x: 1, y: 1, z: 1 },
+      }).overhangTriangles,
+    ).toEqual(new Uint32Array(0));
+  });
+
+  it("two pillars and a slab: the triangles under the slab, the same area as the percentage", () => {
+    const shape = centered(extruded(["####", "#..#", "#..#"], 3));
+    const result = analyzeModel(shape, IDENTITY);
+    const red = result.overhangTriangles;
+
+    expect(red.length).toBeGreaterThan(0);
+    // In order, each one once, all facing straight down
+    expect([...red]).toEqual([...new Set(red)].sort((a, b) => a - b));
+    for (const t of red) {
+      const z = [shape[t * 9 + 2], shape[t * 9 + 5], shape[t * 9 + 8]];
+      expect(new Set(z).size).toBe(1);
+    }
+    expect(area(shape, red)).toBeCloseTo(600, 6);
+    expect((area(shape, red) / result.geometry.surfaceArea) * 100).toBeCloseTo(
+      result.overhangs.percentage,
+      6,
+    );
+  });
+
+  it("the triangles follow the rotation: slab turned upside down, nothing in red", () => {
+    const shape = centered(extruded(["####", "#..#", "#..#"], 3));
+    const upsideDown = analyzeModel(shape, {
+      rotation: { x: 180, y: 0, z: 0 },
+      scale: { x: 1, y: 1, z: 1 },
+    });
+
+    expect(upsideDown.overhangs.detected).toBe(false);
+    expect(upsideDown.overhangTriangles.length).toBe(0);
+  });
+
+  it("sphere: the red triangles make the percentage of the analysis", () => {
+    const shape = centered(sphere(10, 32, 16));
+    const result = analyzeModel(shape, IDENTITY);
+
+    expect(
+      (area(shape, result.overhangTriangles) / result.geometry.surfaceArea) *
+        100,
+    ).toBeCloseTo(result.overhangs.percentage, 4);
+  });
+});
+
 /** The same triangles facing the other way (inside of a hollow) */
 function inverted(triangles: number[]): number[] {
   const result = triangles.slice();

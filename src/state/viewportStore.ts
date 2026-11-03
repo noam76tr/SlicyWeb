@@ -11,12 +11,16 @@
  * - transformMode: gizmo shown on the selected object (Move by default;
  *   toolbar Move, Rotate, Scale and keys G, R, S, Phase 6);
  * - keepProportions: lock of the scale (on by default), the same for the
- *   Transform section and the Scale gizmo.
+ *   Transform section and the Scale gizmo;
+ * - showOverhangs: triangles beyond 45 degrees of the selected objects
+ *   drawn in red (off at each start, not saved; GUI_SPEC.md, Overhang
+ *   Display, lot 82).
  *
  * No business logic.
  *
  * Based on:
- * - GUI_SPEC.md (View Menu, Camera Views, Object Gizmos, Keyboard Shortcuts)
+ * - GUI_SPEC.md (View Menu, Camera Views, Object Gizmos, Keyboard Shortcuts,
+ *   Overhang Display)
  * - ARCHITECTURE.md
  */
 
@@ -56,6 +60,8 @@ interface ViewportState {
 
   keepProportions: boolean;
 
+  showOverhangs: boolean;
+
   setProjection: (
     projection: ViewportProjection
   ) => void;
@@ -71,6 +77,10 @@ interface ViewportState {
   setKeepProportions: (
     keepProportions: boolean
   ) => void;
+
+  setShowOverhangs: (
+    showOverhangs: boolean
+  ) => void;
 }
 
 export const useViewportStore =
@@ -82,6 +92,8 @@ export const useViewportStore =
     transformMode: "translate",
 
     keepProportions: true,
+
+    showOverhangs: false,
 
     setProjection: (projection) =>
       set({ projection }),
@@ -98,5 +110,8 @@ export const useViewportStore =
       set({ transformMode }),
 
     setKeepProportions: (keepProportions) =>
-      set({ keepProportions })
+      set({ keepProportions }),
+
+    setShowOverhangs: (showOverhangs) =>
+      set({ showOverhangs })
   }));

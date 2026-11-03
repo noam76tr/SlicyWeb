@@ -28,10 +28,7 @@ import { useMaterialStore } from "../../state/materialStore";
 import { useObjectStore } from "../../state/objectStore";
 import { usePresetStore } from "../../state/presetStore";
 import { usePrinterStore } from "../../state/printerStore";
-import {
-  LANGUAGE_NAME_KEYS,
-  useTranslation,
-} from "../hooks/useTranslation";
+import { LANGUAGE_NAME_KEYS, useTranslation } from "../hooks/useTranslation";
 import { getDisplayNames } from "../sidebar/objectNames";
 
 interface StatusFieldProps {
@@ -41,7 +38,10 @@ interface StatusFieldProps {
 
 function StatusField({ label, value }: StatusFieldProps): JSX.Element {
   return (
-    <div className="flex min-w-0 items-center gap-1" title={`${label}: ${value}`}>
+    <div
+      className="flex min-w-0 items-center gap-1"
+      title={`${label}: ${value}`}
+    >
       <span className="shrink-0 text-muted-foreground">{label}:</span>
       <span className="truncate">{value}</span>
     </div>
@@ -60,10 +60,11 @@ export default function StatusBar(): JSX.Element {
   const objects = useObjectStore((state) => state.objects);
   const names = useMemo(() => getDisplayNames(objects), [objects]);
 
-  const selectedObject = useObjectStore((state) =>
-    state.objects.find(
-      (object) => object.objectId === state.selectedObjectId,
-    ) ?? null,
+  const selectedObject = useObjectStore(
+    (state) =>
+      state.objects.find(
+        (object) => object.objectId === state.selectedObjectId,
+      ) ?? null,
   );
 
   const selectedCount = useObjectStore(

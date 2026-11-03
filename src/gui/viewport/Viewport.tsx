@@ -30,6 +30,12 @@
  * (keepProportions) applies to the Scale gizmo as to the Transform section;
  * Escape clears the selection (GUI_SPEC.md, Keyboard Shortcuts).
  *
+ * Overhang Display (lot 82): when it is on (viewport store), the
+ * triangles beyond 45 degrees of each selected object are drawn in red,
+ * as found by its analysis (analysis task store), only while that analysis
+ * is up to date: nothing during a rotation or a scale, until the object is
+ * analyzed again. The viewport only draws them: it computes nothing.
+ *
  * Domain: Viewport (DOMAINS_DEPENDENCY_MATRIX.md). It does not depend
  * on the GUI: the GUI mounts it and passes its translated label, and the
  * function that applies a transform (TransformService).
@@ -40,7 +46,8 @@
  *
  * Based on:
  * - ARCHITECTURE.md
- * - GUI_SPEC.md (3D Viewport, Viewport Controls, Camera Views, Navigation Cube)
+ * - GUI_SPEC.md (3D Viewport, Viewport Controls, Camera Views, Navigation Cube,
+ *   Overhang Display)
  * - FILE_STRUCTURE.md
  * - DECISIONS.md (ADR-027, ADR-031)
  */
@@ -61,6 +68,8 @@ import {
   groupBounds,
   type Vector3Mm,
 } from "../../scene/ObjectTransform";
+import { useAnalysisStore } from "../../state/analysisStore";
+import { useAnalysisTaskStore } from "../../state/analysisTaskStore";
 import { useObjectStore } from "../../state/objectStore";
 import { usePrinterStore } from "../../state/printerStore";
 import {
@@ -92,6 +101,31 @@ function groupCenter(objects: Object3D[]): Vector3Mm | null {
   );
 
   return bounds ? boundsCenter(bounds) : null;
+}
+
+/**
+ * Triangles to draw in red: those of the selected objects whose analysis
+ * is up to date, when the Overhang Display is on
+ */
+function overhangsToShow(): Map<string, Uint32Array> {
+  const shown = new Map<string, Uint32Array>();
+
+  if (!useViewportStore.getState().showOverhangs) {
+    return shown;
+  }
+
+  const { analysis } = useAnalysisStore.getState();
+  const { overhangTriangles } = useAnalysisTaskStore.getState();
+
+  for (const objectId of useObjectStore.getState().selectedObjectIds) {
+    const triangles = overhangTriangles[objectId];
+
+    if (triangles && analysis[objectId]?.status === "generated") {
+      shown.set(objectId, triangles);
+    }
+  }
+
+  return shown;
 }
 
 /** Keys typed in a text field must not move the camera */
@@ -271,10 +305,19 @@ export default function Viewport({
     });
     resizeObserver.observe(container);
 
+    // Red triangles (Overhang Display); their number is read by the
+    // end-to-end tests
+    const syncOverhangs = (): void => {
+      const count = objectRenderer.syncOverhangs(overhangsToShow());
+
+      container.dataset.overhangTriangles = String(count);
+    };
+
     // Objects of the scene (imported models)
     const syncObjects = (): void => {
       const { objects, selectedObjectIds } = useObjectStore.getState();
       objectRenderer.sync(objects, selectedObjectIds);
+      syncOverhangs();
 
       const selected = objects.filter((object) =>
         selectedObjectIds.includes(object.objectId),
@@ -286,6 +329,20 @@ export default function Viewport({
     };
     syncObjects();
     const unsubscribeObjects = useObjectStore.subscribe(syncObjects);
+    const unsubscribeAnalyses = useAnalysisStore.subscribe(
+      (state, previous) => {
+        if (state.analysis !== previous.analysis) {
+          syncOverhangs();
+        }
+      },
+    );
+    const unsubscribeOverhangs = useAnalysisTaskStore.subscribe(
+      (state, previous) => {
+        if (state.overhangTriangles !== previous.overhangTriangles) {
+          syncOverhangs();
+        }
+      },
+    );
 
     const unsubscribePrinter = usePrinterStore.subscribe((state, previous) => {
       if (state.selectedPrinter === previous.selectedPrinter) {
@@ -309,6 +366,10 @@ export default function Viewport({
 
         if (state.keepProportions !== previous.keepProportions) {
           gizmo.setUniform(state.keepProportions);
+        }
+
+        if (state.showOverhangs !== previous.showOverhangs) {
+          syncOverhangs();
         }
 
         if (
@@ -357,6 +418,8 @@ export default function Viewport({
       window.removeEventListener("keydown", handleKeyDown);
       unsubscribeViewport();
       unsubscribePrinter();
+      unsubscribeOverhangs();
+      unsubscribeAnalyses();
       unsubscribeObjects();
       resizeObserver.disconnect();
       interaction.dispose();

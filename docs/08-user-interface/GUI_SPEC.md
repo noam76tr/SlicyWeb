@@ -460,7 +460,13 @@ Isometric
 
 Reset View
 
+
+
+Show Overhangs
+
 ```
+
+Show Overhangs (lot 82) is a check item: it turns the Overhang Display on and off, like the button Overhangs over the 3D viewport; disabled while the scene has no object.
 
 
 
@@ -661,7 +667,7 @@ Generate
 
 ```
 
-Undo and Redo (Phase 6) undo and redo the last change of transform, disabled while their history is empty (UNDO_REDO_SPEC.md). Analyze (Phase 9, lot 80) does the same as Tools > Analyze Models, disabled while the scene has no object. Move, Rotate and Scale are not in the toolbar: they are shown over the 3D viewport only, at the top on the start side (decision of Noam, Phase 6). They choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. They are active only when an object is selected, and grayed out otherwise.
+Undo and Redo (Phase 6) undo and redo the last change of transform, disabled while their history is empty (UNDO_REDO_SPEC.md). Analyze (Phase 9, lot 80) does the same as Tools > Analyze Models, disabled while the scene has no object. Move, Rotate and Scale are not in the toolbar: they are shown over the 3D viewport only, at the top on the start side (decision of Noam, Phase 6). They choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. They are active only when an object is selected, and grayed out otherwise. Next to them, in its own group, the button Overhangs (lot 82) turns the Overhang Display on and off (pressed while it is on), like View > Show Overhangs; it is grayed out while the scene has no object.
 
 
 
@@ -1064,6 +1070,22 @@ Lot 74 (decision of Noam, 2026-10-30; visible choices validated by Noam on 2026-
 - a click on a face gives the same view as the View menu (Camera Views: same framing, projection kept); the view changes at once (no animation); only the faces can be clicked (no edge, no corner);
 - the face under the mouse is highlighted;
 - axes X (red), Y (green), Z (blue) from the front-left-bottom corner of the cube, with their letter (Axis Display); an axis seen end-on is not drawn.
+
+
+
+---
+
+
+
+# Overhang Display
+
+Decision of Noam (2026-11-01, ADR-034 D8 option B), lot 82.
+
+- When it is on, the triangles beyond 45 degrees of each selected object are drawn in red (#E5484D, the red of the axis X) over its faces, in the 3D viewport.
+- They are the triangles counted by the analysis in overhangs.percentage (DATA_SCHEMA.md, Analysis Rules: angle from the vertical, triangles on the build plate excluded), computed in the Web Worker of the analysis; the viewport computes nothing.
+- They are shown only while the analysis of the object is up to date: nothing during a rotation or a scale, until the object is analyzed again; nothing for an object whose analysis failed (ANA_001).
+- Objects not selected are never drawn in red; the red faces never stop a click on the object.
+- Turned on and off with the button Overhangs over the viewport and View > Show Overhangs; off at each start, not saved (no setting, nothing in a project).
 
 
 
@@ -2257,11 +2279,9 @@ Preset Library
 
 Profile Repository Browser
 
-Overhang Display
-
 ```
 
-Overhang Display (decision of Noam, 2026-11-01, ADR-034 D8 option B): the triangles of the selected object beyond 45 degrees shown in red in the 3D viewport, with a button to turn it on. A separate lot after the closure of Phase 9 (PHASES_IMPLEMENTATION_PLAN.md, Phase 9).
+Overhang Display: done in lot 82 (see Overhang Display, under 3D Viewport).
 
 
 

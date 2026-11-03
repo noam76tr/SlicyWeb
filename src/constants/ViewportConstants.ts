@@ -87,6 +87,12 @@ export const OBJECT_COLOR = 0xb4b8c0;
 export const SELECTED_OBJECT_COLOR = 0x4fa3ff;
 
 /**
+ * Faces beyond 45 degrees of the selected objects (GUI_SPEC.md, Overhang
+ * Display, lot 82): red, the red of the axis X
+ */
+export const OVERHANG_COLOR = 0xe5484d;
+
+/**
  * Navigation cube (GUI_SPEC.md, Navigation Cube): square area in the
  * bottom corner on the end side of the viewport, edge of the cube, axes
  * from its front-left-bottom corner (GUI_SPEC.md, Axis Display).

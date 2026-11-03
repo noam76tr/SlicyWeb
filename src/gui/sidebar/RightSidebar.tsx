@@ -55,10 +55,11 @@ export default function RightSidebar(): JSX.Element {
   const objects = useObjectStore((state) => state.objects);
   const names = useMemo(() => getDisplayNames(objects), [objects]);
 
-  const selectedObject = useObjectStore((state) =>
-    state.objects.find(
-      (object) => object.objectId === state.selectedObjectId,
-    ) ?? null,
+  const selectedObject = useObjectStore(
+    (state) =>
+      state.objects.find(
+        (object) => object.objectId === state.selectedObjectId,
+      ) ?? null,
   );
 
   const selectedName = selectedObject
@@ -75,9 +76,7 @@ export default function RightSidebar(): JSX.Element {
   const group = selectedObjects.length > 1;
 
   const recommendation = useRecommendationStore((state) =>
-    selectedObject
-      ? state.recommendations[selectedObject.objectId]
-      : undefined,
+    selectedObject ? state.recommendations[selectedObject.objectId] : undefined,
   );
 
   const noObject = t("object.noSelection");

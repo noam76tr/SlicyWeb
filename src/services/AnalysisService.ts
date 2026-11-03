@@ -32,7 +32,10 @@
  *   changes, or Analyze Models or Recompute Analysis is chosen;
  * - a mesh not closed (ANA_002, ADR-034 D6) does not block: the analysis
  *   is stored, the warning is kept for the Analysis section and shown
- *   over the viewport the first time for each object.
+ *   over the viewport the first time for each object;
+ * - the triangles beyond 45 degrees of each analysis stored are kept for
+ *   the display in red in the 3D viewport (GUI_SPEC.md, Overhang Display,
+ *   lot 82); they are never saved.
  *
  * The state of the computation (objects waiting, warnings, messages) is
  * published in analysisTaskStore for the GUI.
@@ -213,7 +216,12 @@ export function createAnalysisService(
       }
     }
 
-    for (const objectId of useAnalysisTaskStore.getState().openMeshObjectIds) {
+    const task = useAnalysisTaskStore.getState();
+
+    for (const objectId of new Set([
+      ...task.openMeshObjectIds,
+      ...Object.keys(task.overhangTriangles),
+    ])) {
       if (!ids.has(objectId)) {
         useAnalysisTaskStore.getState().forgetObject(objectId);
       }
@@ -348,6 +356,11 @@ export function createAnalysisService(
       );
     }
 
+    // Before the analysis: the viewport finds its triangles when the
+    // analysis becomes up to date
+    useAnalysisTaskStore
+      .getState()
+      .setOverhangTriangles(object.objectId, result.overhangTriangles);
     useAnalysisStore.getState().setAnalysis(analysis);
     useAnalysisTaskStore
       .getState()

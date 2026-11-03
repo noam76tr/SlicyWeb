@@ -76,6 +76,8 @@
   "view.right": "Right",
   "view.isometric": "Isometric",
   "view.resetView": "Reset View",
+  "view.showOverhangs": "Show Overhangs",
+  "view.overhangs": "Overhangs",
   "viewCube.top": "Top",
   "viewCube.bottom": "Bottom",
   "viewCube.front": "Front",

@@ -10,7 +10,9 @@
  *   settings, I18nProvider);
  * - File > Exit: closes the application window;
  * - View (Phase 4): perspective or orthographic projection, the seven
- *   view presets and Reset View (viewport store);
+ *   view presets and Reset View (viewport store); Show Overhangs (lot 82):
+ *   turns the Overhang Display on and off, like the button Overhangs over
+ *   the viewport, disabled while the scene has no object;
  * - File > Import STL and File > Import 3MF (Phase 5): system file
  *   dialog, import (openImportDialog, ImportService);
  * - Edit > Select All, Edit > Deselect All (Phase 6): selects all the
@@ -42,7 +44,7 @@
  * No business logic.
  *
  * Based on:
- * - GUI_SPEC.md (Menu Bar, Keyboard Shortcuts)
+ * - GUI_SPEC.md (Menu Bar, Keyboard Shortcuts, Overhang Display)
  * - CLAUDE.md (Internationalization Rule)
  */
 
@@ -61,6 +63,7 @@ import {
 } from "../../state/viewportStore";
 import {
   Menubar,
+  MenubarCheckboxItem,
   MenubarContent,
   MenubarItem,
   MenubarMenu,
@@ -286,6 +289,8 @@ export default function MenuBar(): JSX.Element {
   const { t, language, languages, setLanguage } = useTranslation();
   const projection = useViewportStore((state) => state.projection);
   const setProjection = useViewportStore((state) => state.setProjection);
+  const showOverhangs = useViewportStore((state) => state.showOverhangs);
+  const setShowOverhangs = useViewportStore((state) => state.setShowOverhangs);
   const canUndo = useHistoryStore((state) => state.undoStack.length > 0);
   const canRedo = useHistoryStore((state) => state.redoStack.length > 0);
   const hasObjects = useObjectStore((state) => state.objects.length > 0);
@@ -311,6 +316,7 @@ export default function MenuBar(): JSX.Element {
   const renderMenu = (
     menu: MenuDefinition,
     header?: JSX.Element,
+    footer?: JSX.Element,
   ): JSX.Element => (
     <MenubarMenu key={menu.key}>
       <MenubarTrigger>{t(menu.key)}</MenubarTrigger>
@@ -339,6 +345,13 @@ export default function MenuBar(): JSX.Element {
             ))}
           </Fragment>
         ))}
+
+        {footer && (
+          <>
+            <MenubarSeparator />
+            {footer}
+          </>
+        )}
       </MenubarContent>
     </MenubarMenu>
   );
@@ -365,6 +378,16 @@ export default function MenuBar(): JSX.Element {
             </MenubarRadioItem>
           ))}
         </MenubarRadioGroup>,
+        <MenubarCheckboxItem
+          checked={showOverhangs}
+          disabled={!hasObjects}
+          onCheckedChange={(checked: boolean) => {
+            setShowOverhangs(checked);
+          }}
+          closeOnClick
+        >
+          {t("view.showOverhangs")}
+        </MenubarCheckboxItem>,
       )}
 
       {/* Printer, Material, Filament, Tools */}

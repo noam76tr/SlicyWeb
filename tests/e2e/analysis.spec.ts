@@ -6,12 +6,14 @@
  * ADR-034 D6, D7, D8): started by itself after the import and after a
  * change of scale, shown in the Analysis section and the status bar; a
  * mesh not closed gives the warning ANA_002; several selected objects:
- * "Select a single object"; Tools menu and Analyze button of the toolbar.
+ * "Select a single object"; Tools menu and Analyze button of the toolbar;
+ * Overhang Display (lot 82): faces beyond 45 degrees of the selected
+ * object in red, button Overhangs and View > Show Overhangs.
  *
  * Based on:
  * - TEST_PLAN.md (End-To-End Testing; Object Imported → Analysis
  *   Triggered → Analysis Stored)
- * - GUI_SPEC.md (Analysis Section, Tools Menu, Status Bar)
+ * - GUI_SPEC.md (Analysis Section, Tools Menu, Status Bar, Overhang Display)
  */
 
 import type { Page } from "@playwright/test";
@@ -124,7 +126,10 @@ test("a mesh not closed is analyzed with the warning ANA_002", async ({
   await expect(message).toHaveCount(0);
 });
 
-test("Tools menu, Analyze button and several selected objects", async ({ window, files }) => {
+test("Tools menu, Analyze button and several selected objects", async ({
+  window,
+  files,
+}) => {
   const tools = window.getByRole("menuitem", { name: en["menu.tools"] });
   const item = (key: "tools.analyzeModels" | "tools.recomputeAnalysis") =>
     window.getByRole("menuitem", { name: en[key] });
@@ -169,4 +174,61 @@ test("Tools menu, Analyze button and several selected objects", async ({ window,
   await expect(analysisSection(window)).toContainText(
     en["analysis.selectSingle"],
   );
+});
+
+test("Overhang Display: faces beyond 45 degrees in red, button and View menu", async ({
+  window,
+  files,
+  started,
+}) => {
+  const viewport = window.locator("#renderer-container");
+  const button = window
+    .getByRole("toolbar", { name: en["view.showOverhangs"] })
+    .getByRole("button", { name: en["view.overhangs"] });
+
+  // No object: grayed out
+  await expect(button).toBeDisabled();
+
+  await importFiles(window, [files("cube.stl", cubeStl("cube", 20))]);
+  await expect(row(window, en["analysis.status"])).toHaveText(
+    en["result.generated"],
+  );
+
+  // Off at start; on: a cube on the plate has no face in red
+  await expect(button).toHaveAttribute("aria-pressed", "false");
+  await button.click();
+  await expect(button).toHaveAttribute("aria-pressed", "true");
+  await expect(viewport).toHaveAttribute("data-overhang-triangles", "0");
+
+  // Turned 30 degrees around X: its bottom faces down at 60 degrees
+  await window
+    .getByRole("toolbar", { name: en["transform.title"] })
+    .getByRole("button", { name: en["transform.rotate"] })
+    .click();
+  const rotationX = transformField(window, "rotation", "x");
+  await rotationX.fill("30");
+  await rotationX.press("Enter");
+  await expect(row(window, en["analysis.overhangs"])).not.toHaveText(
+    en["analysis.noneDetected"],
+  );
+  await expect(viewport).toHaveAttribute("data-overhang-triangles", "2");
+
+  // Nothing selected: nothing in red
+  await window.getByRole("heading", { name: en["analysis.title"] }).click();
+  await window.keyboard.press("Escape");
+  await expect(viewport).toHaveAttribute("data-overhang-triangles", "0");
+  await window.keyboard.press("ControlOrMeta+a");
+  await expect(viewport).toHaveAttribute("data-overhang-triangles", "2");
+
+  // View > Show Overhangs: checked, turns the display off
+  await window.getByRole("menuitem", { name: en["menu.view"] }).click();
+  const item = window.getByRole("menuitemcheckbox", {
+    name: en["view.showOverhangs"],
+  });
+  await expect(item).toHaveAttribute("aria-checked", "true");
+  await item.click();
+  await expect(button).toHaveAttribute("aria-pressed", "false");
+  await expect(viewport).toHaveAttribute("data-overhang-triangles", "0");
+
+  expect(started.errors).toEqual([]);
 });

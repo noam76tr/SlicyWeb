@@ -20,7 +20,11 @@
  *   its supports; longestBridge = the largest span, 0 without bridge.
  *   This is an approximation (ADR-034: a curved or slanted bridge can be
  *   counted wrongly);
- * - thin walls: see analyzeThinWalls (ADR-034 D5, lot 79).
+ * - thin walls: see analyzeThinWalls (ADR-034 D5, lot 79);
+ * - overhangTriangles: the triangles beyond 45 degrees themselves, the
+ *   same as those counted in overhangs.percentage, for the display in red
+ *   in the 3D viewport (GUI_SPEC.md, Overhang Display; ADR-034 D8 option
+ *   B, lot 82).
  *
  * No printability score: no field in DATA_SCHEMA.md (ADR-034 D9).
  *
@@ -162,6 +166,33 @@ export function analyzeOverhangs(
       ? Math.min(100, (overhangArea / surfaceArea) * 100)
       : 0,
   };
+}
+
+/**
+ * Index of each triangle beyond 45 degrees (the same rule as
+ * analyzeOverhangs), in increasing order; triangle t is the triangle t of
+ * the triangle data of the object (the welding keeps their order).
+ */
+export function overhangTriangles({ angles }: DownAngles): Uint32Array {
+  let count = 0;
+
+  for (let t = 0; t < angles.length; t += 1) {
+    if (angles[t] > OVERHANG_LIMIT_DEG + ANGLE_TOLERANCE_DEG) {
+      count += 1;
+    }
+  }
+
+  const triangles = new Uint32Array(count);
+  let next = 0;
+
+  for (let t = 0; t < angles.length; t += 1) {
+    if (angles[t] > OVERHANG_LIMIT_DEG + ANGLE_TOLERANCE_DEG) {
+      triangles[next] = t;
+      next += 1;
+    }
+  }
+
+  return triangles;
 }
 
 /**

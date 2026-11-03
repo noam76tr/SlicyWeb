@@ -76,6 +76,8 @@
   "view.right": "Droite",
   "view.isometric": "Isométrique",
   "view.resetView": "Réinitialiser la vue",
+  "view.showOverhangs": "Afficher les surplombs",
+  "view.overhangs": "Surplombs",
   "viewCube.top": "Dessus",
   "viewCube.bottom": "Dessous",
   "viewCube.front": "Avant",

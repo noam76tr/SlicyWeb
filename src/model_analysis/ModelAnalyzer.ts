@@ -11,7 +11,8 @@
  * 5. stability (contact area, contact hull, height ratio, risk);
  * 6. overhangs and bridges (angle from the vertical, ADR-034 D3);
  * 7. thin walls (rays towards the inside, three-mesh-bvh, ADR-034 D5);
- * 8. open edges: meshClosed false = warning ANA_002 (non-blocking).
+ * 8. open edges: meshClosed false = warning ANA_002 (non-blocking);
+ * 9. the triangles beyond 45 degrees, for the display in red (lot 82).
  *
  * Phase 9: base of the analysis (lot 77), overhangs and bridges (lot 78),
  * thin walls (lot 79); the Complete Analysis Schema
@@ -53,6 +54,7 @@ import {
   analyzeOverhangs,
   analyzeThinWalls,
   downAngles,
+  overhangTriangles,
 } from "./PrintabilityAnalyzer";
 import { analyzeStability } from "./StabilityAnalyzer";
 
@@ -77,6 +79,13 @@ export interface ModelAnalysisResult {
    * ANA_002 is shown (not stored, DATA_SCHEMA.md: Mesh not closed).
    */
   meshClosed: boolean;
+
+  /**
+   * Index of each triangle beyond 45 degrees, in the triangle data of the
+   * object (GUI_SPEC.md, Overhang Display, lot 82). Not part of the
+   * analysis (DATA_SCHEMA.md): never stored in a project.
+   */
+  overhangTriangles: Uint32Array;
 }
 
 /**
@@ -116,6 +125,7 @@ export function analyzeModel(
     bridges: analyzeBridges(placed, welded.corners, welded.vertexCount, down),
     thinWalls: analyzeThinWalls(placed, welded.corners),
     meshClosed: countOpenEdges(welded.corners, welded.vertexCount) === 0,
+    overhangTriangles: overhangTriangles(down),
   };
 }
 

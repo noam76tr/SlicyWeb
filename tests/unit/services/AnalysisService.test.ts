@@ -214,6 +214,7 @@ beforeEach(() => {
     pendingObjectIds: [],
     openMeshObjectIds: [],
     messages: [],
+    overhangTriangles: {},
   });
   h = harness();
   stop = h.service.start();
@@ -324,6 +325,25 @@ describe("AnalysisService (Phase 9 lot 80, ADR-034 D7)", () => {
     h.calls[1].resolve();
     await settle(h);
     expect(analysisOf("a").dimensions.width).toBeCloseTo(20, 4);
+  });
+
+  it("keeps the triangles beyond 45 degrees of each analysis, forgets them with the object (lot 82)", async () => {
+    const red = () => useAnalysisTaskStore.getState().overhangTriangles;
+
+    addObject(h, "a", box(10, 10, 10));
+    await settle(h);
+    expect(red()).toEqual({ a: new Uint32Array(0) });
+
+    // Turned 30 degrees around X: the bottom (triangles 0 and 1) leaves
+    // the plate and faces down at 60 degrees from the vertical
+    setTransform("a", { rotation: { x: 30, y: 0, z: 0 } });
+    await settle(h);
+    expect(analysisOf("a").status).toBe("generated");
+    expect(red()).toEqual({ a: new Uint32Array([0, 1]) });
+
+    useObjectStore.getState().removeObject("a");
+    await settle(h);
+    expect(red()).toEqual({});
   });
 
   it("drops the computation of a removed object, nothing is stored", async () => {

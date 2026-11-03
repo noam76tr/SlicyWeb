@@ -11,12 +11,16 @@
  *   closed (warning ANA_002 in the Analysis section; found again at each
  *   computation, ERROR_CODES_SPEC.md);
  * - messages: messages ANA_001 and ANA_002 shown over the viewport, like
- *   the messages of the import, until closed.
+ *   the messages of the import, until closed;
+ * - overhangTriangles: triangles beyond 45 degrees found by the last
+ *   analysis of each object, drawn in red by the 3D viewport while that
+ *   analysis is up to date (GUI_SPEC.md, Overhang Display, lot 82).
  *
  * No business logic.
  *
  * Based on:
- * - GUI_SPEC.md (Analysis Section, Status Bar, Error Handling UI)
+ * - GUI_SPEC.md (Analysis Section, Status Bar, Error Handling UI,
+ *   Overhang Display)
  * - ERROR_CODES_SPEC.md (ANA_001, ANA_002)
  * - DECISIONS.md (ADR-034 D6, D7)
  */
@@ -45,10 +49,19 @@ interface AnalysisTaskState {
 
   messages: AnalysisMessage[];
 
+  /**
+   * Triangles beyond 45 degrees of the last analysis, by objectId (index
+   * in the triangle data of the object)
+   */
+  overhangTriangles: Record<string, Uint32Array>;
+
   setPending: (objectIds: string[]) => void;
 
   /** Keeps (true) or clears (false) the warning ANA_002 of an object */
   setOpenMesh: (objectId: string, open: boolean) => void;
+
+  /** Keeps the triangles beyond 45 degrees of the last analysis */
+  setOverhangTriangles: (objectId: string, triangles: Uint32Array) => void;
 
   addMessage: (message: AnalysisMessage) => void;
 
@@ -65,6 +78,8 @@ export const useAnalysisTaskStore = create<AnalysisTaskState>((set) => ({
 
   messages: [],
 
+  overhangTriangles: {},
+
   setPending: (objectIds) =>
     set({
       pendingObjectIds: [...objectIds],
@@ -79,6 +94,14 @@ export const useAnalysisTaskStore = create<AnalysisTaskState>((set) => ({
       };
     }),
 
+  setOverhangTriangles: (objectId, triangles) =>
+    set((state) => ({
+      overhangTriangles: {
+        ...state.overhangTriangles,
+        [objectId]: triangles,
+      },
+    })),
+
   addMessage: (message) =>
     set((state) => ({
       messages: [...state.messages, message],
@@ -92,10 +115,19 @@ export const useAnalysisTaskStore = create<AnalysisTaskState>((set) => ({
     })),
 
   forgetObject: (objectId) =>
-    set((state) => ({
-      pendingObjectIds: state.pendingObjectIds.filter((id) => id !== objectId),
-      openMeshObjectIds: state.openMeshObjectIds.filter(
-        (id) => id !== objectId,
-      ),
-    })),
+    set((state) => {
+      const overhangTriangles = { ...state.overhangTriangles };
+
+      delete overhangTriangles[objectId];
+
+      return {
+        pendingObjectIds: state.pendingObjectIds.filter(
+          (id) => id !== objectId,
+        ),
+        openMeshObjectIds: state.openMeshObjectIds.filter(
+          (id) => id !== objectId,
+        ),
+        overhangTriangles,
+      };
+    }),
 }));

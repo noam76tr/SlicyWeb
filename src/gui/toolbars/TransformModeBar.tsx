@@ -8,17 +8,30 @@
  * (not in the main toolbar), active only when an object is selected and
  * grayed out otherwise (decisions of Noam, Phase 6).
  *
+ * Next to them, the button Overhangs (lot 82) turns the Overhang Display
+ * on and off, like View > Show Overhangs: the faces beyond 45 degrees of
+ * the selected objects are drawn in red in the viewport. It is a separate
+ * toolbar, pressed while the display is on, grayed out while the scene has
+ * no object; the display is off at each start (not saved).
+ *
  * Mounted by the GUI over the viewport: the Viewport Domain does not
  * depend on the GUI.
  *
  * No business logic.
  *
  * Based on:
- * - GUI_SPEC.md (Toolbar Buttons, Object Gizmos, Keyboard Shortcuts)
+ * - GUI_SPEC.md (Toolbar Buttons, Object Gizmos, Keyboard Shortcuts,
+ *   Overhang Display)
  * - CLAUDE.md (Internationalization Rule)
  */
 
-import { Move, Rotate3d, Scaling, type LucideIcon } from "lucide-react";
+import {
+  Move,
+  Rotate3d,
+  Scaling,
+  TriangleAlert,
+  type LucideIcon,
+} from "lucide-react";
 
 import { useObjectStore } from "../../state/objectStore";
 import {
@@ -45,31 +58,55 @@ export default function TransformModeBar(): JSX.Element {
   const hasSelection = useObjectStore(
     (state) => state.selectedObjectId !== null,
   );
+  const hasObjects = useObjectStore((state) => state.objects.length > 0);
+  const showOverhangs = useViewportStore((state) => state.showOverhangs);
+  const setShowOverhangs = useViewportStore((state) => state.setShowOverhangs);
+  const overhangsLabel = t("view.overhangs");
 
   return (
-    <div
-      role="toolbar"
-      aria-label={t("transform.title")}
-      className="absolute start-2 top-2 z-10 flex gap-0.5 rounded-lg border border-border bg-card/90 p-0.5 shadow-sm"
-    >
-      {MODES.map(({ mode, key, shortcut, icon: Icon }) => {
-        const label = t(key);
+    <div className="absolute start-2 top-2 z-10 flex gap-2">
+      <div
+        role="toolbar"
+        aria-label={t("transform.title")}
+        className="flex gap-0.5 rounded-lg border border-border bg-card/90 p-0.5 shadow-sm"
+      >
+        {MODES.map(({ mode, key, shortcut, icon: Icon }) => {
+          const label = t(key);
 
-        return (
-          <button
-            key={mode}
-            type="button"
-            aria-pressed={mode === transformMode}
-            disabled={!hasSelection}
-            title={`${label} (${shortcut})`}
-            onClick={() => setTransformMode(mode)}
-            className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-foreground hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring aria-pressed:bg-primary aria-pressed:text-primary-foreground disabled:pointer-events-none disabled:opacity-40"
-          >
-            <Icon className="size-4" aria-hidden="true" />
-            <span>{label}</span>
-          </button>
-        );
-      })}
+          return (
+            <button
+              key={mode}
+              type="button"
+              aria-pressed={mode === transformMode}
+              disabled={!hasSelection}
+              title={`${label} (${shortcut})`}
+              onClick={() => setTransformMode(mode)}
+              className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-foreground hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring aria-pressed:bg-primary aria-pressed:text-primary-foreground disabled:pointer-events-none disabled:opacity-40"
+            >
+              <Icon className="size-4" aria-hidden="true" />
+              <span>{label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        role="toolbar"
+        aria-label={t("view.showOverhangs")}
+        className="flex gap-0.5 rounded-lg border border-border bg-card/90 p-0.5 shadow-sm"
+      >
+        <button
+          type="button"
+          aria-pressed={showOverhangs}
+          disabled={!hasObjects}
+          title={t("view.showOverhangs")}
+          onClick={() => setShowOverhangs(!showOverhangs)}
+          className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-foreground hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring aria-pressed:bg-primary aria-pressed:text-primary-foreground disabled:pointer-events-none disabled:opacity-40"
+        >
+          <TriangleAlert className="size-4" aria-hidden="true" />
+          <span>{overhangsLabel}</span>
+        </button>
+      </div>
     </div>
   );
 }

@@ -12,6 +12,10 @@
  * an object is touched when the outline of its box (bounding box of its
  * geometry, turned and scaled with it), seen from the camera, overlaps
  * the rectangle.
+ * syncOverhangs() draws in red the triangles beyond 45 degrees of some
+ * objects (GUI_SPEC.md, Overhang Display, lot 82): a second mesh, child
+ * of the object, made of these triangles only and drawn over its faces;
+ * it never answers pick() nor the selection rectangle.
  *
  * Domain: Viewport. Depends on the Scene Domain (geometry, transform).
  *
@@ -24,6 +28,7 @@ import * as THREE from "three";
 
 import {
   OBJECT_COLOR,
+  OVERHANG_COLOR,
   SELECTED_OBJECT_COLOR,
 } from "../constants/ViewportConstants";
 import { GeometryRegistry } from "../scene/GeometryRegistry";
@@ -108,6 +113,46 @@ function overlaps(hull: Point2[], rect: ScreenRect): boolean {
   });
 }
 
+/**
+ * Geometry made of some triangles of an object (index of each triangle),
+ * in the coordinates of the object; an index outside the object is
+ * ignored.
+ */
+function overhangGeometry(
+  source: THREE.BufferGeometry,
+  triangles: Uint32Array,
+): THREE.BufferGeometry {
+  const position = source.getAttribute("position");
+  const index = source.getIndex();
+  const triangleCount = (index ? index.count : position.count) / 3;
+  const positions = new Float32Array(triangles.length * 9);
+  let next = 0;
+
+  for (const t of triangles) {
+    if (t >= triangleCount) {
+      continue;
+    }
+
+    for (let corner = 0; corner < 3; corner += 1) {
+      const vertex = index ? index.getX(t * 3 + corner) : t * 3 + corner;
+
+      positions[next] = position.getX(vertex);
+      positions[next + 1] = position.getY(vertex);
+      positions[next + 2] = position.getZ(vertex);
+      next += 3;
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(positions.subarray(0, next), 3),
+  );
+  geometry.computeVertexNormals();
+
+  return geometry;
+}
+
 export class ObjectRenderer {
   private readonly scene: THREE.Scene;
 
@@ -123,6 +168,22 @@ export class ObjectRenderer {
     color: SELECTED_OBJECT_COLOR,
     roughness: 0.6,
     metalness: 0.05,
+  });
+
+  /** Red triangles of each object, built from these triangle indices */
+  private readonly overhangs = new Map<
+    string,
+    { triangles: Uint32Array; mesh: THREE.Mesh }
+  >();
+
+  private readonly overhangMaterial = new THREE.MeshStandardMaterial({
+    color: OVERHANG_COLOR,
+    roughness: 0.6,
+    metalness: 0.05,
+    // Drawn over the faces of the object, at the same place
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
   });
 
   constructor(scene: THREE.Scene) {
@@ -180,6 +241,58 @@ export class ObjectRenderer {
   }
 
   /**
+   * Draws in red the triangles given for each object (index in its
+   * triangle data), and nothing on the other objects. Call after sync().
+   * Returns the number of red triangles drawn.
+   */
+  public syncOverhangs(trianglesById: Map<string, Uint32Array>): number {
+    let count = 0;
+
+    for (const [objectId, entry] of this.overhangs) {
+      const mesh = this.meshes.get(objectId);
+
+      if (
+        entry.triangles !== trianglesById.get(objectId) ||
+        entry.mesh.parent !== mesh
+      ) {
+        this.removeOverhang(objectId);
+      }
+    }
+
+    for (const [objectId, triangles] of trianglesById) {
+      const mesh = this.meshes.get(objectId);
+
+      if (!mesh || triangles.length === 0) {
+        continue;
+      }
+
+      if (!this.overhangs.has(objectId)) {
+        const red = new THREE.Mesh(
+          overhangGeometry(mesh.geometry, triangles),
+          this.overhangMaterial,
+        );
+        red.name = `overhangs-${objectId}`;
+        mesh.add(red);
+        this.overhangs.set(objectId, { triangles, mesh: red });
+      }
+
+      count += triangles.length;
+    }
+
+    return count;
+  }
+
+  private removeOverhang(objectId: string): void {
+    const entry = this.overhangs.get(objectId);
+
+    if (entry) {
+      entry.mesh.removeFromParent();
+      entry.mesh.geometry.dispose();
+      this.overhangs.delete(objectId);
+    }
+  }
+
+  /**
    * Visible object under the ray (nearest), or null.
    */
   public pick(raycaster: THREE.Raycaster): string | null {
@@ -233,6 +346,10 @@ export class ObjectRenderer {
   }
 
   public dispose(): void {
+    for (const objectId of [...this.overhangs.keys()]) {
+      this.removeOverhang(objectId);
+    }
+
     for (const mesh of this.meshes.values()) {
       this.scene.remove(mesh);
     }
@@ -240,5 +357,6 @@ export class ObjectRenderer {
     this.meshes.clear();
     this.material.dispose();
     this.selectedMaterial.dispose();
+    this.overhangMaterial.dispose();
   }
 }

@@ -803,11 +803,11 @@ src/state/
 ├── printerStore.ts
 ├── materialStore.ts
 ├── analysisStore.ts
-├── analysisTaskStore.ts       = objects being analyzed, warnings and messages of the analysis (Phase 9)
+├── analysisTaskStore.ts       = objects being analyzed, warnings and messages of the analysis (Phase 9), triangles beyond 45 degrees (lot 82)
 ├── recommendationStore.ts
 ├── importStore.ts             = imports in progress and their result
 ├── historyStore.ts            = undo and redo stacks (Phase 6)
-└── viewportStore.ts           = projection and view presets of the viewport
+└── viewportStore.ts           = projection and view presets of the viewport, Overhang Display on or off (lot 82)
 ```
 
 ---
