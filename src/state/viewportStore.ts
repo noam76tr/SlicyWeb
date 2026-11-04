@@ -12,8 +12,8 @@
  *   toolbar Move, Rotate, Scale and keys G, R, S, Phase 6);
  * - keepProportions: lock of the scale (on by default), the same for the
  *   Transform section and the Scale gizmo;
- * - showOverhangs: triangles beyond 45 degrees of the selected objects
- *   drawn in red (off at each start, not saved; GUI_SPEC.md, Overhang
+ * - showOverhangs: triangles beyond 45 degrees of all the objects drawn
+ *   in red (off at each start, not saved; GUI_SPEC.md, Overhang
  *   Display, lot 82).
  *
  * No business logic.

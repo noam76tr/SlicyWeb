@@ -7,8 +7,8 @@
  * change of scale, shown in the Analysis section and the status bar; a
  * mesh not closed gives the warning ANA_002; several selected objects:
  * "Select a single object"; Tools menu and Analyze button of the toolbar;
- * Overhang Display (lot 82): faces beyond 45 degrees of the selected
- * object in red, button Overhangs and View > Show Overhangs.
+ * Overhang Display (lot 82): faces beyond 45 degrees of all the objects
+ * in red, selected or not, button Overhangs and View > Show Overhangs.
  *
  * Based on:
  * - TEST_PLAN.md (End-To-End Testing; Object Imported → Analysis
@@ -213,11 +213,12 @@ test("Overhang Display: faces beyond 45 degrees in red, button and View menu", a
   );
   await expect(viewport).toHaveAttribute("data-overhang-triangles", "2");
 
-  // Nothing selected: nothing in red
+  // Nothing selected: still in red (all the objects, decision of Noam Q1 B)
   await window.getByRole("heading", { name: en["analysis.title"] }).click();
   await window.keyboard.press("Escape");
-  await expect(viewport).toHaveAttribute("data-overhang-triangles", "0");
-  await window.keyboard.press("ControlOrMeta+a");
+  await expect(window.getByRole("contentinfo")).toContainText(
+    `${en["statusBar.selectedObject"]}:${en["statusBar.none"]}`,
+  );
   await expect(viewport).toHaveAttribute("data-overhang-triangles", "2");
 
   // View > Show Overhangs: checked, turns the display off

@@ -31,8 +31,8 @@
  * Escape clears the selection (GUI_SPEC.md, Keyboard Shortcuts).
  *
  * Overhang Display (lot 82): when it is on (viewport store), the
- * triangles beyond 45 degrees of each selected object are drawn in red,
- * as found by its analysis (analysis task store), only while that analysis
+ * triangles beyond 45 degrees of every object of the scene, selected or
+ * not (decision of Noam, Q1 B), are drawn in red, as found by its analysis (analysis task store), only while that analysis
  * is up to date: nothing during a rotation or a scale, until the object is
  * analyzed again. The viewport only draws them: it computes nothing.
  *
@@ -104,8 +104,8 @@ function groupCenter(objects: Object3D[]): Vector3Mm | null {
 }
 
 /**
- * Triangles to draw in red: those of the selected objects whose analysis
- * is up to date, when the Overhang Display is on
+ * Triangles to draw in red: those of all the objects whose analysis is
+ * up to date, when the Overhang Display is on
  */
 function overhangsToShow(): Map<string, Uint32Array> {
   const shown = new Map<string, Uint32Array>();
@@ -117,7 +117,7 @@ function overhangsToShow(): Map<string, Uint32Array> {
   const { analysis } = useAnalysisStore.getState();
   const { overhangTriangles } = useAnalysisTaskStore.getState();
 
-  for (const objectId of useObjectStore.getState().selectedObjectIds) {
+  for (const { objectId } of useObjectStore.getState().objects) {
     const triangles = overhangTriangles[objectId];
 
     if (triangles && analysis[objectId]?.status === "generated") {

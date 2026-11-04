@@ -1079,12 +1079,12 @@ Lot 74 (decision of Noam, 2026-10-30; visible choices validated by Noam on 2026-
 
 # Overhang Display
 
-Decision of Noam (2026-11-01, ADR-034 D8 option B), lot 82.
+Decision of Noam (2026-11-01, ADR-034 D8 option B), lot 82; choices of Noam (2026-11-03): all the objects (Q1 B), hidden while the analysis is outdated, button and View menu, not saved, red of the axis X (Q2 to Q5 A).
 
-- When it is on, the triangles beyond 45 degrees of each selected object are drawn in red (#E5484D, the red of the axis X) over its faces, in the 3D viewport.
+- When it is on, the triangles beyond 45 degrees of every object of the scene, selected or not, are drawn in red (#E5484D, the red of the axis X) over its faces, in the 3D viewport.
 - They are the triangles counted by the analysis in overhangs.percentage (DATA_SCHEMA.md, Analysis Rules: angle from the vertical, triangles on the build plate excluded), computed in the Web Worker of the analysis; the viewport computes nothing.
 - They are shown only while the analysis of the object is up to date: nothing during a rotation or a scale, until the object is analyzed again; nothing for an object whose analysis failed (ANA_001).
-- Objects not selected are never drawn in red; the red faces never stop a click on the object.
+- The selection does not change the display (a selected object keeps its accent color under the red faces); a hidden object shows nothing; the red faces never stop a click on the object.
 - Turned on and off with the button Overhangs over the viewport and View > Show Overhangs; off at each start, not saved (no setting, nothing in a project).
 
 

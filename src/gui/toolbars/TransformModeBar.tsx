@@ -10,7 +10,7 @@
  *
  * Next to them, the button Overhangs (lot 82) turns the Overhang Display
  * on and off, like View > Show Overhangs: the faces beyond 45 degrees of
- * the selected objects are drawn in red in the viewport. It is a separate
+ * all the objects are drawn in red in the viewport. It is a separate
  * toolbar, pressed while the display is on, grayed out while the scene has
  * no object; the display is off at each start (not saved).
  *

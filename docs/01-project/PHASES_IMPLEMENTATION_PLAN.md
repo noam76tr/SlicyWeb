@@ -1551,7 +1551,7 @@ Progress:
 - Lot 79 (CHANGELOG 0.1.80): thin walls (PrintabilityAnalyzer.ts, three-mesh-bvh 0.9.17), part of the result of the Web Worker
 - Lot 80 (CHANGELOG 0.1.81): interface: automatic analysis (AnalysisService), Analysis section, Tools > Analyze Models and Recompute Analysis, "Analyzing…" in the status bar, messages ANA_001 and ANA_002, texts in three languages; AnalysisPanel.tsx deleted
 - Closure (lot 81, CHANGELOG 0.1.82): numbers in the format of the language in every section (NumberFormatter, GUI_SPEC.md, Number Format)
-- Lot 82 (CHANGELOG 0.1.83), after the closure: Overhang Display (D8 option B): the triangles beyond 45 degrees of the selected objects in red in the 3D viewport, found by the Web Worker of the analysis, shown while the analysis is up to date; button Overhangs over the viewport and View > Show Overhangs (GUI_SPEC.md, Overhang Display)
+- Lot 82 (CHANGELOG 0.1.83), after the closure: Overhang Display (D8 option B): the triangles beyond 45 degrees of all the objects in red in the 3D viewport, found by the Web Worker of the analysis, shown while the analysis is up to date; button Overhangs over the viewport and View > Show Overhangs (GUI_SPEC.md, Overhang Display)
 
 Validation result (Windows 11, checks and manual controls of Noam, lots 76 to 80, 2026-11-01 to 2026-11-02; all passed):
 

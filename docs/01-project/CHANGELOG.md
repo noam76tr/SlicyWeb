@@ -3010,20 +3010,20 @@ Date:
 
 ## Added
 
-- Overhang Display (decision of Noam 81, ADR-034 D8 option B; GUI_SPEC.md, Overhang Display): the triangles beyond 45 degrees of the selected objects drawn in red in the 3D viewport, the same triangles as overhangs.percentage of the analysis (angle from the vertical, triangles on the build plate excluded); shown only while the analysis of the object is up to date (nothing during a rotation or a scale, until the object is analyzed again); off at each start, not saved
+- Overhang Display (decision of Noam 81, ADR-034 D8 option B; GUI_SPEC.md, Overhang Display): the triangles beyond 45 degrees of all the objects of the scene, selected or not (choice of Noam, Q1 B), drawn in red in the 3D viewport, the same triangles as overhangs.percentage of the analysis (angle from the vertical, triangles on the build plate excluded); shown only while the analysis of the object is up to date (nothing during a rotation or a scale, until the object is analyzed again); off at each start, not saved
 - Button Overhangs over the 3D viewport, next to Move, Rotate and Scale (its own toolbar "Show Overhangs"), pressed while the display is on, disabled while the scene has no object; View > Show Overhangs (check item), the same switch
 - src/model_analysis/PrintabilityAnalyzer.ts: overhangTriangles (index of each triangle beyond 45 degrees, same rule as analyzeOverhangs); ModelAnalysisResult.overhangTriangles (computed in the Web Worker of the analysis; not part of the analysis, never stored in a project)
 - src/state/analysisTaskStore.ts: overhangTriangles by objectId (setOverhangTriangles; forgotten with the object)
 - src/state/viewportStore.ts: showOverhangs, setShowOverhangs
 - src/renderer/ObjectRenderer.ts: syncOverhangs (red mesh child of the object, drawn over its faces, never picked)
 - src/constants/ViewportConstants.ts: OVERHANG_COLOR (#E5484D, the red of the axis X)
-- 2 translation keys (409): view.showOverhangs, view.overhangs
+- 2 translation keys (409): view.showOverhangs, view.overhangs (Hebrew wording of Noam: « הצג אזורים תלויים », « אזורים תלויים »)
 - Tests: tests/unit/model_analysis/ModelAnalyzer.test.ts 4 tests, tests/unit/services/AnalysisService.test.ts 1 test, tests/unit/renderer/ObjectRenderer.test.ts 3 tests; tests/e2e/analysis.spec.ts 1 test
 
 ## Changed
 
 - src/services/AnalysisService.ts: keeps the triangles beyond 45 degrees of each analysis stored (analysisTaskStore)
-- src/gui/viewport/Viewport.tsx: draws the red triangles of the selected objects whose analysis is up to date (reads the analysis stores, computes nothing)
+- src/gui/viewport/Viewport.tsx: draws the red triangles of all the objects whose analysis is up to date (reads the analysis stores, computes nothing)
 - src/gui/toolbars/TransformModeBar.tsx: button Overhangs; src/gui/menus/MenuBar.tsx: View > Show Overhangs
 - src/gui/sidebar/RightSidebar.tsx, src/gui/statusbar/StatusBar.tsx: Prettier format only (request of Noam), no change of code
 - GUI_SPEC.md: View Menu, Toolbar Buttons, Overhang Display (3D Viewport); removed from Future GUI Features

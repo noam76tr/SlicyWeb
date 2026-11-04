@@ -87,7 +87,7 @@ export const OBJECT_COLOR = 0xb4b8c0;
 export const SELECTED_OBJECT_COLOR = 0x4fa3ff;
 
 /**
- * Faces beyond 45 degrees of the selected objects (GUI_SPEC.md, Overhang
+ * Faces beyond 45 degrees of the objects (GUI_SPEC.md, Overhang
  * Display, lot 82): red, the red of the axis X
  */
 export const OVERHANG_COLOR = 0xe5484d;
