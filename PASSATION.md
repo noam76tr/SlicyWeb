@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-11-03. Lot 81 (clôture de la phase 9, format des nombres) sur `main` (8c6d016), vérifié identique, validé par Noam (0.1.82 Completed : 407 clés, 28 canaux, 358 + 1 tests, 33 e2e, contrôles 1 à 6). Lot 82 (surplombs en rouge, format Prettier de RightSidebar et StatusBar ; version corrigée avec les choix de Noam du 2026-11-03) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.83 (lot 82, In Progress).
+Date : 2026-11-04. Lot 82 (surplombs en rouge, format Prettier de RightSidebar et StatusBar, version corrigée) sur `main` (f38651e), vérifié identique, validé par Noam (0.1.83 Completed : 409 clés, 28 canaux, 366 + 1 tests, 34 e2e, contrôles 1 à 8). Lot 83 (analyse de la phase 10, décisions D1 à D13 dans `lot83-phase10-analyse/PHASE10-ANALYSE.md` ; hébreu `analysis.overhangs`) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.84 (lot 83, In Progress).
 
 ---
 
@@ -77,7 +77,8 @@ Date : 2026-11-03. Lot 81 (clôture de la phase 9, format des nombres) sur `main
 | 7 | Printer Database | Completed (2026-10-27) | 0.1.59 à 0.1.66 |
 | 8 | Material Database | Completed (2026-11-01) | 0.1.67 à 0.1.75 |
 | 9 | Model Analysis | Completed (2026-11-02) | 0.1.77 à 0.1.82 |
-| 10 à 16 | Classification, Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
+| 10 | Classification and Recommendation Engine | Analysée (lot 83), en attente des décisions de Noam (D1 à D13) | — |
+| 11 à 16 | Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
 
@@ -221,6 +222,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 80 | Phase 9, interface de l'analyse : `AnalysisService.ts` réécrit (lancement automatique, attente de la fin d'un geste, un objet à la fois, calcul abandonné, AnalysisSchema, ANA_001 et ANA_002), `analysisTaskStore.ts`, section Analysis (`AnalysisSection.tsx`), `AnalysisMessages.tsx`, Tools > Analyze Models et Recompute Analysis, bouton Analyze de la barre d'outils, barre d'état ; `TransformService` : `isGestureActive`, `onGestureEnd` ; 31 clés (407) ; 14 tests (354 + 1), 4 e2e (32) ; `AnalysisPanel.tsx` supprimé (D9) | 0.1.81 |
 | 81 | Clôture de la phase 9 ; nombres au format de la langue dans toutes les sections (`src/i18n/NumberFormatter.ts`, GUI_SPEC « Number Format ») ; aucune suppression ; 4 tests (358 + 1), 1 e2e (33) | 0.1.82 |
 | 82 | Surplombs en rouge dans la vue 3D (décision 81, D8 option B ; GUI_SPEC « Overhang Display ») : `overhangTriangles` (Worker de l'analyse), `analysisTaskStore`, `viewportStore.showOverhangs`, `ObjectRenderer.syncOverhangs`, bouton « Surplombs » et Affichage > Afficher les surplombs ; 2 clés (409) ; 8 tests (366 + 1), 1 e2e (34) ; `RightSidebar.tsx` et `StatusBar.tsx` au format Prettier (format seulement) ; aucune suppression | 0.1.83 |
+| 83 | Analyse seule : phase 10 (Classification and Recommendation Engine), inventaire, 13 décisions D1 à D13 (`lot83-phase10-analyse/PHASE10-ANALYSE.md`) ; hébreu `analysis.overhangs` « אזורים תלויים » au lieu de « תליות », comme le bouton et le menu (demande de Noam) | 0.1.84 |
 
 ---
 
@@ -332,7 +334,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 80. **Stabilité (D4 corrigé par Noam) :** le test de bascule et `heightRatio` utilisent l'**enveloppe convexe des points de contact** avec le plateau (sommets à Z ≤ 0,01 mm) ; `heightRatio` = hauteur ÷ √(aire de l'enveloppe) ; risque = (rapport − 1) × 20, arrondi, borné à 0 et 100, 100 si le centre de gravité vu de dessus est hors de l'enveloppe ou sans contact. `contactArea` reste l'aire réelle des faces posées (adhérence). Tests demandés : tabouret à 4 pieds à risque faible ; cube plein de 20 mm qui donne une épaisseur minimale de 20 mm (D5).
 81. **Surplombs en rouge dans la vue 3D (D8 option B) :** accepté, dans un lot séparé **après la clôture de la phase 9** (noté dans le plan et dans GUI_SPEC, Future GUI Features).
 82. **Format des nombres (remarque de Noam sur le lot 80, 2026-11-02) :** toutes les valeurs affichées suivent le format de la langue, dans toutes les sections (virgule décimale en français, point en anglais et en hébreu, 2 décimales au plus) ; une valeur seulement lue a les séparateurs de milliers de la langue (comme la section Analysis), un champ n'en a pas et accepte la virgule ou le point ; les valeurs enregistrées restent des nombres JSON. Clôture de la phase 9 (lot 81) : aucune suppression, tous les fichiers de `src/model_analysis/` sont utilisés.
-83. **Surplombs en rouge (lot 82, choix de Noam le 2026-11-03 : Q1 B, Q2 à Q5 A) :** tous les objets de la scène, sélectionnés ou non (Q1 B) ; triangles de l'analyse (même règle que `overhangs.percentage`), affichés seulement quand l'analyse est à jour, donc rien pendant une rotation ou une échelle jusqu'au nouveau calcul ; bouton « Surplombs » dans son propre groupe à côté de Déplacer, Pivoter, Échelle, et Affichage > Afficher les surplombs ; éteint à chaque démarrage, non enregistré ; rouge #E5484D (celui de l'axe X) ; textes hébreux choisis par Noam : « אזורים תלויים » (bouton) et « הצג אזורים תלויים » (menu).
+83. **Surplombs en rouge (lot 82, choix de Noam le 2026-11-03 : Q1 B, Q2 à Q5 A) :** tous les objets de la scène, sélectionnés ou non (Q1 B) ; triangles de l'analyse (même règle que `overhangs.percentage`), affichés seulement quand l'analyse est à jour, donc rien pendant une rotation ou une échelle jusqu'au nouveau calcul ; bouton « Surplombs » dans son propre groupe à côté de Déplacer, Pivoter, Échelle, et Affichage > Afficher les surplombs ; éteint à chaque démarrage, non enregistré ; rouge #E5484D (celui de l'axe X) ; textes hébreux choisis par Noam : « אזורים תלויים » (bouton) et « הצג אזורים תלויים » (menu) ; le titre de la ligne de la section Analysis (`analysis.overhangs`) dit aussi « אזורים תלויים » depuis le lot 83 (demande de Noam, 2026-11-04).
 
 **Méthode**
 
@@ -350,8 +352,9 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 4. **Phase 8 : Material Database** (Completed, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (fait, validé) ; 68 chargement (fait, validé) ; 69 données (fait, validé) ; 70 interface (fait, validé) ; 71 filaments de l'utilisateur (fait, validé) ; 72 synchronisation (fait, validé ; release v1.1.0 de `slicyweb-profiles`) ; 73 clôture (fait, validé). Close le 2026-11-01. (Lot 67 : plateau, hors phase 8.)
 5. **Cube de navigation** (décisions 76 et 78) : lot 74 fait, validé par Noam le 2026-11-01.
 6. **Phase 9 : Model Analysis** (Completed, ADR-034) : analyse au lot 75 ; réponses de Noam (décisions 79 à 81) ; 76 documentation ; 77 calcul de base dans un Worker ; 78 surplombs et ponts ; 79 parois fines ; 80 interface (tous validés) ; 81 clôture et format des nombres (décision 82). Close le 2026-11-02, confirmée par les contrôles de Noam sur le lot 81 (2026-11-03). Lot 82 : surplombs en rouge (décisions 81 et 83). Suite : la phase 10. La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
-7. **Phases 10 à 16**, dans l'ordre du plan technique.
-8. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
+7. **Phase 10 : Classification and Recommendation Engine** : analyse au lot 83 (13 décisions D1 à D13, en attente des réponses de Noam) ; découpage proposé : 84 documentation, 85 classification, 86 presets, 87 moteur de recommandation, 88 interface, 89 clôture.
+8. **Phases 11 à 16**, dans l'ordre du plan technique.
+9. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
    | KI | Sujet | À régler avant |
    |---|---|---|
@@ -367,7 +370,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    | KI-027 | npm audit : deepmerge (GHSA-gcqx-w48m-w2h4, faible), via shadcn, outil de développement seulement, absent de l'application livrée | Phase 16 |
    | KI-028 | npm audit : minimatch (GHSA-g3hv-75wg-m249, modérée), via eslint, typescript-eslint et ts-morph (shadcn), outils de développement seulement | Phase 16 |
 
-9. **Points signalés, en attente d'une décision de Noam :**
+10. **Points signalés, en attente d'une décision de Noam :**
    - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (lié à KI-007).
    - SLICER_EXPORT_SPEC.md : version restée en 1.0.0, pas de code d'erreur pour les contrôles de scène (proposés : EXP_013 hors volume, EXP_014 collision).
    - Duplication projet/scène des 4 sélections dans DATA_SCHEMA (décision 4) : choisir la source de vérité.
@@ -379,7 +382,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 ## 6. Fichiers utiles dans `/mnt/project-files/slicyweb/`
 
-- `lot9-create-project/` à `lot82-surplombs-rouge/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 75 sont présents dans le dossier du projet.
+- `lot9-create-project/` à `lot83-phase10-analyse/` : livrables de chaque lot (`LOTN.md`, zip, patch). Au 2026-10-21, seuls les dossiers des lots 1 à 8 et 52 à 75 sont présents dans le dossier du projet.
 - `lot39-stl-import/fichiers-de-test.zip` : STL de test (cube, tour en texte, fichier tronqué, fichier vide, `.txt`).
 - `lot40-3mf-import/fichiers-de-test-3mf.zip` : 3MF de test (badge OrcaSlicer, ligne Bambu Studio, disposition, cube en pouces, et trois fichiers à refuser).
 - `lot42-zip-reader-cancel/fichiers-de-test-lot42.zip` : bombes zip à en-tête mensonger (3 Go réels, 1 ko ou 400 Mo annoncés), fichier avec bit 3 et fausse signature `PK\x07\x08`, gros 3MF pour tester Annuler.

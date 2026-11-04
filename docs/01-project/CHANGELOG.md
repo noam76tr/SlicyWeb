@@ -3003,7 +3003,7 @@ Release Type:
 Model Analysis
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-03
@@ -3035,6 +3035,34 @@ Date:
 
 - An object whose analysis failed (ANA_001) has no red triangles
 - A long label of a menu goes on two lines (View > Show Overhangs, like Tools > Recompute Analysis): width of the menus unchanged
+
+## Validation Result
+
+- Windows 11 (2026-11-04): corrected lot 82 on GitHub (f38651e, identical to the lot); npm run check:locales: 409 keys; npm run check:ipc: 28 channels; typecheck and lint without error; npm test: 366 tests passed, 1 skipped (link test); npm run test:e2e: 34 tests passed; manual controls 1 to 8 passed, with the choice Q1 B: the red stays after Escape (Noam)
+- Request of Noam: the Hebrew label analysis.overhangs of the Analysis section, as the button and the menu: done in 0.1.84
+
+---
+
+# VERSION 0.1.84
+
+Release Type:
+Model Analysis
+
+Status:
+In Progress
+
+Date:
+2026-11-04
+
+## Changed
+
+- public/locales/he.json: analysis.overhangs « אזורים תלויים » instead of « תליות », the same words as the button Overhangs and View > Show Overhangs (request of Noam, 2026-11-04)
+- PASSATION.md: lot 82 on main and validated, lot 83 (analysis of Phase 10 - Classification and Recommendation Engine, decisions in lot83-phase10-analyse/PHASE10-ANALYSE.md, outside the repository)
+- 0.1.83 Completed with the results of Noam
+
+## Known Limitations
+
+- No code changed for Phase 10 in this lot: the decisions of the analysis are waiting for the answers of Noam
 
 ---
 
