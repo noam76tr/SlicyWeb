@@ -607,6 +607,67 @@ Warning Generation
 
 ```
 
+Phase 10 (ADR-035; OBJECT_CLASSIFICATION_SPEC.md 1.2.0, RECOMMENDATION_RULES.md 1.1.0, PRINT_PRESETS_SPEC.md 1.3.0). Models built in the tests (no model file); printers, materials and filaments of data/ (shipped profiles):
+
+```text
+Classification (lot 85):
+  cube 20 mm: planar; no hole; unknown (confidence 0)
+  tower 20 x 20 x 100 mm: tall
+  sphere: curved, not hollow; figurine (65)
+  small sphere (diameter 20 mm): small and curved; miniature (70)
+  open vase (tall cylinder, open top, thin wall, with a bottom): vase (75)
+  open box (low, open top): container (70)
+  plate with holes: planar and holes; mechanical_part (65)
+  closed box (hollow, with a lid): not open_top; not container
+  mesh not closed: holes not computed
+  repeatable: the same mesh gives the same classification twice
+  category chosen by the user: source user, confidence 100, kept after a
+    new analysis (rotation, scale), detectedFeatures computed again
+  ClassificationValidator called; AnalysisSchema accepts a classification
+    without source (read as automatic)
+
+Presets (lot 86):
+  the 11 shipped presets are valid (PresetSchema, strict) and have the
+    values of Preset Values; a field fanSpeed or a support type organic is
+    refused; a file refused does not stop the other presets
+  preset:getAll returns the 11 presets
+
+Recommendation (lot 87):
+  Ultimaker S5 (maxPrintSpeed and maxTravelSpeed null) + Fast Prototype:
+    print speed at most 100 mm/s, travel at most 150 mm/s, VALUE_LIMITED
+    (test required by Noam)
+  printer with maxPrintSpeed published (as 500) + Balanced: print 150 mm/s,
+    no VALUE_LIMITED
+  printer with maxPrintSpeed 100 + Balanced: 100 mm/s and VALUE_LIMITED
+  TPU: print speed at most 30 mm/s, retraction distance divided by two
+  layer height: nozzle 0.2 mm gives at most 0.15 mm; always 0.08 to 0.28 mm
+  temperatures: Bambu PLA Basic 210 / 40 °C; Prusament PLA nozzle 210
+    (published); Polymaker PolyLite PLA bed 40 (middle 42.5); without a
+    filament, the middle of the range of the material; capped by the
+    printer (TEMPERATURE_UNSUPPORTED when the minimum is above it)
+  fan: published by the filament, otherwise PLA 90, PETG 50, ABS 15, ASA 15,
+    TPU 40
+  retraction: direct drive 0.8 mm 35 mm/s, bowden 5 mm 40 mm/s, unknown
+    (Bambu Lab) direct drive values with EXTRUDER_UNKNOWN
+  supports: maxAngle 60 no support, 61 supports (type of the preset); bridge
+    51 mm supports; Vase preset: no support, VASE_SUPPORTS_IGNORED
+  adhesion: brim for risk 41, for ABS and ASA, for a tall object; never raft
+  warnings: each code of Recommendation Warnings, one per code, most severe
+    first; a critical warning does not stop the recommendation
+  confidence: Official printer + material + filament, user category: 100;
+    no filament -15; mesh not closed -20; printer and filament of the user
+    -10 each; automatic unknown -20
+  no printer or no material: REC_002, no recommendation
+  RecommendationSchema: temperature required, filamentId null accepted,
+    supports {enabled, type}
+
+Interface (lot 88, end-to-end):
+  recommendation shown after the import once a printer and a material are
+    selected; outdated then generated again after a change of printer;
+    object type chosen by the user; "Details" folded by default; Tools >
+    Generate Recommendations
+```
+
 
 
 ---

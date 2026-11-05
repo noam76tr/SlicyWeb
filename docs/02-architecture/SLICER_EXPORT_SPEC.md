@@ -2,7 +2,7 @@
 
 # SLICER EXPORT SPECIFICATION
 
-Version: 1.0.0
+Version: 1.1.0
 
 Status: Draft
 
@@ -269,8 +269,9 @@ The current data model does not contain every value required by a target slicer.
 
 | Missing Value | Current Situation | Required Change |
 |---------------|-------------------|-----------------|
-| Nozzle temperature | Material contains only a range (minNozzle, maxNozzle) | Add a selected nozzle temperature to the recommended profile |
-| Bed temperature | Material contains only a range (minBed, maxBed) | Add a selected bed temperature to the recommended profile |
+| Nozzle temperature | Resolved (DATA_SCHEMA.md 3.10.0, ADR-035 D7): temperature.nozzle of the recommended profile | - |
+| Bed temperature | Resolved (DATA_SCHEMA.md 3.10.0, ADR-035 D7): temperature.bed of the recommended profile | - |
+| Vase mode | The Vase preset gives one wall, no top layer and no infill, but no field says "continuous spiral wall" (ADR-035 D5) | Add a vase mode value to the recommended profile (Phase 14) |
 | Z-Hop | Defined in PRINT_SETTINGS_SPEC.md, absent from RecommendedProfile | Add to RetractionSettings |
 | Ironing | Defined in PRINT_SETTINGS_SPEC.md, absent from RecommendedProfile | Add to the recommended profile |
 | Target slicer selection | Not stored | Add to the WYPROJ project data |
@@ -357,12 +358,12 @@ All entries below are currently Unverified.
 | retraction.distance | retraction_length | retract_length | retraction_amount | Unverified |
 | retraction.speed | retraction_speed | retract_speed | retraction_speed | Unverified |
 
-## Temperature (requires data model extension)
+## Temperature (temperature.nozzle, temperature.bed; DATA_SCHEMA.md 3.10.0)
 
 | SlicyWeb Setting | OrcaSlicer / Bambu Studio | PrusaSlicer | Cura | Status |
 |------------------|---------------------------|-------------|------|--------|
-| Nozzle temperature | nozzle_temperature | temperature | material_print_temperature | Unverified |
-| Bed temperature | Depends on plate type (one setting per plate type) | bed_temperature | material_bed_temperature | Unverified |
+| temperature.nozzle | nozzle_temperature | temperature | material_print_temperature | Unverified |
+| temperature.bed | Depends on plate type (one setting per plate type) | bed_temperature | material_bed_temperature | Unverified |
 
 ## Mapping Storage
 
@@ -430,7 +431,8 @@ Example (support type, Unverified):
 | none | enable_support = false | support_material = 0 | support_enable = false |
 | standard | normal | grid | normal |
 | tree | tree | organic | tree |
-| organic | tree (organic style) | organic | tree |
+
+Version 1.1.0 (ADR-035 D5, decision of Noam): tree is the only name of the tree supports in SlicyWeb (also called organic); the value organic is removed from the Support Type values (DATA_SCHEMA.md 3.10.0). The values of this table stay Unverified until Phase 14 (KI-012).
 
 An enumeration value without an explicit translation must not be guessed.
 

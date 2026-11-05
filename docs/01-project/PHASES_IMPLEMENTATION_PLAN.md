@@ -1675,6 +1675,36 @@ Repeatable Results
 
 Moved from Phase 9 (ADR-034 D1): the classification fills analysis.classification, null until then (DATA_SCHEMA.md 3.9.0); the recommendation needs it (REC_002 while it is null).
 
+Status: In Progress
+
+Decisions (ADR-035, decisions D1 to D13 of Noam, 2026-11-05; analysis of lot 83):
+
+- Scope: classification, choice of the object type by the user, presets, recommendation with the limits of the printer, the material and the filament, warnings, confidence, automatic start, interface; orientation (Phase 11), cost (Phase 12), saving (Phase 13), export and vase mode (Phase 14), manual preset and Custom preset (Phase 15) stay outside
+- Automatic classification from 10 measured features (OBJECT_CLASSIFICATION_SPEC.md 1.2.0): 5 categories (vase, container, miniature, figurine, mechanical_part), confidence at most 75, otherwise unknown (Balanced); file name not used
+- Object type chosen by the user for each object (classification.source, confidence 100), kept after a rotation or a scale
+- 11 presets in data/presets/, read by the main process, channel preset:getAll (29 channels); values of PRINT_PRESETS_SPEC.md 1.3.0; one name tree for the tree supports; no fan in the preset
+- Limits (KI-008): print speed at most the printer maximum, or 100 mm/s when it is not published; travel at most the printer maximum, or 150 mm/s when it is not published; TPU at most 30 mm/s; layer height at most 75 % of the nozzle; retraction by extruder type (RECOMMENDATION_RULES.md 1.1.0)
+- Temperatures {nozzle, bed} in the recommended profile (DATA_SCHEMA.md 3.10.0): published value, otherwise the middle of the range rounded to 5 °C, at most the printer maximum; fan of the filament or of the family
+- Supports above 60 degrees or a bridge above 50 mm (supports {enabled, type}); brim for unstable, tall, ABS or ASA objects
+- 13 warning codes, translated; a critical warning does not block; confidence 100 minus reductions (KI-010)
+- Automatic recommendation when the analysis is up to date and a printer and a material are selected (Object Reference Rule 11); Tools > Generate Recommendations and the button Generate
+- Recommendation section: object type, preset, warnings and confidence visible, the rest under "Details" (D12 option B); Print Preset section and status bar show the preset of the selected object
+- Deletions of the D13 table, each in its lot
+
+Order of the lots:
+
+- Lot 83: analysis (inventory, decisions D1 to D13)
+- Lot 84: documentation: ADR-035, DATA_SCHEMA.md 3.10.0, OBJECT_CLASSIFICATION_SPEC.md 1.2.0, PRINT_PRESETS_SPEC.md 1.3.0, RECOMMENDATION_RULES.md 1.1.0, SUPPORT_GENERATION_SPEC.md 1.1.0, GUI_SPEC.md, ERROR_CODES_SPEC.md 2.4.0, SLICER_EXPORT_SPEC.md 1.1.0, TEST_PLAN.md
+- Lot 85: classification in the Web Worker of the analysis (features, rules, ClassificationValidator), classification.source in the schemas; copies of src/optimization_engine/ removed
+- Lot 86: presets: 11 files in data/presets/, loading by the main process, preset:getAll; PresetSchema strict without fanSpeed, support types without organic; files of src/preset_engine/ and PresetService.ts removed
+- Lot 87: recommendation engine: limits, temperatures and cooling, retraction, supports and adhesion, warnings, confidence; RecommendationSchema with temperature, filamentId null and the Warning Schema; unit tests (with Ultimaker S5 and Fast Prototype: print speed at most 100 mm/s)
+- Lot 88: interface: automatic start (rule 11), Recommendation section with the object type, Print Preset section, status bar, Generate Recommendations and Generate, texts in three languages; RecommendationPanel.tsx and PresetPanel.tsx removed; end-to-end tests
+- Lot 89: closure of Phase 10 (controls on the models of Noam, thresholds of the classification adjusted if needed)
+
+Progress:
+
+- Analysis (lot 83, CHANGELOG 0.1.84) and documentation (lot 84, CHANGELOG 0.1.85): ADR-035, DATA_SCHEMA.md 3.10.0; no code of Phase 10 yet
+
 
 
 ---

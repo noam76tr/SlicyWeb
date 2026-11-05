@@ -2,7 +2,7 @@
 
 # SUPPORT GENERATION SPECIFICATION
 
-Version: 1.0.0
+Version: 1.1.0
 
 Status: Approved
 
@@ -231,6 +231,9 @@ Interface Supports
 Custom Supports (Future)
 
 ```
+
+Version 1.1.0 (ADR-035 D5, decision of Noam): Organic and Tree are one stored value, tree (DATA_SCHEMA.md 3.10.0, Support Type values); the translation per target slicer is done by the export (SLICER_EXPORT_SPEC.md, Enumerations). Phase 10 uses tree, standard or none; Interface Supports are not recommended in Phase 10. When supports are enabled: RECOMMENDATION_RULES.md 1.1.0, Supports And Adhesion (above 60 degrees, or a bridge above 50 mm).
+
 
 
 

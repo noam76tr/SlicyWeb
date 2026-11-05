@@ -2,7 +2,7 @@
 
 # OBJECT CLASSIFICATION SPECIFICATION
 
-Version: 1.1.0
+Version: 1.2.0
 
 Status: Approved
 
@@ -95,6 +95,8 @@ Never use file names alone.
 
 File names may assist classification but must never be considered authoritative.
 
+Version 1.2.0 (ADR-035 D2): the file name is not used. The automatic classification uses the geometry only (Automatic Classification below); the printer, the material and the filament are taken into account by the confidence of the recommendation (RECOMMENDATION_RULES.md 1.1.0, Confidence), not by the confidence of the classification.
+
 ---
 
 # Classification Output
@@ -107,6 +109,8 @@ File names may assist classification but must never be considered authoritative.
   "detectedFeatures": []
 }
 ```
+
+Stored form: DATA_SCHEMA.md 3.10.0, Object Classification Schema (with detectedTags, classificationVersion and source).
 
 ---
 
@@ -212,6 +216,8 @@ Reduced Speed
 
 Organic Supports
 ```
+
+Version 1.2.0: organic supports are stored as tree (DATA_SCHEMA.md 3.10.0, Support Type values).
 
 ---
 
@@ -587,6 +593,117 @@ Object Classification Uncertain
 
 ---
 
+# Automatic Classification
+
+Version 1.2.0 (DECISIONS.md, ADR-035 D2 and D3; decisions of Noam, 2026-11-05).
+
+The automatic classification detects only what the geometry can show. Several categories depend on the intended use of the object (a bracket, a tool, an enclosure, an articulated model, a prototype, a structural or functional part can have exactly the same shape): they are chosen by the user only (User Choice below).
+
+The classification is computed in the Web Worker of the analysis, at the same time as the analysis, on the object as placed on the build plate (DATA_SCHEMA.md, Analysis Rules). It is reproducible and deterministic: the same mesh, rotation and scale always give the same classification.
+
+---
+
+## Geometric Features
+
+Stored in classification.detectedFeatures, with these fixed lowercase names, in this order, each at most once.
+
+| Feature | Measure | Threshold |
+|---------|---------|-----------|
+| small | largest of dimensions.width, depth, height | at most 40 mm |
+| large | largest of dimensions.width, depth, height | at least 150 mm |
+| tall | dimensions.height divided by the smallest side of the base (smaller of width and depth) | at least 3 |
+| flat | the same ratio | at most 0.2 |
+| planar | planar share: area of the planar regions divided by geometry.surfaceArea | at least 70 % |
+| curved | the same planar share | at most 30 % |
+| holes | through holes: genus of the welded mesh | at least 1 |
+| hollow | geometry.volume divided by the volume of the convex hull of the mesh | at most 0.35 |
+| open_top | hollow open towards the top (definition below) | - |
+| thin_walls | thinWalls.detected of the analysis (below 0.8 mm) | - |
+
+Definitions:
+
+```text
+Planar region:
+  triangles joined by their edges whose normals differ by at most 1 degree
+  from the normal of the first triangle of the region; a region counts only
+  when its area is at least 1 % of geometry.surfaceArea
+  (a curved surface made of many small faces gives no planar region)
+
+Genus (holes):
+  computed on the welded mesh (vertices at the same position merged, as the
+  analysis): genus = (2 x C - (V - E + F)) / 2, with C connected parts,
+  V vertices, E edges, F triangles; holes when the genus is at least 1
+  not computed (holes absent) when the mesh is not closed (ANA_002)
+
+Convex hull (hollow):
+  the convex hull of the vertices of the placed object, in 3D;
+  hollow absent when the volume of the hull is 0
+
+open_top:
+  a vertical ray going down from above the object, at the center of its
+  bounding box seen from above, first meets a triangle facing up whose
+  height is below 50 % of dimensions.height (the inner bottom of a cup or
+  of a vase); absent when the ray meets no triangle, or first meets a face
+  higher than 50 % (a lid, a closed top)
+```
+
+---
+
+## Category Rules
+
+Checked in this order; the first rule that matches gives the category and its confidence.
+
+| Order | Category | Rule | Confidence |
+|-------|----------|------|------------|
+| 1 | vase | hollow and open_top and tall, without holes | 75 |
+| 2 | container | hollow and open_top | 70 |
+| 3 | miniature | small and curved | 70 |
+| 4 | figurine | curved, without hollow and without holes | 65 |
+| 5 | mechanical_part | planar and holes | 65 |
+| - | unknown | no rule matches | 0 |
+
+```text
+unknown: Balanced preset and warning CLASSIFICATION_UNCERTAIN
+  (Unknown Object Strategy; PRINT_PRESETS_SPEC.md, Default Preset)
+automatic confidence: never above 75 (High): the geometry alone does not
+  allow more certainty
+never chosen automatically: gear, bracket, enclosure, tool,
+  articulated_model, prototype, structural_part, decorative_object,
+  functional_part
+subcategory: "" ; detectedTags: [] (no list is defined)
+classificationVersion: "1.2.0"
+source: "automatic"
+```
+
+The thresholds and the confidences are a first setting. They are checked on models built in the tests (cube, tower, sphere, open vase, open box, plate with holes) and on the models of Noam during the manual controls, and can be adjusted before the closure of Phase 10 (a new version of this document).
+
+---
+
+## User Choice
+
+ADR-035 D3 (GUI_SPEC.md, Rule 7: the AI helps the user, it does not decide for them).
+
+```text
+Recommendation section, list "Object type":
+  "Automatic (<category>)" first: the automatic classification
+  then the 15 categories (Supported Categories)
+
+A category chosen by the user:
+  belongs to this object only
+  source = "user", confidenceScore = 100
+  detectedFeatures stay the measured features
+  is kept when the object is analyzed again (rotation, scale)
+  is not part of Undo / Redo
+  makes the recommendation of the object outdated, then generated again
+    (DATA_SCHEMA.md, Object Reference Rules, rule 11)
+
+Choosing "Automatic" again gives back the automatic classification
+  (source = "automatic").
+A duplicated object has no analysis and no classification (rule 7).
+```
+
+---
+
 # Geometry Indicators
 
 The AI should evaluate:
@@ -672,6 +789,8 @@ Vases
 ---
 
 # Classification Confidence
+
+Version 1.2.0: the confidence of an automatic classification is the confidence of its category rule (Category Rules); a category chosen by the user has the confidence 100. The verified profiles below are counted in the confidence of the recommendation (RECOMMENDATION_RULES.md 1.1.0, Confidence).
 
 Increase confidence when:
 

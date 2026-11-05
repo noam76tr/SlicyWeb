@@ -2,7 +2,7 @@
 
 # ARCHITECTURE DECISION MATRIX
 
-Version: 2.6.0
+Version: 2.7.0
 
 Status: Approved
 
@@ -182,6 +182,7 @@ Requires:
 | ADM-028 | Printer Profile Sources, Licences and Profile Repository | Printer Database | High | Approved |
 | ADM-029 | Material and Filament Profile Sources | Material Database | High | Approved |
 | ADM-030 | Model Analysis Definitions and Methods | Analysis | High | Approved |
+| ADM-031 | Classification and Recommendation Rules | Recommendation | High | Approved |
 
 ---
 
@@ -881,6 +882,31 @@ Benefits:
 
 - Each value defined and tested on built models
 - An analysis outdated only by a rotation or a scale (ADR-026)
+
+---
+
+ADM-031
+
+Title:
+
+Classification and Recommendation Rules
+
+Decision:
+
+Phase 10 classifies each object from measured geometric features (5 categories detected automatically, confidence at most 75, file name not used) and the user can choose the category of an object (classification.source); 11 presets shipped in data/presets/, read by the main process (preset:getAll), one name tree for the tree supports; the recommendation applies the limits of the printer, the material and the filament (100 mm/s print and 150 mm/s travel when the printer does not publish its speed), a nozzle and bed temperature, the fan of the filament or of the family, supports above 60 degrees or 50 mm of bridge, a brim for unstable, tall, ABS or ASA objects; 13 warning codes; confidence 100 minus reductions; generated automatically when the analysis is up to date and a printer and a material are selected (Object Reference Rule 11).
+
+Rationale:
+
+The documents gave words and ranges; every number proposed by the application must be written and validated (RECOMMENDATION_RULES.md, Golden Rule; GUI_SPEC.md, rule 7: the AI helps the user, it does not decide for them).
+
+Reference:
+
+ADR-035 (DECISIONS.md)
+
+Benefits:
+
+- Deterministic and explainable recommendations, tested printer by printer
+- KI-008 and KI-010 resolved by written rules
 
 ---
 

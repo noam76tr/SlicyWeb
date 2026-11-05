@@ -4,7 +4,7 @@
 
 
 
-Version: 1.2.0
+Version: 1.3.0
 
 
 
@@ -44,6 +44,10 @@ The AI Engine may select presets automatically.
 
 
 Users may also select presets manually.
+
+
+
+Version 1.3.0 (ADR-035 D1): in Phase 10, the preset is selected automatically only; the manual choice of a preset and the Custom preset come in Phase 15.
 
 
 
@@ -181,6 +185,8 @@ Custom
 
 ```
 
+Stored form (1.3.0): DATA_SCHEMA.md 3.10.0, Print Preset Schema and Preset Settings.
+
 
 
 ---
@@ -266,6 +272,8 @@ Supports:
 Organic
 
 ```
+
+Version 1.3.0: organic supports are stored as tree (Preset Values).
 
 
 
@@ -1281,6 +1289,69 @@ User Goal
 
 
 
+# Shipped Presets
+
+Version 1.3.0 (DECISIONS.md, ADR-035 D4 and D5; decisions of Noam, 2026-11-05).
+
+SlicyWeb ships 11 presets: one per preset category, except Custom (Phase 15). The values are written by SlicyWeb, not taken from a manufacturer or a slicer.
+
+```text
+Location: data/presets/, one JSON file per preset (as balanced.json)
+Format: Repository Data Schema envelope, type "preset", source "Official";
+  data is a Print Preset Schema (DATA_SCHEMA.md 3.10.0, Preset Settings)
+Loading: by the main process, validated with PresetSchema (strict), served
+  by the IPC channel preset:getAll; a file refused is not used
+  (the other presets stay available)
+No synchronization with the profile repository in Phase 10
+name: the English name of the category (as "Balanced"); the interface shows
+  the translation of the category (preset.<category>)
+confidenceScore: 100
+```
+
+---
+
+# Preset Values
+
+The layer height, walls and infill of 8 presets come from the Typical Settings of this document; the other values were proposed in lot 83 and validated by Noam (D5, corrected: one name for the tree supports).
+
+| Preset | Layer (mm) | Walls | Top | Bottom | Infill | Pattern | Support type | Adhesion | Print speed (mm/s) |
+|--------|------------|-------|-----|--------|--------|---------|--------------|----------|--------------------|
+| Ultra Quality | 0.08 | 3 | 10 | 8 | 10 % | gyroid | tree | skirt | 60 |
+| High Quality | 0.12 | 3 | 7 | 6 | 15 % | gyroid | tree | skirt | 100 |
+| Balanced | 0.20 | 3 | 5 | 4 | 15 % | gyroid | tree | skirt | 150 |
+| Draft | 0.28 | 2 | 4 | 3 | 5 % | lightning | standard | skirt | 200 |
+| Fast Prototype | 0.28 | 2 | 4 | 3 | 10 % | lightning | standard | skirt | 250 |
+| Functional | 0.20 | 4 | 6 | 5 | 25 % | gyroid | standard | skirt | 120 |
+| Structural | 0.20 | 5 | 7 | 6 | 50 % | cubic | standard | skirt | 80 |
+| Engineering | 0.16 | 4 | 7 | 6 | 35 % | cubic | standard | skirt | 80 |
+| Flexible | 0.20 | 3 | 5 | 4 | 15 % | gyroid | standard | skirt | 30 |
+| Miniature | 0.08 | 3 | 10 | 8 | 15 % | gyroid | tree | skirt | 40 |
+| Vase | 0.20 | 1 | 0 | 4 | 0 % | gyroid | none | skirt | 80 |
+
+Rules:
+
+```text
+Support type: the type used IF the geometry requires supports
+  (RECOMMENDATION_RULES.md 1.1.0, Supports And Adhesion); supportEnabled is
+  false for every preset: no preset enables supports by itself
+  (AI_ENGINE_SPEC.md: supports only when justified)
+tree: the only name of the tree supports (also called organic); the
+  translation per target slicer is done by the export (Phase 14, KI-012)
+Vase: never supports; the vase mode itself (continuous spiral wall) has no
+  field in the recommended profile (Known Issue, Phase 14)
+Fan: not a value of the preset (the field fanSpeed is removed); it comes
+  from the filament or the family of the material
+Flexible: not selected by the Classification To Preset Mapping in Phase 10;
+  a TPU filament is handled by the limits of the recommendation
+  (RECOMMENDATION_RULES.md 1.1.0, Limits); the preset is shipped for the
+  manual choice (Phase 15)
+Speeds in mm/s, then limited by the printer and the material
+  (RECOMMENDATION_RULES.md 1.1.0, Limits): a fast printer is slowed down to
+  the speed of the preset; reliability is never sacrificed to speed
+```
+
+---
+
 # Classification To Preset Mapping
 
 Each classification category (OBJECT_CLASSIFICATION_SPEC.md, Supported Categories) selects one preset category.
@@ -1351,6 +1422,8 @@ The recommended profile is initialized from preset.settings, then adjusted (Gold
 Values not defined by preset.settings keep the defaults of the recommendation engine.
 
 The outer wall, inner wall and infill speeds never exceed preset.settings.printSpeed. The travel speed is not limited by it.
+
+Engine defaults (1.3.0, ADR-035 D5): outer wall 40 mm/s, inner wall 80 mm/s, infill 120 mm/s (each at most printSpeed), travel 250 mm/s, minimum layer time 5 s. Then the limits, temperatures, cooling, retraction, supports and adhesion of RECOMMENDATION_RULES.md 1.1.0 are applied.
 
 The target slicer export uses the recommended profile values (DATA_SCHEMA.md, Recommended Profile Schema, Export Values).
 

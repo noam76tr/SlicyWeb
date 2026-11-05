@@ -3049,7 +3049,7 @@ Release Type:
 Model Analysis
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-04
@@ -3063,6 +3063,50 @@ Date:
 ## Known Limitations
 
 - No code changed for Phase 10 in this lot: the decisions of the analysis are waiting for the answers of Noam
+
+## Validation Result
+
+- Windows 11 (2026-11-05): lot 83 on GitHub (2359221, identical to the lot); npm run check:locales: 409 keys; « אזורים תלויים » shown in the Analysis section (Noam)
+- Answers of Noam to the decisions D1 to D13 of Phase 10 (2026-11-05): all A, except D5 A corrected (one name for the tree supports in every preset), D6 A corrected (print speed at most 100 mm/s when the printer does not publish maxPrintSpeed, with VALUE_LIMITED; a prudent travel speed when maxTravelSpeed is not published; test Ultimaker S5 + Fast Prototype) and D12 B (details folded): written in 0.1.85
+
+---
+
+# VERSION 0.1.85
+
+Release Type:
+Architecture Decision
+
+Status:
+In Progress
+
+Date:
+2026-11-05
+
+## Added
+
+- ADR-035 (DECISIONS.md) and ADM-031 (ARCHITECTURE_DECISION_MATRIX.md 2.7.0): classification and recommendation rules of Phase 10 (decisions D1 to D13 of Noam, 2026-11-05, analysis of lot 83): scope; automatic classification from 10 measured features, 5 categories, confidence at most 75, file name not used; object type chosen by the user (classification.source); 11 presets in data/presets/ read by the main process (preset:getAll); one name tree for the tree supports (correction of Noam); limits of the printer, the material and the filament (KI-008), 100 mm/s print and 150 mm/s travel when the printer does not publish its speed (correction of Noam; 150 mm/s proposed, to be confirmed); temperatures {nozzle, bed}; fan of the filament or of the family; supports above 60 degrees or 50 mm of bridge; brim; 13 warning codes; confidence 100 minus reductions (KI-010); automatic recommendation (Object Reference Rule 11); Recommendation section with "Details" folded (D12 B); table of deletions (D13)
+- DATA_SCHEMA.md 3.10.0: Object Classification Schema: source (automatic or user; read as automatic when absent) and Classification Rules (features, confidence, user choice kept after a new analysis); Repository Data Schema type preset; Print Preset Schema: Preset Settings (no fan value, strict); Support Schema {enabled, type} and Support Type values none, standard, tree (organic removed); Recommended Profile Schema: temperature {nozzle, bed}; Recommendation Rules (filamentId null when no filament, warnings with source recommendation); Object Reference Rule 11 (change of printer, material, filament or object type); recommendation warnings (message never shown, one per code); Known Duplication of the Recommended Settings Schema; Filament recommendedProfile not used by Phase 10
+- OBJECT_CLASSIFICATION_SPEC.md 1.2.0: Automatic Classification (Geometric Features with their thresholds and definitions, Category Rules, never chosen automatically), User Choice
+- PRINT_PRESETS_SPEC.md 1.3.0: Shipped Presets, Preset Values (11 presets, speeds in mm/s), engine defaults; Flexible not selected automatically in Phase 10
+- RECOMMENDATION_RULES.md 1.1.0: Rules Of Version 1.1.0 (inputs and order, Limits, Temperature And Cooling, Retraction, Supports And Adhesion, Recommendation Warnings, Confidence); overhang severity aligned on SUPPORT_GENERATION_SPEC.md
+
+## Changed
+
+- SUPPORT_GENERATION_SPEC.md 1.1.0: Organic and Tree are one stored value, tree
+- GUI_SPEC.md: Tools Menu and Toolbar Buttons (Generate Recommendations, Generate), Print Preset Section (display of the preset of the selected object), Recommendation Section (object type, preset, warnings, confidence; the rest under "Details"), Status Bar (Active Preset)
+- ERROR_CODES_SPEC.md 2.4.0: REC_001 (failure, in the section), REC_002 (information: no printer or no material, no classification, no Balanced preset, no fan value), REC_003 not used in Phase 10
+- SLICER_EXPORT_SPEC.md 1.1.0: nozzle and bed temperatures resolved (temperature.nozzle, temperature.bed); vase mode added to the Required Data Model Extensions; support type table without organic
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 10 In Progress, its decisions and the order of the lots 83 to 89
+- TEST_PLAN.md: Recommendation Engine Unit Tests (classification, presets, recommendation with the test Ultimaker S5 + Fast Prototype, interface)
+- PASSATION.md: lot 84, Phase 10 In Progress, versions of the documents, decision 84
+- 0.1.84 Completed with the results of Noam
+- KNOWN ISSUES: KI-008, KI-010, KI-011, KI-012 and KI-015 updated (rules written, resolved by lots 85 to 88); KI-029 added (vase mode)
+
+## Known Limitations
+
+- Documentation only: no code changed. The code follows DATA_SCHEMA.md 3.9.0 until the lot that implements each change: classification.source in lot 85; Preset Settings without fanSpeed and support types without organic in lot 86; temperature, filamentId null and the Warning Schema of the recommendation in lot 87
+- The travel speed of 150 mm/s for a printer that does not publish maxTravelSpeed (57 printers of 79) is a proposal waiting for the confirmation of Noam
+- The thresholds of the classification are a first setting, checked before the closure of Phase 10
 
 ---
 
@@ -3873,7 +3917,7 @@ Issue: The recommended profile is initialized from preset.settings and adjusted 
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
-Planned Resolution: With Technical Phase 10 (Classification and Recommendation Engine)
+Planned Resolution: With Technical Phase 10 (Classification and Recommendation Engine). Rules written in 0.1.85 (ADR-035 D6 and D7; RECOMMENDATION_RULES.md 1.1.0, Limits, Temperature And Cooling, Retraction); applied by the recommendation engine in lot 87.
 
 
 ---
@@ -3887,7 +3931,7 @@ Affected Module: src/recommendation_engine/DecisionEngine.ts, src/recommendation
 
 Issue: The confidenceScore of the recommendation is the confidenceScore of the preset only. It does not take the classification confidence (classification.confidenceScore) into account.
 
-Planned Resolution: Define the combination rule in RECOMMENDATION_RULES.md or AI_ENGINE_SPEC.md (decision required), then apply it.
+Planned Resolution: Define the combination rule in RECOMMENDATION_RULES.md or AI_ENGINE_SPEC.md (decision required), then apply it. Rule decided and written in 0.1.85 (ADR-035 D10; RECOMMENDATION_RULES.md 1.1.0, Confidence: 100 minus reductions, the confidence of the preset no longer used); applied in lot 87.
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
@@ -3903,7 +3947,7 @@ Affected Module: src/classification_engine/ClassificationValidator.ts, src/optim
 
 Issue: ClassificationValidator is not called anywhere since the validated field was removed (0.1.23). Since 0.1.81, AnalysisPanel is removed and AnalysisService no longer gives the confidence level: the classification and its confidence level are shown from Phase 10 (ADR-034 D1; ConfidenceScorer).
 
-Planned Resolution: Call ClassificationValidator in the classification workflow; show the classification and its confidence level when Phase 10 computes them.
+Planned Resolution: Call ClassificationValidator in the classification workflow; show the classification and its confidence level when Phase 10 computes them. Planned in 0.1.85 (ADR-035 D13): ClassificationValidator called by the classification (lot 85), the four copies of src/optimization_engine/ removed (lot 85), the confidence level shown in the Recommendation section (lot 88).
 
 Resolve Before: Technical Phase 10 - Classification and Recommendation Engine
 
@@ -3919,7 +3963,7 @@ Affected Module: docs/02-architecture/SLICER_EXPORT_SPEC.md, src/recommendation_
 
 Issue: The support type "organic" is forced when overhangs are detected and the preset has no supports. SLICER_EXPORT_SPEC.md has no value table for supports.type per target slicer (Value Conversion Rules, Enumerations); Cura has no "organic" support type (Cura equivalent: tree).
 
-Planned Resolution: Add the supports.type value table per target slicer to SLICER_EXPORT_SPEC.md (Cura: organic = tree).
+Planned Resolution: Add the supports.type value table per target slicer to SLICER_EXPORT_SPEC.md (Cura: organic = tree). Since 0.1.85 (ADR-035 D5 and D8, decision of Noam): one name, tree, for the tree supports (organic removed from the Support Type values); supports only above 60 degrees or a bridge above 50 mm, with the type of the preset (lot 87). The table of SLICER_EXPORT_SPEC.md 1.1.0 stays Unverified until Phase 14.
 
 Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
 
@@ -3937,7 +3981,7 @@ Issue: These components are not used by the interface of Phase 3, and some of th
 
 Resolve Before: the phase that displays each component (Phases 7 to 10 for the panels); Renderer.ts can be removed at any time. ViewportToolbar and ViewportStatus removed in 0.1.56 (replaced by the mode buttons over the viewport and the status bar); PrinterPanel removed in 0.1.62 (replaced by the Printer section of the Properties Panel); MaterialPanel and FilamentPanel removed in 0.1.72 (replaced by the Material and Filament sections); AnalysisPanel removed in 0.1.81 (replaced by the Analysis section)
 
-Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it.
+Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it. PresetPanel and RecommendationPanel: removed in lot 88, when the Print Preset and Recommendation sections are done (ADR-035 D13).
 
 
 ---
@@ -4067,6 +4111,22 @@ Resolve Before: Phase 16 - Production Validation and Release
 
 Planned Resolution: Update eslint, typescript-eslint and shadcn when their versions use minimatch 11.0.1 or later, then check npm audit. Never run npm audit fix --force.
 
+
+
+---
+
+
+Identifier: KI-029
+
+Since: 0.1.85
+
+Affected Module: DATA_SCHEMA.md (Recommended Profile Schema), docs/02-architecture/SLICER_EXPORT_SPEC.md
+
+Issue: The Vase preset gives one wall, no top layer and no infill (PRINT_PRESETS_SPEC.md 1.3.0), but the recommended profile has no field for the vase mode itself (continuous spiral wall: spiral_mode in OrcaSlicer and Bambu Studio, spiral_vase in PrusaSlicer, magic_spiralize in Cura, Unverified). The export cannot turn it on (ADR-035 D5).
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan)
+
+Planned Resolution: Add a vase mode value to the recommended profile (DATA_SCHEMA.md), set by the Vase preset, and map it in SLICER_EXPORT_SPEC.md.
 
 ---
 

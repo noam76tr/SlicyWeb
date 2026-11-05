@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.9.0
+Version: 3.10.0
 
 Status: Approved
 
@@ -282,7 +282,7 @@ data
 validated
 ```
 
-Types (3.7.0, ADR-032, ADR-033): "printer" (data is a Printer Schema), "material" (data is a Complete Material Schema) and "filament" (data is a Filament Schema). The files are written with validated false; the loader sets validated only after the schema validation.
+Types (3.7.0, ADR-032, ADR-033): "printer" (data is a Printer Schema), "material" (data is a Complete Material Schema) and "filament" (data is a Filament Schema). Type "preset" (3.10.0, ADR-035 D4): data is a Print Preset Schema; the presets are shipped in data/presets/ (source Official) and are not synchronized in Phase 10. The files are written with validated false; the loader sets validated only after the schema validation.
 
 Repository data must not be consumed when:
 
@@ -913,7 +913,7 @@ diameter in mm (1.75 or 2.85)
 density (g/cm3) and pricePerKg are numbers, or null when not published; pricePerKg of a shipped filament is null (it depends on the country and the seller), the user gives it for their own filaments; its currency is the one of the user preferences
 temperature has the structure of Material Thermal Properties: the ranges published by the manufacturer, in degrees Celsius; each value is a number, or null when not published; the four values are required (not null) for a shipped filament
 manufacturerSettings has exactly these five fields: retractionDistance (mm), retractionSpeed (mm/s), fanSpeed (percent), nozzleTemperature and bedTemperature (degrees Celsius); each is a single value published by the manufacturer, or null (a range only is kept in temperature, never turned into a single value)
-recommendedProfile stays {} until the recommendation engine (Phase 10) defines its content
+recommendedProfile stays {}: the recommendation of Phase 10 does not use it (ADR-035; the values of the filament come from temperature and manufacturerSettings)
 null means not published, never 0
 ```
 
@@ -1535,8 +1535,8 @@ thinWalls:
     RECOMMENDATION_RULES.md, Phase 10)
 
 classification:
-  null = not yet classified (Phase 10, Classification and Recommendation
-  Engine); otherwise the Object Classification Schema
+  null = not yet classified; otherwise the Object Classification Schema
+  (3.10.0, ADR-035): computed with the analysis, in the same Web Worker
 ```
 
 Known Duplication:
@@ -1561,7 +1561,8 @@ Compatibility: a WYPROJ 3.0.0 file whose analysis has a classification object st
     "confidenceScore": 0,
     "detectedFeatures": [],
     "detectedTags": [],
-    "classificationVersion": ""
+    "classificationVersion": "",
+    "source": "automatic"
   }
 }
 ```
@@ -1570,9 +1571,41 @@ category: stored value (Classification Categories).
 
 classificationVersion: version of OBJECT_CLASSIFICATION_SPEC.md applied by the classification.
 
+Classification Rules (3.10.0, DECISIONS.md, ADR-035 D2 and D3):
+
+```text
+source:
+  automatic = category and confidenceScore computed from the geometry
+              (OBJECT_CLASSIFICATION_SPEC.md 1.2.0, Category Rules)
+  user      = category chosen by the user for this object
+  a classification without source (WYPROJ 3.0.0 file written before 3.10.0)
+  is read as automatic
+
+confidenceScore:
+  automatic: the confidence of the rule that matched, at most 75;
+             0 for unknown
+  user: 100
+
+detectedFeatures:
+  the measured geometric features, whatever the source, with the names of
+  OBJECT_CLASSIFICATION_SPEC.md 1.2.0 (Geometric Features): small, large,
+  tall, flat, planar, curved, holes, hollow, open_top, thin_walls; each name
+  at most once, in this order
+
+subcategory: "" (no list of subcategories is defined)
+detectedTags: [] (no list of tags is defined)
+
+A category chosen by the user is kept when the analysis of the object is
+computed again (rotation, scale): only detectedFeatures is computed again.
+It is not part of Undo / Redo (UNDO_REDO_SPEC.md). A duplicated object has
+no analysis and no classification (Object Reference Rules, rule 7).
+```
+
+Compatibility: source is an added field; a WYPROJ 3.0.0 file stays valid, with or without it. No new version of the WYPROJ format.
+
 The confidence level is not stored. It is computed from confidenceScore (OBJECT_CLASSIFICATION_SPEC.md, Confidence Levels).
 
-Not yet classified (3.9.0, ADR-034): the classification of an analysis is null until the object is classified (Phase 10). recommendation.classification is the classification of the analysis used: a recommendation is not generated while the classification of the analysis is null (ERROR_CODES_SPEC.md, REC_002 Insufficient Data).
+Not yet classified (3.9.0, ADR-034): the classification of an analysis is null until the object is classified (from 3.10.0, the classification is computed with the analysis, ADR-035). recommendation.classification is the classification of the analysis used: a recommendation is not generated while the classification of the analysis is null (ERROR_CODES_SPEC.md, REC_002 Insufficient Data).
 
 
 ---
@@ -1624,7 +1657,7 @@ The category field contains the stored value.
 
    "infillPattern": "gyroid",
 
-   "supportType": "organic",
+   "supportType": "tree",
 
    "adhesionType": "brim"
 
@@ -1633,6 +1666,8 @@ The category field contains the stored value.
 }
 
 ```
+
+Known Duplication (3.10.0): the Recommended Settings Schema repeats values of the Recommended Profile Schema (quality, infill, supports, adhesion) in a flat form. No module uses it: the recommendation, the WYPROJ files and the export use the Recommended Profile Schema only. This duplication is known; the Recommended Settings Schema is kept until a decision removes it.
 
 ---
 
@@ -1652,6 +1687,40 @@ The category field contains the stored value.
 ```
 
 confidenceScore: 0 to 100 (PRINT_PRESETS_SPEC.md, Preset Structure).
+
+Preset Settings (3.10.0, ADR-035 D4 and D5):
+
+```json
+{
+  "settings": {
+    "layerHeight": 0.2,
+    "wallCount": 3,
+    "topLayers": 5,
+    "bottomLayers": 4,
+    "infillDensity": 15,
+    "infillPattern": "gyroid",
+    "supportEnabled": false,
+    "supportType": "tree",
+    "adhesionType": "skirt",
+    "printSpeed": 150
+  }
+}
+```
+
+```text
+layerHeight in mm; wallCount, topLayers, bottomLayers whole numbers;
+infillDensity percentage 0 to 100; printSpeed in mm/s
+infillPattern: gyroid, lightning or cubic for the shipped presets
+supportType: a Support Type value; it is used only when the geometry
+  requires supports (RECOMMENDATION_RULES.md 1.1.0); supportEnabled is false
+  for every shipped preset
+adhesionType: none, skirt, brim or raft
+no fan value: the fan comes from the filament or the material
+  (RECOMMENDATION_RULES.md 1.1.0, Temperature And Cooling)
+no other field is accepted (PresetSchema, strict)
+values of the shipped presets: PRINT_PRESETS_SPEC.md 1.3.0, Preset Values;
+their confidenceScore is 100
+```
 
 ---
 
@@ -1773,13 +1842,26 @@ A display name is converted to its stored value by writing it in lowercase and r
 ```json
 {
   "supports": {
-    "required": false,
-    "type": "",
-    "density": 0,
-    "overhangThreshold": 50
+    "enabled": false,
+    "type": "tree"
   }
 }
 ```
+
+Support Type values (3.10.0, ADR-035 D5 and D8):
+
+```text
+none      = no support
+standard  = standard (grid or normal) supports
+tree      = tree supports; the only name of the tree supports, also called
+            organic supports (SUPPORT_GENERATION_SPEC.md 1.1.0); the
+            translation per target slicer is done by the export
+            (SLICER_EXPORT_SPEC.md, Enumerations)
+```
+
+enabled: true when the geometry requires supports (RECOMMENDATION_RULES.md 1.1.0, Supports And Adhesion). type: the supportType of the preset; none when enabled is false and the preset has no support type.
+
+Compatibility (3.10.0, ADR-035 D8): the fields required, density and overhangThreshold were never written by the application and never accepted by the validation of the recommendations (RecommendationSchema validated enabled and type); the value organic was never produced in a file (no recommendation was ever generated before Phase 10). The schema follows the code; no new version of the WYPROJ format.
 
 ---
 
@@ -1796,12 +1878,28 @@ A display name is converted to its stored value by writing it in lowercase and r
     "retraction": {},
     "supports": {},
     "adhesion": {},
+    "temperature": {},
     "infillDensity": 0,
     "infillPattern": "",
     "confidenceScore": 0
   }
 }
 ```
+
+Temperature Settings (3.10.0, ADR-035 D7):
+
+```json
+{
+  "temperature": {
+    "nozzle": 210,
+    "bed": 40
+  }
+}
+```
+
+nozzle and bed: degrees Celsius, whole numbers, chosen by the recommendation (RECOMMENDATION_RULES.md 1.1.0, Temperature And Cooling). Both are required. They replace the missing values Nozzle temperature and Bed temperature of SLICER_EXPORT_SPEC.md (Required Data Model Extensions).
+
+adhesion: none, skirt, brim or raft.
 
 Infill Settings:
 
@@ -1847,7 +1945,20 @@ Recommendation Status Values:
 ```text
 generated = Generated from the current analysis of the object
 
-outdated = The analysis of the object is outdated or was recomputed; must be regenerated
+outdated = The analysis of the object is outdated or was recomputed, or the printer, the material, the filament or the category chosen for the object changed (Object Reference Rules, rules 9 and 11); must be regenerated
+```
+
+Recommendation Rules (3.10.0, ADR-035 D9 and D11):
+
+```text
+printerId, materialId: required; no recommendation is generated without a
+  selected printer and a selected material (REC_002)
+filamentId: the selected filament, or null when no filament is selected
+  (the confidence is reduced, RECOMMENDATION_RULES.md 1.1.0)
+classification: the classification of the analysis used (never null)
+warnings: Warning Schema; source "recommendation"
+confidenceScore: RECOMMENDATION_RULES.md 1.1.0, Confidence; equal to
+  recommendedProfile.confidenceScore
 ```
 
 
@@ -1880,6 +1991,8 @@ Reference: ADR-026
 9. When the analysis of an object becomes outdated or is recomputed, the recommendation of the same object becomes outdated. A recomputed analysis keeps the analysisId of the object, so that rule 5 remains satisfied.
 
 10. An outdated analysis or recommendation must be recomputed before any export. Export is blocked for an object whose recommendation is missing or outdated (SLICER_EXPORT_SPEC.md, error EXP_003).
+
+11. Selection Change (3.10.0, ADR-035 D11): when the selected printer, material or filament changes, the recommendations of all the objects become outdated; when the category chosen for an object changes (classification.source), the recommendation of this object becomes outdated. They are generated again at once when an analysis up to date, a printer and a material exist; otherwise they stay outdated. The analyses do not change.
 ```
 
 
@@ -1906,6 +2019,7 @@ Reference: ADR-026
 
 ```
 
+Recommendation warnings (3.10.0, ADR-035 D9): code is a code of RECOMMENDATION_RULES.md 1.1.0 (Recommendation Warnings); message is an English reference text, never shown (the interface shows the translation of the code); source is "recommendation"; recommendedAction is "" (no list of actions is defined). A code appears at most once in a recommendation.
 
 ---
 

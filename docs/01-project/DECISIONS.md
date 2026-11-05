@@ -2607,6 +2607,95 @@ Reason:
 
 ---
 
+# ADR-035
+
+Title: Classification and Recommendation Rules
+
+Status: Accepted
+
+Date: 2026-11-05
+
+## Context
+
+Phase 10 (Classification and Recommendation Engine) classifies each object and recommends its print settings. The documents describe the categories with words ("Organic Shapes", "Open Top") and the settings with ranges or words ("Slow", "Reduce Speed"), rarely with a number. The code of src/classification_engine/ looks for keywords that nothing produces; no print preset exists (data/presets/ is empty); the recommendation ignores the printer, the material and the filament (KI-008); its confidence is the confidence of the preset only (KI-010); the recommended profile has no temperature (SLICER_EXPORT_SPEC.md, Required Data Model Extensions); the Support Schema of DATA_SCHEMA.md ({required, type, density, overhangThreshold}) differs from the code ({enabled, type}). Every number that the application proposes must therefore be written in the documentation and validated. Analysis: lot 83 (PHASE10-ANALYSE.md), decisions D1 to D13 of Noam (2026-11-05).
+
+## Decision
+
+- Scope (D1): Phase 10 contains the automatic classification with a choice of the user, the presets, the recommendation with the limits of the printer, the material and the filament, the warnings, the confidence, the automatic start and the interface. Out of Phase 10: orientation and optimization (Phase 11), cost (Phase 12), saving in a project (Phase 13), export, vase mode and values per target slicer (Phase 14, KI-012), manual choice of a preset, Custom preset, editing of the recommended values, preset library (Phase 15), HTTP API Generate Recommendation (KI-007 stays open).
+- Automatic classification (D2): only what the geometry can show. Ten measured features with fixed lowercase names (small, large, tall, flat, planar, curved, holes, hollow, open_top, thin_walls), computed in the Web Worker of the analysis, with the thresholds of OBJECT_CLASSIFICATION_SPEC.md 1.2.0 (Geometric Features). Five category rules, the first that matches wins: vase (75), container (70), miniature (70), figurine (65), mechanical_part (65); otherwise unknown (0, Balanced preset, CLASSIFICATION_UNCERTAIN). The other nine categories are never chosen automatically. The automatic confidence never exceeds 75. The file name is not used. subcategory stays "" and detectedTags stays []. The thresholds are a first setting, checked on models built in the tests and on the models of Noam, and can be adjusted before the closure of Phase 10.
+- Choice of the user (D3): in the Recommendation section, a list "Object type": "Automatic (category)" first, then the 15 categories. The choice belongs to each object and gives a confidence of 100. New field classification.source ("automatic" or "user", DATA_SCHEMA.md 3.10.0); a WYPROJ 3.0.0 file without it is read as "automatic"; no new version of the WYPROJ format. The choice is kept when the object is analyzed again (rotation, scale): the type of an object does not depend on its orientation. It is not part of Undo / Redo (transforms only, UNDO_REDO_SPEC.md). A duplicated object has neither analysis nor choice (Object Reference Rules, rule 7).
+- Presets (D4): 11 presets shipped in data/presets/ (one JSON file each, Repository Data Schema envelope, type preset, source Official), read and validated by the main process (PresetSchema, strict), served by a new IPC channel preset:getAll (29 channels). Same path as the materials (ADR-033). No synchronization with slicyweb-profiles in Phase 10; no Custom preset and no preset of the user (Phase 15).
+- Values of the presets (D5, corrected by Noam): the table of PRINT_PRESETS_SPEC.md 1.3.0 (Preset Values), speeds in mm/s. One single name for the tree supports in every preset: tree (Cura name); the value organic is removed from the support types (the translation per target slicer stays in Phase 14, KI-012). No preset enables supports by itself: the type is used only when the geometry requires supports (D8). The fan is no longer a value of the preset: the field fanSpeed of the preset settings is removed (it comes from the filament or the material, D7). Wall and infill speeds stay 40, 80 and 120 mm/s, never above the print speed of the preset; travel 250 mm/s. The confidenceScore of the shipped presets is 100 and is no longer part of the confidence of the recommendation (D10). The vase mode itself (continuous spiral wall) has no field in the recommended profile: Known Issue for Phase 14.
+- Limits (D6, corrected by Noam; KI-008): after the preset and the geometry: print speed at most maxPrintSpeed of the printer, or at most 100 mm/s when maxPrintSpeed is null (15 printers of 79, among them Ultimaker S5, S6, S7, Prusa MINI+, Raise3D Pro3, Flashforge Adventurer 5M); travel speed at most maxTravelSpeed, or at most 150 mm/s when it is null (prudent value proposed in lot 84, to be confirmed by Noam); family TPU: print speed at most 30 mm/s; layer height at most 75 % of the default nozzle of the printer and between 0.08 and 0.28 mm; temperatures at most those of the printer (D7); retraction by extruder type: direct drive 0.8 mm at 35 mm/s, bowden 5 mm at 40 mm/s, unknown type (24 printers, among them every Bambu Lab printer) the direct drive values with the warning EXTRUDER_UNKNOWN; TPU: distance divided by two; a value published by the manufacturer of the filament always comes first. A value lowered by a limit gives the warning VALUE_LIMITED when it changes by at least 10 %; the two limits of a null printer value (100 and 150 mm/s) always give it when they lower the value.
+- Temperatures and cooling (D7): new field temperature {nozzle, bed} in the Recommended Profile Schema (DATA_SCHEMA.md 3.10.0). Value: the one published by the manufacturer of the filament; otherwise the middle of the range of the filament, rounded to 5 °C; without a filament, the middle of the range of the material; always at most the maximum temperature of the printer. Fan: the value published by the manufacturer of the filament; otherwise the rule of the family (RECOMMENDATION_RULES.md): PLA 90 %, PETG 50 %, ABS 15 %, ASA 15 %, TPU 40 %. Minimum layer time 5 s. These values are a choice of the recommendation, shown as such; the rule of lot 69 (no value taken in the middle of a range) applies to the data of the filaments, not to the recommendation.
+- Supports and adhesion (D8): DATA_SCHEMA.md 3.10.0 follows the code: supports {enabled, type}. Supports enabled when the largest overhang angle is above 60 degrees or the longest bridge above 50 mm; type of the preset; never with the Vase preset (warning VASE_SUPPORTS_IGNORED). Adhesion: skirt by default; brim when the tip risk is at least 41 (Moderate), when the family is ABS or ASA, or when the object is tall; never a raft in Phase 10.
+- Warnings (D9): the table of RECOMMENDATION_RULES.md 1.1.0 (Recommendation Warnings): 13 codes. The interface shows the translated text of the code (warning.<CODE>, three languages); the stored message keeps an English reference text, never shown; source "recommendation"; recommendedAction "". A critical warning does not block the recommendation: it is shown first, in red; nothing is blocked before the export (Phase 14).
+- Confidence (D10; KI-010): 100 minus the reductions of RECOMMENDATION_RULES.md 1.1.0 (no filament -15, incomplete analysis -20, printer or filament of the user (Local Custom) -10 each, automatic classification Low -10 or Unknown -20), limited to 0 and 100; levels Excellent, High, Moderate, Low, Very Low. The confidence of the preset is no longer used.
+- Start (D11): automatic, as the analysis: as soon as the analysis of an object is up to date and a printer and a material are selected. The filament is optional (filamentId null, DATA_SCHEMA.md 3.10.0). Immediate computation (rules only), without a Web Worker. New Object Reference Rule 11: a change of the printer, the material, the filament, or of the category chosen for an object makes the recommendations concerned outdated, then they are generated again at once. Without a printer or a material: no recommendation; the section shows "Select a printer and a material" (REC_002, no message over the viewport). Tools > Generate Recommendations and the toolbar button Generate generate again the recommendations of the selected objects (all the objects when none is selected).
+- Interface (D12, option B): Recommendation section, one selected object: object type, preset, warnings and confidence visible; quality, infill, supports, adhesion, temperatures, cooling, speeds and retraction folded under "Details" (GUI_SPEC.md, Recommendation Section). Read-only values. Print Preset section and status bar (Active Preset): the preset of the selected object, "—" otherwise.
+- Unused files (D13): the table of PHASE10-ANALYSE.md (D13) is validated; each deletion is made in the lot given and recalled in its LOTN.md: CategoryDetector, ConfidenceScorer and ClassificationEngine (src/classification_engine/) rewritten under the same names, ConfidenceScorer.isReliable removed, ClassificationValidator kept and called (KI-011); the four copies of src/optimization_engine/ removed (decision 5 of 2026-10-13 changed); DecisionEngine.shouldRecommend, calculateScore, getRecommendationLevel and WarningEngine.hasWarnings, getWarningCount removed; PresetSelector.ts removed; PresetManager.ts, PresetRepository.ts, PresetValidator.ts and src/services/PresetService.ts replaced by the loading of the presets and removed; RecommendationPanel.tsx and PresetPanel.tsx removed when the sections are done; field fanSpeed of PrintPreset removed. Any other removal is asked first.
+
+## Consequences
+
+Advantages:
+
+- Every number proposed by the application is written in the documentation and validated
+- The recommendation respects the printer, the material and the filament (KI-008), with a prudent value when the printer does not publish a speed
+- The user can correct the type of an object, the information the application cannot guess
+- The recommended profile contains the temperatures, the most important setting for the user
+
+Disadvantages:
+
+- Nine categories of fifteen are never detected automatically
+- The thresholds of the classification are a first setting
+- Many printers do not publish their travel speed: their travel is limited to the prudent value, with a warning
+
+## Alternatives Considered
+
+File name used as a hint of the category (D2, option B)
+
+Rejected
+
+Reason:
+
+- A name is often unrelated to the content; the classification must stay geometric and explainable
+
+Speeds as a percentage of the maximum speed of the printer (D5, option B)
+
+Rejected
+
+Reason:
+
+- The published maximums are commercial values, and 15 printers publish none
+
+Support Schema {required, type, density, overhangThreshold} kept (D8, option B)
+
+Rejected
+
+Reason:
+
+- density and overhangThreshold have neither definition nor equivalent in the target slicers
+
+A critical warning blocks the recommendation (D9, option B)
+
+Rejected
+
+Reason:
+
+- The user must see the settings and the problem together; the export (Phase 14) stays the place where an object is blocked
+
+## Related Documents
+
+- DATA_SCHEMA.md 3.10.0 (Object Classification Schema, Print Preset Schema, Support Schema, Recommended Profile Schema, Recommendation Schema, Object Reference Rules)
+- OBJECT_CLASSIFICATION_SPEC.md 1.2.0, PRINT_PRESETS_SPEC.md 1.3.0, RECOMMENDATION_RULES.md 1.1.0, SUPPORT_GENERATION_SPEC.md 1.1.0
+- GUI_SPEC.md (Tools Menu, Toolbar Buttons, Print Preset Section, Recommendation Section, Status Bar)
+- ERROR_CODES_SPEC.md (Recommendation Errors), SLICER_EXPORT_SPEC.md (Required Data Model Extensions, Enumerations)
+- PHASES_IMPLEMENTATION_PLAN.md (Phase 10), TEST_PLAN.md (Classification and Recommendation Engine Unit Tests)
+- ADR-026, ADR-032, ADR-033, ADR-034
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-031)
+
+---
+
 # Future Decision Template
 
 Copy and complete:
