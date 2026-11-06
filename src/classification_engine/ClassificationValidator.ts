@@ -6,7 +6,11 @@
  * - Classification validation
  * - Category validation
  * - Confidence validation
- * - Feature validation
+ * - Feature validation (names, order and uniqueness of the geometric
+ *   features, OBJECT_CLASSIFICATION_SPEC.md 1.2.0)
+ * - Source validation (DATA_SCHEMA.md 3.10.0)
+ *
+ * Called by ClassificationEngine for every classification (KI-011).
  *
  * No business logic.
  * No AI logic.
@@ -15,13 +19,19 @@
  * Based on:
  * - ARCHITECTURE.md
  * - AI_ENGINE_SPEC.md
- * - OBJECT_CLASSIFICATION_SPEC.md
+ * - OBJECT_CLASSIFICATION_SPEC.md (1.2.0: Geometric Features)
+ * - DATA_SCHEMA.md (3.10.0: Classification Rules)
  */
 
-import { CLASSIFICATION_CATEGORIES } from "../constants/AnalysisConstants";
+import {
+  CLASSIFICATION_CATEGORIES,
+  CLASSIFICATION_SOURCES,
+  GEOMETRIC_FEATURES,
+} from "../constants/AnalysisConstants";
 import type {
   Classification,
   ClassificationCategory,
+  ClassificationSource,
   ConfidenceLevel,
 } from "../types/Classification";
 
@@ -58,13 +68,52 @@ export class ClassificationValidator {
       this.validateConfidenceScore(
         classification.confidenceScore,
       ) &&
-      this.validateFeatures(
+      this.validateDetectedFeatures(
         classification.detectedFeatures,
       ) &&
       this.validateFeatures(
         classification.detectedTags,
+      ) &&
+      this.validateSource(
+        classification.source,
       )
     );
+  }
+
+  /**
+   * Validates the source of the category.
+   */
+  public static validateSource(
+    source: ClassificationSource,
+  ): boolean {
+    return CLASSIFICATION_SOURCES.includes(source);
+  }
+
+  /**
+   * Validates the measured geometric features: known names, each at most
+   * once, in the order of OBJECT_CLASSIFICATION_SPEC.md 1.2.0.
+   */
+  public static validateDetectedFeatures(
+    features: string[],
+  ): boolean {
+    if (!this.validateFeatures(features)) {
+      return false;
+    }
+
+    const order: readonly string[] = GEOMETRIC_FEATURES;
+    let previous = -1;
+
+    for (const feature of features) {
+      const position = order.indexOf(feature);
+
+      if (position <= previous) {
+        return false;
+      }
+
+      previous = position;
+    }
+
+    return true;
   }
 
   /**

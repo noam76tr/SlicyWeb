@@ -1683,7 +1683,7 @@ Decisions (ADR-035, decisions D1 to D13 of Noam, 2026-11-05; analysis of lot 83)
 - Automatic classification from 10 measured features (OBJECT_CLASSIFICATION_SPEC.md 1.2.0): 5 categories (vase, container, miniature, figurine, mechanical_part), confidence at most 75, otherwise unknown (Balanced); file name not used
 - Object type chosen by the user for each object (classification.source, confidence 100), kept after a rotation or a scale
 - 11 presets in data/presets/, read by the main process, channel preset:getAll (29 channels); values of PRINT_PRESETS_SPEC.md 1.3.0; one name tree for the tree supports; no fan in the preset
-- Limits (KI-008): print speed at most the printer maximum, or 100 mm/s when it is not published; travel at most the printer maximum, or 150 mm/s when it is not published; TPU at most 30 mm/s; layer height at most 75 % of the nozzle; retraction by extruder type (RECOMMENDATION_RULES.md 1.1.0)
+- Limits (KI-008): print speed at most the printer maximum, or 100 mm/s when it is not published; travel at most the printer maximum, or 150 mm/s when it is not published (without warning, answer C of Noam); TPU at most 30 mm/s; layer height at most 75 % of the nozzle; retraction by extruder type (RECOMMENDATION_RULES.md 1.1.0)
 - Temperatures {nozzle, bed} in the recommended profile (DATA_SCHEMA.md 3.10.0): published value, otherwise the middle of the range rounded to 5 °C, at most the printer maximum; fan of the filament or of the family
 - Supports above 60 degrees or a bridge above 50 mm (supports {enabled, type}); brim for unstable, tall, ABS or ASA objects
 - 13 warning codes, translated; a critical warning does not block; confidence 100 minus reductions (KI-010)
@@ -1703,7 +1703,8 @@ Order of the lots:
 
 Progress:
 
-- Analysis (lot 83, CHANGELOG 0.1.84) and documentation (lot 84, CHANGELOG 0.1.85): ADR-035, DATA_SCHEMA.md 3.10.0; no code of Phase 10 yet
+- Analysis (lot 83, CHANGELOG 0.1.84) and documentation (lot 84, CHANGELOG 0.1.85): ADR-035, DATA_SCHEMA.md 3.10.0
+- Classification (lot 85, CHANGELOG 0.1.86): computed in the Web Worker of the analysis, open_top with the walls around the bottom (OBJECT_CLASSIFICATION_SPEC.md 1.2.1); travel without warning when maxTravelSpeed is null (RECOMMENDATION_RULES.md 1.1.1)
 
 
 

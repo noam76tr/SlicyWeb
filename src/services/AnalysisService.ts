@@ -24,7 +24,10 @@
  *   again later if needed;
  * - the result is the Complete Analysis Schema (DATA_SCHEMA.md 3.9.0):
  *   analysisId kept at each computation (Object Reference Rule 5),
- *   status "generated", classification null until Phase 10 (ADR-034 D1);
+ *   status "generated", classification computed in the same Web Worker
+ *   (Phase 10 lot 85, DATA_SCHEMA.md 3.10.0); a category chosen by the
+ *   user for the object is kept, with the features just measured
+ *   (ClassificationEngine.keepUserChoice);
  * - a failure (ANA_001: mesh empty or unreadable, computation failed,
  *   result refused by AnalysisSchema) shows the message ANA_001; no
  *   analysis is stored (an outdated analysis stays outdated) and the
@@ -41,17 +44,19 @@
  * published in analysisTaskStore for the GUI.
  *
  * Domain: Service. Depends on the Analysis Domain (AnalysisRunner), the
- * Scene Domain (GeometryRegistry), the Validation Domain (AnalysisSchema)
- * and State Management (DOMAINS_DEPENDENCY_MATRIX.md).
+ * Classification Domain (ClassificationEngine), the Scene Domain
+ * (GeometryRegistry), the Validation Domain (AnalysisSchema) and State
+ * Management (DOMAINS_DEPENDENCY_MATRIX.md).
  *
  * Based on:
  * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules,
- *   Object Reference Rules)
- * - DECISIONS.md (ADR-034 D1, D2, D6, D7, D9)
+ *   Object Reference Rules; 3.10.0: Classification Rules)
+ * - DECISIONS.md (ADR-034 D1, D2, D6, D7, D9; ADR-035 D2, D3)
  * - ERROR_CODES_SPEC.md (ANA_001, ANA_002)
  * - GUI_SPEC.md (Tools Menu, Analysis Section, Status Bar)
  */
 
+import { ClassificationEngine } from "../classification_engine/ClassificationEngine";
 import { AnalysisCancelledError } from "../model_analysis/AnalysisError";
 import { runModelAnalysis } from "../model_analysis/AnalysisRunner";
 import type { AnalysisTransform } from "../model_analysis/MeshAnalyzer";
@@ -345,7 +350,12 @@ export function createAnalysisService(
       overhangs: result.overhangs,
       bridges: result.bridges,
       thinWalls: result.thinWalls,
-      classification: null,
+      classification: result.classification
+        ? ClassificationEngine.keepUserChoice(
+            previous?.classification,
+            result.classification,
+          )
+        : null,
     };
 
     const checked = AnalysisSchema.safeParse(analysis);

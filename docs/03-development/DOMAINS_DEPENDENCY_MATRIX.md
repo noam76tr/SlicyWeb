@@ -296,7 +296,7 @@ The Service Domain triggers the import (ImportService, ADR-029); the GUI calls I
 
 The Service Domain changes the transform of the objects (TransformService, Phase 6): it uses the geometry and the meaning of the transform of the Scene Domain (GeometryRegistry, ObjectTransform, ADR-031); the GUI calls TransformService.
 
-The Service Domain starts the model analysis (AnalysisService, Phase 9, ADR-034 D7): it reads the geometry of the Scene Domain (GeometryRegistry), runs the Analysis Domain in its Web Worker (AnalysisRunner), validates the result (AnalysisSchema) and stores it (State Management); it waits for the end of a gesture of TransformService. The GUI calls AnalysisService (Tools menu).
+The Service Domain starts the model analysis (AnalysisService, Phase 9, ADR-034 D7): it reads the geometry of the Scene Domain (GeometryRegistry), runs the Analysis Domain in its Web Worker (AnalysisRunner), validates the result (AnalysisSchema) and stores it (State Management); it waits for the end of a gesture of TransformService. The GUI calls AnalysisService (Tools menu). Since Phase 10 (lot 85, ADR-035 D2), the result contains the classification; AnalysisService keeps a category chosen by the user through the Classification Domain (ClassificationEngine.keepUserChoice).
 
 Cannot Depend On:
 
@@ -427,6 +427,10 @@ Deterministic
 Reproducible
 Testable
 ```
+
+---
+
+Analysis Worker (Phase 10 lot 85, ADR-035 D2; DATA_SCHEMA.md 3.10.0: the classification is computed with the analysis, in the same Web Worker): the entry file of the worker (src/model_analysis/workers/modelAnalysis.worker.ts) joins the two domains. It gives the classifier of the Classification Domain (ClassificationEngine.classifyModel) to the Analysis Domain (ModelAnalyzer.runAnalysisRequest), which calls it on the placed mesh. The modules of the Analysis Domain never import the Classification Domain; the Classification Domain depends on the Analysis Domain (types of the placed mesh and of the result).
 
 ---
 

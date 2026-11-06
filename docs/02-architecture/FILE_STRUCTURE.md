@@ -669,7 +669,8 @@ src/classification_engine/
 ├── ClassificationEngine.ts
 ├── CategoryDetector.ts
 ├── ConfidenceScorer.ts
-└── ClassificationValidator.ts
+├── ClassificationValidator.ts
+└── FeatureDetector.ts
 ```
 ---
 

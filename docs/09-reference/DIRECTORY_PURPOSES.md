@@ -582,10 +582,6 @@ Every file should be placed in the directory that matches its responsibility.
 
 | File | Role |
 |------|------|
-| `CategoryDetector.ts` | Detects the object category from the extracted features |
-| `ClassificationEngine.ts` | Orchestrates the complete classification process |
-| `ClassificationValidator.ts` | Validates Classification objects and data consistency |
-| `ConfidenceScorer.ts` | Calculates and normalizes confidence scores and levels |
 | `MaterialOptimizer.ts` | Optimizes profiles to reduce material consumption |
 | `OptimizationEngine.ts` | Orchestrates all optimizers to produce a complete result |
 | `OrientationOptimizer.ts` | Evaluates and optimizes the print orientation |
@@ -594,13 +590,7 @@ Every file should be placed in the directory that matches its responsibility.
 
 **Note:**
 
-CategoryDetector.ts, ClassificationEngine.ts, ClassificationValidator.ts and ConfidenceScorer.ts have the same class names and roles as the files in src/classification_engine/, with different implementations. They are not used by OptimizationEngine.ts.
-
-Until the project owner decides otherwise:
-
-- Do not delete, move or merge them
-- Do not import them from other domains
-- Object classification uses src/classification_engine/ (AI_ENGINE_SPEC.md)
+The four copies of the classification files (CategoryDetector.ts, ClassificationEngine.ts, ClassificationValidator.ts, ConfidenceScorer.ts), never used, were removed in Phase 10 lot 85 (ADR-035 D13, decision of Noam of 2026-11-05 changing the decision of 2026-10-13). Object classification uses src/classification_engine/ (AI_ENGINE_SPEC.md).
 
 ---
 
@@ -816,10 +806,11 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 
 | File | Role |
 |------|------|
-| `CategoryDetector.ts` | Detects the category from the extracted features |
-| `ClassificationEngine.ts` | Orchestrates the complete classification process |
-| `ClassificationValidator.ts` | Validates Classification objects and data consistency |
-| `ConfidenceScorer.ts` | Calculates and normalizes confidence scores and levels |
+| `CategoryDetector.ts` | Category of the first rule that matches the measured features (OBJECT_CLASSIFICATION_SPEC.md 1.2.1, Category Rules) |
+| `ClassificationEngine.ts` | Orchestrates the classification: features, category, confidence, validation; keeps a category chosen by the user after a new analysis |
+| `ClassificationValidator.ts` | Validates Classification objects and data consistency (called for every classification) |
+| `ConfidenceScorer.ts` | Confidence of the rule (at most 75), 100 for the user; confidence levels |
+| `FeatureDetector.ts` | Measures the 10 geometric features of the placed object (Geometric Features), in the Web Worker of the analysis |
 
 ---
 

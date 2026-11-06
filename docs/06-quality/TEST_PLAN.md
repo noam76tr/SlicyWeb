@@ -619,6 +619,12 @@ Classification (lot 85):
   open box (low, open top): container (70)
   plate with holes: planar and holes; mechanical_part (65)
   closed box (hollow, with a lid): not open_top; not container
+  L bracket (thin, hollow, base low and facing up; also mirrored and turned
+    on the plate): not open_top; neither container nor vase (Noam,
+    2026-11-05)
+  open box with three walls only: not open_top; with its four walls:
+    open_top
+  open vase upside down: not open_top, not vase
   mesh not closed: holes not computed
   repeatable: the same mesh gives the same classification twice
   category chosen by the user: source user, confidence 100, kept after a
@@ -634,8 +640,9 @@ Presets (lot 86):
 
 Recommendation (lot 87):
   Ultimaker S5 (maxPrintSpeed and maxTravelSpeed null) + Fast Prototype:
-    print speed at most 100 mm/s, travel at most 150 mm/s, VALUE_LIMITED
-    (test required by Noam)
+    print speed at most 100 mm/s with VALUE_LIMITED, travel at most
+    150 mm/s without warning of its own (test required by Noam; answer C,
+    2026-11-05)
   printer with maxPrintSpeed published (as 500) + Balanced: print 150 mm/s,
     no VALUE_LIMITED
   printer with maxPrintSpeed 100 + Balanced: 100 mm/s and VALUE_LIMITED

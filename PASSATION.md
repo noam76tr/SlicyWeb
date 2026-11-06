@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-11-05. Lot 83 (analyse de la phase 10 ; hébreu `analysis.overhangs`) sur `main` (2359221), vérifié identique, validé par Noam (0.1.84 Completed : 409 clés ; réponses D1 à D13, décision 84). Lot 84 (documentation de la phase 10 : ADR-035, DATA_SCHEMA 3.10.0, OBJECT_CLASSIFICATION_SPEC 1.2.0, PRINT_PRESETS_SPEC 1.3.0, RECOMMENDATION_RULES 1.1.0…) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.85 (lot 84, In Progress).
+Date : 2026-11-05. Lot 84 (documentation de la phase 10 : ADR-035, DATA_SCHEMA 3.10.0…) sur `main` (25efb78), vérifié identique, validé par Noam (0.1.85 Completed ; réponses Q1 C et Q2 A, décision 85). Lot 85 (classification des objets dans le Worker de l'analyse ; `open_top` avec les parois autour du fond ; copies de `src/optimization_engine/` supprimées) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.86 (lot 85, In Progress).
 
 ---
 
@@ -77,7 +77,7 @@ Date : 2026-11-05. Lot 83 (analyse de la phase 10 ; hébreu `analysis.overhangs`
 | 7 | Printer Database | Completed (2026-10-27) | 0.1.59 à 0.1.66 |
 | 8 | Material Database | Completed (2026-11-01) | 0.1.67 à 0.1.75 |
 | 9 | Model Analysis | Completed (2026-11-02) | 0.1.77 à 0.1.82 |
-| 10 | Classification and Recommendation Engine | In Progress (ADR-035 ; lot 84 documentation) | 0.1.84, 0.1.85 |
+| 10 | Classification and Recommendation Engine | In Progress (ADR-035 ; lot 84 documentation, lot 85 classification) | 0.1.84 à 0.1.86 |
 | 11 à 16 | Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
@@ -100,6 +100,7 @@ Date : 2026-11-05. Lot 83 (analyse de la phase 10 ; hébreu `analysis.overhangs`
   - objets centrés à Z = 0 ; un 3MF garde la disposition de ses objets ;
   - messages d'erreur traduits, avec les codes d'ERROR_CODES_SPEC.
 - **Analyse des modèles (phase 9, lots 77 à 80) :** chaque objet est analysé tout seul après son import, et de nouveau après une rotation ou une échelle (à la fin du geste ou à la validation du champ, jamais pendant un glissement), un objet à la fois, dans un Web Worker ; un calcul devenu inutile (objet supprimé ou de nouveau tourné) est abandonné. Section Analysis du panneau Propriétés : statut (À jour, Obsolète, Analyse en cours…, Aucune analyse), dimensions, volume (cm³), surface (cm²), maillage, surplombs, ponts, parois fines, stabilité (surface de contact, rapport de hauteur, risque de bascule sur 100 et son niveau) ; « Sélectionnez un seul objet » pour plusieurs objets. Tools > Analyze Models (et le bouton Analyze de la barre d'outils) et Recompute Analysis ; « Analyzing… » dans la barre d'état ; messages ANA_001 (échec) et ANA_002 (maillage non fermé, une fois par objet) au-dessus de la vue 3D, sous ceux de l'import. Surplombs en rouge (lot 82, décision 83) : bouton « Surplombs » à côté de Déplacer, Pivoter, Échelle et Affichage > Afficher les surplombs ; les triangles au-delà de 45° de tous les objets de la scène en rouge, sélectionnés ou non, trouvés par le Worker de l'analyse, seulement quand l'analyse est à jour ; éteint à chaque démarrage.
+- **Classification (phase 10, lot 85) :** calculée avec l'analyse, dans le même Worker, sur l'objet tel qu'il est posé : 10 caractéristiques (`FeatureDetector.ts`), 5 règles (vase 75, container 70, miniature 70, figurine 65, mechanical_part 65, sinon unknown 0), `source` automatic ; `open_top` exige des parois autour du fond (4 rayons horizontaux, remarque de Noam : une équerre en L n'est ni container ni vase) ; une catégorie choisie par l'utilisateur est gardée après une nouvelle analyse. Pas encore affichée (section Recommendation au lot 88).
 - **Transformations (phase 6) :** la vue 3D applique la position, la rotation et l'échelle de chaque objet (règles d'ADR-031). La section Transform du panneau Propriétés permet de saisir la position X, Y, la rotation, l'échelle (%) et la taille (mm), avec Reset et Center On Bed ; l'objet reste toujours posé sur le plateau. Dans la vue 3D : clic pour sélectionner (un vrai clic dans le vide désélectionne), glisser un objet pour le déplacer sur le plateau (après 4 pixels), poignées Move, Rotate, Scale (touches G, R, S et boutons au-dessus de la vue 3D, grisés sans sélection), Échap désélectionne. La position d'un objet est celle de son **centre** (DATA_SCHEMA 3.4.0) : il tourne autour de son centre ; avec la poignée, il tourne librement pendant le geste et se repose sur le plateau au relâchement. Poignée Scale : une poignée par axe (X à droite, Y devant, Z en haut) et celle du centre ; le cadenas agit pareil dans le panneau et sur la poignée. La section Transform n'affiche que les lignes du mode. Annuler / Rétablir (lot 49) : transformations seulement, un geste = une étape, 50 étapes, barre d'outils, menu Édition, Ctrl+Z, Ctrl+Y, Ctrl+Maj+Z ; l'objet concerné est sélectionné ; dans un champ de la section Transform, Ctrl+Z annule d'abord la frappe non validée, sinon il annule dans l'application (lot 52). Plusieurs objets (lot 50) : Ctrl+clic (vue 3D et panneau Objets), Ctrl+A ; le groupe se déplace, tourne et change d'échelle (uniforme) autour de son centre ; le panneau Transform agit comme la poignée sur le groupe. Rectangle de sélection dans la vue 3D, Maj+clic dans le panneau Objets (lot 51).
 - **Sécurité :**
   - liste blanche des canaux IPC dans le preload (28 canaux, `npm run check:ipc`) ;
@@ -120,13 +121,13 @@ Date : 2026-11-05. Lot 83 (analyse de la phase 10 ; hébreu `analysis.overhangs`
 
 | Document | Version |
 |---|---|
-| DATA_SCHEMA.md | 3.10.0 (phase 10 : `classification.source`, Preset Settings, `supports {enabled, type}` sans `organic`, `temperature {nozzle, bed}`, `filamentId` nullable, règle 11 ; le code suit encore 3.9.0 jusqu'aux lots 85 à 87) |
+| DATA_SCHEMA.md | 3.10.0 (phase 10 : `classification.source`, Preset Settings, `supports {enabled, type}` sans `organic`, `temperature {nozzle, bed}`, `filamentId` nullable, règle 11 ; `classification.source` dans le code depuis le lot 85 ; le reste aux lots 86 et 87) |
 | Format WYPROJ | 3.0.0 (les fichiers 2.0.0 sont refusés) |
 | IMPORT_EXPORT_SPEC.md | 3.0.0 |
 | ERROR_CODES_SPEC.md | 2.4.0 (ANA_001 ; ANA_002 avertissement non bloquant ; REC_001, REC_002 information, REC_003 non utilisé en phase 10) |
-| OBJECT_CLASSIFICATION_SPEC.md | 1.2.0 (10 caractéristiques, 5 catégories automatiques, choix de l'utilisateur) |
+| OBJECT_CLASSIFICATION_SPEC.md | 1.2.1 (10 caractéristiques, 5 catégories automatiques, choix de l'utilisateur ; `open_top` avec les parois autour du fond) |
 | PRINT_PRESETS_SPEC.md | 1.3.0 (11 presets livrés, valeurs, `tree`) |
-| RECOMMENDATION_RULES.md | 1.1.0 (limites, températures, rétraction, supports, 13 avertissements, confiance) |
+| RECOMMENDATION_RULES.md | 1.1.1 (limites, températures, rétraction, supports, 13 avertissements, confiance ; déplacement 150 mm/s sans avertissement quand `maxTravelSpeed` vaut `null`) |
 | SUPPORT_GENERATION_SPEC.md | 1.1.0 (Organic et Tree = `tree`) |
 | PERFORMANCE_SPEC.md | 1.1.0 (analyse : 1 million de triangles en moins de 5 s) |
 | ARCHITECTURE_DECISION_MATRIX.md | 2.7.0 |
@@ -228,6 +229,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 82 | Surplombs en rouge dans la vue 3D (décision 81, D8 option B ; GUI_SPEC « Overhang Display ») : `overhangTriangles` (Worker de l'analyse), `analysisTaskStore`, `viewportStore.showOverhangs`, `ObjectRenderer.syncOverhangs`, bouton « Surplombs » et Affichage > Afficher les surplombs ; 2 clés (409) ; 8 tests (366 + 1), 1 e2e (34) ; `RightSidebar.tsx` et `StatusBar.tsx` au format Prettier (format seulement) ; aucune suppression | 0.1.83 |
 | 83 | Analyse seule : phase 10 (Classification and Recommendation Engine), inventaire, 13 décisions D1 à D13 (`lot83-phase10-analyse/PHASE10-ANALYSE.md`) ; hébreu `analysis.overhangs` « אזורים תלויים » au lieu de « תליות », comme le bouton et le menu (demande de Noam) | 0.1.84 |
 | 84 | Documentation de la phase 10 (décision 84) : ADR-035, ADM-031, DATA_SCHEMA 3.10.0, OBJECT_CLASSIFICATION_SPEC 1.2.0, PRINT_PRESETS_SPEC 1.3.0, RECOMMENDATION_RULES 1.1.0, SUPPORT_GENERATION_SPEC 1.1.0, GUI_SPEC, ERROR_CODES_SPEC 2.4.0, SLICER_EXPORT_SPEC 1.1.0, plan, TEST_PLAN ; KI-029 ; aucun code | 0.1.85 |
+| 85 | Phase 10, classification (décision 85) : `FeatureDetector.ts` (nouveau), `CategoryDetector`, `ConfidenceScorer`, `ClassificationEngine` réécrits, `ClassificationValidator` appelé (KI-011), `classification.source` (AnalysisSchema, type), classification calculée dans le Worker de l'analyse et gardée si choisie par l'utilisateur (AnalysisService) ; `open_top` avec 4 rayons horizontaux (équerre en L) ; OBJECT_CLASSIFICATION_SPEC 1.2.1, RECOMMENDATION_RULES 1.1.1 (Q1 C) ; 4 copies de `src/optimization_engine/` et `ConfidenceScorer.isReliable` supprimés (D13) ; 26 tests (392 + 1), e2e inchangés (34) | 0.1.86 |
 
 ---
 
@@ -241,7 +243,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 4. **Duplication projet/scène des 4 sélections dans DATA_SCHEMA :** connue et documentée (« Known Duplication »), source de vérité encore à choisir.
 5. **Nom de fichier WYPROJ :** lettres de toutes les langues acceptées (lots 7 et 8).
 6. **Création de projet :** ProjectManager est le seul créateur ; ProjectService lui délègue.
-7. **Copies de classification dans `src/optimization_engine/` :** elles restent (documentées dans DIRECTORY_PURPOSES).
+7. **Copies de classification dans `src/optimization_engine/` :** supprimées au lot 85 (D13 de la phase 10, validé par Noam le 2026-11-05 ; elles restaient depuis le 2026-10-13).
 8. **Specs manquantes :** ne pas en créer ; les en-têtes « Based on » pointent vers des documents existants.
 
 **Outillage (ADR-025)**
@@ -341,6 +343,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 82. **Format des nombres (remarque de Noam sur le lot 80, 2026-11-02) :** toutes les valeurs affichées suivent le format de la langue, dans toutes les sections (virgule décimale en français, point en anglais et en hébreu, 2 décimales au plus) ; une valeur seulement lue a les séparateurs de milliers de la langue (comme la section Analysis), un champ n'en a pas et accepte la virgule ou le point ; les valeurs enregistrées restent des nombres JSON. Clôture de la phase 9 (lot 81) : aucune suppression, tous les fichiers de `src/model_analysis/` sont utilisés.
 83. **Surplombs en rouge (lot 82, choix de Noam le 2026-11-03 : Q1 B, Q2 à Q5 A) :** tous les objets de la scène, sélectionnés ou non (Q1 B) ; triangles de l'analyse (même règle que `overhangs.percentage`), affichés seulement quand l'analyse est à jour, donc rien pendant une rotation ou une échelle jusqu'au nouveau calcul ; bouton « Surplombs » dans son propre groupe à côté de Déplacer, Pivoter, Échelle, et Affichage > Afficher les surplombs ; éteint à chaque démarrage, non enregistré ; rouge #E5484D (celui de l'axe X) ; textes hébreux choisis par Noam : « אזורים תלויים » (bouton) et « הצג אזורים תלויים » (menu) ; le titre de la ligne de la section Analysis (`analysis.overhangs`) dit aussi « אזורים תלויים » depuis le lot 83 (demande de Noam, 2026-11-04).
 84. **Phase 10, décisions D1 à D13 (Noam, 2026-11-05, ADR-035 ; option A partout sauf D12 = B, avec deux corrections) :** classification automatique de 5 catégories seulement (vase, container, miniature, figurine, mechanical_part) à partir de 10 caractéristiques mesurées, confiance au plus 75, nom du fichier non utilisé (D2) ; type d'objet choisi par l'utilisateur, `classification.source`, confiance 100, gardé après rotation ou échelle (D3) ; 11 presets dans `data/presets/`, `preset:getAll` (D4) ; valeurs des presets de PRINT_PRESETS_SPEC 1.3.0, **un seul nom `tree` pour les supports en arbre dans tous les presets** (correction de Noam ; `organic` retiré), pas de ventilateur dans le preset (D5) ; limites : **vitesse d'impression ≤ 100 mm/s quand `maxPrintSpeed` vaut `null`, avec VALUE_LIMITED** (correction de Noam), déplacement ≤ 150 mm/s quand `maxTravelSpeed` vaut `null` (proposition du lot 84, à confirmer par Noam : 57 imprimantes sur 79), TPU ≤ 30 mm/s, couche ≤ 75 % de la buse, rétraction par type d'extrudeur ; test Ultimaker S5 + Fast Prototype ≤ 100 mm/s (D6) ; températures `{nozzle, bed}` au milieu de la plage arrondi à 5 °C, ventilateur du filament ou de la famille (D7) ; `supports {enabled, type}`, supports au-delà de 60° ou d'un pont de 50 mm, bordure (brim) (D8) ; 13 avertissements, un `critical` ne bloque pas (D9) ; confiance 100 moins les baisses (D10) ; recommandation automatique, règle 11 (D11) ; section Recommendation : type d'objet, preset, avertissements et confiance visibles, le reste sous « Détails » (D12 B) ; tableau de suppressions validé, chaque suppression faite au lot indiqué (D13).
+85. **Réponses du lot 84 et remarque sur la classification (Noam, 2026-11-05) :** Q1 C : déplacement limité à 150 mm/s quand `maxTravelSpeed` vaut `null`, **sans avertissement** ; VALUE_LIMITED reste pour la vitesse d'impression (100 mm/s quand `maxPrintSpeed` vaut `null`) et les autres limites (RECOMMENDATION_RULES 1.1.1). Q2 A : `tree` seul, `organic` retiré (retiré du code au lot 86). `open_top` : le fond touché par le rayon vertical doit être entouré de parois (4 rayons horizontaux depuis ce point, chacun touche une face) ; une équerre en L n'est ni container ni vase, modèle ajouté aux tests (OBJECT_CLASSIFICATION_SPEC 1.2.1).
 
 **Méthode**
 
@@ -358,7 +361,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 4. **Phase 8 : Material Database** (Completed, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (fait, validé) ; 68 chargement (fait, validé) ; 69 données (fait, validé) ; 70 interface (fait, validé) ; 71 filaments de l'utilisateur (fait, validé) ; 72 synchronisation (fait, validé ; release v1.1.0 de `slicyweb-profiles`) ; 73 clôture (fait, validé). Close le 2026-11-01. (Lot 67 : plateau, hors phase 8.)
 5. **Cube de navigation** (décisions 76 et 78) : lot 74 fait, validé par Noam le 2026-11-01.
 6. **Phase 9 : Model Analysis** (Completed, ADR-034) : analyse au lot 75 ; réponses de Noam (décisions 79 à 81) ; 76 documentation ; 77 calcul de base dans un Worker ; 78 surplombs et ponts ; 79 parois fines ; 80 interface (tous validés) ; 81 clôture et format des nombres (décision 82). Close le 2026-11-02, confirmée par les contrôles de Noam sur le lot 81 (2026-11-03). Lot 82 : surplombs en rouge (décisions 81 et 83). Suite : la phase 10. La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
-7. **Phase 10 : Classification and Recommendation Engine** (In Progress, ADR-035) : analyse au lot 83 (validé) ; réponses de Noam (décision 84) ; 84 documentation (à envoyer) ; puis 85 classification (et `classification.source` dans les schémas), 86 presets, 87 moteur de recommandation (schéma de la recommandation aligné, test Ultimaker S5), 88 interface, 89 clôture. À confirmer par Noam : déplacement à 150 mm/s quand `maxTravelSpeed` vaut `null`.
+7. **Phase 10 : Classification and Recommendation Engine** (In Progress, ADR-035) : analyse au lot 83 (validé) ; réponses de Noam (décision 84) ; 84 documentation (validé) ; 85 classification (à envoyer) ; puis 86 presets, 87 moteur de recommandation (schéma de la recommandation aligné, test Ultimaker S5), 88 interface, 89 clôture (seuils de la classification et durée de l'enveloppe convexe vérifiés sur les modèles de Noam).
 8. **Phases 11 à 16**, dans l'ordre du plan technique.
 9. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
@@ -367,7 +370,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    | KI-007 | Réponse de Generate Recommendation différente du Recommendation Schema | Implémentation de l'API Recommendation |
    | KI-008 | Limites de l'imprimante et du matériau non appliquées au profil recommandé (règles écrites au lot 84, appliquées au lot 87) | Phase 14 |
    | KI-010 | Confiance de la recommandation = celle du preset (règle écrite au lot 84, appliquée au lot 87) | Phase 14 |
-   | KI-011 | ClassificationValidator jamais appelé (lot 85) | Phase 10 |
+   | KI-011 | Niveau de confiance de la classification pas encore affiché (lot 88) ; ClassificationValidator appelé depuis le lot 85 | Phase 10 |
    | KI-012 | Table des types de supports par slicer non vérifiée (`tree` seul nom depuis le lot 84) | Phase 14 |
    | KI-015 | Panneaux inutilisés avec du texte en dur ; `Renderer.ts` inutilisé (`PrinterPanel.tsx` supprimé au lot 60, `MaterialPanel.tsx` et `FilamentPanel.tsx` au lot 70) | Phase qui affiche chaque panneau (8 à 10) |
    | KI-019 | 3MF Bambu à plusieurs plateaux : objets éloignés | Phase 14 |

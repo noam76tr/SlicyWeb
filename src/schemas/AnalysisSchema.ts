@@ -3,8 +3,8 @@
  * Analysis Schema Definition
  *
  * Based on:
- * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules,
- *   Object Classification Schema)
+ * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules;
+ *   3.10.0: Object Classification Schema, Classification Rules)
  * - DECISIONS.md (ADR-034)
  * - AI_ENGINE_SPEC.md
  * - OBJECT_CLASSIFICATION_SPEC.md
@@ -14,7 +14,10 @@
 
 import { z } from "zod";
 
-import { CLASSIFICATION_CATEGORIES } from "../constants/AnalysisConstants";
+import {
+  CLASSIFICATION_CATEGORIES,
+  CLASSIFICATION_SOURCES
+} from "../constants/AnalysisConstants";
 
 /**
  * Status of an analysis or a recommendation (DATA_SCHEMA.md,
@@ -40,7 +43,13 @@ export const AnalysisClassificationSchema = z.object({
     z.string()
   ),
 
-  classificationVersion: z.string().min(1)
+  classificationVersion: z.string().min(1),
+
+  /**
+   * DATA_SCHEMA.md 3.10.0: a classification without source (WYPROJ 3.0.0
+   * file written before 3.10.0) is read as automatic.
+   */
+  source: z.enum(CLASSIFICATION_SOURCES).default("automatic")
 });
 
 /** Length, area or volume: finite and not negative (mm, mm², mm³). */

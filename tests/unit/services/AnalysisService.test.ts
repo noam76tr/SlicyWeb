@@ -6,21 +6,24 @@
  * automatic after the import and after a rotation or a scale, never during
  * a gesture, one object at a time; a computation no longer needed is
  * dropped; the result is validated (Complete Analysis Schema, analysisId
- * kept, classification null); ANA_001 and ANA_002 messages; Tools >
- * Analyze Models and Recompute Analysis.
+ * kept); ANA_001 and ANA_002 messages; Tools > Analyze Models and
+ * Recompute Analysis. Phase 10 lot 85: classification stored with the
+ * analysis; a category chosen by the user is kept after a new analysis.
  *
- * The computation itself is the real one (analyzeModel), called without a
- * worker.
+ * The computation itself is the real one (analyzeModel with the classifier
+ * of the Web Worker), called without a worker.
  *
  * Based on:
- * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Object Reference Rules)
- * - DECISIONS.md (ADR-034 D6, D7)
+ * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Object Reference Rules;
+ *   3.10.0: Classification Rules)
+ * - DECISIONS.md (ADR-034 D6, D7; ADR-035 D3)
  * - GUI_SPEC.md (Tools Menu, Analysis Section)
  * - TEST_PLAN.md
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { ClassificationEngine } from "../../../src/classification_engine/ClassificationEngine";
 import { AnalysisCancelledError } from "../../../src/model_analysis/AnalysisError";
 import type { AnalysisTransform } from "../../../src/model_analysis/MeshAnalyzer";
 import {
@@ -118,7 +121,11 @@ function harness(): Harness {
           signal,
           resolve: () => {
             try {
-              const result = analyzeModel(positions, transform);
+              const result = analyzeModel(
+                positions,
+                transform,
+                ClassificationEngine.classifyModel,
+              );
               tamper?.(result);
               resolve(result);
             } catch (error) {
@@ -230,7 +237,13 @@ describe("AnalysisService (Phase 9 lot 80, ADR-034 D7)", () => {
     expect(AnalysisSchema.safeParse(analysis).success).toBe(true);
     expect(analysis.status).toBe("generated");
     expect(analysis.objectId).toBe("a");
-    expect(analysis.classification).toBeNull();
+    expect(analysis.classification).toMatchObject({
+      category: "unknown",
+      // 30 mm high on a base of 10 mm: ratio 3
+      detectedFeatures: ["small", "tall", "planar"],
+      source: "automatic",
+      classificationVersion: "1.2.0",
+    });
     expect(analysis.dimensions.width).toBeCloseTo(20, 6);
     expect(analysis.geometry.volume).toBeCloseTo(6000, 3);
     expect(useAnalysisTaskStore.getState().pendingObjectIds).toEqual([]);
@@ -274,6 +287,44 @@ describe("AnalysisService (Phase 9 lot 80, ADR-034 D7)", () => {
     // Turned 90° around X: the depth becomes the height
     expect(analysis.dimensions.height).toBeCloseTo(10, 4);
     expect(h.calls).toHaveLength(2);
+  });
+
+  it("keeps the category chosen by the user after a rotation; the features are measured again (lot 85)", async () => {
+    addObject(h, "a", box(10, 10, 40));
+    await settle(h);
+
+    const first = analysisOf("a");
+
+    expect(first.classification?.detectedFeatures).toEqual([
+      "small",
+      "tall",
+      "planar",
+    ]);
+
+    // Category chosen by the user (Recommendation section, lot 88)
+    useAnalysisStore.getState().setAnalysis({
+      ...first,
+      classification: {
+        ...first.classification!,
+        category: "tool",
+        confidenceScore: 100,
+        source: "user",
+      },
+    });
+    setTransform("a", { rotation: { x: 90, y: 0, z: 0 } });
+    await settle(h);
+
+    const analysis = analysisOf("a");
+
+    expect(h.calls).toHaveLength(2);
+    expect(AnalysisSchema.safeParse(analysis).success).toBe(true);
+    expect(analysis.classification).toMatchObject({
+      category: "tool",
+      confidenceScore: 100,
+      source: "user",
+      // Lying down: no longer tall
+      detectedFeatures: ["small", "planar"],
+    });
   });
 
   it("does not analyze again after a move only (Object Reference Rule 8)", async () => {

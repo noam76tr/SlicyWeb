@@ -12,11 +12,15 @@
  * 6. overhangs and bridges (angle from the vertical, ADR-034 D3);
  * 7. thin walls (rays towards the inside, three-mesh-bvh, ADR-034 D5);
  * 8. open edges: meshClosed false = warning ANA_002 (non-blocking);
- * 9. the triangles beyond 45 degrees, for the display in red (lot 82).
+ * 9. the triangles beyond 45 degrees, for the display in red (lot 82);
+ * 10. the classification (Phase 10 lot 85), on the same placed mesh, by
+ *    the classifier given by the Web Worker of the analysis: this domain
+ *    never imports the Classification Domain
+ *    (DOMAINS_DEPENDENCY_MATRIX.md).
  *
  * Phase 9: base of the analysis (lot 77), overhangs and bridges (lot 78),
  * thin walls (lot 79); the Complete Analysis Schema
- * (analysisId, objectId, status, classification null) is built and
+ * (analysisId, objectId, status, classification) is built and
  * validated with AnalysisSchema by AnalysisService (lot 80).
  *
  * Pure functions, no state, deterministic: the same object gives the same
@@ -25,8 +29,9 @@
  * Domain: Analysis.
  *
  * Based on:
- * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules)
- * - DECISIONS.md (ADR-034 D2, D3, D4, D5, D6, D7)
+ * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules;
+ *   3.10.0: classification computed with the analysis)
+ * - DECISIONS.md (ADR-034 D2, D3, D4, D5, D6, D7; ADR-035 D2)
  * - ERROR_CODES_SPEC.md (ANA_001, ANA_002)
  */
 
@@ -39,6 +44,7 @@ import type {
   Stability,
   ThinWalls,
 } from "../types/Analysis";
+import type { Classification } from "../types/Classification";
 
 import { AnalysisError } from "./AnalysisError";
 import { analyzeGeometry } from "./GeometryAnalyzer";
@@ -58,7 +64,29 @@ import {
 } from "./PrintabilityAnalyzer";
 import { analyzeStability } from "./StabilityAnalyzer";
 
-/** Result of the computation of one object (lots 77 to 79) */
+/**
+ * The object as placed on the build plate, as the analysis computes it:
+ * welded vertices (x, y, z relative to the center of the object, rotation
+ * and scale applied) and the vertex of each corner.
+ */
+export interface PlacedMesh {
+  placed: Float64Array;
+
+  corners: Uint32Array;
+
+  vertexCount: number;
+}
+
+/**
+ * Classification of the placed object from its analysis (Phase 10,
+ * ClassificationEngine.classifyModel, given by the Web Worker).
+ */
+export type ModelClassifier = (
+  mesh: PlacedMesh,
+  result: ModelAnalysisResult,
+) => Classification;
+
+/** Result of the computation of one object (lots 77 to 79, 85) */
 export interface ModelAnalysisResult {
   dimensions: Dimensions;
 
@@ -86,17 +114,27 @@ export interface ModelAnalysisResult {
    * analysis (DATA_SCHEMA.md): never stored in a project.
    */
   overhangTriangles: Uint32Array;
+
+  /**
+   * Automatic classification of the object (Phase 10 lot 85,
+   * OBJECT_CLASSIFICATION_SPEC.md 1.2.0); null when no classifier was
+   * given (the analysis alone).
+   */
+  classification: Classification | null;
 }
 
 /**
  * Analysis of one object.
  * positions: x, y, z of the 3 corners of each triangle, coordinates of the
  * object (GeometryRegistry); transform: its scale and rotation.
+ * classify: classification of the result (Web Worker of the analysis);
+ * without it, classification is null.
  * Throws AnalysisError ANA_001 when the mesh is empty or cannot be read.
  */
 export function analyzeModel(
   positions: Float32Array,
   transform: AnalysisTransform,
+  classify?: ModelClassifier,
 ): ModelAnalysisResult {
   checkMeshData(positions);
   checkTransform(transform);
@@ -116,7 +154,7 @@ export function analyzeModel(
   );
   const down = downAngles(placed, welded.corners, lowestZ);
 
-  return {
+  const result: ModelAnalysisResult = {
     dimensions,
     geometry,
     mesh: meshStatistics(welded),
@@ -126,7 +164,17 @@ export function analyzeModel(
     thinWalls: analyzeThinWalls(placed, welded.corners),
     meshClosed: countOpenEdges(welded.corners, welded.vertexCount) === 0,
     overhangTriangles: overhangTriangles(down),
+    classification: null,
   };
+
+  if (classify) {
+    result.classification = classify(
+      { placed, corners: welded.corners, vertexCount: welded.vertexCount },
+      result,
+    );
+  }
+
+  return result;
 }
 
 /** Scale and rotation must be finite numbers, the scale above 0 */
@@ -169,9 +217,13 @@ export type AnalysisResponse =
 
 /**
  * Answer to one request of the worker; never throws: any failure of the
- * computation is ANA_001 (ERROR_CODES_SPEC.md, Analysis Errors).
+ * computation, classification included, is ANA_001 (ERROR_CODES_SPEC.md,
+ * Analysis Errors).
  */
-export function runAnalysisRequest(request: AnalysisRequest): AnalysisResponse {
+export function runAnalysisRequest(
+  request: AnalysisRequest,
+  classify?: ModelClassifier,
+): AnalysisResponse {
   try {
     if (!(request?.positions instanceof Float32Array) || !request.transform) {
       throw new AnalysisError("ANA_001", "The analysis request is not valid.");
@@ -179,7 +231,7 @@ export function runAnalysisRequest(request: AnalysisRequest): AnalysisResponse {
 
     return {
       type: "result",
-      result: analyzeModel(request.positions, request.transform),
+      result: analyzeModel(request.positions, request.transform, classify),
     };
   } catch (error) {
     return {

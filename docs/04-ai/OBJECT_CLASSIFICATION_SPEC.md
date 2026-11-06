@@ -2,7 +2,7 @@
 
 # OBJECT CLASSIFICATION SPECIFICATION
 
-Version: 1.2.0
+Version: 1.2.1
 
 Status: Approved
 
@@ -645,7 +645,14 @@ open_top:
   height is below 50 % of dimensions.height (the inner bottom of a cup or
   of a vase); absent when the ray meets no triangle, or first meets a face
   higher than 50 % (a lid, a closed top)
+  and the bottom met is surrounded by walls (1.2.1, remark of Noam,
+  2026-11-05): from the point met, raised by 0.01 mm, four horizontal rays
+  (+X, -X, +Y, -Y, axes of the build plate) each meet a triangle; absent
+  when one of them meets nothing (an L bracket: its base is low and faces
+  up, but it is open on three sides; a tray with three walls)
 ```
+
+Version 1.2.1: the walls around the bottom are required for open_top. Without them, a thin L bracket (hollow, its base below 50 % of the height) was classified as a container. An L bracket is neither a container nor a vase (model built in the tests).
 
 ---
 
@@ -671,11 +678,11 @@ never chosen automatically: gear, bracket, enclosure, tool,
   articulated_model, prototype, structural_part, decorative_object,
   functional_part
 subcategory: "" ; detectedTags: [] (no list is defined)
-classificationVersion: "1.2.0"
+classificationVersion: "1.2.1"
 source: "automatic"
 ```
 
-The thresholds and the confidences are a first setting. They are checked on models built in the tests (cube, tower, sphere, open vase, open box, plate with holes) and on the models of Noam during the manual controls, and can be adjusted before the closure of Phase 10 (a new version of this document).
+The thresholds and the confidences are a first setting. They are checked on models built in the tests (cube, tower, sphere, open vase, open box, plate with holes, closed box, L bracket) and on the models of Noam during the manual controls, and can be adjusted before the closure of Phase 10 (a new version of this document).
 
 ---
 

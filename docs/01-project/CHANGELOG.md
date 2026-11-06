@@ -3077,7 +3077,7 @@ Release Type:
 Architecture Decision
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-05
@@ -3105,7 +3105,63 @@ Date:
 ## Known Limitations
 
 - Documentation only: no code changed. The code follows DATA_SCHEMA.md 3.9.0 until the lot that implements each change: classification.source in lot 85; Preset Settings without fanSpeed and support types without organic in lot 86; temperature, filamentId null and the Warning Schema of the recommendation in lot 87
-- The travel speed of 150 mm/s for a printer that does not publish maxTravelSpeed (57 printers of 79) is a proposal waiting for the confirmation of Noam
+- The thresholds of the classification are a first setting, checked before the closure of Phase 10
+
+## Validation Result
+
+- Windows 11 (2026-11-05): lot 84 on GitHub (25efb78, identical to the lot); documentation only, nothing to run (Noam)
+- Answers of Noam: Q1 C (travel at most 150 mm/s when maxTravelSpeed is null, without warning; VALUE_LIMITED kept for the print speed), Q2 A (tree only, organic removed): written in 0.1.86
+- Remark of Noam for the classification: open_top must check that the bottom is surrounded by walls; an L bracket is neither a container nor a vase: written in 0.1.86
+
+---
+
+# VERSION 0.1.86
+
+Release Type:
+Classification Engine
+
+Status:
+In Progress
+
+Date:
+2026-11-05
+
+## Added
+
+- Automatic classification of each object, computed with its analysis in the Web Worker of the analysis (ADR-035 D2; OBJECT_CLASSIFICATION_SPEC.md 1.2.1; DATA_SCHEMA.md 3.10.0, Classification Rules): the 10 geometric features, the 5 category rules (vase 75, container 70, miniature 70, figurine 65, mechanical_part 65, otherwise unknown 0), subcategory "", detectedTags [], classificationVersion 1.2.1, source automatic
+- src/classification_engine/FeatureDetector.ts: small, large, tall, flat (dimensions); planar, curved (planar regions within 1 degree, at least 1 % of the surface); holes (genus of the welded mesh, closed mesh only); hollow (volume / volume of the convex hull, three ConvexHull); open_top (vertical ray at the center, face turned up below 50 % of the height, and four horizontal rays +X, -X, +Y, -Y from just above the bottom that each meet a face, remark of Noam); thin_walls (analysis)
+- src/constants/AnalysisConstants.ts: CLASSIFICATION_SOURCES, GEOMETRIC_FEATURES, FEATURE_THRESHOLDS, CATEGORY_RULES, USER_CLASSIFICATION_CONFIDENCE
+- src/types/Classification.ts: ClassificationSource, GeometricFeature, field source
+- Tests: tests/unit/classification_engine/Classification.test.ts (25 tests: models of TEST_PLAN.md, L bracket neither container nor vase, open box with three walls, vase upside down, rules, confidence, validator, user choice, classification without source), tests/unit/classification_engine/testModels.ts (models built in the tests); tests/unit/services/AnalysisService.test.ts 1 test (category chosen by the user kept after a rotation)
+
+## Changed
+
+- src/classification_engine/CategoryDetector.ts, ConfidenceScorer.ts, ClassificationEngine.ts rewritten under the same names (ADR-035 D13): rules of OBJECT_CLASSIFICATION_SPEC.md 1.2.1 instead of keywords that nothing produced; ClassificationEngine.classifyModel (Web Worker) and keepUserChoice (a category chosen by the user stays after a new analysis, with confidence 100 and the features just measured); ConfidenceScorer.calculate: confidence of the rule, 100 for the user
+- src/classification_engine/ClassificationValidator.ts: called for every classification (KI-011); checks the source and the names, order and uniqueness of the geometric features
+- src/schemas/AnalysisSchema.ts: classification.source (automatic or user), read as automatic when absent (DATA_SCHEMA.md 3.10.0)
+- src/model_analysis/ModelAnalyzer.ts: PlacedMesh, ModelClassifier; ModelAnalysisResult.classification; analyzeModel and runAnalysisRequest take the classifier given by the worker (the Analysis Domain does not import the Classification Domain)
+- src/model_analysis/workers/modelAnalysis.worker.ts: gives ClassificationEngine.classifyModel to the analysis
+- src/services/AnalysisService.ts: stores the classification of the result; keeps a category chosen by the user
+- OBJECT_CLASSIFICATION_SPEC.md 1.2.1: open_top requires walls around the bottom (remark of Noam, 2026-11-05: an L bracket is neither a container nor a vase)
+- RECOMMENDATION_RULES.md 1.1.1, Limits: travel at most 150 mm/s when maxTravelSpeed is null, without warning (answer C of Noam); VALUE_LIMITED kept for the print speed (100 mm/s when maxPrintSpeed is null) and the other limits; tree only, organic removed (answer A of Noam, removed from the code in lot 86)
+- DECISIONS.md (ADR-035 D5, D6 and Consequences): answers C and A of Noam
+- TEST_PLAN.md: classification tests (L bracket, open box with three walls, vase upside down); Ultimaker S5 test: travel 150 mm/s without warning
+- DOMAINS_DEPENDENCY_MATRIX.md: Analysis Worker (the worker joins the Analysis and Classification Domains); AnalysisService and the classification
+- DIRECTORY_PURPOSES.md, FILE_STRUCTURE.md: FeatureDetector.ts; copies of src/optimization_engine/ removed
+- PASSATION.md: lot 85, decision 85, decision 7 changed
+- 0.1.85 Completed with the results of Noam
+- KNOWN ISSUES: KI-011 updated (validator called; the confidence level shown in lot 88)
+
+## Removed
+
+- src/optimization_engine/CategoryDetector.ts, ClassificationEngine.ts, ClassificationValidator.ts, ConfidenceScorer.ts: copies never used (ADR-035 D13, decision of Noam of 2026-11-05 changing the decision of 2026-10-13)
+- ConfidenceScorer.isReliable (never called; ADR-035 D13) and the keyword search of CategoryDetector
+
+## Known Limitations
+
+- The classification is computed and stored but not shown yet: the object type appears in the Recommendation section in lot 88; the choice of the user is kept by the analysis, but chosen in the interface only from lot 88
+- The automatic classification is computed on the object as placed: an object turned upside down can change category (a vase upside down is not a vase); a category chosen by the user does not depend on the orientation
+- Convex hull (hollow): about 1.3 s more for a sphere of 250 000 triangles, 7 s for 1 million (worst case: every vertex on the hull); the analysis target (1 million triangles in less than 5 s, PERFORMANCE_SPEC.md) is checked at the closure of Phase 10 on the models of Noam
 - The thresholds of the classification are a first setting, checked before the closure of Phase 10
 
 ---
@@ -3943,11 +3999,11 @@ Identifier: KI-011
 
 Since: 0.1.23
 
-Affected Module: src/classification_engine/ClassificationValidator.ts, src/optimization_engine/ClassificationValidator.ts
+Affected Module: src/classification_engine/ClassificationValidator.ts (the copy of src/optimization_engine/ was removed in 0.1.86)
 
 Issue: ClassificationValidator is not called anywhere since the validated field was removed (0.1.23). Since 0.1.81, AnalysisPanel is removed and AnalysisService no longer gives the confidence level: the classification and its confidence level are shown from Phase 10 (ADR-034 D1; ConfidenceScorer).
 
-Planned Resolution: Call ClassificationValidator in the classification workflow; show the classification and its confidence level when Phase 10 computes them. Planned in 0.1.85 (ADR-035 D13): ClassificationValidator called by the classification (lot 85), the four copies of src/optimization_engine/ removed (lot 85), the confidence level shown in the Recommendation section (lot 88).
+Planned Resolution: Call ClassificationValidator in the classification workflow; show the classification and its confidence level when Phase 10 computes them. Planned in 0.1.85 (ADR-035 D13): ClassificationValidator called by the classification (lot 85), the four copies of src/optimization_engine/ removed (lot 85), the confidence level shown in the Recommendation section (lot 88). 0.1.86 (lot 85): ClassificationValidator called for every classification and the four copies removed; remains the confidence level shown (lot 88).
 
 Resolve Before: Technical Phase 10 - Classification and Recommendation Engine
 

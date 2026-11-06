@@ -2,7 +2,7 @@
 
 # RECOMMENDATION RULES
 
-Version: 1.1.0
+Version: 1.1.1
 
 Status: Approved
 
@@ -308,7 +308,7 @@ The family of the material is material.category (as "PLA", "TPU"; MATERIAL_PROFI
 
 ## Limits
 
-ADR-035 D6, corrected by Noam (KI-008).
+ADR-035 D6, corrected by Noam (KI-008). Version 1.1.1: travel speed of a printer that does not publish maxTravelSpeed confirmed by Noam (2026-11-05, answer C): 150 mm/s, without warning.
 
 ```text
 Print speed (speed.print):
@@ -323,7 +323,8 @@ Print speed (speed.print):
 Travel speed (speed.travel):
   at most printer.motion.maxTravelSpeed
   at most 150 mm/s when maxTravelSpeed is null (not published: 57 printers
-    of 79 on 2026-11-05)
+    of 79 on 2026-11-05), without warning: the travel does not change the
+    quality of the part (decision of Noam, 2026-11-05)
 
 Layer height (quality.layerHeight):
   at most 75 % of printer.defaultNozzle (Nozzle Compatibility Rule),
@@ -335,9 +336,9 @@ Temperatures: at most the maximum temperatures of the printer
   (Temperature And Cooling)
 ```
 
-VALUE_LIMITED (warning): given when a limit lowers the print speed, the travel speed, the layer height or a temperature by at least 10 % of the value before the limit. The limits of 100 mm/s and 150 mm/s (printer value null) always give it when they lower the value.
+VALUE_LIMITED (warning): given when a limit lowers the print speed, the travel speed, the layer height or a temperature by at least 10 % of the value before the limit. The limit of 100 mm/s (maxPrintSpeed null) always gives it when it lowers the print speed. The limit of 150 mm/s (maxTravelSpeed null) never gives it (1.1.1).
 
-Example (test required by Noam): Ultimaker S5 (maxPrintSpeed and maxTravelSpeed null) with the preset Fast Prototype: print speed 250 lowered to 100 mm/s, travel 250 lowered to 150 mm/s, warning VALUE_LIMITED.
+Example (test required by Noam): Ultimaker S5 (maxPrintSpeed and maxTravelSpeed null) with the preset Fast Prototype: print speed 250 lowered to 100 mm/s with the warning VALUE_LIMITED; travel 250 lowered to 150 mm/s without warning of its own.
 
 ---
 
@@ -1638,7 +1639,7 @@ Version 1.1.0: supports are enabled above 60 degrees (Supports And Adhesion). Th
 
 # Support Type Selection
 
-Version 1.1.0: Organic and Tree below are one stored value, tree (DATA_SCHEMA.md 3.10.0, Support Type values); the type used is the support type of the preset (PRINT_PRESETS_SPEC.md 1.3.0, Preset Values).
+Version 1.1.0: Organic and Tree below are one stored value, tree (DATA_SCHEMA.md 3.10.0, Support Type values; confirmed by Noam, 2026-11-05, answer A: tree only, organic removed, removed from the code in lot 86); the type used is the support type of the preset (PRINT_PRESETS_SPEC.md 1.3.0, Preset Values).
 
 
 

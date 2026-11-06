@@ -2,211 +2,40 @@
  * SlicyWeb
  * Category Detector Definition
  *
+ * Category of the automatic classification from the measured geometric
+ * features (OBJECT_CLASSIFICATION_SPEC.md 1.2.0, Category Rules; ADR-035
+ * D2): the rules are checked in their order, the first rule that matches
+ * gives the category; unknown when none matches. The file name is never
+ * used. gear, bracket, enclosure, tool, articulated_model, prototype,
+ * structural_part, decorative_object and functional_part are never chosen
+ * automatically (User Choice).
+ *
  * Based on:
- * - OBJECT_CLASSIFICATION_SPEC.md
- * - AI_ENGINE_SPEC.md
- * - DATA_SCHEMA.md
+ * - OBJECT_CLASSIFICATION_SPEC.md (1.2.0: Category Rules)
+ * - DATA_SCHEMA.md (3.10.0: Classification Rules)
+ * - DECISIONS.md (ADR-035 D2)
  */
 
-import type { ClassificationCategory } from "../types/Classification";
+import { CATEGORY_RULES } from "../constants/AnalysisConstants";
+import type {
+  ClassificationCategory,
+  GeometricFeature,
+} from "../types/Classification";
 
 export class CategoryDetector {
-  public detect(
-    features: string[]
-  ): ClassificationCategory {
-    const normalizedFeatures =
-      features.map((feature) =>
-        feature.toLowerCase()
-      );
+  /** Category of the first rule that matches; unknown otherwise */
+  public detect(features: readonly GeometricFeature[]): ClassificationCategory {
+    const present = new Set<string>(features);
 
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "teeth",
-          "gear",
-          "circular"
-        ]
-      )
-    ) {
-      return "gear";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "bracket",
-          "mounting_holes",
-          "reinforcement_ribs"
-        ]
-      )
-    ) {
-      return "bracket";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "figurine",
-          "organic",
-          "curves"
-        ]
-      )
-    ) {
-      return "figurine";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "miniature",
-          "small_features",
-          "fine_details"
-        ]
-      )
-    ) {
-      return "miniature";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "container",
-          "internal_volume",
-          "open_top"
-        ]
-      )
-    ) {
-      return "container";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "vase",
-          "thin_walls",
-          "hollow"
-        ]
-      )
-    ) {
-      return "vase";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "enclosure",
-          "electronics",
-          "cover"
-        ]
-      )
-    ) {
-      return "enclosure";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "tool",
-          "grip",
-          "handle"
-        ]
-      )
-    ) {
-      return "tool";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "articulated",
-          "joint",
-          "linked"
-        ]
-      )
-    ) {
-      return "articulated_model";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "prototype",
-          "concept"
-        ]
-      )
-    ) {
-      return "prototype";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "structural",
-          "load_bearing"
-        ]
-      )
-    ) {
-      return "structural_part";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "mechanical",
-          "functional_geometry",
-          "holes"
-        ]
-      )
-    ) {
-      return "mechanical_part";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "decorative",
-          "aesthetic"
-        ]
-      )
-    ) {
-      return "decorative_object";
-    }
-
-    if (
-      this.hasAny(
-        normalizedFeatures,
-        [
-          "functional",
-          "engineering"
-        ]
-      )
-    ) {
-      return "functional_part";
+    for (const rule of CATEGORY_RULES) {
+      if (
+        rule.all.every((feature) => present.has(feature)) &&
+        rule.none.every((feature) => !present.has(feature))
+      ) {
+        return rule.category;
+      }
     }
 
     return "unknown";
-  }
-
-  private hasAny(
-    features: string[],
-    candidates: string[]
-  ): boolean {
-    return candidates.some(
-      (candidate) =>
-        features.includes(candidate)
-    );
   }
 }
