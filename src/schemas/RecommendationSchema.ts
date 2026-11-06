@@ -2,6 +2,12 @@
  * SlicyWeb
  * Recommendation Schema Definition
  *
+ * Recommendation Schema, Recommended Profile Schema and Warning Schema
+ * of DATA_SCHEMA.md 3.10.0 (ADR-035 D7 to D9, Phase 10 lot 87):
+ * temperature {nozzle, bed} required, filamentId null when no filament
+ * is selected, supports {enabled, type} without organic, warnings with
+ * source and recommendedAction.
+ *
  * Based on:
  * - DATA_SCHEMA.md
  * - AI_ENGINE_SPEC.md
@@ -14,6 +20,8 @@ import {
   AnalysisClassificationSchema,
   ResultStatusSchema
 } from "./AnalysisSchema";
+import { SUPPORT_TYPES } from "../constants/PresetConstants";
+
 import { PresetSchema } from "./PrintPresetSchema";
 
 export const QualitySettingsSchema = z.object({
@@ -53,12 +61,17 @@ export const RetractionSettingsSchema = z.object({
 export const SupportSettingsSchema = z.object({
   enabled: z.boolean(),
 
-  type: z.enum([
-    "none",
-    "organic",
-    "tree",
-    "standard"
-  ])
+  type: z.enum(SUPPORT_TYPES)
+});
+
+/**
+ * Temperature Settings (DATA_SCHEMA.md 3.10.0): whole numbers of degrees
+ * Celsius, both required.
+ */
+export const TemperatureSettingsSchema = z.object({
+  nozzle: z.number().int().nonnegative(),
+
+  bed: z.number().int().nonnegative()
 });
 
 /**
@@ -85,6 +98,8 @@ export const RecommendedProfileSchema =
       "raft"
     ]),
 
+    temperature: TemperatureSettingsSchema,
+
     infillDensity: z.number(),
 
     infillPattern: z.string(),
@@ -103,7 +118,11 @@ export const WarningSchema = z.object({
     "critical"
   ]),
 
-  message: z.string()
+  message: z.string(),
+
+  source: z.string(),
+
+  recommendedAction: z.string()
 });
 
 export const OptimizationSchema =
@@ -130,7 +149,8 @@ export const RecommendationSchema =
 
     materialId: z.string().min(1),
 
-    filamentId: z.string().min(1),
+    // null when no filament is selected (DATA_SCHEMA.md 3.10.0)
+    filamentId: z.string().min(1).nullable(),
 
     analysisId: z.string().min(1),
 

@@ -1,0 +1,25 @@
+{
+  "id": "draft",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "Draft",
+    "category": "draft",
+    "description": "Quick visual validation.",
+    "settings": {
+      "layerHeight": 0.28,
+      "wallCount": 2,
+      "topLayers": 4,
+      "bottomLayers": 3,
+      "infillDensity": 5,
+      "infillPattern": "lightning",
+      "supportEnabled": false,
+      "supportType": "standard",
+      "adhesionType": "skirt",
+      "printSpeed": 200
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

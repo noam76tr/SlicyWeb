@@ -636,13 +636,16 @@ Presets (lot 86):
   the 11 shipped presets are valid (PresetSchema, strict) and have the
     values of Preset Values; a field fanSpeed or a support type organic is
     refused; a file refused does not stop the other presets
-  preset:getAll returns the 11 presets
+  preset:getAll returns the 11 presets (unit test and end-to-end test)
 
 Recommendation (lot 87):
   Ultimaker S5 (maxPrintSpeed and maxTravelSpeed null) + Fast Prototype:
     print speed at most 100 mm/s with VALUE_LIMITED, travel at most
     150 mm/s without warning of its own (test required by Noam; answer C,
     2026-11-05)
+  travel lowered by a published maxTravelSpeed: no VALUE_LIMITED (answer A
+    of Noam, 2026-11-06); a limit lowering the print speed by less than
+    10 %: no VALUE_LIMITED
   printer with maxPrintSpeed published (as 500) + Balanced: print 150 mm/s,
     no VALUE_LIMITED
   printer with maxPrintSpeed 100 + Balanced: 100 mm/s and VALUE_LIMITED

@@ -1,0 +1,25 @@
+{
+  "id": "miniature",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "Miniature",
+    "category": "miniature",
+    "description": "Very small highly detailed models.",
+    "settings": {
+      "layerHeight": 0.08,
+      "wallCount": 3,
+      "topLayers": 10,
+      "bottomLayers": 8,
+      "infillDensity": 15,
+      "infillPattern": "gyroid",
+      "supportEnabled": false,
+      "supportType": "tree",
+      "adhesionType": "skirt",
+      "printSpeed": 40
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

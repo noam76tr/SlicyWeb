@@ -3,7 +3,7 @@
 # ERROR CODES SPECIFICATION
 
 
-Version: 2.4.0
+Version: 2.4.1
 
 Status: Approved
 
@@ -468,6 +468,8 @@ The file of a filament of the user could not be written or deleted (disk full, n
 ```toml
 Schema Validation Failed
 ```
+
+Version 2.4.1 (Phase 10 lot 86, ADR-035 D4): also a preset file of data/presets/ refused at loading: larger than 1 MB, not readable, invalid JSON, not a valid Repository Data Schema envelope or preset (PresetSchema, strict), source other than Official, or id already loaded. The file is not used, the other presets stay available; reported in the log of the main process only (no preset code exists).
 
 ## SCH_002
 ```toml

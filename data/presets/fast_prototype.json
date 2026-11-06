@@ -1,0 +1,25 @@
+{
+  "id": "fast_prototype",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "Fast Prototype",
+    "category": "fast_prototype",
+    "description": "Rapid iteration.",
+    "settings": {
+      "layerHeight": 0.28,
+      "wallCount": 2,
+      "topLayers": 4,
+      "bottomLayers": 3,
+      "infillDensity": 10,
+      "infillPattern": "lightning",
+      "supportEnabled": false,
+      "supportType": "standard",
+      "adhesionType": "skirt",
+      "printSpeed": 250
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

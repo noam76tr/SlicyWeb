@@ -552,7 +552,10 @@ Can Depend On:
 ```text
 Profiles Domain
 Validation Domain
+Storage Domain
 ```
+
+Storage Domain (Phase 10 lot 86, ADR-035 D4): PresetLoader (src/preset_engine/) reads the preset files of data/presets/ in the main process with the reader of the profile files (PrinterProfileStorage), as the material and filament profiles.
 
 Cannot Depend On:
 

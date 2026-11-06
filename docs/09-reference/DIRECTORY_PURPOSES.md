@@ -831,11 +831,11 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 
 | File | Role |
 |------|------|
-| `DecisionEngine.ts` | Generates recommendation decisions and selects the preset |
-| `RecommendationBuilder.ts` | Builds the final Recommendation object |
-| `RecommendationEngine.ts` | Orchestrates the complete recommendation process |
-| `ValidationEngine.ts` | Validates and normalizes the profile parameters |
-| `WarningEngine.ts` | Generates warnings based on the analysis |
+| `DecisionEngine.ts` | Selects the preset (Default Preset); initializes the profile from the preset; temperatures, fan, retraction, supports, adhesion and confidence of RECOMMENDATION_RULES.md 1.1.2 (Phase 10 lot 87) |
+| `RecommendationBuilder.ts` | Builds the final Recommendation object (filamentId null without a filament) |
+| `RecommendationEngine.ts` | Orchestrates the recommendation of one object in the order of RECOMMENDATION_RULES.md (Inputs And Order); REC_002 without printer, material, classification, Balanced preset or fan value; REC_001 when RecommendationSchema refuses the result |
+| `ValidationEngine.ts` | Bounds of the profile values (validate) and limits of the printer and the material (applyLimits: print speed, travel, layer height, temperatures; VALUE_LIMITED, never for the travel; TEMPERATURE_UNSUPPORTED) |
+| `WarningEngine.ts` | Warnings of the geometry, the printer and the material (Recommendation Warnings); one per code with its highest severity, most severe first |
 
 ---
 
@@ -843,23 +843,20 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 
 **Purpose:** Print Preset Management
 
-**Role:** Print preset management.
+**Role:** Print preset management: loading of the shipped presets (Phase 10 lot 86, ADR-035 D4). The selection of the preset of an object is made by the recommendation engine (DecisionEngine.selectPreset).
 
 **Contains:**
 
-- Preset Selection
+- Preset Loading
 - Preset Validation
-- Preset Recommendations
-- Preset Storage
 
 **Files:**
 
 | File | Role |
 |------|------|
-| `PresetManager.ts` | Manages print presets and coordinates the repository |
-| `PresetRepository.ts` | Storage and retrieval of presets (in-memory Map) |
-| `PresetSelector.ts` | Selects presets by criteria (name, category, classification) |
-| `PresetValidator.ts` | Validates preset integrity |
+| `PresetLoader.ts` | Reads the preset files of data/presets/ in the main process (PrinterProfileStorage), validates each one (PresetProfileFileSchema, source Official), refuses a damaged or invalid file and a duplicate id (SCH_001, the others stay available), keeps the presets in the order of their files; served by preset:getAll |
+
+PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and src/services/PresetService.ts were removed in Phase 10 lot 86 (ADR-035 D13): never used, replaced by the loading of the presets and by DecisionEngine.selectPreset.
 
 ---
 
@@ -1011,10 +1008,9 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 | `AnalysisService.ts` | Starts the analysis of the objects (ADR-034 D7, Phase 9 lot 80): by itself after the import and after a rotation or a scale (never during a gesture), Tools > Analyze Models and Recompute Analysis; one object at a time in the Web Worker (AnalysisRunner), computation dropped when no longer needed; Complete Analysis Schema validated with AnalysisSchema and stored in analysisStore; ANA_001 and ANA_002 in analysisTaskStore |
 | `FilamentService.ts` | Filament service: add, remove, retrieve filaments |
 | `MaterialService.ts` | Material service: add, remove, retrieve materials |
-| `PresetService.ts` | Preset service: creation, validation, serialization and duplication of presets |
 | `PrinterService.ts` | Printer service: add, remove, retrieve printers |
 | `ProjectService.ts` | Project service: complete lifecycle (creation, validation, serialization) |
-| `RecommendationService.ts` | Recommendation service that delegates generation to the RecommendationEngine |
+| `RecommendationService.ts` | Recommendation service that delegates generation to the RecommendationEngine (inputs: analysis, printer, material, filament, presets; Phase 10 lot 87) |
 | `StorageService.ts` | Storage service for projects, cache and user settings |
 | `TransformService.ts` | The only way to change the transform of an object (fields, actions, gizmos): refuses invalid values, places the object on the plate (except the live steps of a rotation with the gizmo), writes the object store; records each change for undo and redo (a gesture is one action), undo(), redo() groups of objects (moveGroup, rotateGroup, scaleGroup, setGroupSize, groupInfo); |
 | `MaterialSelectionService.ts` | Materials and filaments of the window (Phase 8 lot 70): reads material:getAll and filament:getAll (checked with MaterialSchema and FilamentSchema), materials in the order of the families, filaments by brand and name; last material and filament selected again (material.autoloadLastMaterial); a filament selects its family, a material of another family clears the filament; each choice saved (settings:update); filament:add, update and remove (lot 71), then the filaments read again, the selected filament follows its update or is cleared |
@@ -1137,7 +1133,8 @@ No other store keeps a copy of a selection.
 | `AnalysisConstants.ts` | Analysis constants (score ranges, risk and confidence levels, object categories) |
 | `ApplicationConstants.ts` | Global application constants (name, version, language, theme, autosave) |
 | `MaterialConstants.ts` | Material constants (categories, warping risks, cooling ranges) |
-| `PresetConstants.ts` | Preset constants (categories, infill patterns, support, adhesion, layer heights) |
+| `PresetConstants.ts` | Preset constants (categories, infill patterns, support types without organic, adhesion, layer heights) |
+| `RecommendationConstants.ts` | Numbers of the recommendation (Phase 10 lot 87): engine defaults, limits, fan by family, retraction by extruder, thresholds of supports and warnings, codes and reference messages of the warnings, confidence reductions (RECOMMENDATION_RULES.md 1.1.2) |
 | `PrinterConstants.ts` | Printer constants (nozzles, build volume, temperatures, extruder types) |
 | `ViewportConstants.ts` | Viewport constants (coordinate system, default workspace, grid, colors, camera) |
 | `HistoryConstants.ts` | Undo and redo: MAX_HISTORY_SIZE (50 actions) |
@@ -1311,6 +1308,7 @@ No other store keeps a copy of a selection.
 | `ImportIPC.ts`  | IPC communication for file import (STL, 3MF) and validation |
 | `IpcChannels.ts` | Allow list of the IPC channels the renderer may use (invoke, send, receive), read by preload.ts (API_SPEC.md, Allowed IPC Channels) |
 | `MaterialIPC.ts` | IPC communication for the materials: material:getAll (Phase 8 lot 68) |
+| `PresetIPC.ts` | IPC communication for the print presets: preset:getAll (Phase 10 lot 86) |
 | `PrinterIPC.ts` | IPC communication for printer operations (get, get all, add, update, remove, count) |
 | `ProjectIPC.ts` | IPC communication for project operations (create, load, save, delete) |
 | `SettingsIPC.ts`| IPC communication for user settings (get, update, reset, theme, language) |
@@ -1390,6 +1388,8 @@ One file per product line, `<id>.json` (11 lines in lot 69): a Repository Data S
 - Engineering Presets
 - Miniature Presets
 - Custom Presets
+
+The 11 shipped presets (Phase 10 lot 86, ADR-035 D4; no Custom preset): one file per category, `<category>.json` (as `balanced.json`), a Repository Data Schema envelope (type preset, source Official, id = category) whose data is the Print Preset Schema with the values of PRINT_PRESETS_SPEC.md 1.3.1 (Preset Values). Written by SlicyWeb, not taken from a manufacturer or a slicer. Read only, loaded by the main process (PresetLoader); no index.json and no synchronization in Phase 10.
 
 ---
 
@@ -1730,6 +1730,8 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 | `gui/dialogs/printerForm.test.ts` | Form of the Printer Manager: empty limit = null (never 0), comma as decimal separator, lists of nozzles and materials, required and invalid fields, default nozzle in the list, printer unchanged through the form; numbers shown with the separator of the language and read back unchanged in English, French and Hebrew |
 | `gui/hooks/UndoRedoShortcuts.test.ts` | Keys of undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z, Cmd, AZERTY letter, Hebrew layout (key position), Alt and other keys ignored |
 | `i18n/NumberFormatter.test.ts` | Numbers in the format of the language: decimal separator (comma in French, point in English and Hebrew), 2 decimals at most, -0 shown as 0, digit grouping only for a value read, never in a field, ASCII minus sign in a field |
+| `preset_engine/PresetLoading.test.ts` | The 11 presets of data/presets/: valid (PresetSchema, strict), values of Preset Values, id = category; field fanSpeed, support type organic, unknown field and wall count not whole refused; damaged file and invalid preset refused (SCH_001) without stopping the others; other source and duplicate id refused; preset:getAll returns the 11 presets |
+| `recommendation_engine/RecommendationEngine.test.ts` | Recommendation with the printers, materials, filaments and presets of data/: Ultimaker S5 + Fast Prototype (print 100 mm/s with VALUE_LIMITED, travel 150 mm/s), travel never VALUE_LIMITED, limits under 10 % without warning, TPU, layer height and nozzle; temperatures (Bambu PLA Basic, Prusament PLA, PolyLite PLA, without filament, capped, TEMPERATURE_UNSUPPORTED), fan by family, REC_002 without fan value; retraction by extruder, EXTRUDER_UNKNOWN; supports above 60 degrees or a bridge of 50 mm, Vase preset, brim; warnings once each, most severe first; confidence and its reductions; REC_002; RecommendationSchema; repeatable |
 | `material_database/MaterialLoading.test.ts` | MaterialSchema and FilamentSchema (null kept apart from 0; unknown field, family not listed, inverted range, sixth manufacturer setting, other diameter refused); Importers through the schemas; material files (MAT_002: damaged, too large, no temperature for a shipped material, wrong source, duplicate); missing folder; filaments of both folders, user filament never over an Official one; shipped filament with a color, a price or a missing temperature refused (FIL_002) |
 | `material_database/UserFilaments.test.ts` | Filaments of the user: file written in the user folder (envelope filament, Local Custom), id chosen by the main process (valid profile id), loaded again at the next start; update and remove of the file; Official filament never changed (FIL_003), unknown id (FIL_001), same brand, name and color (FIL_004; another color accepted), file not written (FIL_005, no path) |
 | `material_database/MaterialProfiles.test.ts` | The 5 materials and 11 filaments of data/: schema, file name = id, source Official, listed in SOURCES.md and in the index.json of its folder with its SHA-256; each filament in a shipped family; ranges of a family = smallest minimum and largest maximum of its filaments, density null when they differ; loaded without refused file |
@@ -1801,6 +1803,7 @@ Run with Playwright (`npm run test:e2e`: builds the application, then starts it 
 | `analysis.spec.ts` | Analysis (Phase 9 lot 80): cube of 20 mm analyzed after the import (Up to date, 20 × 20 × 20 mm, 8 cm³, 24 cm², no overhang, no bridge, contact 4 cm², risk 0 Very low, status bar); analyzed again after a scale of 50 %; mesh not closed: ANA_002 over the viewport and in the section, closed; Tools menu and Analyze button disabled without object, Recompute Analysis; "Select a single object" for two objects |
 | `app.spec.ts` | Main window without console error, 9 menus, toolbar, no Node.js in the window; language changed and kept after a restart; Hebrew from right to left; numbers in the format of the language (lot 81: comma in French in the Printer, Filament, Transform and Analysis sections, value typed with a comma, point again in English) |
 | `import.spec.ts` | STL import centered and standing on the plate; several files, same names numbered; 3MF import; unsupported and corrupted files refused with their message, error closed with its Close button |
+| `preset.spec.ts` | The 11 presets of data/presets/ served by preset:getAll (Phase 10 lot 86), without error in the window |
 | `material.spec.ts` | The 5 materials and the 11 filaments of data/ served; the filament of the user served by filament:getAll with its id in userFilamentIds; damaged filament file refused without error in the window |
 | `printer.spec.ts` | The 79 printers of data/printers/ and the printer of the user served by printer:getAll; printer:get, damaged file refused without error in the window, PRN_001; settings.json without printer keeps the language; Printer section: Bambu Lab X1 Carbon chosen, limits ("Not published"), plate "256 × 256 mm" in the viewport, status bar, Printer > Select Printer gives the focus to the selector, printer chosen again at the next start, "No printer" saved; Printer Manager: required fields, printer entered and saved in printers/, listed in "My printers", plate, kept at the next start, deleted after a confirmation; profiles: line "Profiles v1.0.1", Printer > Refresh Profiles shows the result, printers still available, setting "Check for profile updates automatically" checked by default and saved |
 | `transform.spec.ts` | Fields of the Transform section; undo and redo (toolbar, Ctrl+Z and Ctrl+Y in a field, no extra action); modes G, R, S, Escape; Ctrl+A, Shift+click, selection rectangle from the top corner (under the import messages) and the bottom corner, group moved |

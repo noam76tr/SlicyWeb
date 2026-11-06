@@ -1,0 +1,25 @@
+{
+  "id": "balanced",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "Balanced",
+    "category": "balanced",
+    "description": "General purpose printing.",
+    "settings": {
+      "layerHeight": 0.2,
+      "wallCount": 3,
+      "topLayers": 5,
+      "bottomLayers": 4,
+      "infillDensity": 15,
+      "infillPattern": "gyroid",
+      "supportEnabled": false,
+      "supportType": "tree",
+      "adhesionType": "skirt",
+      "printSpeed": 150
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

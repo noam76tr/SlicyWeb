@@ -1,0 +1,25 @@
+{
+  "id": "flexible",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "Flexible",
+    "category": "flexible",
+    "description": "Flexible filament printing.",
+    "settings": {
+      "layerHeight": 0.2,
+      "wallCount": 3,
+      "topLayers": 5,
+      "bottomLayers": 4,
+      "infillDensity": 15,
+      "infillPattern": "gyroid",
+      "supportEnabled": false,
+      "supportType": "standard",
+      "adhesionType": "skirt",
+      "printSpeed": 30
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

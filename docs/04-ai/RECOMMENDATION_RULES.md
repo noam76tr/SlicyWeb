@@ -2,7 +2,7 @@
 
 # RECOMMENDATION RULES
 
-Version: 1.1.1
+Version: 1.1.2
 
 Status: Approved
 
@@ -308,7 +308,7 @@ The family of the material is material.category (as "PLA", "TPU"; MATERIAL_PROFI
 
 ## Limits
 
-ADR-035 D6, corrected by Noam (KI-008). Version 1.1.1: travel speed of a printer that does not publish maxTravelSpeed confirmed by Noam (2026-11-05, answer C): 150 mm/s, without warning.
+ADR-035 D6, corrected by Noam (KI-008). Version 1.1.1: travel speed of a printer that does not publish maxTravelSpeed confirmed by Noam (2026-11-05, answer C): 150 mm/s, without warning. Version 1.1.2: the travel speed never gives a warning, also when a published maxTravelSpeed lowers it (Noam, 2026-11-06, answer A).
 
 ```text
 Print speed (speed.print):
@@ -323,8 +323,10 @@ Print speed (speed.print):
 Travel speed (speed.travel):
   at most printer.motion.maxTravelSpeed
   at most 150 mm/s when maxTravelSpeed is null (not published: 57 printers
-    of 79 on 2026-11-05), without warning: the travel does not change the
-    quality of the part (decision of Noam, 2026-11-05)
+    of 79 on 2026-11-05)
+  never a warning, whatever the limit (published maxTravelSpeed or
+    150 mm/s): the travel does not change the quality of the part
+    (decisions of Noam, 2026-11-05 and 2026-11-06)
 
 Layer height (quality.layerHeight):
   at most 75 % of printer.defaultNozzle (Nozzle Compatibility Rule),
@@ -336,7 +338,7 @@ Temperatures: at most the maximum temperatures of the printer
   (Temperature And Cooling)
 ```
 
-VALUE_LIMITED (warning): given when a limit lowers the print speed, the travel speed, the layer height or a temperature by at least 10 % of the value before the limit. The limit of 100 mm/s (maxPrintSpeed null) always gives it when it lowers the print speed. The limit of 150 mm/s (maxTravelSpeed null) never gives it (1.1.1).
+VALUE_LIMITED (warning): given when a limit lowers the print speed, the layer height or a temperature by at least 10 % of the value before the limit. The limit of 100 mm/s (maxPrintSpeed null) always gives it when it lowers the print speed. The travel speed never gives it, neither with the limit of 150 mm/s (maxTravelSpeed null, 1.1.1) nor with a published maxTravelSpeed (1.1.2).
 
 Example (test required by Noam): Ultimaker S5 (maxPrintSpeed and maxTravelSpeed null) with the preset Fast Prototype: print speed 250 lowered to 100 mm/s with the warning VALUE_LIMITED; travel 250 lowered to 150 mm/s without warning of its own.
 

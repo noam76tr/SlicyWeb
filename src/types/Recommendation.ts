@@ -14,9 +14,12 @@ import type { Classification } from "./Classification";
 import type { PrintPreset } from "./PrintPreset";
 import type { Warning } from "./Warning";
 
+/**
+ * Support Type values (DATA_SCHEMA.md 3.10.0): tree is the only name of
+ * the tree supports (ADR-035 D5).
+ */
 export type SupportType =
   | "none"
-  | "organic"
   | "tree"
   | "standard";
 
@@ -51,6 +54,15 @@ export interface RetractionSettings {
   speed: number;
 }
 
+/**
+ * Temperature Settings (DATA_SCHEMA.md 3.10.0, ADR-035 D7): degrees
+ * Celsius, whole numbers.
+ */
+export interface TemperatureSettings {
+  nozzle: number;
+  bed: number;
+}
+
 export interface SupportSettings {
   enabled: boolean;
   type: SupportType;
@@ -73,6 +85,8 @@ export interface RecommendedProfile {
   supports: SupportSettings;
 
   adhesion: AdhesionType;
+
+  temperature: TemperatureSettings;
 
   infillDensity: number;
 
@@ -103,7 +117,8 @@ export interface Recommendation {
 
   materialId: string;
 
-  filamentId: string;
+  /** null when no filament is selected (DATA_SCHEMA.md 3.10.0) */
+  filamentId: string | null;
 
   analysisId: string;
 

@@ -20,7 +20,8 @@ import type { Warning } from "../types/Warning";
 
 /**
  * Printer, material and filament the recommendation is generated for
- * (API_SPEC.md, Generate Recommendation input).
+ * (API_SPEC.md, Generate Recommendation input); filamentId is null when
+ * no filament is selected (DATA_SCHEMA.md 3.10.0).
  */
 export type RecommendationSelection = Pick<
   Recommendation,

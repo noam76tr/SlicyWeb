@@ -1,0 +1,25 @@
+{
+  "id": "engineering",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "Engineering",
+    "category": "engineering",
+    "description": "Precision engineering parts.",
+    "settings": {
+      "layerHeight": 0.16,
+      "wallCount": 4,
+      "topLayers": 7,
+      "bottomLayers": 6,
+      "infillDensity": 35,
+      "infillPattern": "cubic",
+      "supportEnabled": false,
+      "supportType": "standard",
+      "adhesionType": "skirt",
+      "printSpeed": 80
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

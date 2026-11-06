@@ -3121,7 +3121,7 @@ Release Type:
 Classification Engine
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-05
@@ -3163,6 +3163,97 @@ Date:
 - The automatic classification is computed on the object as placed: an object turned upside down can change category (a vase upside down is not a vase); a category chosen by the user does not depend on the orientation
 - Convex hull (hollow): about 1.3 s more for a sphere of 250 000 triangles, 7 s for 1 million (worst case: every vertex on the hull); the analysis target (1 million triangles in less than 5 s, PERFORMANCE_SPEC.md) is checked at the closure of Phase 10 on the models of Noam
 - The thresholds of the classification are a first setting, checked before the closure of Phase 10
+
+## Validation Result
+
+- Windows 11 (2026-11-06): lot 85 on GitHub (0fb4fd6, identical to the lot); 409 keys, 28 channels, typecheck and lint without error, 392 tests passed and 1 skipped, 34 end-to-end tests passed; the four copies of src/optimization_engine/ deleted (Noam)
+- Answer of Noam: Q1 A (never a warning for the travel, also when a published maxTravelSpeed lowers it): written in 0.1.88
+- Remark of Noam on the performance: 7 s for 1 million triangles is above the target of 5 s; the convex hull is already computed on the welded vertices (unique), so the optimization stays for lot 89
+
+---
+
+# VERSION 0.1.87
+
+Release Type:
+Print Presets
+
+Status:
+In Progress
+
+Date:
+2026-11-06
+
+## Added
+
+- data/presets/: the 11 shipped presets (ADR-035 D4 and D5; PRINT_PRESETS_SPEC.md 1.3.1, Shipped Presets and Preset Values): ultra_quality, high_quality, balanced, draft, fast_prototype, functional, structural, engineering, flexible, miniature, vase; one file per category (Repository Data Schema envelope, type preset, source Official, id = category, version 1.0.0, validated false); confidenceScore 100, supportEnabled false, adhesion skirt; no Custom preset (Phase 15)
+- src/preset_engine/PresetLoader.ts: loading of the presets by the main process (PrinterProfileStorage, PresetProfileFileSchema, source Official); a damaged or invalid file and a duplicate id are refused with SCH_001 in the log, the other presets stay available
+- src/electron/ipc/PresetIPC.ts and the channel preset:getAll (IpcChannels.ts: 29 channels; main.ts loads data/presets/ at start); no synchronization with the profile repository in Phase 10
+- src/schemas/PrintPresetSchema.ts: PresetSettingsSchema and PresetSchema strict (whole numbers of walls and layers, infill 0 to 100, positive layer height and speed), PresetProfileFileSchema (DATA_SCHEMA.md 3.10.0, Print Preset Schema, Preset Settings, Repository Data Schema type preset)
+- Tests: tests/unit/preset_engine/PresetLoading.test.ts (18 tests: the 11 presets and their values, fanSpeed and organic refused, refused file, other source, duplicate id, preset:getAll); tests/e2e/preset.spec.ts (preset:getAll in the built application)
+
+## Changed
+
+- src/types/PrintPreset.ts, src/constants/PresetConstants.ts: support types without organic (tree is the only name of the tree supports, answer A of Noam, 2026-11-05); field fanSpeed removed from the preset settings (ADR-035 D5, D13); PRESET_DEFAULTS.supportType tree
+- API_SPEC.md: PresetIPC Channels (preset:getAll) and the allow list
+- PRINT_PRESETS_SPEC.md 1.3.1: id of the envelope = category, version 1.0.0, refused file reported with SCH_001
+- ERROR_CODES_SPEC.md 2.4.1: SCH_001 also for a refused preset file (no preset code exists)
+- DOMAINS_DEPENDENCY_MATRIX.md: the Presets Domain may depend on the Storage Domain (PresetLoader reads the files as the profiles)
+- DIRECTORY_PURPOSES.md, FILE_STRUCTURE.md, ARCHITECTURE.md, API_START_HERE.md: src/preset_engine/ (PresetLoader.ts), PresetIPC.ts, data/presets/, PresetService.ts removed, tests
+- TEST_PLAN.md: preset:getAll also tested end to end
+- PASSATION.md: lots 86 and 87, grouped delivery of lots (rule of Noam, 2026-11-06), decision 86
+- 0.1.86 Completed with the results of Noam
+
+## Removed
+
+- src/preset_engine/PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and src/services/PresetService.ts: never used, replaced by the loading of the presets and by DecisionEngine.selectPreset (ADR-035 D13, validated by Noam on 2026-11-05)
+- Support type organic (types, constants, schemas) and field fanSpeed of the preset settings (ADR-035 D5, D13)
+
+## Known Limitations
+
+- The presets are loaded and served, but not read by the window yet: the Print Preset section and the status bar show the preset of the selected object from lot 88
+
+---
+
+# VERSION 0.1.88
+
+Release Type:
+Recommendation Engine
+
+Status:
+In Progress
+
+Date:
+2026-11-06
+
+## Added
+
+- Recommendation engine of Phase 10 (ADR-035 D5 to D10; RECOMMENDATION_RULES.md 1.1.2, Rules Of Version 1.1.0), in the order of Inputs And Order: preset of the classification; profile from the preset and the engine defaults (40, 80, 120 mm/s at most the print speed, travel 250 mm/s, minimum layer time 5 s); limits (print speed at most maxPrintSpeed or 100 mm/s when it is null, TPU 30 mm/s, travel at most maxTravelSpeed or 150 mm/s when it is null, layer height at most 75 % of the nozzle and 0.08 to 0.28 mm, temperatures at most the printer); temperatures {nozzle, bed} (published value, otherwise the middle of the range of the filament or the material rounded to 5 °C); fan (published, otherwise PLA 90, PETG 50, ABS 15, ASA 15, TPU 40); retraction (published, otherwise direct drive 0.8 mm 35 mm/s, bowden 5 mm 40 mm/s, unknown: direct drive and EXTRUDER_UNKNOWN; TPU distance divided by two); supports above 60 degrees or a bridge above 50 mm with the type of the preset, never with Vase (VASE_SUPPORTS_IGNORED); brim for a risk of at least 41, ABS, ASA or a tall object; the 13 warnings, one per code with its highest severity, most severe first; confidence 100 minus the reductions (KI-010)
+- src/constants/RecommendationConstants.ts: the numbers of these rules, the codes and English reference messages of the warnings
+- src/types/Recommendation.ts, src/schemas/RecommendationSchema.ts: temperature {nozzle, bed} (whole numbers, required), filamentId null when no filament is selected, supports without organic; src/types/Warning.ts and WarningSchema: source and recommendedAction (DATA_SCHEMA.md 3.10.0, Warning Schema)
+- RecommendationEngine.generateRecommendation(input): analysis, meshClosed, printer, material, filament (or null), printer and filament of the user, presets; REC_002 without printer, material, analysis, classification, Balanced preset, fan value or temperature range; REC_001 when RecommendationSchema refuses the result
+- Tests: tests/unit/recommendation_engine/RecommendationEngine.test.ts (38 tests, with the printers, materials, filaments and presets of data/: Ultimaker S5 + Fast Prototype at most 100 mm/s with VALUE_LIMITED and travel 150 mm/s, test required by Noam; travel never VALUE_LIMITED; temperatures of Bambu PLA Basic, Prusament PLA, PolyLite PLA; TEMPERATURE_UNSUPPORTED of Prusament ASA on Bambu A1; retraction; supports; brim; warnings; confidence; REC_002; schema)
+
+## Changed
+
+- src/recommendation_engine/DecisionEngine.ts: generate() takes the values of the rules; new rules temperature, cooling, retraction, requiresSupports, supports, adhesion, confidence; the supports follow RECOMMENDATION_RULES.md (above 60 degrees or a bridge above 50 mm, type of the preset) instead of organic forced for any overhang (private adjustSupports replaced)
+- src/recommendation_engine/ValidationEngine.ts: applyLimits() (limits, VALUE_LIMITED, TEMPERATURE_UNSUPPORTED); validate() kept
+- src/recommendation_engine/WarningEngine.ts: warnings of RECOMMENDATION_RULES.md 1.1.2 with their thresholds and severities (instead of the thresholds without source: angle above 60 high, risk above 75, bridge above 20 mm), finalize() (one per code, order of display)
+- src/recommendation_engine/RecommendationEngine.ts, RecommendationBuilder.ts, src/services/RecommendationService.ts: inputs of the rules (printer, material, filament)
+- RECOMMENDATION_RULES.md 1.1.2, Limits: the travel speed never gives VALUE_LIMITED, also when a published maxTravelSpeed lowers it (answer A of Noam, 2026-11-06)
+- DECISIONS.md (ADR-035 D6): answer A of Noam
+- TEST_PLAN.md: travel lowered by a published maxTravelSpeed without warning; limit under 10 % without warning
+- PHASES_IMPLEMENTATION_PLAN.md: progress of lots 86 and 87
+- DIRECTORY_PURPOSES.md, FILE_STRUCTURE.md: recommendation engine, RecommendationConstants.ts, tests
+- KNOWN ISSUES: KI-008 and KI-010 resolved (removed); KI-012 updated (organic no longer forced, removed from the code)
+
+## Removed
+
+- DecisionEngine.shouldRecommend, calculateScore, getRecommendationLevel; WarningEngine.hasWarnings, getWarningCount (never called; ADR-035 D13)
+
+## Known Limitations
+
+- The engine is not called by the window yet: the automatic start (Object Reference Rule 11), the store and the Recommendation section come in lot 88
+- KI-029 (vase mode) and the values per target slicer (KI-012) stay for Phase 14
 
 ---
 
@@ -3963,38 +4054,6 @@ Planned Resolution: Documentation lot, with the API_SPEC.md 3.0.0 decision
 ---
 
 
-Identifier: KI-008
-
-Since: 0.1.23
-
-Affected Module: src/recommendation_engine/DecisionEngine.ts, src/recommendation_engine/ValidationEngine.ts
-
-Issue: The recommended profile is initialized from preset.settings and adjusted for geometry (supports when overhangs are detected) and generic ranges (ValidationEngine). Printer limits and material limits are not applied (PRINT_PRESETS_SPEC.md, Printer Overrides, Material Overrides, Golden Rule): the recommendation generation receives printer, material and filament identifiers only.
-
-Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
-
-Planned Resolution: With Technical Phase 10 (Classification and Recommendation Engine). Rules written in 0.1.85 (ADR-035 D6 and D7; RECOMMENDATION_RULES.md 1.1.0, Limits, Temperature And Cooling, Retraction); applied by the recommendation engine in lot 87.
-
-
----
-
-
-Identifier: KI-010
-
-Since: 0.1.23
-
-Affected Module: src/recommendation_engine/DecisionEngine.ts, src/recommendation_engine/RecommendationBuilder.ts
-
-Issue: The confidenceScore of the recommendation is the confidenceScore of the preset only. It does not take the classification confidence (classification.confidenceScore) into account.
-
-Planned Resolution: Define the combination rule in RECOMMENDATION_RULES.md or AI_ENGINE_SPEC.md (decision required), then apply it. Rule decided and written in 0.1.85 (ADR-035 D10; RECOMMENDATION_RULES.md 1.1.0, Confidence: 100 minus reductions, the confidence of the preset no longer used); applied in lot 87.
-
-Resolve Before: Phase 14 - Target Slicer Export (technical plan); Roadmap Phase 12
-
-
----
-
-
 Identifier: KI-011
 
 Since: 0.1.23
@@ -4017,7 +4076,7 @@ Since: 0.1.23
 
 Affected Module: docs/02-architecture/SLICER_EXPORT_SPEC.md, src/recommendation_engine/DecisionEngine.ts
 
-Issue: The support type "organic" is forced when overhangs are detected and the preset has no supports. SLICER_EXPORT_SPEC.md has no value table for supports.type per target slicer (Value Conversion Rules, Enumerations); Cura has no "organic" support type (Cura equivalent: tree).
+Issue: The support type "organic" was forced when overhangs were detected and the preset had no supports (no longer since 0.1.88: organic is removed from the code in 0.1.87, the supports follow RECOMMENDATION_RULES.md 1.1.2). SLICER_EXPORT_SPEC.md has no value table for supports.type per target slicer (Value Conversion Rules, Enumerations); Cura has no "organic" support type (Cura equivalent: tree).
 
 Planned Resolution: Add the supports.type value table per target slicer to SLICER_EXPORT_SPEC.md (Cura: organic = tree). Since 0.1.85 (ADR-035 D5 and D8, decision of Noam): one name, tree, for the tree supports (organic removed from the Support Type values); supports only above 60 degrees or a bridge above 50 mm, with the type of the preset (lot 87). The table of SLICER_EXPORT_SPEC.md 1.1.0 stays Unverified until Phase 14.
 

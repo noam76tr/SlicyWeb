@@ -1,0 +1,25 @@
+{
+  "id": "high_quality",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "High Quality",
+    "category": "high_quality",
+    "description": "High quality while reducing print duration.",
+    "settings": {
+      "layerHeight": 0.12,
+      "wallCount": 3,
+      "topLayers": 7,
+      "bottomLayers": 6,
+      "infillDensity": 15,
+      "infillPattern": "gyroid",
+      "supportEnabled": false,
+      "supportType": "tree",
+      "adhesionType": "skirt",
+      "printSpeed": 100
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

@@ -84,7 +84,7 @@ data/
 │   ├── cache/
 │   ├── filaments/                      = profils de filaments Official (un fichier JSON par gamme, SOURCES.md, index.json)
 │   ├── materials/                      = profils de matériaux Official (un fichier JSON par famille, SOURCES.md, index.json)
-│   ├── presets/
+│   ├── presets/                        = presets Official (un fichier JSON par catégorie, 11 presets, phase 10)
 │   ├── printers/                       = profils d'imprimantes Official (un fichier JSON par imprimante, SOURCES.md, index.json)
 │   └── templates/
 
@@ -341,6 +341,7 @@ src/electron/
     ├── ImportIPC.ts
     ├── IpcChannels.ts         = allow list of the IPC channels (API_SPEC.md)
     ├── MaterialIPC.ts         = material:getAll (Phase 8)
+    ├── PresetIPC.ts           = preset:getAll (Phase 10)
     ├── PrinterIPC.ts
     ├── ProjectIPC.ts
     ├── SettingsIPC.ts
@@ -679,10 +680,7 @@ src/classification_engine/
 ```text
 src/preset_engine/
 
-├── PresetManager.ts
-├── PresetRepository.ts
-├── PresetValidator.ts
-└── PresetSelector.ts
+└── PresetLoader.ts            = loading of the presets of data/presets/ (Phase 10 lot 86)
 ```
 
 ---
@@ -778,10 +776,9 @@ src/services/
 ├── AnalysisService.ts         = automatic analysis, Tools menu, validation and storage of the results (Phase 9)
 ├── FilamentService.ts
 ├── MaterialService.ts
-├── PresetService.ts
 ├── PrinterService.ts
 ├── ProjectService.ts
-├── RecommendationService.ts
+├── RecommendationService.ts  = recommendation of one object through the engine (Phase 10)
 ├── ImportService.ts           = import queue, progress, cancel and errors for the GUI (ADR-029)
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
 ├── PrinterSelectionService.ts = printers of the window, last printer (Phase 7)
@@ -899,6 +896,7 @@ src/constants
 ├── MaterialConstants.ts
 ├── PresetConstants.ts
 ├── PrinterConstants.ts
+├── RecommendationConstants.ts = numbers of the recommendation rules (Phase 10)
 ├── HistoryConstants.ts        = MAX_HISTORY_SIZE (undo and redo)
 └── ViewportConstants.ts       = coordinate system, colors and camera of the viewport (ADR-028)
 ```
@@ -941,10 +939,14 @@ tests/
 │   │   └── UserFilaments.test.ts = filaments entered by the user (Phase 8)
 │   ├── model_analysis/
 │   │   └── ModelAnalyzer.test.ts = base of the model analysis, stability, overhangs, bridges, thin walls, worker (Phase 9)
+│   ├── preset_engine/
+│   │   └── PresetLoading.test.ts = presets of data/presets/, PresetSchema, preset:getAll (Phase 10)
 │   ├── printer_database/
 │   │   ├── PrinterLoading.test.ts = printer profile files, PrinterSchema (Phase 7)
 │   │   ├── PrinterProfiles.test.ts = the profiles of data/printers/ and their index.json (Phase 7)
 │   │   └── UserPrinters.test.ts = printers entered by the user (Phase 7)
+│   ├── recommendation_engine/
+│   │   └── RecommendationEngine.test.ts = limits, temperatures, retraction, supports, warnings, confidence (Phase 10)
 │   ├── repositories/
 │   │   ├── MaterialRepositorySync.test.ts = download of the materials and filaments of the profile repository (Phase 8)
 │   │   └── PrinterRepositorySync.test.ts = download of the profile repository (Phase 7)
@@ -972,6 +974,7 @@ tests/
     ├── app.spec.ts = main window, languages, numbers in the format of the language
     ├── import.spec.ts = STL and 3MF import, refused files
     ├── material.spec.ts = materials and filaments served by the main process (Phase 8)
+    ├── preset.spec.ts = presets served by the main process (Phase 10)
     ├── printer.spec.ts = printers served by the main process, Printer section, Printer Manager, profiles (Phase 7)
     ├── transform.spec.ts = transforms, undo and redo, several objects (Phase 6)
     └── viewport.spec.ts = navigation cube (lot 74)

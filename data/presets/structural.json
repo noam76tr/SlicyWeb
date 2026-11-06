@@ -1,0 +1,25 @@
+{
+  "id": "structural",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "Structural",
+    "category": "structural",
+    "description": "Load-bearing components.",
+    "settings": {
+      "layerHeight": 0.2,
+      "wallCount": 5,
+      "topLayers": 7,
+      "bottomLayers": 6,
+      "infillDensity": 50,
+      "infillPattern": "cubic",
+      "supportEnabled": false,
+      "supportType": "standard",
+      "adhesionType": "skirt",
+      "printSpeed": 80
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

@@ -1,0 +1,25 @@
+{
+  "id": "functional",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "Functional",
+    "category": "functional",
+    "description": "General purpose functional parts.",
+    "settings": {
+      "layerHeight": 0.2,
+      "wallCount": 4,
+      "topLayers": 6,
+      "bottomLayers": 5,
+      "infillDensity": 25,
+      "infillPattern": "gyroid",
+      "supportEnabled": false,
+      "supportType": "standard",
+      "adhesionType": "skirt",
+      "printSpeed": 120
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

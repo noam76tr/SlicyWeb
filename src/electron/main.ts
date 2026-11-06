@@ -11,7 +11,8 @@
  * - DECISIONS.md (ADR-032, D4: printer profiles loaded by the main process;
  *   D5: profiles synchronized with the SlicyWeb profile repository;
  *   ADR-033, D6: material and filament profiles loaded by the main
- *   process; D7: synchronized with the same repository)
+ *   process; D7: synchronized with the same repository;
+ *   ADR-035, D4: print presets loaded by the main process)
  */
 
 import { app, BrowserWindow } from "electron";
@@ -20,6 +21,7 @@ import path from "node:path";
 
 import { FilamentService } from "../services/FilamentService";
 import { MaterialService } from "../services/MaterialService";
+import { PresetLoader } from "../preset_engine/PresetLoader";
 import { PrinterService } from "../services/PrinterService";
 import { FilamentRepositorySync } from "../repositories/FilamentRepositorySync";
 import { MaterialRepositorySync } from "../repositories/MaterialRepositorySync";
@@ -42,6 +44,7 @@ import { ProjectIPC } from "./ipc/ProjectIPC";
 import { FilamentIPC } from "./ipc/FilamentIPC";
 import { ImportIPC } from "./ipc/ImportIPC";
 import { MaterialIPC } from "./ipc/MaterialIPC";
+import { PresetIPC } from "./ipc/PresetIPC";
 import { PrinterIPC } from "./ipc/PrinterIPC";
 import { SettingsIPC } from "./ipc/SettingsIPC";
 import { StorageIPC } from "./ipc/StorageIPC";
@@ -182,6 +185,25 @@ function loadFilaments(
   return official.loaded;
 }
 
+/**
+ * Print presets (Phase 10 lot 86, ADR-035 D4): the presets shipped with
+ * the application (data/presets/, Official, read only). No cache and no
+ * synchronization in Phase 10, no preset of the user (Phase 15).
+ * A refused file is reported in the log (SCH_001); the other presets
+ * stay available.
+ */
+const BUNDLED_PRESETS = path.join(__dirname, "../../data/presets");
+
+function loadPresets(presetLoader: PresetLoader): void {
+  const result = presetLoader.loadPresets([
+    { folder: BUNDLED_PRESETS, source: "Official" },
+  ]);
+
+  for (const { code, source, fileName, reason } of result.rejected) {
+    console.warn(`${code} ${source} preset refused: ${fileName} (${reason})`);
+  }
+}
+
 async function registerIPCHandlers(): Promise<void> {
   const projectIPC = new ProjectIPC();
   projectIPC.register();
@@ -239,6 +261,12 @@ async function registerIPCHandlers(): Promise<void> {
 
   const filamentIPC = new FilamentIPC(filamentService);
   filamentIPC.register();
+
+  const presetLoader = new PresetLoader();
+  loadPresets(presetLoader);
+
+  const presetIPC = new PresetIPC(presetLoader);
+  presetIPC.register();
 
   // User preferences: settings.json in the user data folder
   // (Windows: %APPDATA%\SlicyWeb), separate from WYPROJ project files

@@ -17,9 +17,12 @@ import type { PRESET_CATEGORIES } from "../constants/PresetConstants";
 export type PresetCategory =
   (typeof PRESET_CATEGORIES)[number];
 
+/**
+ * Support Type values (DATA_SCHEMA.md 3.10.0): tree is the only name of
+ * the tree supports (ADR-035 D5).
+ */
 export type SupportType =
   | "none"
-  | "organic"
   | "tree"
   | "standard";
 
@@ -29,6 +32,10 @@ export type AdhesionType =
   | "brim"
   | "raft";
 
+/**
+ * Preset Settings (DATA_SCHEMA.md 3.10.0, ADR-035 D4 and D5): no fan
+ * value, the fan comes from the filament or the material.
+ */
 export interface PresetSettings {
   layerHeight: number;
 
@@ -49,8 +56,6 @@ export interface PresetSettings {
   adhesionType: AdhesionType;
 
   printSpeed: number;
-
-  fanSpeed: number;
 }
 
 export interface PrintPreset {

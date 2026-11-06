@@ -279,13 +279,25 @@ filament:add, filament:update and filament:remove change only the filaments ente
 
 ---
 
+## PresetIPC Channels
+
+Print presets (DATA_SCHEMA.md 3.10.0, Print Preset Schema), loaded at start by the main process (DECISIONS.md, ADR-035, D4; Phase 10 lot 86): PresetLoader reads the preset files of data/presets/ (Official), validates them (Repository Data Schema envelope of type preset, PresetSchema strict) and keeps the valid ones, in the order of their file names. No synchronization and no preset of the user in Phase 10. The renderer reads no preset file.
+
+| Channel | Payload | Response data |
+|---|---|---|
+| `preset:getAll` | none | `{ presets }` |
+
+A refused preset file (SCH_001) is left out of the presets and reported in the log of the main process (PRINT_PRESETS_SPEC.md 1.3.1, Shipped Presets).
+
+---
+
 ## Allowed IPC Channels
 
 The preload bridge (src/electron/preload.ts, window.slicyWeb) accepts only the channels of the allow list src/electron/ipc/IpcChannels.ts:
 
 | Bridge method | Allow list | Channels |
 |---|---|---|
-| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle: `filament:add`, `filament:getAll`, `filament:remove`, `filament:update`, `import:3mf`, `import:stl`, `import:validate`, `material:getAll`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:refresh`, `printer:remove`, `printer:update`, `project:create`, `project:delete`, `project:load`, `project:save`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
+| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle: `filament:add`, `filament:getAll`, `filament:remove`, `filament:update`, `import:3mf`, `import:stl`, `import:validate`, `material:getAll`, `preset:getAll`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:refresh`, `printer:remove`, `printer:update`, `project:create`, `project:delete`, `project:load`, `project:save`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
 | `send(channel, data)` | SEND_CHANNELS | none yet |
 | `on(channel, callback)` | RECEIVE_CHANNELS | none yet |
 

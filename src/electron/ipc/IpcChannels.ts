@@ -28,6 +28,7 @@ export const INVOKE_CHANNELS = [
   "import:stl",
   "import:validate",
   "material:getAll",
+  "preset:getAll",
   "printer:add",
   "printer:count",
   "printer:get",

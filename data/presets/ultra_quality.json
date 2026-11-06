@@ -1,0 +1,25 @@
+{
+  "id": "ultra_quality",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "Ultra Quality",
+    "category": "ultra_quality",
+    "description": "Highest visual quality.",
+    "settings": {
+      "layerHeight": 0.08,
+      "wallCount": 3,
+      "topLayers": 10,
+      "bottomLayers": 8,
+      "infillDensity": 10,
+      "infillPattern": "gyroid",
+      "supportEnabled": false,
+      "supportType": "tree",
+      "adhesionType": "skirt",
+      "printSpeed": 60
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

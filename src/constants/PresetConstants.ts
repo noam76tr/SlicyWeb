@@ -71,9 +71,12 @@ export const INFILL_PATTERNS = [
   "triangles"
 ] as const;
 
+/**
+ * Support Type values (DATA_SCHEMA.md 3.10.0): tree is the only name of
+ * the tree supports, also called organic (ADR-035 D5, answer A of Noam).
+ */
 export const SUPPORT_TYPES = [
   "none",
-  "organic",
   "tree",
   "standard"
 ] as const;
@@ -102,6 +105,6 @@ export const PRESET_DEFAULTS = {
   bottomLayers: 5,
   infillDensity: 15,
   infillPattern: "gyroid",
-  supportType: "organic",
+  supportType: "tree",
   adhesionType: "brim"
 } as const;

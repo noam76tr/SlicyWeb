@@ -1,0 +1,25 @@
+{
+  "id": "vase",
+  "type": "preset",
+  "version": "1.0.0",
+  "source": "Official",
+  "data": {
+    "name": "Vase",
+    "category": "vase",
+    "description": "Single-wall decorative objects.",
+    "settings": {
+      "layerHeight": 0.2,
+      "wallCount": 1,
+      "topLayers": 0,
+      "bottomLayers": 4,
+      "infillDensity": 0,
+      "infillPattern": "gyroid",
+      "supportEnabled": false,
+      "supportType": "none",
+      "adhesionType": "skirt",
+      "printSpeed": 80
+    },
+    "confidenceScore": 100
+  },
+  "validated": false
+}

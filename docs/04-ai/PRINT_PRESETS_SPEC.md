@@ -4,7 +4,7 @@
 
 
 
-Version: 1.3.0
+Version: 1.3.1
 
 
 
@@ -1299,9 +1299,13 @@ SlicyWeb ships 11 presets: one per preset category, except Custom (Phase 15). Th
 Location: data/presets/, one JSON file per preset (as balanced.json)
 Format: Repository Data Schema envelope, type "preset", source "Official";
   data is a Print Preset Schema (DATA_SCHEMA.md 3.10.0, Preset Settings)
-Loading: by the main process, validated with PresetSchema (strict), served
-  by the IPC channel preset:getAll; a file refused is not used
-  (the other presets stay available)
+Loading: by the main process (PresetLoader, Phase 10 lot 86), validated
+  with PresetSchema (strict), served by the IPC channel preset:getAll; a
+  file refused is not used (the other presets stay available) and is
+  reported in the log with SCH_001 (ERROR_CODES_SPEC.md 2.4.1)
+id of the envelope (1.3.1): the stored value of the category (as balanced),
+  also the name of the file; a preset whose id is already loaded is refused
+version of the envelope: 1.0.0
 No synchronization with the profile repository in Phase 10
 name: the English name of the category (as "Balanced"); the interface shows
   the translation of the category (preset.<category>)

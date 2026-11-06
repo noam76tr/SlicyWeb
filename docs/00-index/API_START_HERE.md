@@ -199,7 +199,6 @@ Examples:
 src/printer_database/PrinterRepository.ts
 src/material_database/MaterialRepository.ts
 src/filament_database/FilamentRepository.ts
-src/preset_engine/PresetRepository.ts
 src/repositories/GitHubRepository.ts
 ```
 
