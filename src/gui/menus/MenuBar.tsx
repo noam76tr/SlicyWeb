@@ -35,6 +35,10 @@
  *   analysis of the objects without an analysis up to date, analysis of
  *   the selected objects again (AnalysisService); disabled while the
  *   scene has no object, Recompute Analysis while no object is selected;
+ * - Tools > Generate Recommendations (Phase 10 lot 88, ADR-035 D11):
+ *   generates again the recommendations of the selected objects (all the
+ *   objects when none is selected; RecommendationService); disabled while
+ *   the scene has no object, or no printer or no material is selected;
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -53,6 +57,9 @@ import { Fragment, useRef } from "react";
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
 import { AnalysisService } from "../../services/AnalysisService";
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
+import { generateRecommendations } from "../../services/RecommendationService";
+import { useMaterialStore } from "../../state/materialStore";
+import { usePrinterStore } from "../../state/printerStore";
 import { TransformService } from "../../services/TransformService";
 import { useHistoryStore } from "../../state/historyStore";
 import { useObjectStore } from "../../state/objectStore";
@@ -97,8 +104,12 @@ interface MenuItemDefinition {
   /** History read to enable the item (Undo, Redo) */
   history?: "undo" | "redo";
 
-  /** Enabled only when the scene has objects, or objects are selected */
-  needs?: "objects" | "selection";
+  /**
+   * Enabled only when the scene has objects, or objects are selected, or
+   * the scene has objects and a printer and a material are selected
+   * (recommend)
+   */
+  needs?: "objects" | "selection" | "recommend";
 }
 
 interface MenuDefinition {
@@ -245,7 +256,11 @@ const MENUS: MenuDefinition[] = [
         },
       ],
       [
-        { key: "tools.generateRecommendations" },
+        {
+          key: "tools.generateRecommendations",
+          needs: "recommend",
+          action: generateRecommendations,
+        },
         { key: "tools.optimizeOrientation" },
       ],
     ],
@@ -297,6 +312,11 @@ export default function MenuBar(): JSX.Element {
   const hasSelection = useObjectStore(
     (state) => state.selectedObjectIds.length > 0,
   );
+  const hasPrinter = usePrinterStore((state) => state.selectedPrinter !== null);
+  const hasMaterial = useMaterialStore(
+    (state) => state.selectedMaterial !== null,
+  );
+  const canRecommend = hasPrinter && hasMaterial;
   const focusTarget = useRef<string | null>(null);
 
   /** Element of focusId of the item chosen, otherwise the menu title */
@@ -311,7 +331,8 @@ export default function MenuBar(): JSX.Element {
     (item.history === "undo" && !canUndo) ||
     (item.history === "redo" && !canRedo) ||
     (item.needs === "objects" && !hasObjects) ||
-    (item.needs === "selection" && !hasSelection);
+    (item.needs === "selection" && !hasSelection) ||
+    (item.needs === "recommend" && !(hasObjects && canRecommend));
 
   const renderMenu = (
     menu: MenuDefinition,

@@ -24,6 +24,12 @@
  * Phase 9: the Analysis section shows the analysis of the selected object
  * (AnalysisSection.tsx).
  *
+ * Phase 10 (lot 88, ADR-035 D12): the Recommendation section shows the
+ * recommendation of the selected object (RecommendationSection.tsx); the
+ * Print Preset section shows its preset, "—" when no object or several
+ * objects are selected, or when the object has no recommendation (a
+ * display only, the choice of a preset comes in Phase 15).
+ *
  * No business logic.
  *
  * Based on:
@@ -35,7 +41,6 @@ import { useMemo } from "react";
 
 import { formatNumber } from "../../i18n/NumberFormatter";
 import { useObjectStore } from "../../state/objectStore";
-import { usePresetStore } from "../../state/presetStore";
 import { useRecommendationStore } from "../../state/recommendationStore";
 import { useTranslation } from "../hooks/useTranslation";
 
@@ -44,13 +49,12 @@ import FilamentSection from "./FilamentSection";
 import MaterialSection from "./MaterialSection";
 import { getDisplayNames } from "./objectNames";
 import PrinterSection from "./PrinterSection";
+import RecommendationSection, { presetKey } from "./RecommendationSection";
 import SidebarSection from "./SidebarSection";
 import TransformSection from "./TransformSection";
 
 export default function RightSidebar(): JSX.Element {
   const { t, language } = useTranslation();
-
-  const preset = usePresetStore((state) => state.selectedPreset);
 
   const objects = useObjectStore((state) => state.objects);
   const names = useMemo(() => getDisplayNames(objects), [objects]);
@@ -75,8 +79,11 @@ export default function RightSidebar(): JSX.Element {
   );
   const group = selectedObjects.length > 1;
 
+  // Preset of the recommendation of the selected object (one object only)
   const recommendation = useRecommendationStore((state) =>
-    selectedObject ? state.recommendations[selectedObject.objectId] : undefined,
+    selectedObject && !group
+      ? state.recommendations[selectedObject.objectId]
+      : undefined,
   );
 
   const noObject = t("object.noSelection");
@@ -100,7 +107,7 @@ export default function RightSidebar(): JSX.Element {
       </SidebarSection>
 
       <SidebarSection title={t("preset.title")}>
-        {preset ? preset.name : t("preset.noSelection")}
+        {recommendation ? t(presetKey(recommendation.preset.category)) : "—"}
       </SidebarSection>
 
       <SidebarSection title={t("object.title")}>
@@ -126,11 +133,7 @@ export default function RightSidebar(): JSX.Element {
       </SidebarSection>
 
       <SidebarSection title={t("recommendation.title")}>
-        {!selectedObject
-          ? noObject
-          : recommendation
-            ? t(`result.${recommendation.status}`)
-            : t("recommendation.none")}
+        <RecommendationSection objectIds={selectedObjectIds} />
       </SidebarSection>
     </div>
   );

@@ -395,6 +395,7 @@ src/gui/
 │   ├── MaterialSection.tsx    = Material section of the Properties Panel (Phase 8)
 │   ├── FilamentSection.tsx    = Filament section of the Properties Panel (Phase 8)
 │   ├── AnalysisSection.tsx    = Analysis section of the Properties Panel (Phase 9)
+│   ├── RecommendationSection.tsx = Recommendation section of the Properties Panel (Phase 10)
 │   ├── profileRows.tsx        = rows of values of the Material and Filament sections (Phase 8)
 │   ├── TransformSection.tsx   = Transform section of the Properties Panel (Phase 6)
 │   └── objectNames.ts         = display names of the objects (duplicates: "cube (1)")
@@ -404,9 +405,6 @@ src/gui/
 │   └── ImportStatus.tsx       = progress, Cancel, confirmation and errors of the imports
 ├── analysis/
 │   └── AnalysisMessages.tsx   = messages ANA_001 and ANA_002 over the viewport (Phase 9)
-├── panels/
-│   ├── PresetPanel.tsx
-│   └── RecommendationPanel.tsx
 ├── statusbar/
 │   └── StatusBar.tsx
 ├── layouts/
@@ -803,6 +801,7 @@ src/state/
 ├── analysisStore.ts
 ├── analysisTaskStore.ts       = objects being analyzed, warnings and messages of the analysis (Phase 9), triangles beyond 45 degrees (lot 82)
 ├── recommendationStore.ts
+├── recommendationTaskStore.ts = errors of the last generation of each recommendation (Phase 10), not saved
 ├── importStore.ts             = imports in progress and their result
 ├── historyStore.ts            = undo and redo stacks (Phase 6)
 └── viewportStore.ts           = projection and view presets of the viewport, Overhang Display on or off (lot 82)

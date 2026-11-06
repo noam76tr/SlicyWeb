@@ -379,28 +379,6 @@ Every file should be placed in the directory that matches its responsibility.
 
 ---
 
-## src/gui/panels/
-
-**Purpose:** Application Functional Panels
-
-**Contains:**
-
-- Printer Configuration Panels
-- Material Panels
-- Filament Panels
-- Preset Panels
-- Analysis Panels
-- Recommendation Panels
-
-**Files:**
-
-| File | Role |
-|------|------|
-| `PresetPanel.tsx` | Displays the properties of the selected print preset |
-| `RecommendationPanel.tsx` | Complete display of the print recommendations |
-
----
-
 ## src/gui/statusbar/
 
 **Purpose:** Application Status Display
@@ -437,6 +415,7 @@ Every file should be placed in the directory that matches its responsibility.
 | `PrinterSection.tsx` | Printer section of the Properties Panel: selector by brand, then model, with "No printer" first; Brand, Model, Build Volume, Nozzle and Printer Limits of the selected printer, "Not published" for a null value (GUI_SPEC.md, Printer Section, Printer Selector); printers of the user in the group "My printers"; "Manage…" opens the Printer Manager; calls PrinterSelectionService |
 | `TransformSection.tsx` | Transform section of the Properties Panel: position X, Y (Z computed), rotation in degrees, scale in % with a lock, size in mm, Reset and Center On Bed, rows chosen by the mode of the gizmo (GUI_SPEC.md, Transform Section); calls TransformService |
 | `AnalysisSection.tsx` | Analysis section of the Properties Panel (GUI_SPEC.md, Analysis Section, Phase 9 lot 80): status (Up to date, Outdated, Analyzing…, No analysis), dimensions, volume in cm³, surface area in cm², mesh, overhangs, bridges, thin walls, stability with the level of the tip risk; warning of a mesh not closed (ANA_002); "Select a single object" for several objects; numbers in the format of the language |
+| `RecommendationSection.tsx` | Recommendation section of the Properties Panel (GUI_SPEC.md, Recommendation Section, Phase 10 lot 88, ADR-035 D12 option B): status; Object type ("Automatic (<category>)" then the 15 categories) with the confidence level of the automatic classification; preset; warnings (most severe first, critical in red); recommendation confidence; the values under "Details", folded by default; "Select a printer and a material"; REC_001 and REC_002; "Select a single object" for several objects; the Print Preset section and the status bar use its presetKey |
 | `objectNames.ts` | Display names of the objects: source file name, "cube (1)", "cube (2)" for duplicates (IMPORT_EXPORT_SPEC.md, Duplicate Names) |
 
 ---
@@ -1010,7 +989,7 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `MaterialService.ts` | Material service: add, remove, retrieve materials |
 | `PrinterService.ts` | Printer service: add, remove, retrieve printers |
 | `ProjectService.ts` | Project service: complete lifecycle (creation, validation, serialization) |
-| `RecommendationService.ts` | Recommendation service that delegates generation to the RecommendationEngine (inputs: analysis, printer, material, filament, presets; Phase 10 lot 87) |
+| `RecommendationService.ts` | Recommendation service (Phase 10 lots 87 and 88, ADR-035 D3, D11): reads the presets (preset:getAll, PresetSchema); generates the recommendation of each object with the RecommendationEngine once its analysis is up to date and a printer and a material are selected, and again after a change of the selection or of the object type (rule 11); Tools > Generate Recommendations; object type chosen by the user or Automatic; REC_001 and REC_002 in recommendationTaskStore |
 | `StorageService.ts` | Storage service for projects, cache and user settings |
 | `TransformService.ts` | The only way to change the transform of an object (fields, actions, gizmos): refuses invalid values, places the object on the plate (except the live steps of a rotation with the gizmo), writes the object store; records each change for undo and redo (a gesture is one action), undo(), redo() groups of objects (moveGroup, rotateGroup, scaleGroup, setGroupSize, groupInfo); |
 | `MaterialSelectionService.ts` | Materials and filaments of the window (Phase 8 lot 70): reads material:getAll and filament:getAll (checked with MaterialSchema and FilamentSchema), materials in the order of the families, filaments by brand and name; last material and filament selected again (material.autoloadLastMaterial); a filament selects its family, a material of another family clears the filament; each choice saved (settings:update); filament:add, update and remove (lot 71), then the filaments read again, the selected filament follows its update or is cleared |
@@ -1071,6 +1050,7 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `presetStore.ts` | Zustand store for print presets (list and selection) |
 | `printerStore.ts` | Zustand store for printers (list and selection) |
 | `recommendationStore.ts` | Zustand store for print recommendations |
+| `recommendationTaskStore.ts` | Zustand store of the generation of the recommendations (Phase 10 lot 88): error of the last generation of each object (REC_001, REC_002), shown in the Recommendation section only; not saved |
 | `importStore.ts` | Zustand store for the imports in progress (file, phase, progress, error code) |
 | `sceneStore.ts` | Zustand store for the 3D scene (scene of the project) |
 | `viewportStore.ts` | Zustand store for the viewport (projection, requested view preset, mode of the gizmo, lock of the scale, Overhang Display on or off, lot 82) |

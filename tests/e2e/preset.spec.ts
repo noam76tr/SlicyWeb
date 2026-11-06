@@ -4,8 +4,8 @@
  *
  * The 11 presets of data/presets/ are loaded by the main process
  * (ADR-035 D4, Phase 10 lot 86) and read by the window through
- * preset:getAll only. Nothing is shown yet: the Print Preset section
- * shows the preset of the selected object from lot 88.
+ * preset:getAll only. The Print Preset section shows the preset of the
+ * recommendation of the selected object (lot 88, recommendation.spec.ts).
  *
  * Based on:
  * - TEST_PLAN.md (Classification and Recommendation Engine Unit Tests,

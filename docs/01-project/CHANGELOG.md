@@ -3178,7 +3178,7 @@ Release Type:
 Print Presets
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-06
@@ -3212,6 +3212,10 @@ Date:
 
 - The presets are loaded and served, but not read by the window yet: the Print Preset section and the status bar show the preset of the selected object from lot 88
 
+## Validation Result
+
+- Windows 11 (2026-11-06): lots 86 and 87 on GitHub (91de6de, identical to the lots); 409 keys, 29 channels, typecheck and lint without error, 448 tests passed and 1 skipped, 35 end-to-end tests passed; the five files of the list deleted, src/preset_engine/ keeps PresetLoader.ts only (Noam)
+
 ---
 
 # VERSION 0.1.88
@@ -3220,7 +3224,7 @@ Release Type:
 Recommendation Engine
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-06
@@ -3254,6 +3258,59 @@ Date:
 
 - The engine is not called by the window yet: the automatic start (Object Reference Rule 11), the store and the Recommendation section come in lot 88
 - KI-029 (vase mode) and the values per target slicer (KI-012) stay for Phase 14
+
+## Validation Result
+
+- Windows 11 (2026-11-06): validated with lot 86 (same delivery, same results; Noam)
+- Remark of Noam (not urgent): 24 printers, among them all the Bambu Lab printers, always get EXTRUDER_UNKNOWN; their extruder type is to be checked again on the sheets of the manufacturers (only when the sheet says it clearly), then a new version of the profiles in slicyweb-profiles (PASSATION.md, remaining work)
+
+---
+
+# VERSION 0.1.89
+
+Release Type:
+Recommendation Interface
+
+Status:
+In Progress
+
+Date:
+2026-11-06
+
+## Added
+
+- Automatic recommendation of each object (ADR-035 D11; DATA_SCHEMA.md 3.10.0, Object Reference Rules, rule 11): generated in the window, without Web Worker, as soon as the analysis of the object is up to date and a printer and a material are selected (the filament is optional); a change of the selected printer, material or filament makes the recommendations of all the objects outdated, then they are generated again at once; without a printer or a material they stay outdated
+- src/services/RecommendationService.ts: loadPresets (preset:getAll, PresetSchema, preset store), start (automatic generation, rule 11), generate (Tools > Generate Recommendations and the Generate button: the selected objects, all the objects when none is selected, even when up to date), chooseObjectType (category chosen by the user or "Automatic", rule 11); REC_001 and REC_002 kept for the Recommendation section, an object is not tried again until its analysis or the selection changes, or Generate Recommendations is chosen
+- src/state/recommendationTaskStore.ts: error of the last generation of each object (REC_001, REC_002), never saved
+- src/gui/sidebar/RecommendationSection.tsx: Recommendation section (GUI_SPEC.md, Recommendation Section; ADR-035 D3, D12 option B): status; Object type ("Automatic (<category>)" then the 15 categories) with the classification confidence of the automatic classification; Preset; Warnings (translated text of each code, most severe first, critical in red); Recommendation confidence (score out of 100 and Excellent, High, Moderate, Low or Very Low); under "Details", folded by default: layer height, walls, top and bottom layers, infill, supports, adhesion, nozzle and bed temperatures, fan, five speeds, retraction; "Select a printer and a material" (REC_002); several objects: "Select a single object"
+- src/classification_engine/ClassificationEngine.ts: chooseCategory (source user, confidence 100, measured features kept) and automaticOf (automatic classification computed again from the measured features, for "Automatic")
+- src/constants/RecommendationConstants.ts: RECOMMENDATION_CONFIDENCE_LEVELS (RECOMMENDATION_RULES.md, Confidence)
+- 61 translation keys in English, French and Hebrew (470 keys): texts of the section, the 13 warnings (warning.<CODE>), the levels of the recommendation confidence, the infill patterns, the support and adhesion types
+- Tests: tests/unit/services/RecommendationService.test.ts (18 tests: automatic generation, filament optional, mesh not closed, rule 9, rule 11, printer and filament of the user, object type and Automatic, REC_001, REC_002, Generate, presets); tests/e2e/recommendation.spec.ts (2 tests: section, Details, object type, Print Preset section, status bar, Tools menu, Generate button, several objects)
+
+## Changed
+
+- src/gui/sidebar/RightSidebar.tsx: Recommendation section; Print Preset section: the preset of the recommendation of the selected object, "—" otherwise (display only, ADR-035 D12)
+- src/gui/statusbar/StatusBar.tsx: Active Preset, same rule
+- src/gui/menus/MenuBar.tsx (Tools > Generate Recommendations) and src/gui/toolbars/Toolbar.tsx (Generate): enabled when the scene has objects and a printer and a material are selected
+- src/gui/App.tsx: reads the presets at start and starts the automatic recommendation
+- GUI_SPEC.md (Recommendation Section): lot 88 details
+- TEST_PLAN.md: tests of lot 88
+- PHASES_IMPLEMENTATION_PLAN.md: progress of lot 88
+- DIRECTORY_PURPOSES.md, FILE_STRUCTURE.md: RecommendationSection.tsx, recommendationTaskStore.ts, src/gui/panels/ removed
+- PASSATION.md: lot 88; remaining work: extruder type of the 24 printers (remark of Noam)
+- 0.1.87 and 0.1.88 Completed with the results of Noam
+- KNOWN ISSUES: KI-011 resolved (removed); KI-015 updated (only src/renderer/Renderer.ts remains)
+
+## Removed
+
+- src/gui/panels/RecommendationPanel.tsx and PresetPanel.tsx: never used, text in English in the code, replaced by the Recommendation and Print Preset sections (ADR-035 D13, validated by Noam on 2026-11-05; KI-015)
+
+## Known Limitations
+
+- The recommendations and the object types are not saved in a project before Phase 13
+- The choice of a preset by the user, the Custom preset and the change of the recommended values come in Phase 15
+- The thresholds of the classification and the duration of the convex hull are checked at the closure of Phase 10 (lot 89), on the models of Noam
 
 ---
 
@@ -4054,22 +4111,6 @@ Planned Resolution: Documentation lot, with the API_SPEC.md 3.0.0 decision
 ---
 
 
-Identifier: KI-011
-
-Since: 0.1.23
-
-Affected Module: src/classification_engine/ClassificationValidator.ts (the copy of src/optimization_engine/ was removed in 0.1.86)
-
-Issue: ClassificationValidator is not called anywhere since the validated field was removed (0.1.23). Since 0.1.81, AnalysisPanel is removed and AnalysisService no longer gives the confidence level: the classification and its confidence level are shown from Phase 10 (ADR-034 D1; ConfidenceScorer).
-
-Planned Resolution: Call ClassificationValidator in the classification workflow; show the classification and its confidence level when Phase 10 computes them. Planned in 0.1.85 (ADR-035 D13): ClassificationValidator called by the classification (lot 85), the four copies of src/optimization_engine/ removed (lot 85), the confidence level shown in the Recommendation section (lot 88). 0.1.86 (lot 85): ClassificationValidator called for every classification and the four copies removed; remains the confidence level shown (lot 88).
-
-Resolve Before: Technical Phase 10 - Classification and Recommendation Engine
-
-
----
-
-
 Identifier: KI-012
 
 Since: 0.1.23
@@ -4090,13 +4131,13 @@ Identifier: KI-015
 
 Since: 0.1.35
 
-Affected Module: src/gui/panels/ (PresetPanel, RecommendationPanel), src/renderer/Renderer.ts
+Affected Module: src/renderer/Renderer.ts
 
 Issue: These components are not used by the interface of Phase 3, and some of them contain hardcoded English text, against the Internationalization Rule (CLAUDE.md). The Properties Panel (src/gui/sidebar/RightSidebar.tsx) is used instead of the panels. Since 0.1.36, Viewport.tsx is used (3D viewport); src/renderer/Renderer.ts is no longer used and duplicates RendererManager.
 
 Resolve Before: the phase that displays each component (Phases 7 to 10 for the panels); Renderer.ts can be removed at any time. ViewportToolbar and ViewportStatus removed in 0.1.56 (replaced by the mode buttons over the viewport and the status bar); PrinterPanel removed in 0.1.62 (replaced by the Printer section of the Properties Panel); MaterialPanel and FilamentPanel removed in 0.1.72 (replaced by the Material and Filament sections); AnalysisPanel removed in 0.1.81 (replaced by the Analysis section)
 
-Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it. PresetPanel and RecommendationPanel: removed in lot 88, when the Print Preset and Recommendation sections are done (ADR-035 D13).
+Planned Resolution: When a component is used, read its texts from the dictionaries (useTranslation) and its colors from the theme variables, or remove it if the Properties Panel section replaces it. PresetPanel and RecommendationPanel: removed in 0.1.89 (lot 88), replaced by the Print Preset and Recommendation sections (ADR-035 D13); only src/renderer/Renderer.ts remains.
 
 
 ---

@@ -1706,7 +1706,8 @@ Progress:
 - Analysis (lot 83, CHANGELOG 0.1.84) and documentation (lot 84, CHANGELOG 0.1.85): ADR-035, DATA_SCHEMA.md 3.10.0
 - Classification (lot 85, CHANGELOG 0.1.86): computed in the Web Worker of the analysis, open_top with the walls around the bottom (OBJECT_CLASSIFICATION_SPEC.md 1.2.1); travel without warning when maxTravelSpeed is null (RECOMMENDATION_RULES.md 1.1.1)
 - Presets (lot 86, CHANGELOG 0.1.87): 11 files in data/presets/, PresetLoader in the main process, channel preset:getAll (29 channels); PresetSchema strict without fanSpeed, tree without organic; src/preset_engine/ old files and PresetService.ts removed
-- Recommendation engine (lot 87, CHANGELOG 0.1.88): limits, temperatures and fan, retraction, supports and adhesion, 13 warnings, confidence (RECOMMENDATION_RULES.md 1.1.2: the travel never gives a warning, answer A of Noam); RecommendationSchema with temperature, filamentId null and the Warning Schema; delivered with lot 86 (lots grouped, Noam, 2026-11-06); not called by the interface before lot 88
+- Recommendation engine (lot 87, CHANGELOG 0.1.88): limits, temperatures and fan, retraction, supports and adhesion, 13 warnings, confidence (RECOMMENDATION_RULES.md 1.1.2: the travel never gives a warning, answer A of Noam); RecommendationSchema with temperature, filamentId null and the Warning Schema; delivered with lot 86 (lots grouped, Noam, 2026-11-06); lots 86 and 87 validated by Noam (2026-11-06)
+- Interface (lot 88, CHANGELOG 0.1.89): automatic recommendation (rule 11), Recommendation section (object type with "Automatic", preset, warnings, confidence; the rest under "Details"), Print Preset section and status bar, Tools > Generate Recommendations and the Generate button, 61 keys in three languages; RecommendationPanel.tsx and PresetPanel.tsx removed
 
 
 

@@ -19,6 +19,12 @@
  * (keepUserChoice): only detectedFeatures and classificationVersion are
  * computed again (DATA_SCHEMA.md 3.10.0, Classification Rules).
  *
+ * Choice of the user in the Recommendation section (Phase 10 lot 88;
+ * OBJECT_CLASSIFICATION_SPEC.md 1.2.1, User Choice): chooseCategory gives
+ * the category chosen (source user, confidence 100, measured features
+ * kept); automaticOf gives back the automatic classification, computed
+ * again from the measured features (the category depends only on them).
+ *
  * Based on:
  * - AI_ENGINE_SPEC.md
  * - OBJECT_CLASSIFICATION_SPEC.md (1.2.0)
@@ -27,7 +33,10 @@
  * - DECISIONS.md (ADR-035 D2, D3)
  */
 
-import { CLASSIFICATION_VERSION } from "../constants/AnalysisConstants";
+import {
+  CLASSIFICATION_VERSION,
+  GEOMETRIC_FEATURES,
+} from "../constants/AnalysisConstants";
 import type {
   ModelAnalysisResult,
   PlacedMesh,
@@ -99,6 +108,35 @@ export class ClassificationEngine {
       classificationVersion: computed.classificationVersion,
       source: "user",
     });
+  }
+
+  /**
+   * Category chosen by the user for the object (User Choice): source
+   * user, confidence 100; the measured features stay.
+   */
+  public static chooseCategory(
+    current: Classification,
+    category: ClassificationCategory,
+  ): Classification {
+    return ClassificationEngine.checked({
+      ...current,
+      category,
+      confidenceScore: ConfidenceScorer.calculate(category, "user"),
+      detectedFeatures: [...current.detectedFeatures],
+      source: "user",
+    });
+  }
+
+  /**
+   * Automatic classification of the object, from the features measured
+   * by its last analysis ("Automatic" in the list Object type).
+   */
+  public static automaticOf(current: Classification): Classification {
+    const features = GEOMETRIC_FEATURES.filter((feature) =>
+      current.detectedFeatures.includes(feature),
+    );
+
+    return new ClassificationEngine().classify(features);
   }
 
   /** The classification, checked by ClassificationValidator (KI-011) */

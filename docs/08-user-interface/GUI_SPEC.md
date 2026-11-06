@@ -1810,6 +1810,8 @@ Under "Details" (folded by default):
 - Numbers follow the language (Localization Support, Number Format). Texts in the three languages.
 - src/gui/panels/RecommendationPanel.tsx and PresetPanel.tsx (unused, text in English in the code, KI-015) are deleted when the sections are done (ADR-035 D13).
 
+Lot 88 details: the list Object type appears once the object has been analyzed (its classification exists), also without a printer or a material; before, the section shows only its status. "Classification confidence" is the level of the automatic classification, also when the user chose a category (the category chosen has the confidence 100). Colors of the warnings: critical in red, high and medium in orange (warning color), low in the color of the text, info in gray. The infill pattern, the support type and the adhesion are translated. REC_001 (in red) and REC_002 are shown in the section only. The Print Preset section and the status bar show "—" when no preset can be shown.
+
 
 
 ---

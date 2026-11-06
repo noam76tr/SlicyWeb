@@ -158,3 +158,17 @@ export const CONFIDENCE_REDUCTIONS = {
   CLASSIFICATION_LOW: 10,
   CLASSIFICATION_UNKNOWN: 20
 } as const;
+
+/**
+ * Levels of the recommendation confidence (RECOMMENDATION_RULES.md 1.1.2,
+ * Confidence: 90-100 Excellent, 75-89 High, 60-74 Moderate, 40-59 Low,
+ * 0-39 Very Low), from the highest; shown in the Recommendation section
+ * (lot 88). Distinct from the levels of the classification.
+ */
+export const RECOMMENDATION_CONFIDENCE_LEVELS = [
+  { level: "excellent", min: 90 },
+  { level: "high", min: 75 },
+  { level: "moderate", min: 60 },
+  { level: "low", min: 40 },
+  { level: "veryLow", min: 0 }
+] as const;

@@ -8,7 +8,9 @@
  *
  * Values come from the stores. Analysis Status (Phase 9 lot 80):
  * "Analyzing…" while an analysis is computed, otherwise the status of the
- * analysis of the selected object. Project Status shows "None" until
+ * analysis of the selected object. Active Preset (Phase 10 lot 88, ADR-035
+ * D12): the preset of the recommendation of the selected object, "—"
+ * otherwise (same rule as the Print Preset section). Project Status shows "None" until
  * the project state is available to the GUI.
  *
  * No business logic.
@@ -26,10 +28,11 @@ import { useAnalysisTaskStore } from "../../state/analysisTaskStore";
 import { useFilamentStore } from "../../state/filamentStore";
 import { useMaterialStore } from "../../state/materialStore";
 import { useObjectStore } from "../../state/objectStore";
-import { usePresetStore } from "../../state/presetStore";
 import { usePrinterStore } from "../../state/printerStore";
+import { useRecommendationStore } from "../../state/recommendationStore";
 import { LANGUAGE_NAME_KEYS, useTranslation } from "../hooks/useTranslation";
 import { getDisplayNames } from "../sidebar/objectNames";
+import { presetKey } from "../sidebar/RecommendationSection";
 
 interface StatusFieldProps {
   label: string;
@@ -54,7 +57,6 @@ export default function StatusBar(): JSX.Element {
   const printer = usePrinterStore((state) => state.selectedPrinter);
   const material = useMaterialStore((state) => state.selectedMaterial);
   const filament = useFilamentStore((state) => state.selectedFilament);
-  const preset = usePresetStore((state) => state.selectedPreset);
   const objectCount = useObjectStore((state) => state.objects.length);
 
   const objects = useObjectStore((state) => state.objects);
@@ -82,6 +84,12 @@ export default function StatusBar(): JSX.Element {
 
   const analysis = useAnalysisStore((state) =>
     selectedObject ? state.analysis[selectedObject.objectId] : undefined,
+  );
+
+  const recommendation = useRecommendationStore((state) =>
+    selectedObject && selectedCount === 1
+      ? state.recommendations[selectedObject.objectId]
+      : undefined,
   );
 
   const analyzing = useAnalysisTaskStore(
@@ -124,7 +132,9 @@ export default function StatusBar(): JSX.Element {
       />
       <StatusField
         label={t("statusBar.preset")}
-        value={preset ? preset.name : none}
+        value={
+          recommendation ? t(presetKey(recommendation.preset.category)) : "—"
+        }
       />
       <StatusField
         label={t("statusBar.language")}

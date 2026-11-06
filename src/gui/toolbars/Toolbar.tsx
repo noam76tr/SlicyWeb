@@ -11,7 +11,10 @@
  * (TransformService); they are disabled while their history is empty
  * (UNDO_REDO_SPEC.md, Disabled State). Analyze (Phase 9 lot 80) does the
  * same as Tools > Analyze Models (AnalysisService); it is disabled while the
- * scene has no object. The other buttons are visible and
+ * scene has no object. Generate (Phase 10 lot 88) does the same as Tools >
+ * Generate Recommendations (RecommendationService); it is disabled while
+ * the scene has no object, or no printer or no material is selected
+ * (ADR-035 D11). The other buttons are visible and
  * disabled until the phase that provides their action. They use aria-disabled
  * instead of disabled, so that their tooltip ("available in a later
  * version") is still shown and they stay reachable with the keyboard.
@@ -37,9 +40,12 @@ import {
 } from "lucide-react";
 
 import { AnalysisService } from "../../services/AnalysisService";
+import { generateRecommendations } from "../../services/RecommendationService";
 import { TransformService } from "../../services/TransformService";
 import { useHistoryStore } from "../../state/historyStore";
+import { useMaterialStore } from "../../state/materialStore";
 import { useObjectStore } from "../../state/objectStore";
+import { usePrinterStore } from "../../state/printerStore";
 import { useTranslation } from "../hooks/useTranslation";
 import { IMPORT_ACCEPT, openImportDialog } from "../import/openImportDialog";
 
@@ -63,6 +69,9 @@ interface ToolbarButtonDefinition {
 
   /** Enabled only when the scene has objects */
   needsObjects?: boolean;
+
+  /** Enabled only when a printer and a material are selected */
+  needsPrinterAndMaterial?: boolean;
 }
 
 /** Groups of buttons, separated by a line */
@@ -106,7 +115,13 @@ const TOOLBAR_GROUPS: ToolbarButtonDefinition[][] = [
       action: () => AnalysisService.analyzeModels(),
     },
     { key: "toolbar.optimize", icon: Sparkles },
-    { key: "toolbar.generate", icon: WandSparkles },
+    {
+      key: "toolbar.generate",
+      icon: WandSparkles,
+      needsObjects: true,
+      needsPrinterAndMaterial: true,
+      action: generateRecommendations,
+    },
   ],
 ];
 
@@ -115,6 +130,10 @@ export default function Toolbar(): JSX.Element {
   const canUndo = useHistoryStore((state) => state.undoStack.length > 0);
   const canRedo = useHistoryStore((state) => state.redoStack.length > 0);
   const hasObjects = useObjectStore((state) => state.objects.length > 0);
+  const hasPrinter = usePrinterStore((state) => state.selectedPrinter !== null);
+  const hasMaterial = useMaterialStore(
+    (state) => state.selectedMaterial !== null,
+  );
 
   const notAvailable = t("app.notAvailable");
 
@@ -141,7 +160,9 @@ export default function Toolbar(): JSX.Element {
             const empty =
               (button.history === "undo" && !canUndo) ||
               (button.history === "redo" && !canRedo) ||
-              (button.needsObjects === true && !hasObjects);
+              (button.needsObjects === true && !hasObjects) ||
+              (button.needsPrinterAndMaterial === true &&
+                !(hasPrinter && hasMaterial));
             const disabled = notYet || empty;
             const title = notYet
               ? `${label} (${notAvailable})`
