@@ -4,7 +4,7 @@
 
 
 
-Version: 1.1.0
+Version: 1.2.0
 
 
 
@@ -215,6 +215,10 @@ Target:
 on the Windows 11 computer used for the validation, the interface staying fluid. Larger models are analyzed too (no limit of the analysis; the limits of the import stay), with "Analyzing…" in the status bar. The target is checked at the closure of Phase 9; it does not block.
 
 Thin walls: at most 200 000 measured points per object, with a BVH (three-mesh-bvh).
+
+Phase 10 (lot 90, closure): the classification runs in the same Web Worker, after the analysis; the target above covers both. Convex hull of the feature hollow (OBJECT_CLASSIFICATION_SPEC.md): the exact hull of every vertex took 6.5 s for 1M triangles when every vertex lies on the hull (a sphere). It is framed first by two bounds: the hull of the extreme vertices in 128 directions (lower bound) and this small hull scaled by 1 + delta / (smallest distance from its center to its faces), delta being the largest distance of a vertex outside its face planes, or the bounding box (upper bound). When the ratio volume / hull is on the same side of the limit for both bounds, the answer is certain; otherwise the exact hull decides. The features are the same as with the exact hull alone.
+
+Measured on Linux (sphere of 998 000 triangles): analysis 2 s, classification 2 to 2.5 s (hollow 0.5 to 0.9 s instead of 6.5 s), about 4 to 4.8 s in all. Sphere of 99 224 triangles: classification 0.14 to 0.18 s (Classification Performance: less than 500 ms).
 
 
 

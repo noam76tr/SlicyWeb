@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-11-06. Lots 86 et 87 (presets et moteur de recommandation, livrés ensemble) sur `main` (91de6de), vérifiés identiques, validés par Noam (0.1.87 et 0.1.88 Completed ; remarque sur les 24 imprimantes à extrudeur inconnu, §5). Lot 88 (interface de la recommandation) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.89 (lot 88, In Progress).
+Date : 2026-11-07. Lot 89 (valeurs avec unité en hébreu) validé par Noam (469 clés, 469 + 1, 38 e2e, contrôles 1 à 7 dans les trois langues ; 0.1.90 Completed) ; lot 88 sur `main` (79ad6a5). Lot 89 et lot 90 (clôture de la phase 10) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.91 (lot 90, In Progress). Phase 10 : Completed (2026-11-07).
 
 ---
 
@@ -81,13 +81,13 @@ Date : 2026-11-06. Lots 86 et 87 (presets et moteur de recommandation, livrés e
 | 7 | Printer Database | Completed (2026-10-27) | 0.1.59 à 0.1.66 |
 | 8 | Material Database | Completed (2026-11-01) | 0.1.67 à 0.1.75 |
 | 9 | Model Analysis | Completed (2026-11-02) | 0.1.77 à 0.1.82 |
-| 10 | Classification and Recommendation Engine | In Progress (ADR-035 ; lot 84 documentation, 85 classification, 86 presets, 87 moteur de recommandation, 88 interface) | 0.1.84 à 0.1.89 |
+| 10 | Classification and Recommendation Engine | Completed (2026-11-07 ; ADR-035 ; lot 84 documentation, 85 classification, 86 presets, 87 moteur de recommandation, 88 interface, 89 hébreu, 90 clôture) | 0.1.84 à 0.1.91 |
 | 11 à 16 | Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
 
 - **Fenêtre :** Electron avec React ; barre de menus (9 menus de GUI_SPEC) ; barre d'outils (11 boutons) ; panneaux latéraux redimensionnables et repliables ; barre d'état ; thème sombre.
-- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 470 clés de traduction. Tous les nombres affichés suivent le format de la langue (lot 81) : virgule décimale en français, point en anglais et en hébreu.
+- **Langues :** anglais, français, hébreu (droite à gauche). La langue choisie est enregistrée dans `settings.json` (dossier de l'utilisateur) et rechargée au démarrage. 469 clés de traduction. Tous les nombres affichés suivent le format de la langue (lot 81) : virgule décimale en français, point en anglais et en hébreu. Une valeur avec son unité s'affiche comme en anglais et en français dans les trois langues (« 200 mm/s », « 210 °C », « 15 % » ; lot 89) : en hébreu, `NumberFormatter` l'isole de gauche à droite (U+2066 … U+2069), à un seul endroit pour toute l'interface.
 - **Vue 3D :**
   - repère en mm, X à droite, Y vers l'arrière, Z vers le haut, origine au centre du plateau (ADR-028) ;
   - grille adaptative ;
@@ -104,7 +104,7 @@ Date : 2026-11-06. Lots 86 et 87 (presets et moteur de recommandation, livrés e
   - objets centrés à Z = 0 ; un 3MF garde la disposition de ses objets ;
   - messages d'erreur traduits, avec les codes d'ERROR_CODES_SPEC.
 - **Analyse des modèles (phase 9, lots 77 à 80) :** chaque objet est analysé tout seul après son import, et de nouveau après une rotation ou une échelle (à la fin du geste ou à la validation du champ, jamais pendant un glissement), un objet à la fois, dans un Web Worker ; un calcul devenu inutile (objet supprimé ou de nouveau tourné) est abandonné. Section Analysis du panneau Propriétés : statut (À jour, Obsolète, Analyse en cours…, Aucune analyse), dimensions, volume (cm³), surface (cm²), maillage, surplombs, ponts, parois fines, stabilité (surface de contact, rapport de hauteur, risque de bascule sur 100 et son niveau) ; « Sélectionnez un seul objet » pour plusieurs objets. Tools > Analyze Models (et le bouton Analyze de la barre d'outils) et Recompute Analysis ; « Analyzing… » dans la barre d'état ; messages ANA_001 (échec) et ANA_002 (maillage non fermé, une fois par objet) au-dessus de la vue 3D, sous ceux de l'import. Surplombs en rouge (lot 82, décision 83) : bouton « Surplombs » à côté de Déplacer, Pivoter, Échelle et Affichage > Afficher les surplombs ; les triangles au-delà de 45° de tous les objets de la scène en rouge, sélectionnés ou non, trouvés par le Worker de l'analyse, seulement quand l'analyse est à jour ; éteint à chaque démarrage.
-- **Classification (phase 10, lot 85) :** calculée avec l'analyse, dans le même Worker, sur l'objet tel qu'il est posé : 10 caractéristiques (`FeatureDetector.ts`), 5 règles (vase 75, container 70, miniature 70, figurine 65, mechanical_part 65, sinon unknown 0), `source` automatic ; `open_top` exige des parois autour du fond (4 rayons horizontaux, remarque de Noam : une équerre en L n'est ni container ni vase) ; une catégorie choisie par l'utilisateur est gardée après une nouvelle analyse. Affichée et choisie dans la section Recommendation (lot 88).
+- **Classification (phase 10, lot 85) :** calculée avec l'analyse, dans le même Worker, sur l'objet tel qu'il est posé : 10 caractéristiques (`FeatureDetector.ts`), 5 règles (vase 75, container 70, miniature 70, figurine 65, mechanical_part 65, sinon unknown 0), `source` automatic ; `open_top` exige des parois autour du fond (4 rayons horizontaux, remarque de Noam : une équerre en L n'est ni container ni vase) ; une catégorie choisie par l'utilisateur est gardée après une nouvelle analyse. `hollow` (volume / enveloppe convexe ≤ 0,35) est décidé par deux bornes du volume de l'enveloppe, l'enveloppe exacte seulement près de la limite (lot 90 : même résultat, 1 million de triangles analysés et classés en 4 à 4,8 s sous Linux au lieu de 11 s). Affichée et choisie dans la section Recommendation (lot 88).
 - **Presets (phase 10, lot 86) :** les 11 presets de `data/presets/` (un fichier par catégorie, Official, valeurs de PRINT_PRESETS_SPEC 1.3.1) sont lus par le processus principal (`PresetLoader`, PresetSchema strict, fichier refusé : SCH_001 dans le journal) et servis par `preset:getAll`. `tree` est le seul type de supports en arbre (`organic` retiré), pas de ventilateur dans un preset. Lus par la fenêtre au démarrage (lot 88).
 - **Moteur de recommandation (phase 10, lot 87) :** règles de RECOMMENDATION_RULES 1.1.2 (limites, températures, ventilateur, rétraction, supports, bordure, 13 avertissements, confiance), testé avec les imprimantes, matériaux, filaments et presets livrés (Ultimaker S5 + Fast Prototype : 100 mm/s avec VALUE_LIMITED, déplacement 150 mm/s ; jamais d'avertissement pour le déplacement).
 - **Recommandation dans la fenêtre (phase 10, lot 88) :** `RecommendationService` fait la recommandation de chaque objet dès que son analyse est à jour et qu'une imprimante et un matériau sont choisis (le filament est facultatif) ; changer d'imprimante, de matériau ou de filament rend toutes les recommandations obsolètes, puis elles sont refaites (règle 11) ; sans imprimante ou sans matériau, elles restent obsolètes. Section Recommendation : statut, Type d'objet (« Automatique (catégorie) » puis les 15 catégories, avec la confiance de la classification automatique), preset, avertissements (les plus graves en premier, critique en rouge), confiance de la recommandation ; le reste sous « Détails », replié (couche, parois, remplissage, supports, adhérence, températures, ventilateur, vitesses, rétraction). Section Print Preset et barre d'état : le preset de l'objet sélectionné, « — » sinon. Outils > Générer les recommandations et le bouton Générer (objets sélectionnés, tous sinon). REC_001 et REC_002 dans la section seulement.
@@ -136,7 +136,7 @@ Date : 2026-11-06. Lots 86 et 87 (presets et moteur de recommandation, livrés e
 | PRINT_PRESETS_SPEC.md | 1.3.1 (11 presets livrés, valeurs, `tree` ; id de l'enveloppe = catégorie) |
 | RECOMMENDATION_RULES.md | 1.1.2 (limites, températures, rétraction, supports, 13 avertissements, confiance ; déplacement 150 mm/s quand `maxTravelSpeed` vaut `null` ; jamais d'avertissement pour le déplacement) |
 | SUPPORT_GENERATION_SPEC.md | 1.1.0 (Organic et Tree = `tree`) |
-| PERFORMANCE_SPEC.md | 1.1.0 (analyse : 1 million de triangles en moins de 5 s) |
+| PERFORMANCE_SPEC.md | 1.2.0 (analyse et classification : 1 million de triangles en moins de 5 s ; méthode de l'enveloppe convexe, lot 90) |
 | ARCHITECTURE_DECISION_MATRIX.md | 2.7.0 |
 | API_SPEC.md | 2.1.0 (voir §5, points en attente ; PresetIPC Channels au lot 86) |
 | SLICER_EXPORT_SPEC.md | 1.1.0 (températures réglées, mode vase manquant : KI-029) |
@@ -240,6 +240,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 86 | Phase 10, presets (livré avec le lot 87) : 11 fichiers dans `data/presets/` (id = catégorie), `PresetLoader.ts` (nouveau, processus principal, SCH_001), `PresetIPC.ts` et `preset:getAll` (29 canaux), PresetSchema strict sans `fanSpeed`, `organic` retiré ; `PresetManager`, `PresetRepository`, `PresetSelector`, `PresetValidator` et `PresetService.ts` supprimés (D13) ; API_SPEC (PresetIPC Channels), PRINT_PRESETS_SPEC 1.3.1, ERROR_CODES_SPEC 2.4.1 ; 18 tests, 1 e2e | 0.1.87 |
 | 87 | Phase 10, moteur de recommandation (livré avec le lot 86) : limites, températures, ventilateur, rétraction, supports, bordure, 13 avertissements, confiance (RECOMMENDATION_RULES 1.1.2, Q1 A : jamais d'avertissement pour le déplacement) ; `RecommendationConstants.ts` (nouveau) ; RecommendationSchema avec `temperature`, `filamentId` `null`, Warning Schema ; méthodes jamais appelées de DecisionEngine et WarningEngine supprimées (D13) ; KI-008 et KI-010 réglés ; 38 tests (448 + 1), e2e 35 | 0.1.88 |
 | 88 | Phase 10, interface : `RecommendationService.ts` réécrit (presets lus par `preset:getAll`, lancement automatique, règle 11, Generate, type d'objet), `recommendationTaskStore.ts` et `RecommendationSection.tsx` (nouveaux), section Print Preset et barre d'état, Outils > Générer les recommandations et bouton Générer, `ClassificationEngine.chooseCategory` et `automaticOf` ; 61 clés (470) ; KI-011 réglé ; `RecommendationPanel.tsx` et `PresetPanel.tsx` supprimés (D13) ; 18 tests (466 + 1), 2 e2e (37) | 0.1.89 |
+| 89 | Valeurs avec unité en hébreu (remarque de Noam sur le lot 88) : `formatQuantity`, `formatQuantities`, `formatQuantityRange`, `isolateValue` dans `NumberFormatter.ts`, utilisés par toutes les valeurs avec unité (sections, taille du plateau) ; unités `mm` aussi en hébreu ; clé `preset.noSelection` supprimée (469) ; fonction privée `format` de `PrinterSection.tsx` supprimée (demandée à Noam) ; 3 tests (469 + 1), 1 e2e en hébreu (38) | 0.1.90 |
+| 90 | Clôture de la phase 10 : `hollow` décidé par deux bornes du volume de l'enveloppe convexe (`isHollow`, `hullVolumeBounds` dans `FeatureDetector.ts`), l'enveloppe exacte seulement près de 0,35 (même résultat ; 6,5 s → 0,5 à 0,9 s sur 1 million de triangles) ; PERFORMANCE_SPEC 1.2.0 ; seuils de la classification inchangés, vérifiés sur les modèles de Noam (contrôles manuels) ; aucune suppression ; 18 tests (487 + 1), e2e inchangés (38) | 0.1.91 |
 
 ---
 
@@ -359,6 +361,10 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 87. **Lots 86 et 87 validés (Noam, 2026-11-06) :** remarque pour plus tard, pas urgente : 24 imprimantes, dont toutes les Bambu Lab, auront toujours EXTRUDER_UNKNOWN (rétraction du direct drive). À faire : revérifier leur type d'extrudeur sur les fiches des fabricants, **seulement si la fiche le dit clairement**, puis publier une nouvelle version des profils dans `slicyweb-profiles` (§5).
 
+88. **Lot 88 validé (Noam, 2026-11-07) :** `presetStore.selectedPreset` gardé (phase 15) ; clé `preset.noSelection` supprimée au lot 89. Remarque : en hébreu, chaque valeur avec son unité doit s'afficher comme en anglais et en français (« 200 mm/s », pas « mm/s 200 »), dans toute l'interface, par un isolement Unicode à un seul endroit commun, avec un test e2e en hébreu : fait au lot 89, avant la clôture (lot 90). Idée pour après la clôture de la phase 10 : onglets dans le panneau Propriétés (§5).
+
+89. **Lot 89 validé (Noam, 2026-11-07) :** 469 clés, 29 canaux, 469 + 1, 38 e2e, contrôles 1 à 7 en hébreu, français et anglais ; suppression de la fonction privée `format` de `PrinterSection.tsx` acceptée. Lot 90 : clôture de la phase 10, avec l'accélération de l'enveloppe convexe (décision 86) ; phase 10 Completed (2026-11-07), à confirmer par les contrôles manuels du lot 90 sur les modèles de Noam. Les questions sur les onglets du panneau Propriétés sont dans `lot90-cloture-phase10/QUESTIONS-ONGLETS.md`.
+
 **Méthode**
 
 27. Règle de décision (§1) : l'option « Recommandé » peut être appliquée sans demander, hors des 5 cas listés.
@@ -375,10 +381,11 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 4. **Phase 8 : Material Database** (Completed, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (fait, validé) ; 68 chargement (fait, validé) ; 69 données (fait, validé) ; 70 interface (fait, validé) ; 71 filaments de l'utilisateur (fait, validé) ; 72 synchronisation (fait, validé ; release v1.1.0 de `slicyweb-profiles`) ; 73 clôture (fait, validé). Close le 2026-11-01. (Lot 67 : plateau, hors phase 8.)
 5. **Cube de navigation** (décisions 76 et 78) : lot 74 fait, validé par Noam le 2026-11-01.
 6. **Phase 9 : Model Analysis** (Completed, ADR-034) : analyse au lot 75 ; réponses de Noam (décisions 79 à 81) ; 76 documentation ; 77 calcul de base dans un Worker ; 78 surplombs et ponts ; 79 parois fines ; 80 interface (tous validés) ; 81 clôture et format des nombres (décision 82). Close le 2026-11-02, confirmée par les contrôles de Noam sur le lot 81 (2026-11-03). Lot 82 : surplombs en rouge (décisions 81 et 83). Suite : la phase 10. La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
-7. **Phase 10 : Classification and Recommendation Engine** (In Progress, ADR-035) : analyse au lot 83 (validé) ; réponses de Noam (décision 84) ; 84 documentation (validé) ; 85 classification (validé) ; 86 presets et 87 moteur de recommandation (livrés ensemble, validés) ; 88 interface (à envoyer) ; puis 89 clôture (seuils de la classification et durée de l'enveloppe convexe vérifiés sur les modèles de Noam).
-8. **Phases 11 à 16**, dans l'ordre du plan technique.
+7. **Phase 10 : Classification and Recommendation Engine** (Completed le 2026-11-07, ADR-035) : analyse au lot 83 (validé) ; réponses de Noam (décision 84) ; 84 documentation (validé) ; 85 classification (validé) ; 86 presets et 87 moteur de recommandation (livrés ensemble, validés) ; 88 interface (validé) ; 89 valeurs avec unité en hébreu (validé) ; 90 clôture (enveloppe convexe accélérée ; seuils de la classification et durée vérifiés sur les modèles de Noam, contrôles manuels du lot 90). Si un modèle de Noam est mal classé, le changement de seuil est un choix visible : question à Noam, puis un lot à part (nouvelle version d'OBJECT_CLASSIFICATION_SPEC).
+8. **Après la clôture de la phase 10 (idée de Noam, 2026-11-07) :** des onglets dans le panneau Propriétés, par exemple Imprimante (Imprimante, Matériau, Filament), Objet (Transformation, Analyse), Réglages (Préréglage, Recommandations) ; jamais de changement d'onglet automatique ; un point rouge sur l'onglet Réglages s'il y a un avertissement critique. Questions préparées au lot 90 (`lot90-cloture-phase10/QUESTIONS-ONGLETS.md`), en attente des réponses de Noam.
+9. **Phases 11 à 16**, dans l'ordre du plan technique.
    - **Pas urgent (remarque de Noam, 2026-11-06, décision 87) :** type d'extrudeur des 24 imprimantes à « unknown » (dont toutes les Bambu Lab) : le revérifier sur les fiches des fabricants, seulement si la fiche le dit clairement, puis publier une nouvelle version des profils dans `slicyweb-profiles` (même règle de tag qu'à la v1.1.0).
-9. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
+10. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
    | KI | Sujet | À régler avant |
    |---|---|---|
@@ -395,7 +402,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    | KI-028 | npm audit : minimatch (GHSA-g3hv-75wg-m249, modérée), via eslint, typescript-eslint et ts-morph (shadcn), outils de développement seulement | Phase 16 |
    | KI-029 | Mode vase : aucun champ dans le profil recommandé | Phase 14 |
 
-10. **Points signalés, en attente d'une décision de Noam :**
+11. **Points signalés, en attente d'une décision de Noam :**
    - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (lié à KI-007).
    - SLICER_EXPORT_SPEC.md (1.1.0 depuis le lot 84) : pas de code d'erreur pour les contrôles de scène (proposés : EXP_013 hors volume, EXP_014 collision).
    - Duplication projet/scène des 4 sélections dans DATA_SCHEMA (décision 4) : choisir la source de vérité.

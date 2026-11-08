@@ -3272,7 +3272,7 @@ Release Type:
 Recommendation Interface
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-06
@@ -3310,7 +3310,87 @@ Date:
 
 - The recommendations and the object types are not saved in a project before Phase 13
 - The choice of a preset by the user, the Custom preset and the change of the recommended values come in Phase 15
-- The thresholds of the classification and the duration of the convex hull are checked at the closure of Phase 10 (lot 89), on the models of Noam
+- The thresholds of the classification and the duration of the convex hull are checked at the closure of Phase 10 (lot 90), on the models of Noam
+
+## Validation Result
+
+- Windows 11 (2026-11-07): lot 88 on GitHub (79ad6a5, identical to the lot); manual checks 1 to 10 passed; the two panels deleted (Noam)
+- Answers of Noam: presetStore.selectedPreset kept (Phase 15); key preset.noSelection removed in 0.1.90
+- Remark of Noam: in Hebrew, a value with its unit is shown "mm/s 200"; to show it as in English and French in the whole interface, from one common place: 0.1.90
+
+---
+
+# VERSION 0.1.90
+
+Release Type:
+Localization (Hebrew)
+
+Status:
+Completed
+
+Date:
+2026-11-07
+
+## Added
+
+- src/i18n/NumberFormatter.ts: formatQuantity, formatQuantities, formatQuantityRange and isolateValue (GUI_SPEC.md, Localization Support, Values with a unit): a value is shown with its unit as in English and French ("200 mm/s", "210 °C", "15 %", "8 cm³", "45°"); in Hebrew, it is wrapped in a left-to-right isolate (U+2066 … U+2069), so that it is no longer shown "mm/s 200", "% 15" or "230 – 190 °C"; English and French are not changed
+- Tests: tests/unit/i18n/NumberFormatter.test.ts (3 tests); tests/e2e/units.spec.ts (1 test in Hebrew: text isolated and number drawn left of its unit, in the Printer, Filament, Analysis and Recommendation sections and the plate size)
+
+## Changed
+
+- Every value with a unit goes through NumberFormatter: src/gui/sidebar/profileRows.tsx (useValue, useRange: Material and Filament sections; a range with one bound not published shows each bound with its unit), PrinterSection.tsx (build volume, nozzles, limits), AnalysisSection.tsx (dimensions, volume, surface area, overhangs, bridges, minimum thickness, contact area), RecommendationSection.tsx (layer height, infill, temperatures, fan, speeds, retraction; the isolate of lot 88 moved to isolateValue), src/gui/App.tsx (plate size)
+- Translations: the unit is given with the value (analysis.overhangsValue, analysis.bridgesValue, analysis.minimumThickness, recommendation.infillValue: {angle}, {percent}, {length}, {thickness}, {density} with their unit; viewport.plate: {size}); Hebrew uses the same unit symbols as English and French (mm instead of מ"מ in the dimensions, the bridges, the minimum thickness and the plate size); overhangs in Hebrew: "12 %" with a space, as in English and French
+- GUI_SPEC.md (Localization Support, Values with a unit), TEST_PLAN.md, PHASES_IMPLEMENTATION_PLAN.md (lot 89; closure of Phase 10 in lot 90), DIRECTORY_PURPOSES.md
+- tests/e2e/printer.spec.ts: plate size with {size}
+- PASSATION.md: lot 89, decision 88
+- 0.1.89 Completed with the results of Noam
+
+## Removed
+
+- Key preset.noSelection (no longer used since 0.1.89; Noam, 2026-11-07): 469 keys
+- src/gui/sidebar/PrinterSection.tsx: private function format (no longer called; asked to Noam)
+
+## Known Limitations
+
+- The labels of the fields ("Position (מ״מ)", "Temperature (°C)") are not values and are not changed
+
+## Validation Result
+
+- Windows 11 (2026-11-07): npm run check:locales 469 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 469 tests passed and 1 skipped, npm run test:e2e 38 tests passed; manual checks 1 to 7 passed in Hebrew, French and English (Noam)
+- The private function format of PrinterSection.tsx removed: agreed by Noam (2026-11-07)
+
+---
+
+# VERSION 0.1.91
+
+Release Type:
+Phase 10 Closure
+
+Status:
+In Progress
+
+Date:
+2026-11-07
+
+## Changed
+
+- src/classification_engine/FeatureDetector.ts: hollow decided without the exact convex hull of all the vertices when possible (isHollow, hullVolumeBounds): the hull of the extreme vertices in 128 directions gives a lower bound of the hull volume; every vertex lies at most delta outside the face planes of this small hull, so the hull lies inside the small hull scaled by 1 + delta / (smallest distance from its center to its faces), and inside the bounding box (upper bound); when the ratio volume / hull is on the same side of 0.35 for both bounds, the answer is certain; otherwise the exact hull of all the vertices decides (convexHullVolume, unchanged). Same features and categories as before (definition of OBJECT_CLASSIFICATION_SPEC.md 1.2.1 unchanged)
+- Duration (Linux, sphere of 998 000 triangles, every vertex on the hull): hollow 0.5 to 0.9 s instead of 6.5 s; analysis with the classification about 4.0 to 4.8 s instead of 11 s (PERFORMANCE_SPEC.md: less than 5 s)
+- PERFORMANCE_SPEC.md 1.2.0: Analysis Performance, measured durations and the method of the convex hull
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 10 Completed (2026-11-07), progress, validation result and open issues
+- TEST_PLAN.md: tests of lot 90
+- PASSATION.md: lot 90, Phase 10 Completed, decision 89; tabs of the Properties panel: questions to Noam
+- 0.1.90 Completed with the results of Noam
+
+## Added
+
+- Tests: tests/unit/classification_engine/Classification.test.ts (18 tests): the bounds frame the exact hull volume and isHollow gives the same answer as the exact ratio on 8 models (sphere, sphere turned, open vase, open box, closed box, plate with holes, L bracket, cube turned 45 degrees); a ratio close to the limit is decided by the exact hull; flat mesh: no bounds, never hollow
+
+## Known Limitations
+
+- The thresholds of the classification are unchanged: they are checked on the models of Noam (manual checks of lot 90); a change of a threshold is a visible choice and comes in its own lot, with a new version of OBJECT_CLASSIFICATION_SPEC.md
+- A model whose ratio volume / hull lies close to 0.35 (about 0.335 to 0.366) still uses the exact hull: same duration as before for such a model
+- presetStore.selectedPreset is kept unused until Phase 15 (answer of Noam, 2026-11-07)
 
 ---
 

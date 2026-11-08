@@ -15,7 +15,9 @@
  *   1 % of the surface;
  * - holes: genus of the welded mesh, only when the mesh is closed;
  * - hollow: geometry.volume divided by the volume of the convex hull of
- *   the vertices; absent when the hull has no volume;
+ *   the vertices; absent when the hull has no volume; decided from two
+ *   bounds of the hull volume, the exact hull only near the limit (lot 90,
+ *   PERFORMANCE_SPEC.md 1.2.0);
  * - open_top: a vertical ray at the center of the bounding box seen from
  *   above first meets a face turned up below 50 % of the height (the inner
  *   bottom), and this bottom is surrounded by walls: from just above the
@@ -34,6 +36,7 @@
  * - OBJECT_CLASSIFICATION_SPEC.md (1.2.0: Geometric Features)
  * - DATA_SCHEMA.md (3.10.0: Classification Rules)
  * - DECISIONS.md (ADR-035 D2)
+ * - PERFORMANCE_SPEC.md (1.2.0: Analysis Performance, convex hull)
  */
 
 import * as THREE from "three";
@@ -116,12 +119,7 @@ export function detectFeatures(
     found.add("holes");
   }
 
-  const hull = convexHullVolume(mesh);
-
-  if (
-    hull > 0 &&
-    volume / hull <= FEATURE_THRESHOLDS.HOLLOW_MAX_RATIO + TOLERANCE
-  ) {
+  if (isHollow(mesh, volume)) {
     found.add("hollow");
   }
 
@@ -285,6 +283,176 @@ export function genus(mesh: PlacedMesh): number {
   return (2 * parts - (vertices - distinctEdges + faces)) / 2;
 }
 
+/**
+ * hollow: geometry.volume / volume of the convex hull of the vertices is
+ * at most HOLLOW_MAX_RATIO (the hull has a volume).
+ *
+ * Same answer as the exact ratio, faster (closure of Phase 10, lot 90:
+ * the exact hull took 7 s for 1 million triangles, PERFORMANCE_SPEC.md
+ * asks less than 5 s for the whole analysis). The hull is framed first:
+ * - lower bound: the hull of the extreme vertices in HULL_DIRECTIONS
+ *   directions lies inside the hull of all the vertices;
+ * - upper bound: every vertex lies at most delta outside the planes of
+ *   the faces of this small hull, so the whole hull lies inside the small
+ *   hull scaled by 1 + delta / (smallest distance from its center to its
+ *   faces), and inside the bounding box.
+ * When the ratio is on the same side of the limit for both bounds, the
+ * answer is certain; otherwise (ratio close to the limit) the exact hull
+ * of all the vertices decides.
+ */
+export function isHollow(mesh: PlacedMesh, volume: number): boolean {
+  const limit = FEATURE_THRESHOLDS.HOLLOW_MAX_RATIO + TOLERANCE;
+  const bounds = hullVolumeBounds(mesh);
+
+  if (bounds) {
+    if (volume <= limit * bounds.lower) return true;
+
+    if (volume > limit * bounds.upper) return false;
+  }
+
+  const hull = convexHullVolume(mesh);
+
+  return hull > 0 && volume / hull <= limit;
+}
+
+/** Number of directions of the extreme vertices (isHollow) */
+export const HULL_DIRECTIONS = 128;
+
+/** Safety margin of the bounds of the hull volume (rounding) */
+const BOUND_MARGIN = 1e-6;
+
+/**
+ * Lower and upper bounds of the volume of the convex hull of the
+ * vertices, in mm³; null when they cannot frame it (few or flat points).
+ */
+export function hullVolumeBounds(
+  mesh: PlacedMesh,
+): { lower: number; upper: number } | null {
+  const { placed, vertexCount } = mesh;
+
+  if (vertexCount < 4) return null;
+
+  // Directions spread evenly on the sphere (Fibonacci), always the same
+  const directions = new Float64Array(HULL_DIRECTIONS * 3);
+  const golden = Math.PI * (3 - Math.sqrt(5));
+
+  for (let d = 0; d < HULL_DIRECTIONS; d += 1) {
+    const z = 1 - (2 * (d + 0.5)) / HULL_DIRECTIONS;
+    const r = Math.sqrt(1 - z * z);
+
+    directions[d * 3] = r * Math.cos(golden * d);
+    directions[d * 3 + 1] = r * Math.sin(golden * d);
+    directions[d * 3 + 2] = z;
+  }
+
+  const best = new Float64Array(HULL_DIRECTIONS).fill(-Infinity);
+  const extreme = new Int32Array(HULL_DIRECTIONS);
+  let minX = Infinity;
+  let minY = Infinity;
+  let minZ = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  let maxZ = -Infinity;
+
+  for (let v = 0; v < vertexCount; v += 1) {
+    const x = placed[v * 3];
+    const y = placed[v * 3 + 1];
+    const z = placed[v * 3 + 2];
+
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+    if (z < minZ) minZ = z;
+    if (z > maxZ) maxZ = z;
+
+    for (let d = 0; d < HULL_DIRECTIONS; d += 1) {
+      const dot =
+        x * directions[d * 3] +
+        y * directions[d * 3 + 1] +
+        z * directions[d * 3 + 2];
+
+      if (dot > best[d]) {
+        best[d] = dot;
+        extreme[d] = v;
+      }
+    }
+  }
+
+  const chosen = [...new Set(extreme)].sort((a, b) => a - b);
+
+  if (chosen.length < 4) return null;
+
+  const points = chosen.map(
+    (v) =>
+      new THREE.Vector3(placed[v * 3], placed[v * 3 + 1], placed[v * 3 + 2]),
+  );
+  let small: ConvexHull;
+
+  try {
+    small = new ConvexHull().setFromPoints(points);
+  } catch {
+    return null;
+  }
+
+  const lower = hullVolume(small);
+
+  if (!(lower > 0)) return null;
+
+  // Center of the small hull: the mean of its points, inside it
+  const center = new THREE.Vector3();
+
+  for (const point of points) center.add(point);
+
+  center.divideScalar(points.length);
+
+  const faces = small.faces;
+  const planes = new Float64Array(faces.length * 4);
+  let nearest = Infinity;
+
+  for (let f = 0; f < faces.length; f += 1) {
+    const { normal, constant } = faces[f];
+
+    planes[f * 4] = normal.x;
+    planes[f * 4 + 1] = normal.y;
+    planes[f * 4 + 2] = normal.z;
+    planes[f * 4 + 3] = constant;
+    nearest = Math.min(nearest, constant - normal.dot(center));
+  }
+
+  if (!(nearest > 0)) return null;
+
+  // Largest distance of a vertex outside a face plane of the small hull
+  let delta = 0;
+
+  for (let v = 0; v < vertexCount; v += 1) {
+    const x = placed[v * 3];
+    const y = placed[v * 3 + 1];
+    const z = placed[v * 3 + 2];
+
+    for (let f = 0; f < faces.length; f += 1) {
+      const outside =
+        x * planes[f * 4] +
+        y * planes[f * 4 + 1] +
+        z * planes[f * 4 + 2] -
+        planes[f * 4 + 3];
+
+      if (outside > delta) delta = outside;
+    }
+  }
+
+  const scale = 1 + delta / nearest;
+  const box = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
+  const upper = Math.min(scale * scale * scale * lower, box);
+
+  if (!Number.isFinite(upper)) return null;
+
+  return {
+    lower: lower * (1 - BOUND_MARGIN),
+    upper: upper * (1 + BOUND_MARGIN),
+  };
+}
+
 /** Volume of the convex hull of the vertices, in mm³; 0 when flat */
 export function convexHullVolume(mesh: PlacedMesh): number {
   const { placed, vertexCount } = mesh;
@@ -308,6 +476,11 @@ export function convexHullVolume(mesh: PlacedMesh): number {
     return 0;
   }
 
+  return hullVolume(hull);
+}
+
+/** Volume enclosed by a convex hull, in mm³ (0 when not finite) */
+function hullVolume(hull: ConvexHull): number {
   let volume = 0;
 
   for (const face of hull.faces) {

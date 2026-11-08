@@ -23,11 +23,18 @@ import { CategoryDetector } from "../../../src/classification_engine/CategoryDet
 import { ClassificationEngine } from "../../../src/classification_engine/ClassificationEngine";
 import { ClassificationValidator } from "../../../src/classification_engine/ClassificationValidator";
 import { ConfidenceScorer } from "../../../src/classification_engine/ConfidenceScorer";
-import { genus } from "../../../src/classification_engine/FeatureDetector";
+import {
+  convexHullVolume,
+  genus,
+  hullVolumeBounds,
+  isHollow,
+} from "../../../src/classification_engine/FeatureDetector";
+import { FEATURE_THRESHOLDS } from "../../../src/constants/AnalysisConstants";
 import { weldVertices } from "../../../src/model_analysis/MeshAnalyzer";
 import {
   analyzeModel,
   runAnalysisRequest,
+  type PlacedMesh,
 } from "../../../src/model_analysis/ModelAnalyzer";
 import { AnalysisClassificationSchema } from "../../../src/schemas/AnalysisSchema";
 import type {
@@ -379,5 +386,91 @@ describe("ClassificationValidator (KI-011) and the stored form", () => {
     // An automatic classification is replaced by the new one
     expect(ClassificationEngine.keepUserChoice(valid, computed)).toBe(computed);
     expect(ClassificationEngine.keepUserChoice(null, computed)).toBe(computed);
+  });
+});
+
+describe("Classification: hollow without the slow exact hull (lot 90)", () => {
+  /** Placed mesh and volume of a model, as given to the classifier */
+  function placedOf(
+    triangles: number[],
+    rotation: Rotation = IDENTITY.rotation,
+  ): { mesh: PlacedMesh; volume: number } {
+    let captured: { mesh: PlacedMesh; volume: number } | null = null;
+
+    analyzeModel(
+      centered(triangles),
+      { rotation, scale: IDENTITY.scale },
+      (mesh, result) => {
+        captured = { mesh, volume: result.geometry.volume };
+
+        return ClassificationEngine.classifyModel(mesh, result);
+      },
+    );
+
+    return captured!;
+  }
+
+  const models: [string, () => number[], Rotation?][] = [
+    ["sphere", () => sphere(30, 96, 48)],
+    ["sphere turned", () => sphere(30, 96, 48), { x: 30, y: 20, z: 10 }],
+    ["open vase", openVase],
+    ["open box", openBox],
+    ["closed box", closedBox],
+    ["plate with holes", plateWithHoles],
+    ["L bracket", () => lBracket(10, 100, 10)],
+    [
+      "cube turned 45 degrees",
+      () => box([0, 0, 0], [20, 20, 20]),
+      { x: 45, y: 0, z: 0 },
+    ],
+  ];
+
+  it.each(models)(
+    "%s: the bounds frame the exact hull volume",
+    (_, build, rotation) => {
+      const { mesh } = placedOf(build(), rotation);
+      const exact = convexHullVolume(mesh);
+      const bounds = hullVolumeBounds(mesh);
+
+      expect(exact).toBeGreaterThan(0);
+      expect(bounds).not.toBeNull();
+      expect(bounds!.lower).toBeLessThanOrEqual(exact);
+      expect(bounds!.upper).toBeGreaterThanOrEqual(exact);
+    },
+  );
+
+  it.each(models)(
+    "%s: the same answer as the exact ratio",
+    (_, build, rotation) => {
+      const { mesh, volume } = placedOf(build(), rotation);
+      const exact = convexHullVolume(mesh);
+
+      expect(isHollow(mesh, volume)).toBe(
+        exact > 0 &&
+          volume / exact <= FEATURE_THRESHOLDS.HOLLOW_MAX_RATIO + 1e-9,
+      );
+    },
+  );
+
+  it("ratio close to the limit (between the bounds): the exact hull decides", () => {
+    const { mesh } = placedOf(sphere(30, 96, 48));
+    const exact = convexHullVolume(mesh);
+    const bounds = hullVolumeBounds(mesh)!;
+    const limit = FEATURE_THRESHOLDS.HOLLOW_MAX_RATIO;
+
+    // Both volumes lie between the two bounds: undecided by them
+    expect(limit * exact * 0.999).toBeGreaterThan(limit * bounds.lower);
+    expect(limit * exact * 1.001).toBeLessThan(limit * bounds.upper);
+    expect(isHollow(mesh, limit * exact * 0.999)).toBe(true);
+    expect(isHollow(mesh, limit * exact * 1.001)).toBe(false);
+  });
+
+  it("flat mesh or too few points: no bounds, never hollow", () => {
+    const flat = placedOf([
+      0, 0, 0, 10, 0, 0, 0, 10, 0, 10, 10, 0, 0, 10, 0, 10, 0, 0,
+    ]);
+
+    expect(hullVolumeBounds(flat.mesh)).toBeNull();
+    expect(isHollow(flat.mesh, 0)).toBe(false);
   });
 });
