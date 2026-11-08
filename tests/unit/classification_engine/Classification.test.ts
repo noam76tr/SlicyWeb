@@ -25,6 +25,7 @@ import { ClassificationValidator } from "../../../src/classification_engine/Clas
 import { ConfidenceScorer } from "../../../src/classification_engine/ConfidenceScorer";
 import {
   convexHullVolume,
+  detectFeatures,
   genus,
   hullVolumeBounds,
   isHollow,
@@ -484,6 +485,34 @@ describe("Classification: hollow without the slow exact hull (lot 90)", () => {
     expect(limit * exact * 1.001).toBeLessThan(limit * bounds.upper);
     expect(isHollow(mesh, limit * exact * 0.999)).toBe(true);
     expect(isHollow(mesh, limit * exact * 1.001)).toBe(false);
+  });
+
+  it("the same features with the edges and the BVH of the analysis or without them (lot 92)", () => {
+    for (const build of [openVase, openBox, plateWithHoles, closedBox]) {
+      const { mesh } = placedOf(build());
+      const result = analyzeModel(centered(build()), IDENTITY);
+      const bare: PlacedMesh = {
+        placed: mesh.placed,
+        corners: mesh.corners,
+        vertexCount: mesh.vertexCount,
+      };
+
+      expect(mesh.edges).toBeDefined();
+      expect(mesh.placedBVH).toBeDefined();
+      expect(detectFeatures(bare, result)).toEqual(
+        detectFeatures(mesh, result),
+      );
+    }
+  });
+
+  it("a volume above 35 % of the bounding box is never hollow (no hull needed)", () => {
+    const { mesh, volume } = placedOf(sphere(30, 96, 48));
+    const exact = convexHullVolume(mesh);
+
+    // Sphere: volume / box = 0.52
+    expect(volume / (60 * 60 * 60)).toBeGreaterThan(0.5);
+    expect(isHollow(mesh, volume)).toBe(false);
+    expect(volume / exact).toBeGreaterThan(0.35);
   });
 
   it("flat mesh or too few points: no bounds, never hollow", () => {

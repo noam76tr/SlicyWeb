@@ -42,6 +42,8 @@
 import * as THREE from "three";
 import { MeshBVH } from "three-mesh-bvh";
 
+import { buildEdgeTable, type EdgeTable } from "./MeshValidator";
+
 import type { Bridges, Overhangs, ThinWalls } from "../types/Analysis";
 
 import { CONTACT_TOLERANCE_MM } from "./StabilityAnalyzer";
@@ -70,6 +72,9 @@ const NOT_DOWN = -1;
 
 /** Edge shared by two triangles of the same flat region (not a border) */
 const INSIDE_REGION = -1;
+
+/** Bridges: edge without owner yet (edge table) */
+const NO_OWNER = -2;
 
 const DEGREES = 180 / Math.PI;
 
@@ -204,6 +209,7 @@ export function analyzeBridges(
   corners: Uint32Array,
   vertexCount: number,
   { angles, areas }: DownAngles,
+  edges: EdgeTable = buildEdgeTable(corners, vertexCount),
 ): Bridges {
   const triangleCount = angles.length;
   const flatLimit = FLAT_LIMIT_DEG + ANGLE_TOLERANCE_DEG;
@@ -225,7 +231,36 @@ export function analyzeBridges(
 
   // Flat regions: flat triangles joined by an edge
   const regions = new UnionFind(flatCount);
+  // Owner of each edge: by its number in the edge table (lot 92: faster
+  // than a Map); a slot whose two corners are the same vertex has no number
+  // and keeps its key in the Map, as before
+  const ownerOf = new Int32Array(edges.edgeCount).fill(NO_OWNER);
   const edgeOwner = new Map<number, number>();
+  const getOwner = (slot: number, p: number, q: number): number | undefined => {
+    const edge = edges.edgeOf[slot];
+
+    if (edge >= 0) {
+      const owner = ownerOf[edge];
+
+      return owner === NO_OWNER ? undefined : owner;
+    }
+
+    return edgeOwner.get(edgeKey(p, q, vertexCount));
+  };
+  const setOwner = (
+    slot: number,
+    p: number,
+    q: number,
+    owner: number,
+  ): void => {
+    const edge = edges.edgeOf[slot];
+
+    if (edge >= 0) {
+      ownerOf[edge] = owner;
+    } else {
+      edgeOwner.set(edgeKey(p, q, vertexCount), owner);
+    }
+  };
 
   for (let t = 0; t < triangleCount; t += 1) {
     const flat = flatIndex[t];
@@ -233,18 +268,15 @@ export function analyzeBridges(
     if (flat < 0) continue;
 
     for (let k = 0; k < 3; k += 1) {
-      const key = edgeKey(
-        corners[t * 3 + k],
-        corners[t * 3 + ((k + 1) % 3)],
-        vertexCount,
-      );
-      const owner = edgeOwner.get(key);
+      const p = corners[t * 3 + k];
+      const q = corners[t * 3 + ((k + 1) % 3)];
+      const owner = getOwner(t * 3 + k, p, q);
 
       if (owner === undefined) {
-        edgeOwner.set(key, flat);
+        setOwner(t * 3 + k, p, q, flat);
       } else {
         if (owner !== INSIDE_REGION) regions.union(owner, flat);
-        edgeOwner.set(key, INSIDE_REGION);
+        setOwner(t * 3 + k, p, q, INSIDE_REGION);
       }
     }
   }
@@ -258,7 +290,7 @@ export function analyzeBridges(
     for (let k = 0; k < 3; k += 1) {
       const p = corners[t * 3 + k];
       const q = corners[t * 3 + ((k + 1) % 3)];
-      const owner = edgeOwner.get(edgeKey(p, q, vertexCount));
+      const owner = getOwner(t * 3 + k, p, q);
 
       if (owner === undefined || owner === INSIDE_REGION) continue;
 
@@ -552,6 +584,37 @@ const R2_STEP_1 = 0.7548776662466927;
 const R2_STEP_2 = 0.5698402909980532;
 
 /**
+ * BVH of the placed object (three-mesh-bvh), built once and shared by the
+ * thin walls and the classification (open_top; lot 92: it was built twice)
+ */
+export interface PlacedBVH {
+  bvh: MeshBVH;
+
+  /** Corners in the order of the BVH (it sorts the triangles) */
+  index: Uint32Array;
+}
+
+/** BVH of the placed object; the same at each computation */
+export function buildPlacedBVH(
+  placed: Float64Array,
+  corners: Uint32Array,
+): PlacedBVH {
+  const geometry = new THREE.BufferGeometry();
+
+  geometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(new Float32Array(placed), 3),
+  );
+  // Copy: the BVH sorts the triangles of its index
+  geometry.setIndex(new THREE.BufferAttribute(corners.slice(), 1));
+
+  const bvh = new MeshBVH(geometry);
+
+  // Triangles in the order of the BVH: the same order at each computation
+  return { bvh, index: geometry.index!.array as Uint32Array };
+}
+
+/**
  * Thin walls (DATA_SCHEMA.md 3.9.0, Analysis Rules; ADR-034 D5): from
  * points of the surface, a ray goes towards the inside (against the normal
  * of the triangle); the distance to the next face met, in mm, is the
@@ -577,19 +640,9 @@ const R2_STEP_2 = 0.5698402909980532;
 export function analyzeThinWalls(
   placed: Float64Array,
   corners: Uint32Array,
+  placedBVH: PlacedBVH = buildPlacedBVH(placed, corners),
 ): ThinWalls {
-  const geometry = new THREE.BufferGeometry();
-
-  geometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(new Float32Array(placed), 3),
-  );
-  // Copy: the BVH sorts the triangles of its index
-  geometry.setIndex(new THREE.BufferAttribute(corners.slice(), 1));
-
-  const bvh = new MeshBVH(geometry);
-  // Triangles in the order of the BVH: the same order at each computation
-  const index = geometry.index!.array as Uint32Array;
+  const { bvh, index } = placedBVH;
   const triangleCount = index.length / 3;
   const areas = new Float64Array(triangleCount);
   let totalArea = 0;

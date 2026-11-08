@@ -695,6 +695,18 @@ Values with a unit in Hebrew (lot 89):
     isolated, and its number drawn left of its unit (a range: minimum on
     the left)
 
+Performance (lot 92):
+  unit (ModelAnalyzer.test.ts): edge table compared with the pairs of
+    vertices on random triangles (a vertex in many triangles: sorted
+    group); a sphere: every edge shared by two triangles
+  unit (Classification.test.ts): the same features with or without the
+    edges and the BVH of the analysis; a volume above 35 % of the bounding
+    box is never hollow
+  comparison (not in the suite): every value of the analysis and every
+    feature identical to lot 91 on 9 models, sphere of 998 000 triangles
+    included
+  manual (Noam): the sphere of 998 000 triangles analyzed in less than 5 s
+
 Mesh defects (lot 91):
   unit (ModelAnalyzer.test.ts): two cubes touching along an edge: closed,
     not manifold, volume exact; an edge with three triangles: open; a cube:

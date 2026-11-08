@@ -3367,7 +3367,7 @@ Release Type:
 Phase 10 Closure
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-07
@@ -3397,7 +3397,7 @@ Date:
 - Windows 11 (2026-11-08): lots 89 and 90 on GitHub (8348a9f, identical to the lots); npm run check:locales 469 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 487 tests passed and 1 skipped, npm run test:e2e 38 tests passed (Noam)
 - Answers of Noam on the tabs of the Properties panel: Q1 to Q6 option A, in a separate lot after the closure of Phase 10
 - Model of Noam (HMG7.4_Seckit_SK-GO_Custom_Base.stl, 16 794 triangles): orange messages and thin walls correct; "Mesh not closed" misleading: no edge with one triangle, but 94 edges shared by 4 triangles and 6 degenerate triangles: fixed in 0.1.92
-- Manual checks 1 and 2 (category of the models of Noam, duration of the largest model): results not received yet
+- Manual checks of Noam (2026-11-08): model Seckit "Automatic (Unknown)" (holes not computed, ANA_005, answer Q3 A); closed sphere of 998 000 triangles (80 mm) "Automatic (Figurine)", the view stays fluid, but the analysis takes 8.76 s: above the target of 5 s (PERFORMANCE_SPEC.md); Phase 10 back to In Progress, the analysis made faster in 0.1.93
 
 ---
 
@@ -3407,7 +3407,7 @@ Release Type:
 Model Analysis (mesh defects)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-08
@@ -3428,6 +3428,47 @@ Date:
 ## Known Limitations
 
 - Degenerate triangles (two corners on the same vertex after the welding) are ignored, as before; they give no message
+
+## Validation Result
+
+- Windows 11 (2026-11-08): lot 91 on GitHub (34e76bf, identical to the lot); npm run check:locales 470 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 490 tests passed and 1 skipped, npm run test:e2e 39 tests passed; manual checks 1 to 3 passed: model Seckit without the orange message, grey line ANA_005, thin walls still detected; open cube of 20 mm: "Mesh not closed"; Hebrew text (Noam)
+
+---
+
+# VERSION 0.1.93
+
+Release Type:
+Performance (Phase 10 closure)
+
+Status:
+In Progress
+
+Date:
+2026-11-08
+
+## Changed
+
+- Analysis and classification of an object faster, with the same results (remark of Noam: sphere of 998 000 triangles analyzed in 8.76 s, target 5 s): every value of the analysis and every feature compared with 0.1.92 on 9 models (sphere, open vase, open box, plate with holes, four cubes touching along edges, open cube, L bracket, random triangles with flat ones, sphere of 998 000 triangles): identical
+- src/model_analysis/MeshValidator.ts: buildEdgeTable (new): the edges of the welded mesh found once, in linear time (slots grouped by their smaller vertex), shared by countEdgeDefects, the bridges, the planar share and the genus (they were found three times, by sorting or with a Map); triangleUses (new)
+- src/model_analysis/PrintabilityAnalyzer.ts: buildPlacedBVH (new): the BVH of the placed object built once, shared by the thin walls and open_top (it was built twice); analyzeBridges reads the owner of each edge from the edge table instead of a Map
+- src/model_analysis/ModelAnalyzer.ts: PlacedMesh carries the edge table and the BVH to the classification (edges, placedBVH; optional)
+- src/classification_engine/FeatureDetector.ts: isHollow first compares the volume with the bounding box (the hull lies inside it: above 35 % of the box, never hollow, no hull computed), then bounds with 32 directions, then 128, then the exact hull; planarShare, genus and isOpenTop use the edge table and the BVH of the analysis when given
+- Duration (Linux, application built, sphere of 998 000 triangles, "Analyzing…" in the status bar): 1.8 to 2.3 s instead of 3.4 to 4.4 s
+- PERFORMANCE_SPEC.md 1.3.0, TEST_PLAN.md, PHASES_IMPLEMENTATION_PLAN.md (Phase 10 back to In Progress until the new check of Noam), PASSATION.md
+- 0.1.91 and 0.1.92 Completed with the results of Noam
+
+## Removed
+
+- Private function edgeKey of src/model_analysis/MeshValidator.ts and of src/classification_engine/FeatureDetector.ts: no longer called (replaced by the edge table); asked to Noam
+
+## Added
+
+- Tests: tests/unit/model_analysis/ModelAnalyzer.test.ts (2 tests: edge table compared with the pairs of vertices on random triangles, with a vertex in many triangles; a sphere: every edge shared by two triangles); tests/unit/classification_engine/Classification.test.ts (2 tests: the same features with or without the edges and the BVH of the analysis; a volume above 35 % of the bounding box is never hollow)
+
+## Known Limitations
+
+- The thin walls (200 000 rays, PERFORMANCE_SPEC.md) and the BVH now take most of the time (about 1.5 s of the 2 s on Linux)
+- An object whose volume is at most 35 % of its bounding box and whose ratio volume / hull lies close to 0.35 still uses the exact hull
 
 ---
 

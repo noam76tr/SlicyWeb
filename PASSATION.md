@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-11-08. Lots 89 et 90 sur `main` (8348a9f), vérifiés identiques ; contrôles automatiques du lot 90 réussis (469 clés, 487 + 1, 38 e2e) ; contrôles manuels 1 et 2 du lot 90 (catégories et durée sur les modèles de Noam) : réponses attendues. Lot 91 (trou ou maillage non conforme) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.92 (lot 91, In Progress). Phase 10 : Completed (2026-11-07), à confirmer par les contrôles manuels du lot 90.
+Date : 2026-11-08. Lot 91 (trou ou maillage non conforme) sur `main` (34e76bf), vérifié identique, validé par Noam (470 clés, 490 + 1, 39 e2e, contrôles 1 à 3). Phase 10 : repassée **In Progress** (sphère de 998 000 triangles analysée en 8,76 s chez Noam, cible 5 s). Lot 92 (analyse plus rapide) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.93 (lot 92, In Progress).
 
 ---
 
@@ -81,7 +81,7 @@ Date : 2026-11-08. Lots 89 et 90 sur `main` (8348a9f), vérifiés identiques ; c
 | 7 | Printer Database | Completed (2026-10-27) | 0.1.59 à 0.1.66 |
 | 8 | Material Database | Completed (2026-11-01) | 0.1.67 à 0.1.75 |
 | 9 | Model Analysis | Completed (2026-11-02) | 0.1.77 à 0.1.82 |
-| 10 | Classification and Recommendation Engine | Completed (2026-11-07 ; ADR-035 ; lot 84 documentation, 85 classification, 86 presets, 87 moteur de recommandation, 88 interface, 89 hébreu, 90 clôture) | 0.1.84 à 0.1.91 |
+| 10 | Classification and Recommendation Engine | In Progress (clôture du 2026-11-07 suspendue : durée de l'analyse, lot 92 ; ADR-035 ; lot 84 documentation, 85 classification, 86 presets, 87 moteur de recommandation, 88 interface, 89 hébreu, 90 clôture, 91 maillage, 92 performance) | 0.1.84 à 0.1.93 |
 | 11 à 16 | Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
@@ -136,7 +136,7 @@ Date : 2026-11-08. Lots 89 et 90 sur `main` (8348a9f), vérifiés identiques ; c
 | PRINT_PRESETS_SPEC.md | 1.3.1 (11 presets livrés, valeurs, `tree` ; id de l'enveloppe = catégorie) |
 | RECOMMENDATION_RULES.md | 1.1.3 (lot 91 : aucune baisse de confiance pour un maillage seulement non conforme ; limites, températures, rétraction, supports, 13 avertissements, confiance ; déplacement 150 mm/s quand `maxTravelSpeed` vaut `null` ; jamais d'avertissement pour le déplacement) |
 | SUPPORT_GENERATION_SPEC.md | 1.1.0 (Organic et Tree = `tree`) |
-| PERFORMANCE_SPEC.md | 1.2.0 (analyse et classification : 1 million de triangles en moins de 5 s ; méthode de l'enveloppe convexe, lot 90) |
+| PERFORMANCE_SPEC.md | 1.3.0 (analyse et classification : 1 million de triangles en moins de 5 s ; enveloppe convexe, lot 90 ; arêtes et BVH partagés, boîte englobante, lot 92) |
 | ARCHITECTURE_DECISION_MATRIX.md | 2.7.0 |
 | API_SPEC.md | 2.1.0 (voir §5, points en attente ; PresetIPC Channels au lot 86) |
 | SLICER_EXPORT_SPEC.md | 1.1.0 (températures réglées, mode vase manquant : KI-029) |
@@ -243,6 +243,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 89 | Valeurs avec unité en hébreu (remarque de Noam sur le lot 88) : `formatQuantity`, `formatQuantities`, `formatQuantityRange`, `isolateValue` dans `NumberFormatter.ts`, utilisés par toutes les valeurs avec unité (sections, taille du plateau) ; unités `mm` aussi en hébreu ; clé `preset.noSelection` supprimée (469) ; fonction privée `format` de `PrinterSection.tsx` supprimée (demandée à Noam) ; 3 tests (469 + 1), 1 e2e en hébreu (38) | 0.1.90 |
 | 90 | Clôture de la phase 10 : `hollow` décidé par deux bornes du volume de l'enveloppe convexe (`isHollow`, `hullVolumeBounds` dans `FeatureDetector.ts`), l'enveloppe exacte seulement près de 0,35 (même résultat ; 6,5 s → 0,5 à 0,9 s sur 1 million de triangles) ; PERFORMANCE_SPEC 1.2.0 ; seuils de la classification inchangés, vérifiés sur les modèles de Noam (contrôles manuels) ; aucune suppression ; 18 tests (487 + 1), e2e inchangés (38) | 0.1.91 |
 | 91 | Trou ou maillage non conforme (remarque de Noam sur son modèle Seckit, décision 90) : ANA_002 seulement pour une arête partagée par un nombre impair de triangles (1 ou 3) ; une arête à 4, 6… triangles (parties qui se touchent par une arête) donne l'information ANA_005, en gris dans la section Analyse seulement, sans baisse de confiance, sans `holes` ; `countEdgeDefects` (MeshValidator), `meshManifold` (ModelAnalyzer), `nonManifoldObjectIds` (analysisTaskStore) ; `CLASSIFICATION_VERSION` « 1.2.2 » ; 1 clé (470) ; 3 tests (490 + 1), 1 e2e (39) ; aucune suppression | 0.1.92 |
+| 92 | Analyse plus rapide, mêmes résultats (décision 91 : 8,76 s chez Noam pour 1 million de triangles) : table des arêtes construite une fois en temps linéaire (`buildEdgeTable`, `triangleUses`) et partagée (arêtes ouvertes, ponts, part plane, genre) ; BVH construit une fois (`buildPlacedBVH`), partagé par les parois fines et `open_top` ; `hollow` : boîte englobante d'abord, puis bornes à 32 puis 128 directions, puis l'enveloppe exacte ; sous Linux dans l'application, 1,8 à 2,3 s au lieu de 3,4 à 4,4 s ; fonctions privées `edgeKey` de MeshValidator et FeatureDetector supprimées (demandé à Noam) ; PERFORMANCE_SPEC 1.3.0 ; 4 tests (494 + 1), e2e inchangés (39) | 0.1.93 |
 
 ---
 
@@ -368,6 +369,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 90. **Lot 90 et maillage (Noam, 2026-11-08) :** lots 89 et 90 envoyés ; contrôles automatiques du lot 90 réussis. Onglets du panneau Propriétés : Q1 à Q6 option A (`lot90-cloture-phase10/QUESTIONS-ONGLETS.md`) : trois onglets Imprimante (Imprimante, Matériau, Filament), Objet (Objet, Transformation, Analyse), Réglages (Préréglage, Recommandations) ; Projet au-dessus des onglets ; dernier onglet retenu dans `settings.json` ; point rouge si l'objet sélectionné a un avertissement critique ; texte seul (Tabs de shadcn) ; pas de Ctrl+1/2/3 ; un lot seul après la clôture de la phase 10. Maillage : son modèle Seckit (aucune arête à 1 face, 94 arêtes à 4 faces, 6 triangles dégénérés) affichait « Maillage non fermé » à tort ; une arête à 1 ou 3 triangles reste un trou (ANA_002, −20) ; seulement des arêtes à 4, 6… triangles : information ANA_005, Q1 A (aucune baisse de confiance), Q2 A (section Analyse seulement), Q3 A (`holes` non calculé) ; fait au lot 91.
 
+91. **Lot 91 validé, clôture de la phase 10 suspendue (Noam, 2026-11-08) :** lot 91 : 470 clés, 490 + 1, 39 e2e, contrôles 1 à 3 OK (texte hébreu d'ANA_005 OK). Contrôles de la clôture : modèle Seckit « Automatique (Inconnue) » (normal, `holes` non calculé, Q3 A) ; sphère fermée de 998 000 triangles (80 mm) « Automatique (Figurine) », vue fluide, mais analyse en **8,76 s** (cible 5 s) : accélérer l'analyse avant de clôturer (l'enveloppe convexe en premier), puis nouveau contrôle avec la même sphère. Fait au lot 92 ; la phase 10 repasse In Progress jusqu'à ce contrôle. Le lot des onglets devient le lot 93.
+
 **Méthode**
 
 27. Règle de décision (§1) : l'option « Recommandé » peut être appliquée sans demander, hors des 5 cas listés.
@@ -384,8 +387,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 4. **Phase 8 : Material Database** (Completed, ADR-033) : analyse au lot 65 (fait) ; 66 documentation (fait, validé) ; 68 chargement (fait, validé) ; 69 données (fait, validé) ; 70 interface (fait, validé) ; 71 filaments de l'utilisateur (fait, validé) ; 72 synchronisation (fait, validé ; release v1.1.0 de `slicyweb-profiles`) ; 73 clôture (fait, validé). Close le 2026-11-01. (Lot 67 : plateau, hors phase 8.)
 5. **Cube de navigation** (décisions 76 et 78) : lot 74 fait, validé par Noam le 2026-11-01.
 6. **Phase 9 : Model Analysis** (Completed, ADR-034) : analyse au lot 75 ; réponses de Noam (décisions 79 à 81) ; 76 documentation ; 77 calcul de base dans un Worker ; 78 surplombs et ponts ; 79 parois fines ; 80 interface (tous validés) ; 81 clôture et format des nombres (décision 82). Close le 2026-11-02, confirmée par les contrôles de Noam sur le lot 81 (2026-11-03). Lot 82 : surplombs en rouge (décisions 81 et 83). Suite : la phase 10. La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
-7. **Phase 10 : Classification and Recommendation Engine** (Completed le 2026-11-07, ADR-035) : analyse au lot 83 (validé) ; réponses de Noam (décision 84) ; 84 documentation (validé) ; 85 classification (validé) ; 86 presets et 87 moteur de recommandation (livrés ensemble, validés) ; 88 interface (validé) ; 89 valeurs avec unité en hébreu (validé) ; 90 clôture (enveloppe convexe accélérée ; seuils de la classification et durée vérifiés sur les modèles de Noam, contrôles manuels du lot 90). Si un modèle de Noam est mal classé, le changement de seuil est un choix visible : question à Noam, puis un lot à part (nouvelle version d'OBJECT_CLASSIFICATION_SPEC).
-8. **Après la clôture de la phase 10 (idée de Noam, 2026-11-07) :** onglets dans le panneau Propriétés, réponses de Noam Q1 à Q6 option A (décision 90) : lot 92, seul, avec des contrôles manuels. Avant : le lot 91 (trou ou maillage non conforme) et les contrôles manuels 1 et 2 du lot 90.
+7. **Phase 10 : Classification and Recommendation Engine** (In Progress, clôture du 2026-11-07 suspendue le 2026-11-08 pour la durée de l'analyse ; ADR-035) : analyse au lot 83 (validé) ; réponses de Noam (décision 84) ; 84 documentation (validé) ; 85 classification (validé) ; 86 presets et 87 moteur de recommandation (livrés ensemble, validés) ; 88 interface (validé) ; 89 valeurs avec unité en hébreu (validé) ; 90 clôture (enveloppe convexe accélérée ; seuils de la classification et durée vérifiés sur les modèles de Noam, contrôles manuels du lot 90). Si un modèle de Noam est mal classé, le changement de seuil est un choix visible : question à Noam, puis un lot à part (nouvelle version d'OBJECT_CLASSIFICATION_SPEC).
+8. **Après la clôture de la phase 10 (idée de Noam, 2026-11-07) :** onglets dans le panneau Propriétés, réponses de Noam Q1 à Q6 option A (décision 90) : lot 93, seul, avec des contrôles manuels. Avant : le lot 92 (analyse plus rapide) et le nouveau contrôle de durée de Noam, qui clôt la phase 10.
 9. **Phases 11 à 16**, dans l'ordre du plan technique.
    - **Pas urgent (remarque de Noam, 2026-11-06, décision 87) :** type d'extrudeur des 24 imprimantes à « unknown » (dont toutes les Bambu Lab) : le revérifier sur les fiches des fabricants, seulement si la fiche le dit clairement, puis publier une nouvelle version des profils dans `slicyweb-profiles` (même règle de tag qu'à la v1.1.0).
 10. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :

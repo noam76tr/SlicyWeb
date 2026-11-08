@@ -1675,9 +1675,7 @@ Repeatable Results
 
 Moved from Phase 9 (ADR-034 D1): the classification fills analysis.classification, null until then (DATA_SCHEMA.md 3.9.0); the recommendation needs it (REC_002 while it is null).
 
-Status: Completed
-
-Date: 2026-11-07
+Status: In Progress (closure of 2026-11-07 suspended on 2026-11-08: analysis of 8.76 s for 1M triangles on the PC of Noam, target 5 s; lot 92)
 
 Decisions (ADR-035, decisions D1 to D13 of Noam, 2026-11-05; analysis of lot 83):
 
@@ -1712,6 +1710,8 @@ Progress:
 - Recommendation engine (lot 87, CHANGELOG 0.1.88): limits, temperatures and fan, retraction, supports and adhesion, 13 warnings, confidence (RECOMMENDATION_RULES.md 1.1.2: the travel never gives a warning, answer A of Noam); RecommendationSchema with temperature, filamentId null and the Warning Schema; delivered with lot 86 (lots grouped, Noam, 2026-11-06); lots 86 and 87 validated by Noam (2026-11-06)
 - Interface (lot 88, CHANGELOG 0.1.89): automatic recommendation (rule 11), Recommendation section (object type with "Automatic", preset, warnings, confidence; the rest under "Details"), Print Preset section and status bar, Tools > Generate Recommendations and the Generate button, 61 keys in three languages; RecommendationPanel.tsx and PresetPanel.tsx removed; validated by Noam (2026-11-07, manual checks 1 to 10)
 - Values with a unit in Hebrew (lot 89, CHANGELOG 0.1.90): NumberFormatter keeps each value with its unit left to right in Hebrew, in every section, the status bar and the plate size; end-to-end test in Hebrew
+- Mesh defects (lot 91, CHANGELOG 0.1.92): ANA_002 only for an edge shared by an odd number of triangles; ANA_005 for parts touching along an edge (remark of Noam)
+- Performance (lot 92, CHANGELOG 0.1.93): edges and BVH found once and shared, bounding box before the convex hull; same results; on Linux 1.8 to 2.3 s instead of 3.4 to 4.4 s for 1M triangles in the application
 - Closure (lot 90, CHANGELOG 0.1.91): hollow decided from two bounds of the convex hull volume, the exact hull only when the ratio is close to the limit (same answer, PERFORMANCE_SPEC.md 1.2.0); thresholds of the classification unchanged, checked on the models of Noam (manual checks of lot 90)
 
 Validation result (Windows 11, checks and manual controls of Noam, lots 84 to 89, 2026-11-05 to 2026-11-07; all passed):
@@ -1719,7 +1719,7 @@ Validation result (Windows 11, checks and manual controls of Noam, lots 84 to 89
 - Recommendations Respect Limits: unit tests of lot 87 with the shipped printers, materials, filaments and presets (Ultimaker S5 + Fast Prototype: print speed 100 mm/s with VALUE_LIMITED, travel 150 mm/s without warning; TPU at most 30 mm/s; layer height at most 75 % of the nozzle; temperatures capped by the printer; retraction by extruder type); in the application, the Recommendation section (end-to-end tests and manual checks 1 to 10 of lot 88)
 - Warnings Produced: each of the 13 codes in the unit tests, one per code, most severe first, a critical warning does not stop the recommendation; translated in three languages, critical in red (manual checks of lot 88)
 - Classification: 10 features and 5 rules on models built in the tests (cube, tower, spheres, open vase, open box, plate with holes, closed box, L bracket: neither container nor vase, remark of Noam); the category chosen by the user kept after a new analysis
-- Performance: on Linux, a sphere of 998 000 triangles (every vertex on the convex hull, the worst case) is analyzed and classified in about 4 to 4.8 s (PERFORMANCE_SPEC.md: less than 5 s); the duration on the PC of Noam is checked in the manual checks of lot 90
+- Performance: on the PC of Noam (2026-11-08), a closed sphere of 998 000 triangles took 8.76 s (lot 90; target 5 s, PERFORMANCE_SPEC.md); made faster in lot 92 (on Linux, in the application: 1.8 to 2.3 s instead of 3.4 to 4.4 s); the closure waits for the new check of Noam with the same sphere
 - With lot 89 (CHANGELOG 0.1.90, 2026-11-07): npm run check:locales 469 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 469 tests passed and 1 skipped, npm run test:e2e 38 tests passed, manual checks 1 to 7 passed in Hebrew, French and English
 
 Open issues after the closure: the recommendations and the object types are not saved in a project yet (Phase 13, Project Persistence); vase mode in the recommended profile (KI-029) and the support types by slicer (KI-012) in Phase 14; choice of a preset by the user, Custom preset and change of the recommended values in Phase 15 (presetStore.selectedPreset kept for it); the 24 printers with an unknown extruder type (remark of Noam, decision 87). Next: the tabs of the Properties panel (idea of Noam, 2026-11-07; questions first), then Phase 11.

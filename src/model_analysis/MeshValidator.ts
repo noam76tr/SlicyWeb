@@ -75,57 +75,152 @@ export interface EdgeDefects {
 }
 
 /**
+ * Edges of the welded mesh, found once and shared by the analysis and the
+ * classification (lot 92: the edges were sorted three times).
+ * Slot t * 3 + e is the edge of triangle t from its corner e to its
+ * corner e + 1 (corner 2 to corner 0).
+ */
+export interface EdgeTable {
+  /** Edge of each slot, -1 when its two corners are on the same vertex */
+  edgeOf: Int32Array;
+
+  /** Number of distinct edges */
+  edgeCount: number;
+}
+
+/** Group sizes up to this length are matched by a plain scan */
+const SCAN_GROUP = 24;
+
+/**
+ * Edge of each slot: the slots joining the same two vertices share one
+ * edge number. Linear time: the slots are grouped by their smaller vertex
+ * (counting sort), then matched inside each group.
+ */
+export function buildEdgeTable(
+  corners: Uint32Array,
+  vertexCount: number,
+): EdgeTable {
+  const slotCount = corners.length;
+  const edgeOf = new Int32Array(slotCount).fill(-1);
+  const start = new Int32Array(vertexCount + 1);
+
+  for (let s = 0; s < slotCount; s += 1) {
+    const a = corners[s];
+    const b = corners[s % 3 === 2 ? s - 2 : s + 1];
+
+    if (a !== b) start[Math.min(a, b) + 1] += 1;
+  }
+
+  for (let v = 0; v < vertexCount; v += 1) start[v + 1] += start[v];
+
+  const cursor = start.slice(0, vertexCount);
+  const others = new Int32Array(start[vertexCount]);
+  const slots = new Int32Array(start[vertexCount]);
+
+  // Slots in increasing order inside each group
+  for (let s = 0; s < slotCount; s += 1) {
+    const a = corners[s];
+    const b = corners[s % 3 === 2 ? s - 2 : s + 1];
+
+    if (a === b) continue;
+
+    const position = cursor[Math.min(a, b)]++;
+
+    others[position] = Math.max(a, b);
+    slots[position] = s;
+  }
+
+  let edgeCount = 0;
+
+  for (let v = 0; v < vertexCount; v += 1) {
+    const first = start[v];
+    const end = start[v + 1];
+
+    if (end - first <= SCAN_GROUP) {
+      for (let i = first; i < end; i += 1) {
+        let edge = -1;
+
+        for (let j = first; j < i; j += 1) {
+          if (others[j] === others[i]) {
+            edge = edgeOf[slots[j]];
+            break;
+          }
+        }
+
+        edgeOf[slots[i]] = edge >= 0 ? edge : edgeCount++;
+      }
+
+      continue;
+    }
+
+    // Large group (a vertex shared by many triangles): sorted by the other
+    // vertex
+    const order = Array.from({ length: end - first }, (_, k) => first + k);
+
+    order.sort((x, y) => others[x] - others[y] || slots[x] - slots[y]);
+
+    for (let k = 0; k < order.length; k += 1) {
+      const i = order[k];
+
+      if (k === 0 || others[i] !== others[order[k - 1]]) {
+        edgeOf[slots[i]] = edgeCount++;
+      } else {
+        edgeOf[slots[i]] = edgeOf[slots[order[k - 1]]];
+      }
+    }
+  }
+
+  return { edgeOf, edgeCount };
+}
+
+/**
  * Open and non-manifold edges of the welded mesh. Triangles with two
  * corners on the same vertex (no area) are ignored.
+ * edges: the table of the mesh, when already built.
  */
 export function countEdgeDefects(
   corners: Uint32Array,
   vertexCount: number,
+  edges: EdgeTable = buildEdgeTable(corners, vertexCount),
 ): EdgeDefects {
-  const triangleCount = corners.length / 3;
-  const keys = new Float64Array(corners.length);
-  let edgeCount = 0;
-
-  for (let t = 0; t < triangleCount; t += 1) {
-    const a = corners[t * 3];
-    const b = corners[t * 3 + 1];
-    const c = corners[t * 3 + 2];
-
-    if (a === b || b === c || a === c) {
-      continue;
-    }
-
-    keys[edgeCount++] = edgeKey(a, b, vertexCount);
-    keys[edgeCount++] = edgeKey(b, c, vertexCount);
-    keys[edgeCount++] = edgeKey(c, a, vertexCount);
-  }
-
-  const edges = keys.subarray(0, edgeCount).sort();
+  const uses = triangleUses(corners, edges);
   const defects: EdgeDefects = { open: 0, nonManifold: 0 };
-  let i = 0;
 
-  while (i < edges.length) {
-    let j = i + 1;
-
-    while (j < edges.length && edges[j] === edges[i]) {
-      j += 1;
-    }
-
-    const shared = j - i;
+  for (let e = 0; e < edges.edgeCount; e += 1) {
+    const shared = uses[e];
 
     if (shared % 2 === 1) {
       defects.open += 1;
     } else if (shared > 2) {
       defects.nonManifold += 1;
     }
-
-    i = j;
   }
 
   return defects;
 }
 
-/** One number per edge, whatever the order of its two vertices */
-function edgeKey(a: number, b: number, vertexCount: number): number {
-  return a < b ? a * vertexCount + b : b * vertexCount + a;
+/**
+ * Number of triangles using each edge, triangles with two corners on the
+ * same vertex left out (0: the edge belongs only to such triangles).
+ */
+export function triangleUses(
+  corners: Uint32Array,
+  edges: EdgeTable,
+): Int32Array {
+  const uses = new Int32Array(edges.edgeCount);
+  const triangleCount = corners.length / 3;
+
+  for (let t = 0; t < triangleCount; t += 1) {
+    const a = corners[t * 3];
+    const b = corners[t * 3 + 1];
+    const c = corners[t * 3 + 2];
+
+    if (a === b || b === c || a === c) continue;
+
+    uses[edges.edgeOf[t * 3]] += 1;
+    uses[edges.edgeOf[t * 3 + 1]] += 1;
+    uses[edges.edgeOf[t * 3 + 2]] += 1;
+  }
+
+  return uses;
 }

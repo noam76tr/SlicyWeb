@@ -4,7 +4,7 @@
 
 
 
-Version: 1.2.0
+Version: 1.3.0
 
 
 
@@ -218,7 +218,9 @@ Thin walls: at most 200 000 measured points per object, with a BVH (three-mesh-b
 
 Phase 10 (lot 90, closure): the classification runs in the same Web Worker, after the analysis; the target above covers both. Convex hull of the feature hollow (OBJECT_CLASSIFICATION_SPEC.md): the exact hull of every vertex took 6.5 s for 1M triangles when every vertex lies on the hull (a sphere). It is framed first by two bounds: the hull of the extreme vertices in 128 directions (lower bound) and this small hull scaled by 1 + delta / (smallest distance from its center to its faces), delta being the largest distance of a vertex outside its face planes, or the bounding box (upper bound). When the ratio volume / hull is on the same side of the limit for both bounds, the answer is certain; otherwise the exact hull decides. The features are the same as with the exact hull alone.
 
-Measured on Linux (sphere of 998 000 triangles): analysis 2 s, classification 2 to 2.5 s (hollow 0.5 to 0.9 s instead of 6.5 s), about 4 to 4.8 s in all. Sphere of 99 224 triangles: classification 0.14 to 0.18 s (Classification Performance: less than 500 ms).
+Lot 92 (1.3.0): on the PC of Noam the sphere of 998 000 triangles took 8.76 s (lot 90). Same results, less work: the edges of the mesh are found once (edge table, linear time) and shared by the open edges, the bridges, the planar share and the genus; the BVH is built once and shared by the thin walls and open_top; hollow first compares the volume with the bounding box (the hull lies inside it: above 35 % of the box, never hollow, no hull), then bounds with 32 directions, then 128, then the exact hull. Measured on Linux in the application built ("Analyzing…" in the status bar, sphere of 998 000 triangles): 1.8 to 2.3 s instead of 3.4 to 4.4 s. The thin walls (200 000 rays) and the BVH now take most of the time.
+
+Measured on Linux in lot 90 (sphere of 998 000 triangles): analysis 2 s, classification 2 to 2.5 s (hollow 0.5 to 0.9 s instead of 6.5 s), about 4 to 4.8 s in all. Sphere of 99 224 triangles: classification 0.14 to 0.18 s (Classification Performance: less than 500 ms).
 
 
 

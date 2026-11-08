@@ -55,13 +55,20 @@ import {
   weldVertices,
   type AnalysisTransform,
 } from "./MeshAnalyzer";
-import { checkMeshData, countEdgeDefects } from "./MeshValidator";
+import {
+  buildEdgeTable,
+  checkMeshData,
+  countEdgeDefects,
+  type EdgeTable,
+} from "./MeshValidator";
 import {
   analyzeBridges,
   analyzeOverhangs,
   analyzeThinWalls,
+  buildPlacedBVH,
   downAngles,
   overhangTriangles,
+  type PlacedBVH,
 } from "./PrintabilityAnalyzer";
 import { analyzeStability } from "./StabilityAnalyzer";
 
@@ -76,6 +83,12 @@ export interface PlacedMesh {
   corners: Uint32Array;
 
   vertexCount: number;
+
+  /** Edges of the mesh, already found by the analysis (lot 92) */
+  edges?: EdgeTable;
+
+  /** BVH of the placed object, already built by the analysis (lot 92) */
+  placedBVH?: PlacedBVH;
 }
 
 /**
@@ -160,7 +173,10 @@ export function analyzeModel(
     centerOfGravity,
   );
   const down = downAngles(placed, welded.corners, lowestZ);
-  const edges = countEdgeDefects(welded.corners, welded.vertexCount);
+  // Found once, shared with the classification (lot 92)
+  const edgeTable = buildEdgeTable(welded.corners, welded.vertexCount);
+  const placedBVH = buildPlacedBVH(placed, welded.corners);
+  const edges = countEdgeDefects(welded.corners, welded.vertexCount, edgeTable);
 
   const result: ModelAnalysisResult = {
     dimensions,
@@ -168,8 +184,14 @@ export function analyzeModel(
     mesh: meshStatistics(welded),
     stability,
     overhangs: analyzeOverhangs(down, geometry.surfaceArea),
-    bridges: analyzeBridges(placed, welded.corners, welded.vertexCount, down),
-    thinWalls: analyzeThinWalls(placed, welded.corners),
+    bridges: analyzeBridges(
+      placed,
+      welded.corners,
+      welded.vertexCount,
+      down,
+      edgeTable,
+    ),
+    thinWalls: analyzeThinWalls(placed, welded.corners, placedBVH),
     meshClosed: edges.open === 0,
     meshManifold: edges.nonManifold === 0,
     overhangTriangles: overhangTriangles(down),
@@ -178,7 +200,13 @@ export function analyzeModel(
 
   if (classify) {
     result.classification = classify(
-      { placed, corners: welded.corners, vertexCount: welded.vertexCount },
+      {
+        placed,
+        corners: welded.corners,
+        vertexCount: welded.vertexCount,
+        edges: edgeTable,
+        placedBVH,
+      },
       result,
     );
   }

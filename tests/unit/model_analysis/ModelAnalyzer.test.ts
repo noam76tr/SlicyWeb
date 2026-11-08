@@ -24,6 +24,7 @@ import {
 import { runModelAnalysis } from "../../../src/model_analysis/AnalysisRunner";
 import { weldVertices } from "../../../src/model_analysis/MeshAnalyzer";
 import {
+  buildEdgeTable,
   countEdgeDefects,
   countOpenEdges,
 } from "../../../src/model_analysis/MeshValidator";
@@ -804,6 +805,61 @@ describe("ModelAnalyzer: mesh not closed and empty mesh", () => {
 
     expect(cube.meshClosed).toBe(true);
     expect(cube.meshManifold).toBe(true);
+  });
+
+  it("edge table (lot 92): the same edge for the same two vertices, also around a vertex with many triangles", () => {
+    // Random corners on 40 vertices: vertex 0 in many triangles (sorted
+    // groups), the others in few (scanned groups); some flat triangles
+    let seed = 11;
+    const random = (n: number): number => {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      return Math.floor((seed / 2147483648) * n);
+    };
+    const corners = new Uint32Array(3 * 400);
+
+    for (let t = 0; t < 400; t += 1) {
+      corners[t * 3] = t % 2 === 0 ? 0 : random(40);
+      corners[t * 3 + 1] = random(40);
+      corners[t * 3 + 2] = random(40);
+    }
+
+    const { edgeOf, edgeCount } = buildEdgeTable(corners, 40);
+    const byPair = new Map<string, number>();
+
+    for (let slot = 0; slot < corners.length; slot += 1) {
+      const a = corners[slot];
+      const b = corners[slot % 3 === 2 ? slot - 2 : slot + 1];
+
+      if (a === b) {
+        expect(edgeOf[slot]).toBe(-1);
+        continue;
+      }
+
+      const pair = `${Math.min(a, b)}-${Math.max(a, b)}`;
+      const known = byPair.get(pair);
+
+      if (known === undefined) {
+        byPair.set(pair, edgeOf[slot]);
+      } else {
+        expect(edgeOf[slot]).toBe(known);
+      }
+    }
+
+    // One number per pair, numbered 0 to edgeCount - 1
+    expect(new Set(byPair.values()).size).toBe(byPair.size);
+    expect(edgeCount).toBe(byPair.size);
+    expect(Math.max(...byPair.values())).toBe(edgeCount - 1);
+  });
+
+  it("a sphere: every edge shared by two triangles (edge table)", () => {
+    const welded = weldVertices(centered(sphere(10, 96, 48)));
+    const { edgeCount } = buildEdgeTable(welded.corners, welded.vertexCount);
+
+    expect(edgeCount).toBe((welded.corners.length / 3) * 1.5);
+    expect(countEdgeDefects(welded.corners, welded.vertexCount)).toEqual({
+      open: 0,
+      nonManifold: 0,
+    });
   });
 
   it("flat mesh (volume 0): center of the surface, area weighted", () => {

@@ -42,16 +42,21 @@
 
 import * as THREE from "three";
 import { ConvexHull } from "three/examples/jsm/math/ConvexHull.js";
-import { MeshBVH } from "three-mesh-bvh";
 
 import {
   FEATURE_THRESHOLDS,
   GEOMETRIC_FEATURES,
 } from "../constants/AnalysisConstants";
+import {
+  buildEdgeTable,
+  triangleUses,
+  type EdgeTable,
+} from "../model_analysis/MeshValidator";
 import type {
   ModelAnalysisResult,
   PlacedMesh,
 } from "../model_analysis/ModelAnalyzer";
+import { buildPlacedBVH } from "../model_analysis/PrintabilityAnalyzer";
 import type { GeometricFeature } from "../types/Classification";
 
 /** Rounding of the computation: a value this close to a limit is on it */
@@ -162,7 +167,10 @@ export function planarShare(mesh: PlacedMesh, surfaceArea: number): number {
     }
   }
 
-  const neighbours = edgeNeighbours(corners, vertexCount);
+  const neighbours = edgeNeighbours(
+    corners,
+    mesh.edges ?? buildEdgeTable(corners, vertexCount),
+  );
   const minimumCos = Math.cos(
     (FEATURE_THRESHOLDS.PLANAR_REGION_MAX_ANGLE_DEG * Math.PI) / 180,
   );
@@ -221,8 +229,6 @@ export function genus(mesh: PlacedMesh): number {
   const { corners, vertexCount } = mesh;
   const triangleCount = corners.length / 3;
   const parent = new Int32Array(vertexCount).fill(-1);
-  const keys = new Float64Array(corners.length);
-  let edgeCount = 0;
   let faces = 0;
 
   const find = (v: number): number => {
@@ -262,16 +268,17 @@ export function genus(mesh: PlacedMesh): number {
     faces += 1;
     join(a, b);
     join(b, c);
-    keys[edgeCount++] = edgeKey(a, b, vertexCount);
-    keys[edgeCount++] = edgeKey(b, c, vertexCount);
-    keys[edgeCount++] = edgeKey(c, a, vertexCount);
   }
 
-  const edges = keys.subarray(0, edgeCount).sort();
+  // Distinct edges of the triangles with three distinct corners
+  const uses = triangleUses(
+    corners,
+    mesh.edges ?? buildEdgeTable(corners, vertexCount),
+  );
   let distinctEdges = 0;
 
-  for (let i = 0; i < edges.length; i += 1) {
-    if (i === 0 || edges[i] !== edges[i - 1]) distinctEdges += 1;
+  for (let e = 0; e < uses.length; e += 1) {
+    if (uses[e] > 0) distinctEdges += 1;
   }
 
   let vertices = 0;
@@ -307,9 +314,19 @@ export function genus(mesh: PlacedMesh): number {
  */
 export function isHollow(mesh: PlacedMesh, volume: number): boolean {
   const limit = FEATURE_THRESHOLDS.HOLLOW_MAX_RATIO + TOLERANCE;
-  const bounds = hullVolumeBounds(mesh);
 
-  if (bounds) {
+  // The hull lies inside the bounding box: a volume above the limit of the
+  // box is never hollow, without any hull (lot 92: a sphere, a block)
+  if (volume > limit * boundingBoxVolume(mesh) * (1 + BOUND_MARGIN)) {
+    return false;
+  }
+
+  // Quick bounds first, then finer ones, then the exact hull (lot 92)
+  for (const directions of HULL_DIRECTION_STEPS) {
+    const bounds = hullVolumeBounds(mesh, directions);
+
+    if (!bounds) break;
+
     if (volume <= limit * bounds.lower) return true;
 
     if (volume > limit * bounds.upper) return false;
@@ -320,8 +337,39 @@ export function isHollow(mesh: PlacedMesh, volume: number): boolean {
   return hull > 0 && volume / hull <= limit;
 }
 
-/** Number of directions of the extreme vertices (isHollow) */
+/** Volume of the bounding box of the vertices, in mm³ */
+function boundingBoxVolume(mesh: PlacedMesh): number {
+  const { placed, vertexCount } = mesh;
+  let minX = Infinity;
+  let minY = Infinity;
+  let minZ = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  let maxZ = -Infinity;
+
+  for (let v = 0; v < vertexCount; v += 1) {
+    const x = placed[v * 3];
+    const y = placed[v * 3 + 1];
+    const z = placed[v * 3 + 2];
+
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+    if (z < minZ) minZ = z;
+    if (z > maxZ) maxZ = z;
+  }
+
+  const box = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
+
+  return Number.isFinite(box) ? box : Infinity;
+}
+
+/** Number of directions of the extreme vertices (isHollow), at most */
 export const HULL_DIRECTIONS = 128;
+
+/** Directions of the successive bounds: quick, then finer (lot 92) */
+const HULL_DIRECTION_STEPS = [32, HULL_DIRECTIONS];
 
 /** Safety margin of the bounds of the hull volume (rounding) */
 const BOUND_MARGIN = 1e-6;
@@ -332,17 +380,18 @@ const BOUND_MARGIN = 1e-6;
  */
 export function hullVolumeBounds(
   mesh: PlacedMesh,
+  count = HULL_DIRECTIONS,
 ): { lower: number; upper: number } | null {
   const { placed, vertexCount } = mesh;
 
   if (vertexCount < 4) return null;
 
   // Directions spread evenly on the sphere (Fibonacci), always the same
-  const directions = new Float64Array(HULL_DIRECTIONS * 3);
+  const directions = new Float64Array(count * 3);
   const golden = Math.PI * (3 - Math.sqrt(5));
 
-  for (let d = 0; d < HULL_DIRECTIONS; d += 1) {
-    const z = 1 - (2 * (d + 0.5)) / HULL_DIRECTIONS;
+  for (let d = 0; d < count; d += 1) {
+    const z = 1 - (2 * (d + 0.5)) / count;
     const r = Math.sqrt(1 - z * z);
 
     directions[d * 3] = r * Math.cos(golden * d);
@@ -350,8 +399,8 @@ export function hullVolumeBounds(
     directions[d * 3 + 2] = z;
   }
 
-  const best = new Float64Array(HULL_DIRECTIONS).fill(-Infinity);
-  const extreme = new Int32Array(HULL_DIRECTIONS);
+  const best = new Float64Array(count).fill(-Infinity);
+  const extreme = new Int32Array(count);
   let minX = Infinity;
   let minY = Infinity;
   let minZ = Infinity;
@@ -371,7 +420,7 @@ export function hullVolumeBounds(
     if (z < minZ) minZ = z;
     if (z > maxZ) maxZ = z;
 
-    for (let d = 0; d < HULL_DIRECTIONS; d += 1) {
+    for (let d = 0; d < count; d += 1) {
       const dot =
         x * directions[d * 3] +
         y * directions[d * 3 + 1] +
@@ -539,17 +588,8 @@ export function isOpenTop(mesh: PlacedMesh): boolean {
 
   if (!(height > 0)) return false;
 
-  const geometry = new THREE.BufferGeometry();
-
-  geometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(new Float32Array(placed), 3),
-  );
-  // Copy: the BVH sorts the triangles of its index
-  geometry.setIndex(new THREE.BufferAttribute(corners.slice(), 1));
-
-  const bvh = new MeshBVH(geometry);
-  const index = geometry.index!.array as Uint32Array;
+  // BVH of the analysis when given (lot 92), otherwise built here
+  const { bvh, index } = mesh.placedBVH ?? buildPlacedBVH(placed, corners);
   const centerX = (min[0] + max[0]) / 2;
   const centerY = (min[1] + max[1]) / 2;
   const ray = new THREE.Ray(
@@ -610,44 +650,35 @@ function triangleNormal(
 }
 
 /**
- * Neighbour of each edge of each triangle (slot t x 3 + e: edge from
- * corner e to corner e + 1), -1 when none. An edge shared by more than two
- * triangles joins each of them to the first.
+ * Neighbour across each edge slot (t * 3 + e): the first triangle met on
+ * this edge for the next ones, the next one for the first; -1 when none.
+ * Same links as before lot 92, from the shared edge table.
  */
-function edgeNeighbours(corners: Uint32Array, vertexCount: number): Int32Array {
-  const triangleCount = corners.length / 3;
+function edgeNeighbours(corners: Uint32Array, edges: EdgeTable): Int32Array {
   const neighbours = new Int32Array(corners.length).fill(-1);
-  const firstSlot = new Map<number, number>();
+  const firstSlot = new Int32Array(edges.edgeCount).fill(-1);
 
-  for (let t = 0; t < triangleCount; t += 1) {
-    for (let e = 0; e < 3; e += 1) {
-      const a = corners[t * 3 + e];
-      const b = corners[t * 3 + ((e + 1) % 3)];
+  for (let slot = 0; slot < corners.length; slot += 1) {
+    const edge = edges.edgeOf[slot];
 
-      if (a === b) continue;
+    if (edge < 0) continue;
 
-      const key = edgeKey(a, b, vertexCount);
-      const slot = firstSlot.get(key);
+    const first = firstSlot[edge];
 
-      if (slot === undefined) {
-        firstSlot.set(key, t * 3 + e);
-        continue;
-      }
-
-      const first = Math.floor(slot / 3);
-
-      if (first === t) continue;
-
-      neighbours[t * 3 + e] = first;
-
-      if (neighbours[slot] === -1) neighbours[slot] = t;
+    if (first < 0) {
+      firstSlot[edge] = slot;
+      continue;
     }
+
+    const t = Math.floor(slot / 3);
+    const firstTriangle = Math.floor(first / 3);
+
+    if (firstTriangle === t) continue;
+
+    neighbours[slot] = firstTriangle;
+
+    if (neighbours[first] === -1) neighbours[first] = t;
   }
 
   return neighbours;
-}
-
-/** One number per edge, whatever the order of its two vertices */
-function edgeKey(a: number, b: number, vertexCount: number): number {
-  return a < b ? a * vertexCount + b : b * vertexCount + a;
 }
