@@ -13,7 +13,8 @@
  *   while their normals differ by at most 1 degree from the normal of the
  *   first triangle of the region, and counts when its area is at least
  *   1 % of the surface;
- * - holes: genus of the welded mesh, only when the mesh is closed;
+ * - holes: genus of the welded mesh, only when the mesh is closed and
+ *   manifold (every edge shared by two triangles; 1.2.2, lot 91);
  * - hollow: geometry.volume divided by the volume of the convex hull of
  *   the vertices; absent when the hull has no volume; decided from two
  *   bounds of the hull volume, the exact hull only near the limit (lot 90,
@@ -115,7 +116,11 @@ export function detectFeatures(
     }
   }
 
-  if (result.meshClosed && genus(mesh) >= FEATURE_THRESHOLDS.HOLES_MIN_GENUS) {
+  if (
+    result.meshClosed &&
+    result.meshManifold &&
+    genus(mesh) >= FEATURE_THRESHOLDS.HOLES_MIN_GENUS
+  ) {
     found.add("holes");
   }
 

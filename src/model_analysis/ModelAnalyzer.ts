@@ -12,6 +12,7 @@
  * 6. overhangs and bridges (angle from the vertical, ADR-034 D3);
  * 7. thin walls (rays towards the inside, three-mesh-bvh, ADR-034 D5);
  * 8. open edges: meshClosed false = warning ANA_002 (non-blocking);
+ *    non-manifold edges: meshManifold false = information ANA_005;
  * 9. the triangles beyond 45 degrees, for the display in red (lot 82);
  * 10. the classification (Phase 10 lot 85), on the same placed mesh, by
  *    the classifier given by the Web Worker of the analysis: this domain
@@ -54,7 +55,7 @@ import {
   weldVertices,
   type AnalysisTransform,
 } from "./MeshAnalyzer";
-import { checkMeshData, countOpenEdges } from "./MeshValidator";
+import { checkMeshData, countEdgeDefects } from "./MeshValidator";
 import {
   analyzeBridges,
   analyzeOverhangs,
@@ -103,10 +104,16 @@ export interface ModelAnalysisResult {
   thinWalls: ThinWalls;
 
   /**
-   * false: an edge is not shared by exactly two triangles; the message
-   * ANA_002 is shown (not stored, DATA_SCHEMA.md: Mesh not closed).
+   * false: an edge is shared by an odd number of triangles (a hole); the
+   * message ANA_002 is shown (not stored, DATA_SCHEMA.md: Mesh not closed).
    */
   meshClosed: boolean;
+
+  /**
+   * false: an edge is shared by 4, 6… triangles (parts touching along an
+   * edge); information ANA_005 when the mesh is closed (not stored; lot 91).
+   */
+  meshManifold: boolean;
 
   /**
    * Index of each triangle beyond 45 degrees, in the triangle data of the
@@ -153,6 +160,7 @@ export function analyzeModel(
     centerOfGravity,
   );
   const down = downAngles(placed, welded.corners, lowestZ);
+  const edges = countEdgeDefects(welded.corners, welded.vertexCount);
 
   const result: ModelAnalysisResult = {
     dimensions,
@@ -162,7 +170,8 @@ export function analyzeModel(
     overhangs: analyzeOverhangs(down, geometry.surfaceArea),
     bridges: analyzeBridges(placed, welded.corners, welded.vertexCount, down),
     thinWalls: analyzeThinWalls(placed, welded.corners),
-    meshClosed: countOpenEdges(welded.corners, welded.vertexCount) === 0,
+    meshClosed: edges.open === 0,
+    meshManifold: edges.nonManifold === 0,
     overhangTriangles: overhangTriangles(down),
     classification: null,
   };

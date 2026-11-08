@@ -2,7 +2,7 @@
 
 # RECOMMENDATION RULES
 
-Version: 1.1.2
+Version: 1.1.3
 
 Status: Approved
 
@@ -476,6 +476,8 @@ confidenceScore = 100 minus:
   no filament selected                                       15
   incomplete analysis (mesh not closed, ANA_002, or thin
     walls not measured: minimumThickness 0)                  20
+    (a mesh only not manifold, ANA_005, gives no reduction:
+    lot 91, Noam 2026-11-08)
   printer of the user (source Local Custom, not verified)    10
   filament of the user (source Local Custom, not verified)   10
   automatic classification Low (40 to 59)                    10
@@ -1630,6 +1632,8 @@ Bridge Failure Risk
 
 
 Support evaluation required.
+
+Version 1.1.3 (lot 91, Noam 2026-11-08, answer A): a mesh only not manifold (ANA_005, parts touching along an edge, no hole) gives no reduction of the confidence; only a mesh not closed (ANA_002) is an incomplete analysis.
 
 Version 1.1.0: supports are enabled above 60 degrees (Supports And Adhesion). The severity of the warning OVERHANG_HIGH follows SUPPORT_GENERATION_SPEC.md: 61 to 75 degrees medium, 76 to 90 degrees high (Recommendation Warnings).
 

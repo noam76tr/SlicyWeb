@@ -23,7 +23,10 @@ import {
 } from "../../../src/model_analysis/AnalysisError";
 import { runModelAnalysis } from "../../../src/model_analysis/AnalysisRunner";
 import { weldVertices } from "../../../src/model_analysis/MeshAnalyzer";
-import { countOpenEdges } from "../../../src/model_analysis/MeshValidator";
+import {
+  countEdgeDefects,
+  countOpenEdges,
+} from "../../../src/model_analysis/MeshValidator";
 import {
   analyzeModel,
   runAnalysisRequest,
@@ -755,6 +758,52 @@ describe("ModelAnalyzer: mesh not closed and empty mesh", () => {
     );
 
     expect(countOpenEdges(closed.corners, closed.vertexCount)).toBe(0);
+  });
+
+  it("two cubes touching along an edge: closed, not manifold (ANA_005), volume exact (lot 91)", () => {
+    const result = analyzeModel(
+      centered([
+        ...box([0, 0, 0], [10, 10, 10]),
+        ...box([10, 10, 0], [20, 20, 10]),
+      ]),
+      IDENTITY,
+    );
+
+    expect(result.meshClosed).toBe(true);
+    expect(result.meshManifold).toBe(false);
+    expect(result.geometry.volume).toBeCloseTo(2000, 6);
+
+    const welded = weldVertices(
+      Float32Array.from([
+        ...box([0, 0, 0], [10, 10, 10]),
+        ...box([10, 10, 0], [20, 20, 10]),
+      ]),
+    );
+
+    expect(countEdgeDefects(welded.corners, welded.vertexCount)).toEqual({
+      open: 0,
+      nonManifold: 1,
+    });
+  });
+
+  it("an edge shared by three triangles is open (ANA_002); a cube is closed and manifold", () => {
+    // A fin on the bottom front edge of the cube: that edge has 3 triangles
+    const fin = [-10, -10, -10, 10, -10, -10, 0, -20, -10];
+    const welded = weldVertices(Float32Array.from([...cube20(), ...fin]));
+
+    expect(countEdgeDefects(welded.corners, welded.vertexCount)).toEqual({
+      open: 3,
+      nonManifold: 0,
+    });
+    expect(
+      analyzeModel(Float32Array.from([...cube20(), ...fin]), IDENTITY)
+        .meshClosed,
+    ).toBe(false);
+
+    const cube = analyzeModel(cube20(), IDENTITY);
+
+    expect(cube.meshClosed).toBe(true);
+    expect(cube.meshManifold).toBe(true);
   });
 
   it("flat mesh (volume 0): center of the surface, area weighted", () => {

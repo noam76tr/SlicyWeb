@@ -312,6 +312,7 @@
   "analysis.mesh": "Mesh",
   "analysis.meshValue": "{triangles} triangles, {vertices} vertices",
   "analysis.meshNotClosed": "Mesh not closed: volume and wall thickness are approximate",
+  "analysis.meshNonManifold": "Non-manifold mesh: some parts touch along an edge",
   "analysis.overhangs": "Overhangs",
   "analysis.overhangsValue": "{angle} max, {percent} beyond 45°",
   "analysis.bridges": "Bridges",

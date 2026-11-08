@@ -104,7 +104,7 @@ describe("Classification: models of TEST_PLAN.md (lot 85)", () => {
       confidenceScore: 0,
       detectedFeatures: ["small", "planar"],
       detectedTags: [],
-      classificationVersion: "1.2.0",
+      classificationVersion: "1.2.2",
       source: "automatic",
     });
   });
@@ -268,6 +268,27 @@ describe("Classification: features, rules and confidence", () => {
     expect(of(blocks([["###"], ["#.#"], ["###"]]))).toBe(1);
   });
 
+  it("parts touching along an edge (not manifold): holes not computed (lot 91)", () => {
+    // Four cubes around an empty center, each touching the next along a
+    // vertical edge only
+    const ring = [
+      ...box([10, 0, 0], [20, 10, 10]),
+      ...box([20, 10, 0], [30, 20, 10]),
+      ...box([10, 20, 0], [20, 30, 10]),
+      ...box([0, 10, 0], [10, 20, 10]),
+    ];
+    const result = analyzeModel(
+      centered(ring),
+      IDENTITY,
+      ClassificationEngine.classifyModel,
+    );
+
+    expect(result.meshClosed).toBe(true);
+    expect(result.meshManifold).toBe(false);
+    expect(result.classification!.detectedFeatures).not.toContain("holes");
+    expect(result.classification!.classificationVersion).toBe("1.2.2");
+  });
+
   it("repeatable: the same mesh gives the same classification twice", () => {
     for (const model of [
       openVase(),
@@ -331,7 +352,7 @@ describe("ClassificationValidator (KI-011) and the stored form", () => {
     confidenceScore: 75,
     detectedFeatures: ["tall", "curved", "hollow", "open_top"],
     detectedTags: [],
-    classificationVersion: "1.2.0",
+    classificationVersion: "1.2.2",
     source: "automatic",
   };
 

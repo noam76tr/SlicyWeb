@@ -3392,6 +3392,43 @@ Date:
 - A model whose ratio volume / hull lies close to 0.35 (about 0.335 to 0.366) still uses the exact hull: same duration as before for such a model
 - presetStore.selectedPreset is kept unused until Phase 15 (answer of Noam, 2026-11-07)
 
+## Validation Result
+
+- Windows 11 (2026-11-08): lots 89 and 90 on GitHub (8348a9f, identical to the lots); npm run check:locales 469 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 487 tests passed and 1 skipped, npm run test:e2e 38 tests passed (Noam)
+- Answers of Noam on the tabs of the Properties panel: Q1 to Q6 option A, in a separate lot after the closure of Phase 10
+- Model of Noam (HMG7.4_Seckit_SK-GO_Custom_Base.stl, 16 794 triangles): orange messages and thin walls correct; "Mesh not closed" misleading: no edge with one triangle, but 94 edges shared by 4 triangles and 6 degenerate triangles: fixed in 0.1.92
+- Manual checks 1 and 2 (category of the models of Noam, duration of the largest model): results not received yet
+
+---
+
+# VERSION 0.1.92
+
+Release Type:
+Model Analysis (mesh defects)
+
+Status:
+In Progress
+
+Date:
+2026-11-08
+
+## Changed
+
+- Mesh not closed (ANA_002, remark of Noam on 0.1.91): only an edge shared by an odd number of triangles (1: a hole; 3: the surface is open somewhere too, agreed by Noam) opens the mesh; before, every edge not shared by exactly two triangles did. src/model_analysis/MeshValidator.ts: countOpenEdges counts the odd edges; countEdgeDefects (new) gives the open and the non-manifold edges (4, 6… triangles); src/model_analysis/ModelAnalyzer.ts: meshManifold in the result (not stored)
+- A closed mesh whose parts touch along an edge: information ANA_005 "Non-manifold mesh: some parts touch along an edge", in grey in the Analysis section only (Q2 A), never over the viewport; no reduction of the recommendation confidence (Q1 A, RECOMMENDATION_RULES.md 1.1.3); the feature holes is not computed (Q3 A, OBJECT_CLASSIFICATION_SPEC.md 1.2.2); src/state/analysisTaskStore.ts (nonManifoldObjectIds, setNonManifold), src/services/AnalysisService.ts, src/gui/sidebar/AnalysisSection.tsx
+- src/constants/AnalysisConstants.ts: CLASSIFICATION_VERSION "1.2.2" (it was still "1.2.0" although OBJECT_CLASSIFICATION_SPEC.md was 1.2.1)
+- ERROR_CODES_SPEC.md 2.5.0 (ANA_002 precised, ANA_005), DATA_SCHEMA.md 3.10.1 (Analysis Rules, Mesh not closed; no field changed), OBJECT_CLASSIFICATION_SPEC.md 1.2.2, RECOMMENDATION_RULES.md 1.1.3, GUI_SPEC.md (Analysis Section), TEST_PLAN.md
+- PASSATION.md: lots 89 and 90 on main, lot 91, decision 90
+
+## Added
+
+- Key analysis.meshNonManifold in English, French and Hebrew (470 keys)
+- Tests: tests/unit/model_analysis/ModelAnalyzer.test.ts (2 tests: two cubes touching along an edge, closed, not manifold, volume 2000 mm³; an edge with three triangles is open, a cube is closed and manifold), tests/unit/classification_engine/Classification.test.ts (1 test: four cubes touching along edges, holes not computed, classificationVersion 1.2.2); tests/e2e/analysis.spec.ts (1 test: ANA_005 in the section, volume 2 cm³, no message over the viewport)
+
+## Known Limitations
+
+- Degenerate triangles (two corners on the same vertex after the welding) are ignored, as before; they give no message
+
 ---
 
 # VERSION 0.2.0

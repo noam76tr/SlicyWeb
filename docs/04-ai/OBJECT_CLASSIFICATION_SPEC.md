@@ -2,7 +2,7 @@
 
 # OBJECT CLASSIFICATION SPECIFICATION
 
-Version: 1.2.1
+Version: 1.2.2
 
 Status: Approved
 
@@ -633,7 +633,9 @@ Genus (holes):
   computed on the welded mesh (vertices at the same position merged, as the
   analysis): genus = (2 x C - (V - E + F)) / 2, with C connected parts,
   V vertices, E edges, F triangles; holes when the genus is at least 1
-  not computed (holes absent) when the mesh is not closed (ANA_002)
+  not computed (holes absent) when the mesh is not closed (ANA_002), or
+  when it is not manifold (an edge shared by 4, 6… triangles, ANA_005;
+  1.2.2): the formula needs two triangles on each edge
 
 Convex hull (hollow):
   the convex hull of the vertices of the placed object, in 3D;
@@ -651,6 +653,8 @@ open_top:
   when one of them meets nothing (an L bracket: its base is low and faces
   up, but it is open on three sides; a tray with three walls)
 ```
+
+Version 1.2.2 (lot 91, Noam 2026-11-08): holes is not computed for a mesh that is not manifold (parts touching along an edge: the genus would be wrong). classificationVersion "1.2.2".
 
 Version 1.2.1: the walls around the bottom are required for open_top. Without them, a thin L bracket (hollow, its base below 50 % of the height) was classified as a container. An L bracket is neither a container nor a vase (model built in the tests).
 
@@ -678,7 +682,7 @@ never chosen automatically: gear, bracket, enclosure, tool,
   articulated_model, prototype, structural_part, decorative_object,
   functional_part
 subcategory: "" ; detectedTags: [] (no list is defined)
-classificationVersion: "1.2.1"
+classificationVersion: "1.2.2"
 source: "automatic"
 ```
 

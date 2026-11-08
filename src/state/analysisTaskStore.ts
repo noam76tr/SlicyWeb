@@ -47,6 +47,12 @@ interface AnalysisTaskState {
   /** Objects whose last analysis found a mesh not closed (ANA_002) */
   openMeshObjectIds: string[];
 
+  /**
+   * Objects whose last analysis found a closed mesh with parts touching
+   * along an edge (information ANA_005 in the Analysis section; lot 91)
+   */
+  nonManifoldObjectIds: string[];
+
   messages: AnalysisMessage[];
 
   /**
@@ -59,6 +65,9 @@ interface AnalysisTaskState {
 
   /** Keeps (true) or clears (false) the warning ANA_002 of an object */
   setOpenMesh: (objectId: string, open: boolean) => void;
+
+  /** Keeps (true) or clears (false) the information ANA_005 of an object */
+  setNonManifold: (objectId: string, nonManifold: boolean) => void;
 
   /** Keeps the triangles beyond 45 degrees of the last analysis */
   setOverhangTriangles: (objectId: string, triangles: Uint32Array) => void;
@@ -76,6 +85,8 @@ export const useAnalysisTaskStore = create<AnalysisTaskState>((set) => ({
 
   openMeshObjectIds: [],
 
+  nonManifoldObjectIds: [],
+
   messages: [],
 
   overhangTriangles: {},
@@ -91,6 +102,15 @@ export const useAnalysisTaskStore = create<AnalysisTaskState>((set) => ({
 
       return {
         openMeshObjectIds: open ? [...others, objectId] : others,
+      };
+    }),
+
+  setNonManifold: (objectId, nonManifold) =>
+    set((state) => {
+      const others = state.nonManifoldObjectIds.filter((id) => id !== objectId);
+
+      return {
+        nonManifoldObjectIds: nonManifold ? [...others, objectId] : others,
       };
     }),
 
@@ -125,6 +145,9 @@ export const useAnalysisTaskStore = create<AnalysisTaskState>((set) => ({
           (id) => id !== objectId,
         ),
         openMeshObjectIds: state.openMeshObjectIds.filter(
+          (id) => id !== objectId,
+        ),
+        nonManifoldObjectIds: state.nonManifoldObjectIds.filter(
           (id) => id !== objectId,
         ),
         overhangTriangles,

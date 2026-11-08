@@ -242,7 +242,7 @@ describe("AnalysisService (Phase 9 lot 80, ADR-034 D7)", () => {
       // 30 mm high on a base of 10 mm: ratio 3
       detectedFeatures: ["small", "tall", "planar"],
       source: "automatic",
-      classificationVersion: "1.2.0",
+      classificationVersion: "1.2.2",
     });
     expect(analysis.dimensions.width).toBeCloseTo(20, 6);
     expect(analysis.geometry.volume).toBeCloseTo(6000, 3);

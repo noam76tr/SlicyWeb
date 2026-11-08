@@ -126,6 +126,38 @@ test("a mesh not closed is analyzed with the warning ANA_002", async ({
   await expect(message).toHaveCount(0);
 });
 
+test("parts touching along an edge: information ANA_005 in the section only", async ({
+  window,
+  files,
+}) => {
+  // Two cubes of 10 mm touching along one vertical edge: closed, not manifold
+  const shifted = cubeStl("b", 10).replace(
+    /vertex (\S+) (\S+) (\S+)/g,
+    (_, x, y, z) => `vertex ${Number(x) + 10} ${Number(y) + 10} ${z}`,
+  );
+  const facets = (stl: string): string =>
+    stl.split("\n").slice(1, -1).join("\n");
+  const touching = [
+    "solid touching",
+    facets(cubeStl("a", 10)),
+    facets(shifted),
+    "endsolid touching",
+  ].join("\n");
+  await importFiles(window, [files("touching.stl", touching)]);
+
+  await expect(row(window, en["analysis.status"])).toHaveText(
+    en["result.generated"],
+  );
+  await expect(row(window, en["analysis.volume"])).toHaveText("2 cm³");
+  await expect(analysisSection(window).getByRole("note")).toHaveText(
+    en["analysis.meshNonManifold"],
+  );
+  // No message over the viewport (ANA_002 is not shown)
+  await expect(
+    window.getByRole("status").filter({ hasText: "touching.stl" }),
+  ).toHaveCount(0);
+});
+
 test("Tools menu, Analyze button and several selected objects", async ({
   window,
   files,

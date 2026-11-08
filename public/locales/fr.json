@@ -312,6 +312,7 @@
   "analysis.mesh": "Maillage",
   "analysis.meshValue": "{triangles} triangles, {vertices} sommets",
   "analysis.meshNotClosed": "Maillage non fermé : volume et épaisseur des parois approximatifs",
+  "analysis.meshNonManifold": "Maillage non conforme : des parties se touchent par une arête",
   "analysis.overhangs": "Surplombs",
   "analysis.overhangsValue": "{angle} max, {percent} au-delà de 45°",
   "analysis.bridges": "Ponts",

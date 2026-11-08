@@ -9,7 +9,9 @@
  *   vertices), overhangs, bridges, thin walls, stability (contact area in
  *   cm², height ratio, tip risk out of 100 with its level of
  *   AI_ENGINE_SPEC.md);
- * - the warning ANA_002 when the mesh is not closed.
+ * - the warning ANA_002 when the mesh is not closed;
+ * - the information ANA_005 when the mesh is closed but parts touch along
+ *   an edge (lot 91: the volume stays reliable).
  *
  * Several selected objects: "Select a single object". An outdated
  * analysis keeps its values until it is computed again. Numbers follow
@@ -78,6 +80,9 @@ export default function AnalysisSection({
   );
   const openMesh = useAnalysisTaskStore((state) =>
     objectId ? state.openMeshObjectIds.includes(objectId) : false,
+  );
+  const nonManifold = useAnalysisTaskStore((state) =>
+    objectId ? state.nonManifoldObjectIds.includes(objectId) : false,
   );
 
   // Format of the language, as in every section (NumberFormatter)
@@ -203,6 +208,8 @@ export default function AnalysisSection({
           {t("analysis.meshNotClosed")}
         </p>
       )}
+
+      {nonManifold && <p role="note">{t("analysis.meshNonManifold")}</p>}
     </div>
   );
 }

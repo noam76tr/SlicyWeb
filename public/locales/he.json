@@ -312,6 +312,7 @@
   "analysis.mesh": "רשת",
   "analysis.meshValue": "{triangles} משולשים, {vertices} קודקודים",
   "analysis.meshNotClosed": "רשת לא סגורה: הנפח ועובי הדפנות משוערים",
+  "analysis.meshNonManifold": "רשת לא תקנית: חלקים נוגעים זה בזה לאורך קצה",
   "analysis.overhangs": "אזורים תלויים",
   "analysis.overhangsValue": "{angle} מקסימום, {percent} מעבר ל-45°",
   "analysis.bridges": "גשרים",

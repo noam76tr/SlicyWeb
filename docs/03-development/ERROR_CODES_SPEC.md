@@ -3,7 +3,7 @@
 # ERROR CODES SPECIFICATION
 
 
-Version: 2.4.1
+Version: 2.5.0
 
 Status: Approved
 
@@ -527,7 +527,7 @@ Mesh Validation Failed
 
 ```
 
-Severity: Warning, non-blocking (ADR-034 D6). The mesh is not closed: an edge is not shared by exactly two triangles. The analysis is computed and stored anyway; message: "Mesh not closed: volume and wall thickness are approximate". No field of DATA_SCHEMA.md keeps it: it is found again at each computation.
+Severity: Warning, non-blocking (ADR-034 D6). The mesh is not closed: an edge is shared by an odd number of triangles (1: a hole; 3: the surface is open somewhere too; 2.5.0, Noam 2026-11-08). The analysis is computed and stored anyway; message: "Mesh not closed: volume and wall thickness are approximate". No field of DATA_SCHEMA.md keeps it: it is found again at each computation.
 
 
 
@@ -560,6 +560,26 @@ Volume Calculation Failed
 Overhang Analysis Failed
 
 ```
+
+
+
+---
+
+
+
+## ANA_005
+
+
+
+```text
+
+Mesh Not Manifold
+
+```
+
+
+
+Severity: Information, non-blocking (2.5.0, lot 91, Noam 2026-11-08). The mesh is closed (no edge with an odd number of triangles), but some edges are shared by 4, 6… triangles: parts touch along an edge. The volume and the wall thickness stay reliable. Message: "Non-manifold mesh: some parts touch along an edge", shown in the Analysis section only (grey, never over the viewport), as long as the last analysis of the object finds it; no reduction of the recommendation confidence; the feature holes is not computed (OBJECT_CLASSIFICATION_SPEC.md 1.2.2). Not shown when the mesh is not closed (ANA_002 already says that the analysis is approximate). No field of DATA_SCHEMA.md keeps it.
 
 
 

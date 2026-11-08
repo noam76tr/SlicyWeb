@@ -127,7 +127,7 @@ export const CLASSIFICATION_CATEGORIES = [
  * (OBJECT_CLASSIFICATION_SPEC.md version), stored in
  * classification.classificationVersion (DATA_SCHEMA.md).
  */
-export const CLASSIFICATION_VERSION = "1.2.0";
+export const CLASSIFICATION_VERSION = "1.2.2";
 
 /**
  * Who chose the category of a classification (DATA_SCHEMA.md 3.10.0,

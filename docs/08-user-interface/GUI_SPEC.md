@@ -1734,6 +1734,7 @@ Stability: contact area (cm²), height ratio, tip risk out of 100 with its level
 - One selected object: its analysis. Several selected objects: "Select a single object". No selected object: the section shows nothing else.
 - An outdated analysis keeps its values, with the status Outdated, until it is computed again.
 - A mesh not closed shows the warning of ANA_002 in the section (volume and wall thickness are approximate).
+- A closed mesh whose parts touch along an edge (an edge shared by 4, 6… triangles) shows the information of ANA_005 in the section, in grey: "Non-manifold mesh: some parts touch along an edge" (lot 91, Noam 2026-11-08: Q2 A, never over the viewport; the volume stays reliable).
 - Numbers follow the language (Localization Support, Number Format); the volume and the areas are shown in cm³ and cm² (the units of the slicers), the stored values stay in mm³ and mm² (DATA_SCHEMA.md).
 - Texts in the three languages. The classification is not shown before Phase 10.
 - src/gui/panels/AnalysisPanel.tsx (unused, text in English in the code, KI-015) is deleted (ADR-034 D9).

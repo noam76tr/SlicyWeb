@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.10.0
+Version: 3.10.1
 
 Status: Approved
 
@@ -1543,7 +1543,7 @@ Known Duplication:
 
 The width, depth and height of the object exist both in dimensions and in geometry. They always have the same values. This duplication is known and is kept: both fields come from the Complete Analysis Schema.
 
-Mesh not closed: when an edge is not shared by exactly two triangles, the analysis is still computed and stored; volume, center of gravity and thickness are then approximate, and the message ANA_002 (warning, non-blocking) is shown (ERROR_CODES_SPEC.md). An empty or unreadable mesh gives ANA_001 and no analysis.
+Mesh not closed: when an edge is shared by an odd number of triangles (1 or 3…), the analysis is still computed and stored; volume, center of gravity and thickness are then approximate, and the message ANA_002 (warning, non-blocking) is shown (ERROR_CODES_SPEC.md). An edge shared by 4, 6… triangles (parts touching along an edge) does not open the mesh: the volume stays reliable, and the information ANA_005 is shown in the Analysis section (3.10.1, lot 91, Noam 2026-11-08). An empty or unreadable mesh gives ANA_001 and no analysis.
 
 Validation: AnalysisSchema (Zod) refuses any field that is not in this schema, in the analysis and in each of its parts.
 

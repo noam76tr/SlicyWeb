@@ -695,6 +695,15 @@ Values with a unit in Hebrew (lot 89):
     isolated, and its number drawn left of its unit (a range: minimum on
     the left)
 
+Mesh defects (lot 91):
+  unit (ModelAnalyzer.test.ts): two cubes touching along an edge: closed,
+    not manifold, volume exact; an edge with three triangles: open; a cube:
+    closed and manifold
+  unit (Classification.test.ts): four cubes touching along edges: holes not
+    computed, classificationVersion 1.2.2
+  end to end (analysis.spec.ts): two cubes touching along an edge: ANA_005
+    in the Analysis section, volume 2 cm³, no message over the viewport
+
 Closure of Phase 10 (lot 90):
   unit (Classification.test.ts): on 8 models (sphere, sphere turned, open
     vase, open box, closed box, plate with holes, L bracket, cube turned 45

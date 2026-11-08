@@ -52,7 +52,7 @@
  * - DATA_SCHEMA.md (3.9.0: Complete Analysis Schema, Analysis Rules,
  *   Object Reference Rules; 3.10.0: Classification Rules)
  * - DECISIONS.md (ADR-034 D1, D2, D6, D7, D9; ADR-035 D2, D3)
- * - ERROR_CODES_SPEC.md (ANA_001, ANA_002)
+ * - ERROR_CODES_SPEC.md (ANA_001, ANA_002, ANA_005)
  * - GUI_SPEC.md (Tools Menu, Analysis Section, Status Bar)
  */
 
@@ -225,6 +225,7 @@ export function createAnalysisService(
 
     for (const objectId of new Set([
       ...task.openMeshObjectIds,
+      ...task.nonManifoldObjectIds,
       ...Object.keys(task.overhangTriangles),
     ])) {
       if (!ids.has(objectId)) {
@@ -375,6 +376,14 @@ export function createAnalysisService(
     useAnalysisTaskStore
       .getState()
       .setOpenMesh(object.objectId, !result.meshClosed);
+    // Parts touching along an edge, without a hole: information only
+    // (ANA_005, Analysis section; lot 91)
+    useAnalysisTaskStore
+      .getState()
+      .setNonManifold(
+        object.objectId,
+        result.meshClosed && !result.meshManifold,
+      );
 
     if (!result.meshClosed && !warnedObjectIds.has(object.objectId)) {
       warnedObjectIds.add(object.objectId);
