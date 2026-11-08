@@ -174,7 +174,7 @@ test("chooses a printer, shows its plate and keeps it", async ({ launch }) => {
   ).toContainText(en["printer.notPublished"]);
   await expect(
     page.getByText(
-      en["viewport.plate"].replace("{x}", "256").replace("{y}", "256"),
+      en["viewport.plate"].replace("{size}", "256 × 256 mm"),
     ),
   ).toBeVisible();
   await expect(page.locator("footer")).toContainText("Bambu Lab X1 Carbon");
@@ -336,7 +336,7 @@ test("enters a printer of the user, uses it and deletes it", async ({
   await selector.selectOption({ label: "Test Home" });
   await expect(
     page.getByText(
-      en["viewport.plate"].replace("{x}", "180").replace("{y}", "170.5"),
+      en["viewport.plate"].replace("{size}", "180 × 170.5 mm"),
     ),
   ).toBeVisible();
   expect(first.errors).toEqual([]);

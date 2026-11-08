@@ -46,7 +46,7 @@
 import { useEffect } from "react";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 
-import { formatNumber } from "../i18n/NumberFormatter";
+import { formatQuantities } from "../i18n/NumberFormatter";
 import { AnalysisService } from "../services/AnalysisService";
 import { MaterialSelectionService } from "../services/MaterialSelectionService";
 import { PrinterSelectionService } from "../services/PrinterSelectionService";
@@ -114,8 +114,12 @@ export default function App(): JSX.Element {
               plateLabel={
                 buildVolume
                   ? t("viewport.plate", {
-                      x: formatNumber(buildVolume.x, language),
-                      y: formatNumber(buildVolume.y, language),
+                      size: formatQuantities(
+                        [buildVolume.x, buildVolume.y],
+                        " × ",
+                        "mm",
+                        language,
+                      ),
                     })
                   : null
               }

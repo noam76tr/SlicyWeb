@@ -6,7 +6,8 @@
  * a label and its value; a value not published (null) is shown as "Not
  * published", never as 0 (DATA_SCHEMA.md 3.7.0). A range shows its two
  * values ("190 – 230 °C"). Numbers follow the format of the language
- * (NumberFormatter, lot 81).
+ * (NumberFormatter, lot 81); a value with its unit is formatted by
+ * NumberFormatter.formatQuantity (kept left to right in Hebrew, lot 89).
  *
  * No business logic.
  *
@@ -15,7 +16,11 @@
  */
 
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
-import { formatNumber as formatLanguageNumber } from "../../i18n/NumberFormatter";
+import {
+  formatNumber as formatLanguageNumber,
+  formatQuantity,
+  formatQuantityRange,
+} from "../../i18n/NumberFormatter";
 import { useTranslation } from "../hooks/useTranslation";
 
 /** Class of the selectors of the Properties Panel */
@@ -51,7 +56,7 @@ export function useValue(): (value: number | null, unit: string) => string {
   return (value, unit) =>
     value === null
       ? t("printer.notPublished")
-      : `${formatNumber(value, language)} ${unit}`;
+      : formatQuantity(value, unit, language);
 }
 
 /** A range "min – max unit"; a bound not published is named as such */
@@ -63,10 +68,18 @@ export function useRange(): (
   const { t, language } = useTranslation();
   const notPublished = t("printer.notPublished");
 
-  return (min, max, unit) =>
-    min === null && max === null
-      ? notPublished
-      : `${min === null ? notPublished : formatNumber(min, language)} – ${
-          max === null ? notPublished : formatNumber(max, language)
-        } ${unit}`;
+  return (min, max, unit) => {
+    if (min === null && max === null) {
+      return notPublished;
+    }
+
+    if (min !== null && max !== null) {
+      return formatQuantityRange(min, max, unit, language);
+    }
+
+    // One bound not published: each bound with its unit
+    return `${min === null ? notPublished : formatQuantity(min, unit, language)} – ${
+      max === null ? notPublished : formatQuantity(max, unit, language)
+    }`;
+  };
 }

@@ -2295,6 +2295,12 @@ Number Format (Phase 9 lot 81, request of Noam, 2026-11-02):
 - A value in a field has no digit grouping, so that it can be typed and read again; a comma or a point is accepted as decimal separator in every language.
 - The language never changes the stored values: projects, settings and profiles keep JSON numbers (language-neutral).
 
+Values with a unit (lot 89, remark of Noam on lot 88, 2026-11-07):
+
+- A value with its unit is shown as in English and French in every language: the number, then the unit ("200 mm/s", "210 °C", "15 %", "8 cm³"; "45°" for an angle). The symbols of the units are the same in the three languages (mm, mm/s, °C, %, cm³, cm²).
+- In Hebrew, the value (with a range "190 – 230 °C" or several values "256 × 256 × 256 mm") is wrapped in a left-to-right isolate (U+2066 … U+2069), so that it is not shown "mm/s 200" or "230 – 190". English and French are not changed.
+- One place does it for the whole interface: NumberFormatter (formatQuantity, formatQuantities, formatQuantityRange, isolateValue). The labels of the fields ("Position (mm)") are not values and are not changed.
+
 ---
 
 # Future GUI Features

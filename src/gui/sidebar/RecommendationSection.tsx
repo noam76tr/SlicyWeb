@@ -17,7 +17,8 @@
  * selected objects: "Select a single object". No printer or no material:
  * "Select a printer and a material" (REC_002). The errors of the
  * generation (REC_001, REC_002) are shown here only. Numbers follow the
- * language (NumberFormatter).
+ * language (NumberFormatter); a value with its unit is kept left to right
+ * in Hebrew (formatQuantity, isolateValue; lot 89).
  *
  * No business logic: values read from the stores; the object type is
  * chosen through RecommendationService.
@@ -32,7 +33,11 @@
 
 import { CLASSIFICATION_CATEGORIES } from "../../constants/AnalysisConstants";
 import { RECOMMENDATION_CONFIDENCE_LEVELS } from "../../constants/RecommendationConstants";
-import { formatNumber } from "../../i18n/NumberFormatter";
+import {
+  formatNumber,
+  formatQuantity,
+  isolateValue,
+} from "../../i18n/NumberFormatter";
 import {
   RecommendationService,
   automaticClassificationOf,
@@ -118,6 +123,8 @@ export default function RecommendationSection({
   );
 
   const number = (value: number): string => formatNumber(value, language);
+  const quantity = (value: number, unit: string): string =>
+    formatQuantity(value, unit, language);
 
   if (objectIds.length > 1) {
     return <p>{t("analysis.selectSingle")}</p>;
@@ -214,7 +221,7 @@ export default function RecommendationSection({
   const profile = recommendation.recommendedProfile;
   const { quality, speed, retraction, supports, temperature } = profile;
   const pattern = t(`recommendation.pattern.${profile.infillPattern}`);
-  const speedValue = (value: number): string => `${number(value)} mm/s`;
+  const speedValue = (value: number): string => quantity(value, "mm/s");
 
   return (
     <div
@@ -268,7 +275,7 @@ export default function RecommendationSection({
         <dl className="mt-1 space-y-1">
           <ProfileRow
             label={t("recommendation.layerHeight")}
-            value={`${number(quality.layerHeight)} mm`}
+            value={quantity(quality.layerHeight, "mm")}
           />
           <ProfileRow
             label={t("recommendation.walls")}
@@ -281,7 +288,7 @@ export default function RecommendationSection({
           <ProfileRow
             label={t("recommendation.infill")}
             value={t("recommendation.infillValue", {
-              density: number(profile.infillDensity),
+              density: quantity(profile.infillDensity, "%"),
               pattern:
                 pattern === `recommendation.pattern.${profile.infillPattern}`
                   ? profile.infillPattern
@@ -304,15 +311,15 @@ export default function RecommendationSection({
           />
           <ProfileRow
             label={t("recommendation.nozzleTemperature")}
-            value={`${number(temperature.nozzle)} °C`}
+            value={quantity(temperature.nozzle, "°C")}
           />
           <ProfileRow
             label={t("recommendation.bedTemperature")}
-            value={`${number(temperature.bed)} °C`}
+            value={quantity(temperature.bed, "°C")}
           />
           <ProfileRow
             label={t("recommendation.fan")}
-            value={`${number(profile.cooling.fanSpeed)} %`}
+            value={quantity(profile.cooling.fanSpeed, "%")}
           />
         </dl>
 
@@ -343,11 +350,13 @@ export default function RecommendationSection({
           />
           <ProfileRow
             label={t("recommendation.retraction")}
-            // Isolated: two values with their units stay in order in Hebrew
-            value={`\u2068${t("recommendation.retractionValue", {
-              distance: number(retraction.distance),
-              speed: number(retraction.speed),
-            })}\u2069`}
+            value={isolateValue(
+              t("recommendation.retractionValue", {
+                distance: number(retraction.distance),
+                speed: number(retraction.speed),
+              }),
+              language,
+            )}
           />
         </dl>
       </details>

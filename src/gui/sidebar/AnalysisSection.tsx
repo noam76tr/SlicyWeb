@@ -13,7 +13,8 @@
  *
  * Several selected objects: "Select a single object". An outdated
  * analysis keeps its values until it is computed again. Numbers follow
- * the language (NumberFormatter, as in every section); the stored values
+ * the language (NumberFormatter, as in every section), a value with its
+ * unit kept left to right in Hebrew (formatQuantity, lot 89); the stored values
  * stay in mm³ and mm² (DATA_SCHEMA.md 3.9.0, Analysis Rules). The
  * classification is not shown before Phase 10.
  *
@@ -28,7 +29,11 @@
  */
 
 import { RISK_LEVELS } from "../../constants/AnalysisConstants";
-import { formatNumber } from "../../i18n/NumberFormatter";
+import {
+  formatNumber,
+  formatQuantity,
+  isolateValue,
+} from "../../i18n/NumberFormatter";
 import { useAnalysisStore } from "../../state/analysisStore";
 import { useAnalysisTaskStore } from "../../state/analysisTaskStore";
 import { useTranslation } from "../hooks/useTranslation";
@@ -77,6 +82,8 @@ export default function AnalysisSection({
 
   // Format of the language, as in every section (NumberFormatter)
   const number = (value: number): string => formatNumber(value, language);
+  const quantity = (value: number, unit: string): string =>
+    formatQuantity(value, unit, language);
 
   if (objectIds.length > 1) {
     return <p>{t("analysis.selectSingle")}</p>;
@@ -109,19 +116,22 @@ export default function AnalysisSection({
         {statusRow}
         <ProfileRow
           label={t("analysis.dimensions")}
-          value={t("analysis.dimensionsValue", {
-            width: number(dimensions.width),
-            depth: number(dimensions.depth),
-            height: number(dimensions.height),
-          })}
+          value={isolateValue(
+            t("analysis.dimensionsValue", {
+              width: number(dimensions.width),
+              depth: number(dimensions.depth),
+              height: number(dimensions.height),
+            }),
+            language,
+          )}
         />
         <ProfileRow
           label={t("analysis.volume")}
-          value={`${number(geometry.volume / 1000)} cm³`}
+          value={quantity(geometry.volume / 1000, "cm³")}
         />
         <ProfileRow
           label={t("analysis.surfaceArea")}
-          value={`${number(geometry.surfaceArea / 100)} cm²`}
+          value={quantity(geometry.surfaceArea / 100, "cm²")}
         />
         <ProfileRow
           label={t("analysis.mesh")}
@@ -135,8 +145,8 @@ export default function AnalysisSection({
           value={
             overhangs.detected
               ? t("analysis.overhangsValue", {
-                  angle: number(overhangs.maxAngle),
-                  percent: number(overhangs.percentage),
+                  angle: quantity(overhangs.maxAngle, "°"),
+                  percent: quantity(overhangs.percentage, "%"),
                 })
               : none
           }
@@ -147,7 +157,7 @@ export default function AnalysisSection({
             bridges.detected && bridges.count > 0
               ? t("analysis.bridgesValue", {
                   count: number(bridges.count),
-                  length: number(bridges.longestBridge),
+                  length: quantity(bridges.longestBridge, "mm"),
                 })
               : none
           }
@@ -157,7 +167,7 @@ export default function AnalysisSection({
           value={
             thinWalls.minimumThickness > 0
               ? t("analysis.minimumThickness", {
-                  thickness: number(thinWalls.minimumThickness),
+                  thickness: quantity(thinWalls.minimumThickness, "mm"),
                 })
               : t("analysis.notMeasured")
           }
@@ -173,7 +183,7 @@ export default function AnalysisSection({
       <dl className="space-y-1">
         <ProfileRow
           label={t("analysis.contactArea")}
-          value={`${number(stability.contactArea / 100)} cm²`}
+          value={quantity(stability.contactArea / 100, "cm²")}
         />
         <ProfileRow
           label={t("analysis.heightRatio")}
