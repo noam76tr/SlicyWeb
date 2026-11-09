@@ -19,7 +19,7 @@ import type { Locator, Page } from "@playwright/test";
 import en from "../../public/locales/en.json";
 import he from "../../public/locales/he.json";
 
-import { cubeStl, expect, importFiles, test } from "./fixtures";
+import { cubeStl, expect, importFiles, openTab, test } from "./fixtures";
 
 const LRI = "⁦";
 const PDI = "⁩";
@@ -118,6 +118,7 @@ test("values with their unit stay left to right in Hebrew", async ({
     "190",
     "230",
   );
+  await openTab(window, "object");
   await expectLeftToRight(
     row(window, he["analysis.title"], he["analysis.volume"]),
     "8 cm³",
@@ -125,6 +126,7 @@ test("values with their unit stay left to right in Hebrew", async ({
     "cm³",
   );
 
+  await openTab(window, "settings");
   await window.getByText(he["recommendation.details"], { exact: true }).click();
   await expectLeftToRight(
     row(window, he["recommendation.title"], he["recommendation.speed.print"]),

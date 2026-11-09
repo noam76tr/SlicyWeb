@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.10.1
+Version: 3.11.0
 
 Status: Approved
 
@@ -2274,6 +2274,12 @@ The index is refused, and no profile is used, when one of these rules fails, whe
 
      "autoloadLastMaterial": true
 
+   },
+
+   "gui": {
+
+     "propertiesTab": "printer"
+
    }
 
  }
@@ -2288,6 +2294,8 @@ printer (3.5.0, ADR-032, USER_SETTINGS_SPEC.md Printer Settings): defaultPrinter
 material (3.7.0, ADR-033 D9, USER_SETTINGS_SPEC.md Material Settings): defaultMaterial is the id of the last material selected, or null; defaultFilament is the id of the last filament selected, or null; when autoloadLastMaterial is true, they are selected again at startup. An id that is no longer in the material or filament database is ignored (nothing selected). A settings.json without material loads with these defaults.
 
 printer.autoCheckProfiles (3.6.0, ADR-032 D5, decision of Noam): boolean, true by default. When true, the SlicyWeb profile repository is checked at start, at most once every 24 hours; when false, it is checked only with Printer > Refresh Profiles. A settings.json without this field loads with true.
+
+gui (3.11.0, lot 93, PASSATION.md decision 90 Q3 A; USER_SETTINGS_SPEC.md GUI Settings; GUI_SPEC.md Properties Tabs): propertiesTab is the last tab chosen in the Properties Panel, one of "printer", "object" or "settings", opened again at start. A settings.json without gui, or with another value, loads with "printer". The other GUI Settings of USER_SETTINGS_SPEC.md are not stored yet. User settings only: never written in a WYPROJ file.
 
 
 ---

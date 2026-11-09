@@ -3441,7 +3441,7 @@ Release Type:
 Performance (Phase 10 closure)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-08
@@ -3459,7 +3459,7 @@ Date:
 
 ## Removed
 
-- Private function edgeKey of src/model_analysis/MeshValidator.ts and of src/classification_engine/FeatureDetector.ts: no longer called (replaced by the edge table); asked to Noam
+- Private function edgeKey of src/model_analysis/MeshValidator.ts and of src/classification_engine/FeatureDetector.ts: no longer called (replaced by the edge table); agreed by Noam (2026-11-08)
 
 ## Added
 
@@ -3469,6 +3469,51 @@ Date:
 
 - The thin walls (200 000 rays, PERFORMANCE_SPEC.md) and the BVH now take most of the time (about 1.5 s of the 2 s on Linux)
 - An object whose volume is at most 35 % of its bounding box and whose ratio volume / hull lies close to 0.35 still uses the exact hull
+
+## Validation Result
+
+- Windows 11 (2026-11-08): lot 92 on GitHub (cd9b42c, identical to the lot); npm run check:locales 470 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 494 tests passed and 1 skipped, npm run test:e2e 39 tests passed (Noam)
+- Manual checks of Noam (2026-11-08): closed sphere of 998 000 triangles (80 mm) analyzed in about 4 s (target 5 s), "Automatic (Figurine)", the view stays fluid; model Seckit: 80.93 × 59.38 × 38.52 mm, 33.37 cm³, 179.28 cm², thin walls detected, grey line ANA_005, "Automatic (Unknown)"
+- Removal of edgeKey agreed by Noam (answer A)
+- Phase 10 (Classification and Recommendation Engine) Completed on 2026-11-08
+
+---
+
+# VERSION 0.1.94
+
+Release Type:
+Graphical User Interface (Properties tabs)
+
+Status:
+In Progress
+
+Date:
+2026-11-08
+
+## Changed
+
+- Properties Panel in three tabs (idea of Noam, 2026-11-07; answers Q1 to Q6 A, PASSATION.md decision 90; GUI_SPEC.md, Properties Tabs): Printer (Printer, Material, Filament), Object (Object, Transform, Analysis), Settings (Print Preset, Recommendations); the Project line stays above the tabs (one line); text only (shadcn Tabs); no shortcut of its own, the arrow keys move along the tabs when a tab has the focus
+- The tab changes only when the user chooses it: never by itself (import, selection, analysis, recommendation, warning). Printer > Select Printer, Material > Select Material and Filament > Select Filament open the Printer tab, then move the focus to their selector (answer A of Noam, 2026-11-08: a menu chosen by the user may open its tab)
+- Red dot on the Settings tab when the single selected object has a critical warning in its recommendation (Q4 A); it stays when Settings is open; the name of the tab then says "critical warning" to a screen reader (properties.criticalWarning)
+- Each tab keeps its own scroll position; in Hebrew, the order of the tabs is reversed (Printer on the right)
+- The last tab chosen is saved in settings.json and opened again at start (Q3 A): DATA_SCHEMA.md 3.11.0, User Preferences Schema, gui.propertiesTab ("printer", "object" or "settings"); a settings.json without gui, or with an unknown tab, opens the Printer tab (USER_SETTINGS_SPEC.md 2.1.0, GUI Settings, Backward Compatibility); saved through settings:update (no new IPC channel)
+- src/schemas/UserPreferencesSchema.ts (PROPERTIES_TABS, PropertiesTabSchema, GuiPreferencesSchema, gui), src/types/UserPreferences.ts (PropertiesTab, GuiPreferences), src/storage/SettingsStorage.ts (readGui), src/gui/sidebar/RightSidebar.tsx, src/gui/menus/MenuBar.tsx (focusTab), src/gui/App.tsx (PropertiesTabService.load at start)
+- GUI_SPEC.md (Properties Panel, Properties Tabs, Printer Menu), DATA_SCHEMA.md 3.11.0, USER_SETTINGS_SPEC.md 2.1.0, TEST_PLAN.md, FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PHASES_IMPLEMENTATION_PLAN.md (Phase 10 Completed), PASSATION.md
+- tests/unit/storage/SettingsStorage.test.ts and tests/e2e/printer.spec.ts: the default preferences now hold gui; the e2e tests open the tab of the section they use (openTab in tests/e2e/fixtures.ts)
+- 0.1.93 Completed with the results of Noam; Phase 10 Completed (2026-11-08)
+
+## Added
+
+- src/gui/components/ui/tabs.tsx: shadcn component tabs (style base-nova, Base UI, logical sides for right to left)
+- src/state/propertiesPanelStore.ts: open tab; a tab chosen by the user is never replaced by the saved tab read at start
+- src/services/PropertiesTabService.ts: reads (settings:get) and saves (settings:update) the last tab
+- Keys properties.tabs, properties.tab.printer, properties.tab.object, properties.tab.settings, properties.criticalWarning in English, French and Hebrew (475 keys)
+- Tests: tests/unit/services/PropertiesTab.test.ts (5 tests), tests/unit/storage/SettingsStorage.test.ts (2 tests: last tab saved and read again, unknown tab), tests/e2e/tabs.spec.ts (3 tests: first start, never by itself, last tab after a restart, Select Printer; red dot and screen reader; scroll kept, Hebrew order)
+
+## Known Limitations
+
+- The other GUI Settings of USER_SETTINGS_SPEC.md (rememberLayout, showTooltips, showStatusBar) are still not stored: only gui.propertiesTab is
+- The tabs component was written from the shadcn registry source (bases/base/ui/tabs.tsx and style-nova.css), the shadcn site being out of reach from the machine of Claude; npx shadcn add tabs should give the same component (not checked)
 
 ---
 

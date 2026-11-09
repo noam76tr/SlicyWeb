@@ -24,6 +24,7 @@ import {
   expectObjectCount,
   importFiles,
   objectRows,
+  openTab,
   test,
   transformField,
 } from "./fixtures";
@@ -68,6 +69,11 @@ function cube3mf(): Uint8Array {
     ),
   });
 }
+
+// The Object tab holds the Transform and Analysis sections (lot 93)
+test.beforeEach(async ({ window }) => {
+  await openTab(window, "object");
+});
 
 test("imports an STL file, centered and standing on the plate", async ({
   window,

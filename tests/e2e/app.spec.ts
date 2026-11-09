@@ -23,7 +23,14 @@ import en from "../../public/locales/en.json";
 import fr from "../../public/locales/fr.json";
 import he from "../../public/locales/he.json";
 
-import { cubeStl, expect, importFiles, test, transformField } from "./fixtures";
+import {
+  cubeStl,
+  expect,
+  importFiles,
+  openTab,
+  test,
+  transformField,
+} from "./fixtures";
 
 const MENUS = [
   "menu.file",
@@ -160,12 +167,14 @@ test("shows the numbers in the format of the language", async ({
 
   // A cube of 15 mm: 3.375 cm³ and 13.5 cm²
   await importFiles(window, [files("cube.stl", cubeStl("cube", 15))]);
+  await openTab(window, "object");
   const positionX = transformField(window, "position", "x");
   await positionX.fill("12.5");
   await positionX.press("Enter");
   await expect(positionX).toHaveValue("12.5");
   await expect(rowValue(window, en["analysis.volume"])).toHaveText("3.38 cm³");
 
+  await openTab(window, "printer");
   await expect(rowValue(window, en["printer.nozzle"])).toHaveText("0.4 mm");
   await expect(rowValue(window, en["filament.pricePerKg"])).toHaveText("24.99");
   await expect(rowValue(window, en["filament.retractionDistance"])).toHaveText(
@@ -187,6 +196,7 @@ test("shows the numbers in the format of the language", async ({
   await expect(rowValue(window, fr["filament.retractionDistance"])).toHaveText(
     "0,8 mm",
   );
+  await openTab(window, "object");
   await expect(positionX).toHaveValue("12,5");
   await expect(rowValue(window, fr["analysis.volume"])).toHaveText("3,38 cm³");
   await expect(rowValue(window, fr["analysis.surfaceArea"])).toHaveText(
@@ -204,6 +214,7 @@ test("shows the numbers in the format of the language", async ({
     .getByRole("menuitemradio", { name: fr["language.english"] })
     .click();
   await expect(positionX).toHaveValue("-7.25");
+  await openTab(window, "printer");
   await expect(rowValue(window, en["filament.pricePerKg"])).toHaveText("24.99");
   expect(errors).toEqual([]);
 });

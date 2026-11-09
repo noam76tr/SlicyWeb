@@ -29,6 +29,9 @@
  * - Material > Select Material, Filament > Select Filament (Phase 8 lot
  *   70): move the focus to the selectors of the Material and Filament
  *   sections, like Printer > Select Printer;
+ * - these three items open the Printer tab of the Properties Panel first,
+ *   when another tab is open (lot 93, PropertiesTabService): the tab
+ *   changes because the user asked for it, never by itself;
  * - Filament > Manage Filaments (Phase 8 lot 71): opens the Filament
  *   Manager (FilamentManagerDialog);
  * - Tools > Analyze Models, Tools > Recompute Analysis (Phase 9 lot 80):
@@ -55,8 +58,10 @@
 import { Fragment, useRef } from "react";
 
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
+import type { PropertiesTab } from "../../types/UserPreferences";
 import { AnalysisService } from "../../services/AnalysisService";
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
+import { PropertiesTabService } from "../../services/PropertiesTabService";
 import { generateRecommendations } from "../../services/RecommendationService";
 import { useMaterialStore } from "../../state/materialStore";
 import { usePrinterStore } from "../../state/printerStore";
@@ -100,6 +105,12 @@ interface MenuItemDefinition {
 
   /** Id of the element that gets the focus when the menu closes */
   focusId?: string;
+
+  /**
+   * Tab of the Properties Panel that holds focusId, opened by the item
+   * (lot 93: the tab changes only on this command of the user)
+   */
+  focusTab?: PropertiesTab;
 
   /** History read to enable the item (Undo, Redo) */
   history?: "undo" | "redo";
@@ -204,6 +215,7 @@ const MENUS: MenuDefinition[] = [
         {
           key: "printer.select",
           focusId: PRINTER_SELECTOR_ID,
+          focusTab: "printer",
         },
         { key: "printer.manage", action: openPrinterManager },
       ],
@@ -221,7 +233,11 @@ const MENUS: MenuDefinition[] = [
     key: "menu.material",
     groups: [
       [
-        { key: "material.select", focusId: MATERIAL_SELECTOR_ID },
+        {
+          key: "material.select",
+          focusId: MATERIAL_SELECTOR_ID,
+          focusTab: "printer",
+        },
         { key: "material.manage" },
       ],
       [{ key: "material.import" }, { key: "material.export" }],
@@ -231,7 +247,11 @@ const MENUS: MenuDefinition[] = [
     key: "menu.filament",
     groups: [
       [
-        { key: "filament.select", focusId: FILAMENT_SELECTOR_ID },
+        {
+          key: "filament.select",
+          focusId: FILAMENT_SELECTOR_ID,
+          focusTab: "printer",
+        },
         { key: "filament.manage", action: openFilamentManager },
       ],
       [{ key: "filament.import" }, { key: "filament.export" }],
@@ -355,6 +375,9 @@ export default function MenuBar(): JSX.Element {
                 disabled={isDisabled(item)}
                 onClick={() => {
                   focusTarget.current = item.focusId ?? null;
+                  if (item.focusTab) {
+                    void PropertiesTabService.choose(item.focusTab);
+                  }
                   item.action?.();
                 }}
               >

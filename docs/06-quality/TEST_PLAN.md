@@ -706,6 +706,25 @@ Performance (lot 92):
     feature identical to lot 91 on 9 models, sphere of 998 000 triangles
     included
   manual (Noam): the sphere of 998 000 triangles analyzed in less than 5 s
+    (done 2026-11-08: about 4 s)
+
+Properties tabs (lot 93):
+  unit (SettingsStorage.test.ts): a settings.json without gui opens the
+    Printer tab; the last tab saved and read again, the language kept; an
+    unknown tab gives the Printer tab
+  unit (PropertiesTab.test.ts): saved tab opened at start; Printer without
+    gui; a tab chosen is saved (settings:update, gui) and never replaced by
+    the saved tab read later; outside Electron, not saved
+  end to end (tests/e2e/tabs.spec.ts): first start: Project line, three
+    tabs, Printer open; an import keeps the tab; arrow keys and Enter;
+    Object again after a restart; Printer > Select Printer opens Printer
+    and focuses the selector; a cube of 260 mm on the MK4S
+    (OBJECT_TOO_LARGE): red dot on Settings with the Printer tab open,
+    name "Settings, critical warning", dot kept in Settings, gone after
+    Escape; scroll of the Printer tab kept; in Hebrew, Printer on the right
+  the other end-to-end tests open the tab of the section they use
+    (openTab, tests/e2e/fixtures.ts)
+  manual (Noam): the same in French and Hebrew on the PC of Noam
 
 Mesh defects (lot 91):
   unit (ModelAnalyzer.test.ts): two cubes touching along an edge: closed,

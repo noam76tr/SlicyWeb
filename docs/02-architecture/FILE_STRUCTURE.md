@@ -421,7 +421,7 @@ src/gui/
 │   └── TransformModeBar.tsx   = buttons Move, Rotate, Scale over the viewport, the only mode buttons (Phase 6)
 ├── components/
 │   ├── I18nProvider.tsx       = translations, language and text direction for the GUI
-│   └── ui/                    = shadcn/ui components (button, dialog, dropdown-menu, menubar, resizable)
+│   └── ui/                    = shadcn/ui components (button, dialog, dropdown-menu, menubar, resizable, tabs)
 ├── themes/
 ├── hooks/
 │   ├── useSelectAllShortcut.ts = Ctrl+A (Phase 6)
@@ -781,6 +781,7 @@ src/services/
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
 ├── PrinterSelectionService.ts = printers of the window, last printer (Phase 7)
 ├── MaterialSelectionService.ts = materials and filaments of the window, last choice (Phase 8)
+├── PropertiesTabService.ts    = last tab of the Properties Panel, saved in settings.json (lot 93)
 ├── ProfileSyncService.ts      = check of the profile repository, once a day or forced (Phase 7)
 └── StorageService.ts
 ```
@@ -804,6 +805,7 @@ src/state/
 ├── recommendationTaskStore.ts = errors of the last generation of each recommendation (Phase 10), not saved
 ├── importStore.ts             = imports in progress and their result
 ├── historyStore.ts            = undo and redo stacks (Phase 6)
+├── propertiesPanelStore.ts    = open tab of the Properties Panel (lot 93)
 └── viewportStore.ts           = projection and view presets of the viewport, Overhang Display on or off (lot 82)
 ```
 
@@ -957,24 +959,26 @@ tests/
 │   ├── schemas/
 │   │   └── AnalysisSchema.test.ts = Complete Analysis Schema, classification null (Phase 9)
 │   ├── storage/
-│   │   └── SettingsStorage.test.ts = settings.json, printer and material settings (Phases 7 and 8)
+│   │   └── SettingsStorage.test.ts = settings.json, printer, material and gui settings (Phases 7 and 8, lot 93)
 │   └── services/
 │       ├── AnalysisService.test.ts = automatic analysis, gesture, dropped computation, ANA_001, ANA_002, Tools menu (Phase 9)
 │       ├── GroupTransform.test.ts = several objects selected (Phase 6)
 │       ├── MaterialSelection.test.ts = materials and filaments of the window, last choice, families of a printer (Phase 8)
 │       ├── PrinterSelection.test.ts = printers of the window, last printer, profiles (Phase 7)
 │       ├── ProfileSync.test.ts = check of the profile repository, cache (Phase 7)
+│       ├── PropertiesTab.test.ts = last tab of the Properties Panel (lot 93)
 │       ├── TransformService.test.ts = transform changes, object on the plate, gesture state
 │       └── UndoRedo.test.ts = undo and redo of the transform changes
 ├── integration/
 └── e2e/
-    ├── fixtures.ts = starts the built application, test files
+    ├── fixtures.ts = starts the built application, test files, opens a tab of the Properties Panel
     ├── analysis.spec.ts = analysis shown after the import and a change of scale, ANA_002, Tools menu (Phase 9)
     ├── app.spec.ts = main window, languages, numbers in the format of the language
     ├── import.spec.ts = STL and 3MF import, refused files
     ├── material.spec.ts = materials and filaments served by the main process (Phase 8)
     ├── preset.spec.ts = presets served by the main process (Phase 10)
     ├── printer.spec.ts = printers served by the main process, Printer section, Printer Manager, profiles (Phase 7)
+    ├── tabs.spec.ts = tabs of the Properties Panel, last tab, red dot (lot 93)
     ├── transform.spec.ts = transforms, undo and redo, several objects (Phase 6)
     └── viewport.spec.ts = navigation cube (lot 74)
 ```

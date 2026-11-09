@@ -3,7 +3,7 @@
 # USER SETTINGS SPECIFICATION
 
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -194,13 +194,17 @@ System
 
     "showTooltips": true,
 
-    "showStatusBar": true
+    "showStatusBar": true,
+
+    "propertiesTab": "printer"
 
   }
 
 }
 
 ```
+
+propertiesTab (lot 93, DATA_SCHEMA.md 3.11.0, User Preferences Schema): last tab chosen in the Properties Panel ("printer", "object" or "settings"; GUI_SPEC.md, Properties Tabs), saved at each choice and opened again at startup. It is the only GUI setting stored today: rememberLayout, showTooltips and showStatusBar are not stored yet (they come with a Preferences window).
 
 
 
@@ -471,7 +475,7 @@ The language choice is saved at each change and restored at the next start.
 
 Old settings must migrate automatically.
 
-A settings.json without printer (written before DATA_SCHEMA.md 3.5.0) loads without error: theme, language and units are kept, printer takes its default value (defaultPrinter null, autoloadLastPrinter true, autoCheckProfiles true). A printer without autoCheckProfiles (written before DATA_SCHEMA.md 3.6.0) keeps its other fields, with autoCheckProfiles true. A settings.json without material (written before DATA_SCHEMA.md 3.7.0) loads in the same way, with defaultMaterial null, defaultFilament null and autoloadLastMaterial true. An invalid field takes its default value; the other fields are kept.
+A settings.json without printer (written before DATA_SCHEMA.md 3.5.0) loads without error: theme, language and units are kept, printer takes its default value (defaultPrinter null, autoloadLastPrinter true, autoCheckProfiles true). A printer without autoCheckProfiles (written before DATA_SCHEMA.md 3.6.0) keeps its other fields, with autoCheckProfiles true. A settings.json without material (written before DATA_SCHEMA.md 3.7.0) loads in the same way, with defaultMaterial null, defaultFilament null and autoloadLastMaterial true. A settings.json without gui (written before DATA_SCHEMA.md 3.11.0) opens the Printer tab (propertiesTab "printer"). An invalid field takes its default value; the other fields are kept.
 
 
 

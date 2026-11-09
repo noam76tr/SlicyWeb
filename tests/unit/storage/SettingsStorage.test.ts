@@ -8,10 +8,12 @@
  * of the user, with the default printer; an invalid field of printer
  * takes its default value only. A file written before 3.7.0, without
  * material, takes the default material settings; an invalid field of
- * material takes its default value only (Phase 8 lot 70).
+ * material takes its default value only (Phase 8 lot 70). A file written
+ * before 3.11.0, without gui, opens the Printer tab; the last tab is
+ * saved and read again; an unknown tab opens the Printer tab (lot 93).
  *
  * Based on:
- * - DATA_SCHEMA.md (User Preferences Schema 3.5.0, 3.7.0)
+ * - DATA_SCHEMA.md (User Preferences Schema 3.5.0, 3.7.0, 3.11.0)
  * - USER_SETTINGS_SPEC.md (Printer Settings, Material Settings)
  * - TEST_PLAN.md
  */
@@ -60,6 +62,7 @@ describe("Settings storage", () => {
         defaultFilament: null,
         autoloadLastMaterial: true,
       },
+      gui: { propertiesTab: "printer" },
     });
   });
 
@@ -127,6 +130,7 @@ describe("Settings storage", () => {
         defaultFilament: null,
         autoloadLastMaterial: true,
       },
+      gui: { propertiesTab: "printer" },
     };
 
     expect(new SettingsStorage(filePath).load()).toEqual(defaults);
@@ -157,5 +161,35 @@ describe("Settings storage", () => {
         autoloadLastMaterial: false,
       },
     });
+  });
+
+  it("saves the last tab of the Properties Panel and reads it again", () => {
+    writeSettings({
+      preferences: { theme: "dark", language: "he", units: "metric" },
+    });
+    const storage = new SettingsStorage(filePath);
+
+    expect(storage.load().gui).toEqual({ propertiesTab: "printer" });
+
+    storage.save({ ...storage.load(), gui: { propertiesTab: "settings" } });
+
+    const loaded = new SettingsStorage(filePath).load();
+    expect(loaded.gui).toEqual({ propertiesTab: "settings" });
+    expect(loaded.language).toBe("he");
+  });
+
+  it("opens the Printer tab when the saved tab is unknown", () => {
+    writeSettings({
+      preferences: {
+        theme: "dark",
+        language: "fr",
+        units: "metric",
+        gui: { propertiesTab: "analysis" },
+      },
+    });
+
+    const loaded = new SettingsStorage(filePath).load();
+    expect(loaded.gui).toEqual({ propertiesTab: "printer" });
+    expect(loaded.language).toBe("fr");
   });
 });

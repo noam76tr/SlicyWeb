@@ -51,6 +51,20 @@ export interface MaterialPreferences {
   autoloadLastMaterial: boolean;
 }
 
+/** Tab of the Properties Panel (GUI_SPEC.md, Properties Tabs) */
+export type PropertiesTab =
+  | "printer"
+  | "object"
+  | "settings";
+
+/**
+ * Interface of the user preferences (DATA_SCHEMA.md 3.11.0): last tab
+ * chosen in the Properties Panel, opened again at start.
+ */
+export interface GuiPreferences {
+  propertiesTab: PropertiesTab;
+}
+
 export interface UserPreferences {
   theme: Theme;
 
@@ -61,4 +75,6 @@ export interface UserPreferences {
   printer: PrinterPreferences;
 
   material: MaterialPreferences;
+
+  gui: GuiPreferences;
 }

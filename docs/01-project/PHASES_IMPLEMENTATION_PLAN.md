@@ -1675,7 +1675,7 @@ Repeatable Results
 
 Moved from Phase 9 (ADR-034 D1): the classification fills analysis.classification, null until then (DATA_SCHEMA.md 3.9.0); the recommendation needs it (REC_002 while it is null).
 
-Status: In Progress (closure of 2026-11-07 suspended on 2026-11-08: analysis of 8.76 s for 1M triangles on the PC of Noam, target 5 s; lot 92)
+Status: Completed (2026-11-08, after the new check of Noam with lot 92; the closure of 2026-11-07 had been suspended on 2026-11-08: analysis of 8.76 s for 1M triangles on the PC of Noam, target 5 s)
 
 Decisions (ADR-035, decisions D1 to D13 of Noam, 2026-11-05; analysis of lot 83):
 
@@ -1719,10 +1719,11 @@ Validation result (Windows 11, checks and manual controls of Noam, lots 84 to 89
 - Recommendations Respect Limits: unit tests of lot 87 with the shipped printers, materials, filaments and presets (Ultimaker S5 + Fast Prototype: print speed 100 mm/s with VALUE_LIMITED, travel 150 mm/s without warning; TPU at most 30 mm/s; layer height at most 75 % of the nozzle; temperatures capped by the printer; retraction by extruder type); in the application, the Recommendation section (end-to-end tests and manual checks 1 to 10 of lot 88)
 - Warnings Produced: each of the 13 codes in the unit tests, one per code, most severe first, a critical warning does not stop the recommendation; translated in three languages, critical in red (manual checks of lot 88)
 - Classification: 10 features and 5 rules on models built in the tests (cube, tower, spheres, open vase, open box, plate with holes, closed box, L bracket: neither container nor vase, remark of Noam); the category chosen by the user kept after a new analysis
-- Performance: on the PC of Noam (2026-11-08), a closed sphere of 998 000 triangles took 8.76 s (lot 90; target 5 s, PERFORMANCE_SPEC.md); made faster in lot 92 (on Linux, in the application: 1.8 to 2.3 s instead of 3.4 to 4.4 s); the closure waits for the new check of Noam with the same sphere
+- Performance: on the PC of Noam (2026-11-08), a closed sphere of 998 000 triangles took 8.76 s (lot 90; target 5 s, PERFORMANCE_SPEC.md); made faster in lot 92 (on Linux, in the application: 1.8 to 2.3 s instead of 3.4 to 4.4 s); new check of Noam with the same sphere (2026-11-08): about 4 s, "Automatic (Figurine)", the view stays fluid; model Seckit: same values as before (80.93 × 59.38 × 38.52 mm, 33.37 cm³, 179.28 cm², thin walls detected, ANA_005), "Automatic (Unknown)"
+- With lot 92 (CHANGELOG 0.1.93, 2026-11-08): npm run check:locales 470 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 494 tests passed and 1 skipped, npm run test:e2e 39 tests passed: closure confirmed
 - With lot 89 (CHANGELOG 0.1.90, 2026-11-07): npm run check:locales 469 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 469 tests passed and 1 skipped, npm run test:e2e 38 tests passed, manual checks 1 to 7 passed in Hebrew, French and English
 
-Open issues after the closure: the recommendations and the object types are not saved in a project yet (Phase 13, Project Persistence); vase mode in the recommended profile (KI-029) and the support types by slicer (KI-012) in Phase 14; choice of a preset by the user, Custom preset and change of the recommended values in Phase 15 (presetStore.selectedPreset kept for it); the 24 printers with an unknown extruder type (remark of Noam, decision 87). Next: the tabs of the Properties panel (idea of Noam, 2026-11-07; questions first), then Phase 11.
+Open issues after the closure: the recommendations and the object types are not saved in a project yet (Phase 13, Project Persistence); vase mode in the recommended profile (KI-029) and the support types by slicer (KI-012) in Phase 14; choice of a preset by the user, Custom preset and change of the recommended values in Phase 15 (presetStore.selectedPreset kept for it); the 24 printers with an unknown extruder type (remark of Noam, decision 87). Next: the tabs of the Properties panel (idea of Noam, 2026-11-07; answers Q1 to Q6 A; lot 93, CHANGELOG 0.1.94, outside the phases), then Phase 11.
 
 
 

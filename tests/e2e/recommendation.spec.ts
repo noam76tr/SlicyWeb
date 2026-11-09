@@ -20,7 +20,7 @@ import type { Page } from "@playwright/test";
 
 import en from "../../public/locales/en.json";
 
-import { cubeStl, expect, importFiles, test } from "./fixtures";
+import { cubeStl, expect, importFiles, openTab, test } from "./fixtures";
 
 /** Section of the Properties Panel with this title */
 function section(window: Page, title: string) {
@@ -53,6 +53,7 @@ test("generates the recommendation by itself and shows it", async ({
     .getByRole("button", { name: en["toolbar.generate"] });
 
   await importFiles(window, [files("cube.stl", cubeStl("cube", 20))]);
+  await openTab(window, "settings");
 
   // Analysis done, no printer and no material: no recommendation yet
   await expect(objectType).toHaveValue("");
@@ -70,8 +71,10 @@ test("generates the recommendation by itself and shows it", async ({
   );
   await expect(generate).toHaveAttribute("aria-disabled", "true");
 
+  await openTab(window, "printer");
   await window.getByLabel(en["printer.selector"]).selectOption("prusa_mk4s");
   await window.getByLabel(en["material.selector"]).selectOption("pla");
+  await openTab(window, "settings");
 
   // A cube: unknown, Balanced preset; no filament -15, unknown -20
   await expect(row(window, en["recommendation.status"])).toHaveText(
@@ -163,6 +166,7 @@ test("Tools > Generate Recommendations, Generate button and several objects", as
     files("a.stl", cubeStl("a", 10)),
     files("b.stl", cubeStl("b", 20)),
   ]);
+  await openTab(window, "settings");
   await expect(row(window, en["recommendation.status"])).toHaveText(
     en["result.generated"],
   );

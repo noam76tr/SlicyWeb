@@ -504,7 +504,7 @@ Export Profile
 
 ```
 
-Select Printer (Phase 7) moves the focus to the Printer Selector of the Properties Panel, when the menu closes. Manage Printers (Phase 7) opens the Printer Manager. The other items stay disabled until the phase that provides their action.
+Select Printer (Phase 7) moves the focus to the Printer Selector of the Properties Panel, when the menu closes; since lot 93, it first opens the Printer tab when another tab is open (Properties Tabs: a command of the user, answer A of Noam, 2026-11-08). Select Material and Select Filament do the same. Manage Printers (Phase 7) opens the Printer Manager. The other items stay disabled until the phase that provides their action.
 
 
 
@@ -1278,6 +1278,7 @@ Collapsible
 
 # Properties Sections
 
+Since lot 93, the sections are in three tabs (Properties Tabs); Project stays above the tabs.
 
 ```text
 
@@ -1300,6 +1301,26 @@ Analysis
 Recommendations
 
 ```
+
+---
+
+# Properties Tabs
+
+Lot 93 (idea of Noam, 2026-11-07; PASSATION.md decision 90, answers Q1 to Q6 A):
+
+```text
+Project            above the tabs, always visible (one line)
+Printer tab        Printer, Material, Filament
+Object tab         Object, Transform, Analysis
+Settings tab       Print Preset, Recommendations
+```
+
+- Tabs: text only, on one line at the top of the panel (shadcn Tabs, Base UI); in right-to-left, the order is reversed (Printer on the right).
+- Keyboard: no shortcut of its own; the arrow keys move along the tabs when a tab has the focus, Enter or Space opens it (standard behavior of tabs).
+- Open tab at start: the last tab chosen, saved in settings.json (DATA_SCHEMA.md 3.11.0, gui.propertiesTab; USER_SETTINGS_SPEC.md, GUI Settings); Printer for a settings.json without it.
+- The tab never changes by itself: an import, a selection, an analysis, a recommendation or a warning keep the open tab. Only a command of the user opens a tab: a click on it, or Printer > Select Printer, Material > Select Material and Filament > Select Filament, which open the Printer tab, then move the focus to their selector (answer A of Noam, 2026-11-08).
+- Red dot on the Settings tab when the single selected object has a critical warning in its recommendation (Recommendation Section); it stays when Settings is open; the name of the tab then says "critical warning" to a screen reader (translated text). No dot when no object or several objects are selected.
+- Each tab keeps its own scroll position when another tab is opened.
 
 ---
 

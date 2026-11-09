@@ -152,6 +152,7 @@ test("keeps the language of a settings.json without printer", async ({
       defaultFilament: null,
       autoloadLastMaterial: true,
     },
+    gui: { propertiesTab: "printer" },
   });
   expect(errors).toEqual([]);
 });

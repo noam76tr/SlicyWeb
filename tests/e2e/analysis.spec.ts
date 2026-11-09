@@ -20,7 +20,14 @@ import type { Page } from "@playwright/test";
 
 import en from "../../public/locales/en.json";
 
-import { cubeStl, expect, importFiles, test, transformField } from "./fixtures";
+import {
+  cubeStl,
+  expect,
+  importFiles,
+  openTab,
+  test,
+  transformField,
+} from "./fixtures";
 
 /** Analysis section of the Properties Panel (inside the panel section) */
 function analysisSection(window: Page) {
@@ -46,6 +53,11 @@ function dimensions(width: number, depth: number, height: number): string {
     .replace("{depth}", String(depth))
     .replace("{height}", String(height));
 }
+
+// The Object tab holds the Transform and Analysis sections (lot 93)
+test.beforeEach(async ({ window }) => {
+  await openTab(window, "object");
+});
 
 test("analyzes an imported object by itself and shows its analysis", async ({
   window,

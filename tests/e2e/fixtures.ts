@@ -11,7 +11,9 @@
  * - launch(): starts the application, returns it with its window;
  * - app, window: the application started once for the test;
  * - files: writes test files (STL cube, text file) in a folder of the
- *   test.
+ *   test;
+ * - openTab(): opens a tab of the Properties Panel (lot 93); the Printer
+ *   tab is open at start.
  *
  * On Linux, the application is started without the Chromium sandbox and
  * with the software renderer (SwiftShader), for machines without a
@@ -193,6 +195,21 @@ export const test = base.extend<{
 });
 
 export { expect };
+
+/**
+ * Opens a tab of the Properties Panel (lot 93, GUI_SPEC.md, Properties
+ * Tabs): Printer (Printer, Material, Filament), Object (Object,
+ * Transform, Analysis) or Settings (Print Preset, Recommendations)
+ */
+export async function openTab(
+  window: Page,
+  tab: "printer" | "object" | "settings",
+): Promise<void> {
+  const trigger = window.locator(`[data-properties-trigger="${tab}"]`);
+
+  await trigger.click();
+  await expect(trigger).toHaveAttribute("aria-selected", "true");
+}
 
 /** Imports files with the Import button of the toolbar (file dialog) */
 export async function importFiles(
