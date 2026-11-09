@@ -12,8 +12,7 @@
  *     "printer": { "defaultPrinter": null, "autoloadLastPrinter": true,
  *       "autoCheckProfiles": true },
  *     "material": { "defaultMaterial": null, "defaultFilament": null,
- *       "autoloadLastMaterial": true },
- *     "gui": { "propertiesTab": "printer" } } }
+ *       "autoloadLastMaterial": true } } }
  *
  * Rules:
  * - Missing or unreadable file: default preferences.
@@ -23,8 +22,11 @@
  *   keeps its theme, language and units, with the default printer.
  *   The fields of printer are read one by one, in the same way. A
  *   settings.json written before 3.7.0 (no material) takes the default
- *   material settings; the fields of material are read one by one. A
- *   settings.json written before 3.11.0 (no gui) opens the Printer tab.
+ *   material settings; the fields of material are read one by one.
+ * - gui (written by lot 93, DATA_SCHEMA.md 3.11.0, gui.propertiesTab) is
+ *   no longer part of the preferences (3.12.0, lot 95): it is ignored at
+ *   reading, the other fields are kept, and it is no longer in the file
+ *   after the next write.
  * - Other top-level entries of the file are kept when writing.
  * - Writing goes through a temporary file, then a rename, so that
  *   an interrupted write never leaves a truncated settings.json.
@@ -44,7 +46,6 @@ import type { ZodType } from "zod";
 
 import {
   DEFAULT_USER_PREFERENCES,
-  GuiPreferencesSchema,
   MaterialPreferencesSchema,
   PrinterPreferencesSchema,
   UserPreferencesSchema,
@@ -72,7 +73,6 @@ export class SettingsStorage {
         ...DEFAULT_USER_PREFERENCES,
         printer: readPrinter(undefined),
         material: readMaterial(undefined),
-        gui: readGui(undefined),
       };
     }
 
@@ -89,7 +89,6 @@ export class SettingsStorage {
       units: readField(shape.units, entries.units, DEFAULT_USER_PREFERENCES.units),
       printer: readPrinter(entries.printer),
       material: readMaterial(entries.material),
-      gui: readGui(entries.gui),
     };
   }
 
@@ -126,7 +125,6 @@ export class SettingsStorage {
       ...DEFAULT_USER_PREFERENCES,
       printer: { ...DEFAULT_USER_PREFERENCES.printer },
       material: { ...DEFAULT_USER_PREFERENCES.material },
-      gui: { ...DEFAULT_USER_PREFERENCES.gui },
     });
   }
 
@@ -212,24 +210,6 @@ function readMaterial(value: unknown): UserPreferences["material"] {
       shape.autoloadLastMaterial,
       entries.autoloadLastMaterial,
       fallback.autoloadLastMaterial,
-    ),
-  };
-}
-
-function readGui(value: unknown): UserPreferences["gui"] {
-  const fallback = DEFAULT_USER_PREFERENCES.gui;
-
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    return { ...fallback };
-  }
-
-  const entries = value as Record<string, unknown>;
-
-  return {
-    propertiesTab: readField(
-      GuiPreferencesSchema.shape.propertiesTab,
-      entries.propertiesTab,
-      fallback.propertiesTab,
     ),
   };
 }

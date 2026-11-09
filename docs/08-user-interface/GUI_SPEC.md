@@ -1317,7 +1317,7 @@ Settings tab       Print Preset, Recommendations
 
 - Tabs: text only, on one line at the top of the panel (shadcn Tabs, Base UI); in right-to-left, the order is reversed (Printer on the right).
 - Keyboard: no shortcut of its own; the arrow keys move along the tabs when a tab has the focus, Enter or Space opens it (standard behavior of tabs).
-- Open tab at start: the last tab chosen, saved in settings.json (DATA_SCHEMA.md 3.11.0, gui.propertiesTab; USER_SETTINGS_SPEC.md, GUI Settings); Printer for a settings.json without it.
+- Open tab at start: always Printer (lot 95, answer Q3 changed from A to B by Noam, 2026-11-09: the scene is empty at start, Object and Settings would have nothing to show). The open tab is not saved (DATA_SCHEMA.md 3.12.0; USER_SETTINGS_SPEC.md, GUI Settings); the tab saved by lot 93 in settings.json is ignored.
 - The tab never changes by itself: an import, a selection, an analysis, a recommendation or a warning keep the open tab. Only a command of the user opens a tab: a click on it, or Printer > Select Printer, Material > Select Material and Filament > Select Filament, which open the Printer tab, then move the focus to their selector (answer A of Noam, 2026-11-08).
 - Red dot on the Settings tab when the single selected object has a critical warning in its recommendation (Recommendation Section); it stays when Settings is open; the name of the tab then says "critical warning" to a screen reader (translated text). No dot when no object or several objects are selected.
 - Each tab keeps its own scroll position when another tab is opened.

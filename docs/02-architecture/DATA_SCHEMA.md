@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.11.0
+Version: 3.12.0
 
 Status: Approved
 
@@ -2274,12 +2274,6 @@ The index is refused, and no profile is used, when one of these rules fails, whe
 
      "autoloadLastMaterial": true
 
-   },
-
-   "gui": {
-
-     "propertiesTab": "printer"
-
    }
 
  }
@@ -2295,7 +2289,7 @@ material (3.7.0, ADR-033 D9, USER_SETTINGS_SPEC.md Material Settings): defaultMa
 
 printer.autoCheckProfiles (3.6.0, ADR-032 D5, decision of Noam): boolean, true by default. When true, the SlicyWeb profile repository is checked at start, at most once every 24 hours; when false, it is checked only with Printer > Refresh Profiles. A settings.json without this field loads with true.
 
-gui (3.11.0, lot 93, PASSATION.md decision 90 Q3 A; USER_SETTINGS_SPEC.md GUI Settings; GUI_SPEC.md Properties Tabs): propertiesTab is the last tab chosen in the Properties Panel, one of "printer", "object" or "settings", opened again at start. A settings.json without gui, or with another value, loads with "printer". The other GUI Settings of USER_SETTINGS_SPEC.md are not stored yet. User settings only: never written in a WYPROJ file.
+gui (3.11.0, lot 93) is no longer part of the User Preferences Schema since 3.12.0 (lot 95, PASSATION.md decision 95: answer Q3 of the tabs changed from A to B): the Properties Panel opens the Printer tab at every start (GUI_SPEC.md, Properties Tabs), and the open tab is not stored. A settings.json written by lot 93, with gui (propertiesTab), loads without error: gui is ignored, every other field is kept, and gui is no longer in the file after the next write. settings:update refuses gui (unknown field). The GUI Settings of USER_SETTINGS_SPEC.md are not stored yet.
 
 
 ---

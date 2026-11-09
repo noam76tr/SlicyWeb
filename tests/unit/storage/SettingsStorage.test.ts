@@ -9,11 +9,12 @@
  * takes its default value only. A file written before 3.7.0, without
  * material, takes the default material settings; an invalid field of
  * material takes its default value only (Phase 8 lot 70). A file written
- * before 3.11.0, without gui, opens the Printer tab; the last tab is
- * saved and read again; an unknown tab opens the Printer tab (lot 93).
+ * by lot 93 (3.11.0), with gui.propertiesTab, loads without error and
+ * keeps every setting; gui is ignored and no longer written (3.12.0,
+ * lot 95, Q3 B).
  *
  * Based on:
- * - DATA_SCHEMA.md (User Preferences Schema 3.5.0, 3.7.0, 3.11.0)
+ * - DATA_SCHEMA.md (User Preferences Schema 3.5.0, 3.7.0, 3.12.0)
  * - USER_SETTINGS_SPEC.md (Printer Settings, Material Settings)
  * - TEST_PLAN.md
  */
@@ -62,7 +63,6 @@ describe("Settings storage", () => {
         defaultFilament: null,
         autoloadLastMaterial: true,
       },
-      gui: { propertiesTab: "printer" },
     });
   });
 
@@ -130,7 +130,6 @@ describe("Settings storage", () => {
         defaultFilament: null,
         autoloadLastMaterial: true,
       },
-      gui: { propertiesTab: "printer" },
     };
 
     expect(new SettingsStorage(filePath).load()).toEqual(defaults);
@@ -163,33 +162,72 @@ describe("Settings storage", () => {
     });
   });
 
-  it("saves the last tab of the Properties Panel and reads it again", () => {
+  it("reads a settings.json of lot 93 with gui without losing any setting", () => {
+    // Written by lot 93 (DATA_SCHEMA.md 3.11.0): gui.propertiesTab is no
+    // longer stored since lot 95 (3.12.0, Q3 B)
     writeSettings({
-      preferences: { theme: "dark", language: "he", units: "metric" },
+      preferences: {
+        theme: "dark",
+        language: "he",
+        units: "metric",
+        printer: {
+          defaultPrinter: "bambu_x1c",
+          autoloadLastPrinter: false,
+          autoCheckProfiles: false,
+        },
+        material: {
+          defaultMaterial: "petg",
+          defaultFilament: "bambu_petg_hf",
+          autoloadLastMaterial: false,
+        },
+        gui: { propertiesTab: "object" },
+      },
+      other: { kept: true },
     });
+    const expected = {
+      theme: "dark",
+      language: "he",
+      units: "metric",
+      printer: {
+        defaultPrinter: "bambu_x1c",
+        autoloadLastPrinter: false,
+        autoCheckProfiles: false,
+      },
+      material: {
+        defaultMaterial: "petg",
+        defaultFilament: "bambu_petg_hf",
+        autoloadLastMaterial: false,
+      },
+    };
     const storage = new SettingsStorage(filePath);
 
-    expect(storage.load().gui).toEqual({ propertiesTab: "printer" });
+    expect(storage.load()).toEqual(expected);
 
-    storage.save({ ...storage.load(), gui: { propertiesTab: "settings" } });
+    // The next write keeps every setting and no longer writes gui
+    storage.save(storage.load());
 
-    const loaded = new SettingsStorage(filePath).load();
-    expect(loaded.gui).toEqual({ propertiesTab: "settings" });
-    expect(loaded.language).toBe("he");
+    const content = JSON.parse(fs.readFileSync(filePath, "utf8")) as {
+      preferences: Record<string, unknown>;
+      other: unknown;
+    };
+    expect(content.preferences).toEqual(expected);
+    expect(content.preferences).not.toHaveProperty("gui");
+    expect(content.other).toEqual({ kept: true });
+    expect(new SettingsStorage(filePath).load()).toEqual(expected);
   });
 
-  it("opens the Printer tab when the saved tab is unknown", () => {
+  it("ignores a damaged gui entry", () => {
     writeSettings({
       preferences: {
         theme: "dark",
         language: "fr",
         units: "metric",
-        gui: { propertiesTab: "analysis" },
+        gui: "settings",
       },
     });
 
     const loaded = new SettingsStorage(filePath).load();
-    expect(loaded.gui).toEqual({ propertiesTab: "printer" });
+    expect(loaded).not.toHaveProperty("gui");
     expect(loaded.language).toBe("fr");
   });
 });

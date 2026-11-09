@@ -10,7 +10,8 @@
  * - USER_SETTINGS_SPEC.md (General Settings, Printer Settings, Material
  *   Settings, GUI Settings)
  * - DECISIONS.md (ADR-032, D8; ADR-033, D9)
- * - PASSATION.md (decision 90: tabs of the Properties Panel, Q3 A)
+ * - PASSATION.md (decision 90: tabs of the Properties Panel; lot 95, Q3 B:
+ *   the open tab is not stored, gui is no longer part of the preferences)
  */
 
 import { z } from "zod";
@@ -47,18 +48,14 @@ export const MaterialPreferencesSchema = z
   })
   .strict();
 
-/** Tabs of the Properties Panel (GUI_SPEC.md, Properties Tabs) */
+/**
+ * Tabs of the Properties Panel (GUI_SPEC.md, Properties Tabs). Not stored
+ * in settings.json since lot 95 (DATA_SCHEMA.md 3.12.0): the Printer tab
+ * is open at every start.
+ */
 export const PROPERTIES_TABS = ["printer", "object", "settings"] as const;
 
 export const PropertiesTabSchema = z.enum(PROPERTIES_TABS);
-
-export const GuiPreferencesSchema = z
-  .object({
-    // Last tab chosen in the Properties Panel, opened again at start
-    // (DATA_SCHEMA.md 3.11.0)
-    propertiesTab: PropertiesTabSchema,
-  })
-  .strict();
 
 export const UserPreferencesSchema = z
   .object({
@@ -68,14 +65,14 @@ export const UserPreferencesSchema = z
     units: z.string().min(1),
     printer: PrinterPreferencesSchema,
     material: MaterialPreferencesSchema,
-    gui: GuiPreferencesSchema,
   })
   .strict();
 
 /**
  * Partial update of the preferences (settings:update).
- * Unknown fields are refused. printer, material and gui are replaced as
- * a whole: an update of one of them gives all of its fields.
+ * Unknown fields are refused (gui too, since lot 95). printer and material
+ * are replaced as a whole: an update of one of them gives all of its
+ * fields.
  */
 export const UserPreferencesUpdateSchema = UserPreferencesSchema.partial();
 
@@ -95,8 +92,5 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
     defaultMaterial: null,
     defaultFilament: null,
     autoloadLastMaterial: true,
-  },
-  gui: {
-    propertiesTab: "printer",
   },
 };

@@ -708,16 +708,18 @@ Performance (lot 92):
   manual (Noam): the sphere of 998 000 triangles analyzed in less than 5 s
     (done 2026-11-08: about 4 s)
 
-Properties tabs (lot 93):
-  unit (SettingsStorage.test.ts): a settings.json without gui opens the
-    Printer tab; the last tab saved and read again, the language kept; an
-    unknown tab gives the Printer tab
-  unit (PropertiesTab.test.ts): saved tab opened at start; Printer without
-    gui; a tab chosen is saved (settings:update, gui) and never replaced by
-    the saved tab read later; outside Electron, not saved
+Properties tabs (lot 93; lot 95, Q3 B):
+  unit (SettingsStorage.test.ts): a settings.json of lot 93 with gui
+    loads without error and keeps every setting, gui ignored and no
+    longer written at the next write, other entries of the file kept; a
+    damaged gui is ignored
+  unit (PropertiesTab.test.ts): Printer at start; a tab chosen is opened,
+    never saved (no IPC call)
   end to end (tests/e2e/tabs.spec.ts): first start: Project line, three
     tabs, Printer open; an import keeps the tab; arrow keys and Enter;
-    Object again after a restart; Printer > Select Printer opens Printer
+    Printer again after a restart; a settings.json of lot 93 (last tab
+    Object): at two starts, Printer open, language, printer, material
+    and filament kept, no gui in settings:get; Printer > Select Printer opens Printer
     and focuses the selector; a cube of 260 mm on the MK4S
     (OBJECT_TOO_LARGE): red dot on Settings with the Printer tab open,
     name "Settings, critical warning", dot kept in Settings, gone after

@@ -37,8 +37,8 @@
  * and a material are selected, and again after a change of the selection
  * or of the object type (ADR-035 D11).
  *
- * The last tab of the Properties Panel is opened again at start
- * (PropertiesTabService, lot 93).
+ * The Printer tab of the Properties Panel is open at every start (lot 95,
+ * Q3 B: the tab is not saved).
  *
  * Based on:
  * - ARCHITECTURE.md
@@ -53,7 +53,6 @@ import { formatQuantities } from "../i18n/NumberFormatter";
 import { AnalysisService } from "../services/AnalysisService";
 import { MaterialSelectionService } from "../services/MaterialSelectionService";
 import { PrinterSelectionService } from "../services/PrinterSelectionService";
-import { PropertiesTabService } from "../services/PropertiesTabService";
 import { RecommendationService } from "../services/RecommendationService";
 import { TransformService } from "../services/TransformService";
 import { usePrinterStore } from "../state/printerStore";
@@ -86,7 +85,6 @@ export default function App(): JSX.Element {
     document.title = "SlicyWeb";
     void PrinterSelectionService.load();
     void MaterialSelectionService.load();
-    void PropertiesTabService.load();
     void RecommendationService.loadPresets();
   }, []);
 

@@ -3522,6 +3522,39 @@ Date:
 
 ---
 
+# VERSION 0.1.95
+
+Release Type:
+Graphical User Interface (Printer tab at start)
+
+Status:
+In Progress
+
+Date:
+2026-11-09
+
+## Changed
+
+- Properties Panel: the Printer tab is open at every start (answer Q3 of the tabs changed from A to B by Noam, 2026-11-09, PASSATION.md decision 95: the scene is empty at start, Object and Settings would have nothing to show); GUI_SPEC.md, Properties Tabs
+- The open tab is no longer saved in settings.json: DATA_SCHEMA.md 3.12.0, gui removed from the User Preferences Schema; USER_SETTINGS_SPEC.md 2.2.0 (GUI Settings, Backward Compatibility); settings:update refuses gui (API_SPEC.md, SettingsIPC Channels, version unchanged)
+- A settings.json written by lot 93 (3.11.0), with gui.propertiesTab, loads without error: gui is ignored, every other setting is kept, and gui is no longer in the file after the next write (src/storage/SettingsStorage.ts)
+- src/schemas/UserPreferencesSchema.ts and src/types/UserPreferences.ts (PROPERTIES_TABS, PropertiesTabSchema and PropertiesTab kept for the tabs), src/services/PropertiesTabService.ts (choose only, nothing saved), src/state/propertiesPanelStore.ts (tab, chooseTab), src/gui/App.tsx (no tab read at start), src/gui/sidebar/RightSidebar.tsx, src/gui/menus/MenuBar.tsx
+- TEST_PLAN.md, FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
+
+## Removed
+
+- src/schemas/UserPreferencesSchema.ts: GuiPreferencesSchema and gui (preferences and default preferences); src/types/UserPreferences.ts: GuiPreferences and gui; src/storage/SettingsStorage.ts: readGui
+- src/services/PropertiesTabService.ts: load() and the save through settings:update; src/state/propertiesPanelStore.ts: restoreTab and chosen (only used to read the saved tab)
+
+## Tests
+
+- tests/unit/storage/SettingsStorage.test.ts: settings.json of lot 93 with gui read without losing any setting, gui no longer written, other entries of the file kept; damaged gui ignored (replace the 2 tests of the saved tab)
+- tests/unit/services/PropertiesTab.test.ts: Printer at start; tab chosen opened and never saved (2 tests instead of 5)
+- tests/e2e/tabs.spec.ts: Printer again after a restart; new test: a settings.json of lot 93 (last tab Object) opens Printer and keeps the language, the printer, the material and the filament, at two starts (43 e2e)
+- tests/e2e/printer.spec.ts: the default preferences no longer hold gui
+
+---
+
 # VERSION 0.2.0
 
 Release Type:

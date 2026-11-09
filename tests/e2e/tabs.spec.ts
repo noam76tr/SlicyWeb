@@ -5,22 +5,28 @@
  * Tabs of the Properties Panel (lot 93; GUI_SPEC.md, Properties Tabs;
  * PASSATION.md decision 90, Q1 to Q6 A): the Project line above three
  * tabs; Printer at the first start; the tab never changes by itself (an
- * import or a selection keeps it); the last tab is opened again after a
- * restart; Printer > Select Printer opens the Printer tab (choice of the
- * user, decision of Noam 2026-11-08); a red dot on Settings when the
+ * import or a selection keeps it); Printer again after a restart (lot 95,
+ * Q3 B: the tab is not saved), also with a settings.json of lot 93 that
+ * holds gui.propertiesTab; Printer > Select Printer opens the Printer tab
+ * (choice of the user, decision of Noam 2026-11-08); a red dot on Settings
+ * when the
  * single selected object has a critical warning, kept when Settings is
  * open and said to a screen reader; each tab keeps its scroll position;
  * in Hebrew, Printer is on the right.
  *
  * Based on:
  * - GUI_SPEC.md (Properties Tabs)
- * - DATA_SCHEMA.md (User Preferences Schema 3.11.0)
+ * - DATA_SCHEMA.md (User Preferences Schema 3.12.0)
  * - TEST_PLAN.md (End-To-End Testing)
  */
+
+import fs from "node:fs";
+import path from "node:path";
 
 import type { Page } from "@playwright/test";
 
 import en from "../../public/locales/en.json";
+import fr from "../../public/locales/fr.json";
 import he from "../../public/locales/he.json";
 
 import { cubeStl, expect, importFiles, openTab, test } from "./fixtures";
@@ -40,7 +46,7 @@ async function expectOpen(window: Page, tab: Tab): Promise<void> {
   await expect(panel(window, tab)).toBeVisible();
 }
 
-test("opens the last tab again, and never changes it by itself", async ({
+test("opens Printer at every start, and never changes the tab by itself", async ({
   launch,
   files,
 }) => {
@@ -80,9 +86,10 @@ test("opens the last tab again, and never changes it by itself", async ({
   expect(first.errors).toEqual([]);
   await first.app.close();
 
-  // Next start: the Object tab again
+  // Next start: the Printer tab again (lot 95, Q3 B)
   const second = await launch();
-  await expectOpen(second.window, "object");
+  await expectOpen(second.window, "printer");
+  await openTab(second.window, "settings");
 
   // Printer > Select Printer: opens the Printer tab, focus on the selector
   await second.window
@@ -95,6 +102,62 @@ test("opens the last tab again, and never changes it by itself", async ({
   await expectOpen(second.window, "printer");
   await expect(second.window.getByLabel(en["printer.selector"])).toBeFocused();
   expect(second.errors).toEqual([]);
+});
+
+test("opens Printer with a settings.json of lot 93, keeps printer, material and filament", async ({
+  userDataDir,
+  launch,
+}) => {
+  // Written by lot 93 (DATA_SCHEMA.md 3.11.0), last tab Object
+  fs.writeFileSync(
+    path.join(userDataDir, "settings.json"),
+    JSON.stringify({
+      preferences: {
+        theme: "dark",
+        language: "fr",
+        units: "metric",
+        printer: {
+          defaultPrinter: "bambu_x1c",
+          autoloadLastPrinter: true,
+          autoCheckProfiles: false,
+        },
+        material: {
+          defaultMaterial: "petg",
+          defaultFilament: "bambu_petg_hf",
+          autoloadLastMaterial: true,
+        },
+        gui: { propertiesTab: "object" },
+      },
+    }),
+  );
+
+  // Two starts: the printer, material and filament are found each time
+  for (let start = 0; start < 2; start += 1) {
+    const { app, window: page, errors } = await launch();
+
+    await expectOpen(page, "printer");
+    await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+    await expect(page.getByLabel(fr["printer.selector"])).toHaveValue(
+      "bambu_x1c",
+    );
+    await expect(page.getByLabel(fr["material.selector"])).toHaveValue("petg");
+    await expect(page.getByLabel(fr["filament.selector"])).toHaveValue(
+      "bambu_petg_hf",
+    );
+    await expect(page.locator("footer")).toContainText("Bambu Lab X1 Carbon");
+
+    const response = (await page.evaluate(() =>
+      window.slicyWeb.invoke("settings:get"),
+    )) as { data: { settings: Record<string, unknown> } };
+    expect(response.data.settings).toMatchObject({
+      language: "fr",
+      printer: { defaultPrinter: "bambu_x1c", autoCheckProfiles: false },
+      material: { defaultMaterial: "petg", defaultFilament: "bambu_petg_hf" },
+    });
+    expect(response.data.settings).not.toHaveProperty("gui");
+    expect(errors).toEqual([]);
+    await app.close();
+  }
 });
 
 test("red dot on Settings for a critical warning of the selected object", async ({

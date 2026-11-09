@@ -35,8 +35,8 @@
  * only): Printer (Printer, Material, Filament), Object (Object,
  * Transform, Analysis), Settings (Print Preset, Recommendations).
  * - The tab changes only when the user chooses it (click, or the arrow
- *   keys then Enter when a tab has the focus); the last tab is opened
- *   again at start (PropertiesTabService).
+ *   keys then Enter when a tab has the focus, PropertiesTabService); the
+ *   Printer tab is open at every start (lot 95, Q3 B).
  * - A red dot on Settings when the single selected object has a critical
  *   warning in its recommendation; it stays when Settings is open, and
  *   the name of the tab then says "critical warning" to a screen reader.
@@ -168,7 +168,7 @@ export default function RightSidebar(): JSX.Element {
           const result = PropertiesTabSchema.safeParse(value);
 
           if (result.success) {
-            void PropertiesTabService.choose(result.data);
+            PropertiesTabService.choose(result.data);
           }
         }}
         className="min-h-0 flex-1 gap-0"

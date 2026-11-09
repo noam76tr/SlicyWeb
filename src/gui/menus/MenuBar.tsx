@@ -376,7 +376,7 @@ export default function MenuBar(): JSX.Element {
                 onClick={() => {
                   focusTarget.current = item.focusId ?? null;
                   if (item.focusTab) {
-                    void PropertiesTabService.choose(item.focusTab);
+                    PropertiesTabService.choose(item.focusTab);
                   }
                   item.action?.();
                 }}

@@ -781,7 +781,7 @@ src/services/
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
 ├── PrinterSelectionService.ts = printers of the window, last printer (Phase 7)
 ├── MaterialSelectionService.ts = materials and filaments of the window, last choice (Phase 8)
-├── PropertiesTabService.ts    = last tab of the Properties Panel, saved in settings.json (lot 93)
+├── PropertiesTabService.ts    = tab chosen in the Properties Panel, not saved (lots 93 and 95)
 ├── ProfileSyncService.ts      = check of the profile repository, once a day or forced (Phase 7)
 └── StorageService.ts
 ```
@@ -966,7 +966,7 @@ tests/
 │       ├── MaterialSelection.test.ts = materials and filaments of the window, last choice, families of a printer (Phase 8)
 │       ├── PrinterSelection.test.ts = printers of the window, last printer, profiles (Phase 7)
 │       ├── ProfileSync.test.ts = check of the profile repository, cache (Phase 7)
-│       ├── PropertiesTab.test.ts = last tab of the Properties Panel (lot 93)
+│       ├── PropertiesTab.test.ts = open tab of the Properties Panel (lot 95)
 │       ├── TransformService.test.ts = transform changes, object on the plate, gesture state
 │       └── UndoRedo.test.ts = undo and redo of the transform changes
 ├── integration/
@@ -978,7 +978,7 @@ tests/
     ├── material.spec.ts = materials and filaments served by the main process (Phase 8)
     ├── preset.spec.ts = presets served by the main process (Phase 10)
     ├── printer.spec.ts = printers served by the main process, Printer section, Printer Manager, profiles (Phase 7)
-    ├── tabs.spec.ts = tabs of the Properties Panel, last tab, red dot (lot 93)
+    ├── tabs.spec.ts = tabs of the Properties Panel, Printer at start, red dot (lots 93 and 95)
     ├── transform.spec.ts = transforms, undo and redo, several objects (Phase 6)
     └── viewport.spec.ts = navigation cube (lot 74)
 ```
