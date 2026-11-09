@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-11-08. Lot 92 (analyse plus rapide) sur `main` (cd9b42c), vérifié identique, validé par Noam (470 clés, 494 + 1, 39 e2e ; sphère de 998 000 triangles en environ 4 s). Phase 10 : **Completed** (2026-11-08). Lot 93 (onglets du panneau Propriétés) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.94 (lot 93, In Progress).
+Date : 2026-11-09. Lot 93 (onglets du panneau Propriétés) sur `main` (7861c4c), vérifié identique (33 fichiers), validé par Noam (475 clés, 29 canaux, 501 + 1, 42 e2e, contrôles 1 à 8). Phase 11 : analysée (lot 94), en attente des réponses de Noam à D1 à D8. Lot 94 (analyse de la phase 11) : à envoyer sur GitHub. Dernière entrée du CHANGELOG : 0.1.94 (lot 93, Completed).
 
 ---
 
@@ -82,7 +82,8 @@ Date : 2026-11-08. Lot 92 (analyse plus rapide) sur `main` (cd9b42c), vérifié 
 | 8 | Material Database | Completed (2026-11-01) | 0.1.67 à 0.1.75 |
 | 9 | Model Analysis | Completed (2026-11-02) | 0.1.77 à 0.1.82 |
 | 10 | Classification and Recommendation Engine | Completed (2026-11-08, après le contrôle de durée du lot 92 ; ADR-035 ; lot 84 documentation, 85 classification, 86 presets, 87 moteur de recommandation, 88 interface, 89 hébreu, 90 clôture, 91 maillage, 92 performance) | 0.1.84 à 0.1.93 |
-| 11 à 16 | Optimization, Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
+| 11 | Optimization Engine | Analysée au lot 94 (`lot94-phase11-analyse/PHASE11-ANALYSE.md`, décisions D1 à D8) : en attente des réponses de Noam | — |
+| 12 à 16 | Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
 
@@ -247,6 +248,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 91 | Trou ou maillage non conforme (remarque de Noam sur son modèle Seckit, décision 90) : ANA_002 seulement pour une arête partagée par un nombre impair de triangles (1 ou 3) ; une arête à 4, 6… triangles (parties qui se touchent par une arête) donne l'information ANA_005, en gris dans la section Analyse seulement, sans baisse de confiance, sans `holes` ; `countEdgeDefects` (MeshValidator), `meshManifold` (ModelAnalyzer), `nonManifoldObjectIds` (analysisTaskStore) ; `CLASSIFICATION_VERSION` « 1.2.2 » ; 1 clé (470) ; 3 tests (490 + 1), 1 e2e (39) ; aucune suppression | 0.1.92 |
 | 92 | Analyse plus rapide, mêmes résultats (décision 91 : 8,76 s chez Noam pour 1 million de triangles) : table des arêtes construite une fois en temps linéaire (`buildEdgeTable`, `triangleUses`) et partagée (arêtes ouvertes, ponts, part plane, genre) ; BVH construit une fois (`buildPlacedBVH`), partagé par les parois fines et `open_top` ; `hollow` : boîte englobante d'abord, puis bornes à 32 puis 128 directions, puis l'enveloppe exacte ; sous Linux dans l'application, 1,8 à 2,3 s au lieu de 3,4 à 4,4 s ; fonctions privées `edgeKey` de MeshValidator et FeatureDetector supprimées (acceptée par Noam) ; PERFORMANCE_SPEC 1.3.0 ; 4 tests (494 + 1), e2e inchangés (39) ; clôture de la phase 10 | 0.1.93 |
 | 93 | Onglets du panneau Propriétés (décisions 90 et 93, hors phase) : `tabs.tsx` (shadcn), `propertiesPanelStore.ts` et `PropertiesTabService.ts` (nouveaux), `RightSidebar.tsx` (ligne Projet, 3 onglets, point rouge, défilement par onglet), menus Sélectionner… qui ouvrent l'onglet Imprimante (`focusTab`) ; `gui.propertiesTab` dans `settings.json` (DATA_SCHEMA 3.11.0, USER_SETTINGS_SPEC 2.1.0, `settings:update`, aucun canal ajouté) ; GUI_SPEC (Properties Tabs) ; 5 clés (475) ; 7 tests (501 + 1), 3 e2e (42), les autres e2e ouvrent l'onglet de leur section (`openTab`) ; aucune suppression | 0.1.94 |
+| 94 | Phase 11, inventaire et décisions (aucun code) : `PHASE11-ANALYSE.md` (documentation de la phase, inventaire de `src/optimization_engine/` jamais appelé et sans mesure, 8 décisions D1 à D8, découpage en lots 95 à 98) ; 0.1.94 passe en Completed avec les résultats de Noam | — |
 
 ---
 
@@ -378,6 +380,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 93. **Menus et onglets (Noam, 2026-11-08, question du lot 93) :** A : un menu choisi par Noam peut ouvrir l'onglet correspondant (Imprimante > Sélectionner une imprimante, Matériau > Sélectionner un matériau, Filament > Sélectionner un filament ouvrent l'onglet Imprimante, puis placent le curseur sur le sélecteur). La règle « jamais de changement d'onglet automatique » ne concerne que les changements que l'application ferait sans action de sa part.
 
+94. **Lot 93 validé, phase 11 (Noam, 2026-11-09) :** lot 93 : 475 clés, 29 canaux, 501 + 1, 42 e2e, contrôles 1 à 8 OK ; `main` 7861c4c identique (33 fichiers). Analyse de la phase 11 livrée au lot 94 : réponses de Noam à D1 à D8 attendues (PHASE11-ANALYSE.md).
+
 **Méthode**
 
 27. Règle de décision (§1) : l'option « Recommandé » peut être appliquée sans demander, hors des 5 cas listés.
@@ -395,10 +399,11 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 5. **Cube de navigation** (décisions 76 et 78) : lot 74 fait, validé par Noam le 2026-11-01.
 6. **Phase 9 : Model Analysis** (Completed, ADR-034) : analyse au lot 75 ; réponses de Noam (décisions 79 à 81) ; 76 documentation ; 77 calcul de base dans un Worker ; 78 surplombs et ponts ; 79 parois fines ; 80 interface (tous validés) ; 81 clôture et format des nombres (décision 82). Close le 2026-11-02, confirmée par les contrôles de Noam sur le lot 81 (2026-11-03). Lot 82 : surplombs en rouge (décisions 81 et 83). Suite : la phase 10. La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
 7. **Phase 10 : Classification and Recommendation Engine** (Completed le 2026-11-08, après le contrôle de durée du lot 92 : environ 4 s ; ADR-035) : analyse au lot 83 (validé) ; réponses de Noam (décision 84) ; 84 documentation (validé) ; 85 classification (validé) ; 86 presets et 87 moteur de recommandation (livrés ensemble, validés) ; 88 interface (validé) ; 89 valeurs avec unité en hébreu (validé) ; 90 clôture (enveloppe convexe accélérée ; seuils de la classification et durée vérifiés sur les modèles de Noam, contrôles manuels du lot 90) ; 91 maillage non conforme (validé) ; 92 analyse plus rapide (validé, clôture). Si un modèle de Noam est mal classé, le changement de seuil est un choix visible : question à Noam, puis un lot à part (nouvelle version d'OBJECT_CLASSIFICATION_SPEC).
-8. **Onglets du panneau Propriétés (idée de Noam, 2026-11-07) :** réponses Q1 à Q6 option A (décision 90), menus Sélectionner… : A (décision 93) ; lot 93, seul, livré avec des contrôles manuels : en attente des résultats de Noam.
-9. **Phases 11 à 16**, dans l'ordre du plan technique.
+8. **Onglets du panneau Propriétés (idée de Noam, 2026-11-07) :** réponses Q1 à Q6 option A (décision 90), menus Sélectionner… : A (décision 93) ; lot 93 validé par Noam le 2026-11-09 (décision 94).
+9. **Phase 11 : Optimization Engine** : analyse au lot 94 (`PHASE11-ANALYSE.md`, D1 à D8, option A recommandée partout : orientation seule, posée sur une face plane, note 0 à 100 avec règles de fiabilité, appliquée à la demande en une action annulable, rien d'enregistré, pas de suggestion automatique, cycle Optimization / Recommendation de DOMAINS_DEPENDENCY_MATRIX corrigé, 3 optimiseurs supprimés). En attente des réponses de Noam. Découpage proposé : 95 documentation (ADR-036), 96 calcul, 97 interface, 98 clôture ; 95 et 96 livrables ensemble s'ils ne posent pas de question.
+10. **Phases 12 à 16**, dans l'ordre du plan technique.
    - **Pas urgent (remarque de Noam, 2026-11-06, décision 87) :** type d'extrudeur des 24 imprimantes à « unknown » (dont toutes les Bambu Lab) : le revérifier sur les fiches des fabricants, seulement si la fiche le dit clairement, puis publier une nouvelle version des profils dans `slicyweb-profiles` (même règle de tag qu'à la v1.1.0).
-10. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
+11. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
 
    | KI | Sujet | À régler avant |
    |---|---|---|
@@ -415,7 +420,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    | KI-028 | npm audit : minimatch (GHSA-g3hv-75wg-m249, modérée), via eslint, typescript-eslint et ts-morph (shadcn), outils de développement seulement | Phase 16 |
    | KI-029 | Mode vase : aucun champ dans le profil recommandé | Phase 14 |
 
-11. **Points signalés, en attente d'une décision de Noam :**
+12. **Points signalés, en attente d'une décision de Noam :**
    - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (lié à KI-007).
    - SLICER_EXPORT_SPEC.md (1.1.0 depuis le lot 84) : pas de code d'erreur pour les contrôles de scène (proposés : EXP_013 hors volume, EXP_014 collision).
    - Duplication projet/scène des 4 sélections dans DATA_SCHEMA (décision 4) : choisir la source de vérité.

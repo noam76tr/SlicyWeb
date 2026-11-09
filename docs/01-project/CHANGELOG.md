@@ -3485,7 +3485,7 @@ Release Type:
 Graphical User Interface (Properties tabs)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-08
@@ -3514,6 +3514,11 @@ Date:
 
 - The other GUI Settings of USER_SETTINGS_SPEC.md (rememberLayout, showTooltips, showStatusBar) are still not stored: only gui.propertiesTab is
 - The tabs component was written from the shadcn registry source (bases/base/ui/tabs.tsx and style-nova.css), the shadcn site being out of reach from the machine of Claude; npx shadcn add tabs should give the same component (not checked)
+
+## Validation Result
+
+- Windows 11 (2026-11-09): lot 93 on GitHub (7861c4c, identical to the lot, 33 files); npm run check:locales 475 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 501 tests passed and 1 skipped, npm run test:e2e 42 tests passed (Noam)
+- Manual checks 1 to 8 of LOT93.md passed (Noam, 2026-11-09)
 
 ---
 
