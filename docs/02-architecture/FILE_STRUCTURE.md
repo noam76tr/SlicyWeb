@@ -702,12 +702,15 @@ src/recommendation_engine/
 ```text
 src/optimization_engine/
 
-├── OptimizationEngine.ts
-├── OrientationOptimizer.ts
-├── MaterialOptimizer.ts
-├── SpeedOptimizer.ts
-└── SupportOptimizer.ts
+├── OptimizationEngine.ts      = orientation optimization of one object, OPT_002 (ADR-036)
+├── OptimizationError.ts       = optimization errors with their code (OPT_002), search dropped
+├── OptimizationRunner.ts      = one search in the worker, cancel (ADR-036 D4)
+├── OrientationOptimizer.ts    = candidates, Orientation Score, Reliability Rules (ADR-036 D2, D3)
+└── workers/
+    └── orientationSearch.worker.ts = Web Worker of the orientation search (ADR-036 D4)
 ```
+
+Phase 11 lot 97: SupportOptimizer.ts, SpeedOptimizer.ts and MaterialOptimizer.ts removed (ADR-036 D8).
 
 ---
 
@@ -898,6 +901,7 @@ src/constants
 ├── PresetConstants.ts
 ├── PrinterConstants.ts
 ├── RecommendationConstants.ts = numbers of the recommendation rules (Phase 10)
+├── OptimizationConstants.ts   = numbers of the orientation search (Phase 11)
 ├── HistoryConstants.ts        = MAX_HISTORY_SIZE (undo and redo)
 └── ViewportConstants.ts       = coordinate system, colors and camera of the viewport (ADR-028)
 ```

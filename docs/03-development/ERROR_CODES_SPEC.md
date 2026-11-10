@@ -3,7 +3,7 @@
 # ERROR CODES SPECIFICATION
 
 
-Version: 2.5.0
+Version: 2.6.0
 
 Status: Approved
 
@@ -662,7 +662,7 @@ Not used in Phase 10 (ADR-035 D9): a conflict (object too large, temperature not
 
 # Optimization Errors
 
-
+Phase 11, ADR-036 (2.6.0). The orientation search is computed in a Web Worker; its messages are translated and shown over the viewport, in the message of the result (GUI_SPEC.md, Error Handling UI).
 
 ---
 
@@ -678,7 +678,7 @@ Optimization Failed
 
 ```
 
-
+Not used in Phase 11: only the orientation is optimized (ADR-036 D1); a failure of the search is OPT_002.
 
 ---
 
@@ -693,6 +693,8 @@ Optimization Failed
 Orientation Search Failed
 
 ```
+
+Severity: Error, for one object. The mesh of the object is empty or cannot be read, its transform or the build volume of the printer cannot be used, or the computation fails. The orientation of this object does not change; the other objects of the same search are applied. Tools > Optimize Orientation tries again.
 
 
 

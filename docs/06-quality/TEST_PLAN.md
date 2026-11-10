@@ -2248,11 +2248,58 @@ Improved Quality
 
 ```
 
+Phase 11 (ADR-036; AI_ENGINE_SPEC.md 1.1.0, Rules Of Version 1.1.0). Models built in the tests (no model file):
 
+```text
+Orientation search (lot 97, tests/unit/optimization_engine/):
+  cube 20 mm: nothing turned, score 90, 6 orientations measured
+  tower 20 x 20 x 100 mm standing (Noam: say which orientation and why):
+    standing risk 80 (High), score 66; lying risk 0, score 98; the four
+    sides give 98 with a turn of 90 degrees: the first of the order wins,
+    the left side (-X), the tower lying along X
+  tower lying: stays lying (standing: risk above 60)
+  tower standing with a build volume of 50 x 50 x 200 mm: lying does not
+    fit, stays standing
+  cone tip down (sides beyond 60 degrees): risk 100 and supports; turned
+    onto its base by a half turn around X; supportReduction 100
+  plate standing on its edge: laid flat (84 to 100)
+  L bracket: laid on its side (92 to 97: 5 points, applied)
+  box 20 x 20 x 24 mm: 89 to 92 (3 points): kept
+  T standing on its foot: turned, supports no longer needed
+  open vases standing (diameter 30 x 100 mm and 80 x 120 mm; Noam: stay
+    standing, vase mode): kept (upside down, the inner bottom becomes a
+    ceiling; lying, the wall overhangs)
+  open vase lying: stood up again, opening at the top
+  figurine of 40 x 20 x 50 mm on a base, arms along the body, hands
+    forward (Noam: show the result; finish quality not measured): stays
+    standing: 42 (supports under the arms and the hands, risk 15); lying
+    on a side or on its face 39 at best, on its back risk 100: nothing
+    gains 5 points
+  sphere: risk 100 in every orientation, nothing turned
+  same object twice: same result
+  the orientation applied, then analyzed: the same overhangs, risk and
+    height as measured by the search
+  candidates: the 6 axes first; a slanted face of the hull (wedge) is a
+    candidate (turn of 135 degrees); the top brought down by a half turn
+    around X
+  Reliability Rules: risk 100, outside the build volume, risk above 60
+    when the current risk is not
+  OptimizationSchema strict; OPT_002 (empty mesh, transform or build
+    volume that cannot be used); Web Worker: copy transferred, worker
+    terminated, search dropped (AbortSignal)
+
+Interface (lot 98, end-to-end): Tools > Optimize Orientation and the
+  button Optimize enabled with an object; a tower turned, the message of
+  the result, one history action (Ctrl+Z gives back the orientation),
+  analysis and recommendation computed again; a cube: "already the best"
+
+Closure (lot 99): the models of Noam; duration for 1 million triangles
+  (PERFORMANCE_SPEC.md, Optimization Performance)
+```
+
+Material Usage Test and Print Time Optimization Test: Phase 15 (ADR-036 D1), after the estimation of Phase 12.
 
 ---
-
-
 
 # Material Usage Test
 

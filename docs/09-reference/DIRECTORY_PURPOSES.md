@@ -548,29 +548,29 @@ Every file should be placed in the directory that matches its responsibility.
 
 **Purpose:** Print Optimization Engine
 
-**Role:** Multi-criteria optimization engine (orientation, material, speed, supports). Searches for the best print configuration according to several criteria at the same time. It does not decide what the object is: object classification belongs to src/classification_engine/.
+**Role:** Orientation optimization (Phase 11, ADR-036): searches the best orientation of an object, which reduces the supports and the tip risk, with the measures of the analysis. Time, material and preset optimization come in Phase 15 (ADR-036 D1). It does not decide what the object is: object classification belongs to src/classification_engine/. It never depends on the recommendation (DOMAINS_DEPENDENCY_MATRIX.md, ADR-036 D7).
 
 **Contains:**
 
 - OptimizationEngine
 - OrientationOptimizer
-- MaterialOptimizer
-- SpeedOptimizer
-- SupportOptimizer
+- OptimizationRunner (Web Worker)
 
 **Files:**
 
 | File | Role |
 |------|------|
-| `MaterialOptimizer.ts` | Optimizes profiles to reduce material consumption |
-| `OptimizationEngine.ts` | Orchestrates all optimizers to produce a complete result |
-| `OrientationOptimizer.ts` | Evaluates and optimizes the print orientation |
-| `SpeedOptimizer.ts` | Estimates the print time reduction |
-| `SupportOptimizer.ts` | Estimates the support reduction based on geometry |
+| `OptimizationEngine.ts` | Orientation optimization of one object (Phase 11 lot 97): checks the mesh, the transform and the build volume (OPT_002), places the object as the analysis does, then searches its best orientation; the result is a turn around the axes of the plate, applied by the caller; nothing stored (ADR-036 D5) |
+| `OptimizationError.ts` | Optimization errors with their code of ERROR_CODES_SPEC.md (OPT_002); OptimizationCancelledError when a search is no longer needed |
+| `OptimizationRunner.ts` | Runs the orientation search of one object in the Web Worker: copy of the triangle data transferred, worker terminated at the end, AbortSignal to drop the search (ADR-036 D4); used by the interface from lot 98 |
+| `OrientationOptimizer.ts` | Candidates (6 axes, faces of the convex hull of at least 1 %), Orientation Score 100 - S - T - H, Reliability Rules, choice with 5 points more (AI_ENGINE_SPEC.md 1.1.0; ADR-036 D2, D3); measures each orientation with the functions of the analysis |
+| `workers/orientationSearch.worker.ts` | Web Worker running OptimizationEngine (ADR-036 D4; no Electron, KI-024) |
 
 **Note:**
 
 The four copies of the classification files (CategoryDetector.ts, ClassificationEngine.ts, ClassificationValidator.ts, ConfidenceScorer.ts), never used, were removed in Phase 10 lot 85 (ADR-035 D13, decision of Noam of 2026-11-05 changing the decision of 2026-10-13). Object classification uses src/classification_engine/ (AI_ENGINE_SPEC.md).
+
+SupportOptimizer.ts, SpeedOptimizer.ts and MaterialOptimizer.ts (numbers without a measure, never called) were removed in Phase 11 lot 97 (ADR-036 D8); OptimizationEngine.ts and OrientationOptimizer.ts were rewritten under the same names.
 
 ---
 
@@ -1117,6 +1117,7 @@ No other store keeps a copy of a selection.
 | `ApplicationConstants.ts` | Global application constants (name, version, language, theme, autosave) |
 | `MaterialConstants.ts` | Material constants (categories, warping risks, cooling ranges) |
 | `PresetConstants.ts` | Preset constants (categories, infill patterns, support types without organic, adhesion, layer heights) |
+| `OptimizationConstants.ts` | Numbers of the orientation search (Phase 11 lot 97): candidates (1 %, 50 faces, 1 degree), convex hull of the candidates, weights of the Orientation Score, Reliability Rules (AI_ENGINE_SPEC.md 1.1.0, PERFORMANCE_SPEC.md 1.4.0) |
 | `RecommendationConstants.ts` | Numbers of the recommendation (Phase 10 lot 87): engine defaults, limits, fan by family, retraction by extruder, thresholds of supports and warnings, codes and reference messages of the warnings, confidence reductions (RECOMMENDATION_RULES.md 1.1.2) |
 | `PrinterConstants.ts` | Printer constants (nozzles, build volume, temperatures, extruder types) |
 | `ViewportConstants.ts` | Viewport constants (coordinate system, default workspace, grid, colors, camera) |

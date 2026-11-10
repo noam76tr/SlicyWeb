@@ -2,7 +2,7 @@
 
 # DOMAINS DEPENDENCY MATRIX
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -497,7 +497,6 @@ Can Depend On:
 Analysis Domain
 Classification Domain
 Profiles Domain
-Recommendation Domain
 ```
 
 Cannot Depend On:
@@ -505,7 +504,10 @@ Cannot Depend On:
 ```text
 GUI Domain
 RepositorySync Domain
+Recommendation Domain
 ```
+
+Phase 11 (2.1.0, ADR-036 D7): the Optimization Domain no longer depends on the Recommendation Domain; the Recommendation Domain may still depend on the Optimization Domain. Before, each could depend on the other: a cycle (Circular Dependency Rule). The orientation search uses the functions of the Analysis Domain (overhangs, stability) on the object turned, and the build volume of the selected printer (types of the Profiles Domain, given by the caller); it never reads a recommendation. After a new orientation, the recommendation is generated again from the new analysis (DATA_SCHEMA.md, Object Reference Rules).
 
 ---
 

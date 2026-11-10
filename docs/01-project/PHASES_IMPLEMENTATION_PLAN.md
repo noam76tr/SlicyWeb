@@ -1825,6 +1825,33 @@ Warnings Produced
 
 # OPTIMIZATION ENGINE
 
+Status: In Progress (since 2026-11-09)
+
+Decisions (ADR-036, decisions D1 to D8 of Noam, 2026-11-09, all A; analysis of lot 94):
+
+- Scope: the orientation only (Orientation Search and Support Optimization: the object is turned before supports are added); Time Optimization, Material Optimization and Preset Optimization move to Phase 15, after the estimation of Phase 12
+- Candidates: the object laid on one of its flat sides: 6 directions of the axes and the faces of the convex hull of at least 1 % of its area (50 at most), the turn around the vertical axis kept as close as possible
+- Orientation Score 100 - S - T - H (supports at most 60, tip risk at most 30, height at most 10; AI_ENGINE_SPEC.md 1.1.0); Reliability Rules: never a risk of 100, never outside the build volume, never a risk above 60 unless the current one is above; applied only with 5 points more; finish quality not measured
+- Tools > Optimize Orientation and the button Optimize: selected objects (all when none is selected), Web Worker, applied at once as one history action (Ctrl+Z), message of the result over the viewport; never started by itself; target less than 5 s for 1 million triangles
+- Nothing stored (DATA_SCHEMA.md 3.13.0, Optimization Result Rules); no new IPC channel; no automatic suggestion
+- DOMAINS_DEPENDENCY_MATRIX.md: the Optimization Domain no longer depends on the Recommendation Domain (cycle removed)
+- SupportOptimizer.ts, SpeedOptimizer.ts and MaterialOptimizer.ts removed; OptimizationEngine.ts and OrientationOptimizer.ts rewritten; keys optimization.title, .run, .material and .time removed
+- Test models of Noam: an open vase standing stays standing; a figurine (result shown); the tower of 20 x 20 x 100 mm (orientation explained)
+
+Order of the lots:
+
+- Lot 94: analysis (inventory, decisions D1 to D8)
+- Lot 95: Printer tab at every start (answer Q3 of the tabs changed to B; outside the phase)
+- Lot 96: documentation: ADR-036, AI_ENGINE_SPEC.md 1.1.0, DATA_SCHEMA.md 3.13.0, RECOMMENDATION_RULES.md 1.1.4, GUI_SPEC.md, UNDO_REDO_SPEC.md 2.3.0, ERROR_CODES_SPEC.md 2.6.0, DOMAINS_DEPENDENCY_MATRIX.md 2.1.0, PERFORMANCE_SPEC.md 1.4.0, TEST_PLAN.md, this plan, ROADMAP.md 2.2.0
+- Lot 97: computation: orientation search in a Web Worker (OrientationOptimizer, OptimizationEngine, OptimizationRunner), OptimizationSchema strict, the three optimizers removed, tests on built models, duration measured
+- Lot 98: interface: Tools > Optimize Orientation and the button Optimize, one history action, message of the result, texts in three languages, the four keys removed, end-to-end tests
+- Lot 99: closure: the models of Noam, weights adjusted if needed (with his answer), duration on the PC of Noam
+
+Progress:
+
+- Analysis (lot 94, CHANGELOG 0.1.94 unchanged: analysis only) and documentation (lot 96, CHANGELOG 0.1.96)
+- Computation (lot 97, CHANGELOG 0.1.97): delivered with lot 96 (lots grouped, Noam, 2026-11-06)
+
 ---
 
 ## Objectives
@@ -2040,6 +2067,8 @@ Unsupported settings are reported in the export report.
 # PHASE 15
 
 # ADVANCED FEATURES
+
+Moved from Phase 11 (ADR-036 D1): Time Optimization, Material Optimization and Preset Optimization, measurable only with the estimation of Phase 12 (Cost Estimation), with the manual choice of a preset and the Custom preset (ADR-035 D1).
 
 ---
 

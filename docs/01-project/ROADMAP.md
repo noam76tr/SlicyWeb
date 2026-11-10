@@ -3,7 +3,7 @@
 # PROJECT ROADMAP
 
 
-Version: 2.1.0
+Version: 2.2.0
 
 Status: Approved
 
@@ -1260,6 +1260,8 @@ Optimization measurable.
 
 Recommendations improved.
 
+Technical Phase 11 (2.2.0, ADR-036 D1): the orientation only (Orientation Optimization, Support Reduction and Support Optimization: the object is turned before supports are added). Time Optimization, Material Optimization and Preset Optimization are measurable only with the estimation of Phase 10 (Cost Estimation; technical Phase 12): they move to Phase 13 (Advanced Features; technical Phase 15).
+
 
 
 ---
@@ -1540,6 +1542,8 @@ Vision Classification
 Preset Marketplace
 
 Plugin System
+
+Time, Material and Preset Optimization (2.2.0, ADR-036 D1: moved from Phase 9)
 
 ---
 

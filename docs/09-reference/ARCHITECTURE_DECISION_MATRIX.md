@@ -2,7 +2,7 @@
 
 # ARCHITECTURE DECISION MATRIX
 
-Version: 2.7.0
+Version: 2.8.0
 
 Status: Approved
 
@@ -183,6 +183,7 @@ Requires:
 | ADM-029 | Material and Filament Profile Sources | Material Database | High | Approved |
 | ADM-030 | Model Analysis Definitions and Methods | Analysis | High | Approved |
 | ADM-031 | Classification and Recommendation Rules | Recommendation | High | Approved |
+| ADM-032 | Orientation Optimization | Optimization | High | Approved |
 
 ---
 
@@ -907,6 +908,31 @@ Benefits:
 
 - Deterministic and explainable recommendations, tested printer by printer
 - KI-008 and KI-010 resolved by written rules
+
+---
+
+ADM-032
+
+Title:
+
+Orientation Optimization
+
+Decision:
+
+Phase 11 optimizes the orientation only (time, material and preset optimization in Phase 15, after the estimation of Phase 12): the object is laid on one of its flat sides (6 directions of the axes and the faces of the convex hull of at least 1 % of its area, 50 at most), each orientation measured with the definitions of the analysis and scored 100 - S - T - H (supports, tip risk, height); an orientation with a risk of 100, outside the build volume, or above 60 when the current one is not, is never chosen; applied only with 5 points more, at the request of the user (Tools > Optimize Orientation, Optimize), in a Web Worker, as one history action; nothing stored; no automatic suggestion; the Optimization Domain no longer depends on the Recommendation Domain.
+
+Rationale:
+
+The documents gave the factors of the Orientation Score without weights or method, and nothing measures the time or the material before Phase 12; every number must be written and measured (AI_ENGINE_SPEC.md, Safety Rules; RECOMMENDATION_RULES.md, Optimization Rules: "Reliability Not Reduced").
+
+Reference:
+
+ADR-036 (DECISIONS.md)
+
+Benefits:
+
+- Fewer supports and a lower tip risk, measured with the same definitions as the Analysis section
+- Undone with Ctrl+Z; no new stored field and no new IPC channel
 
 ---
 

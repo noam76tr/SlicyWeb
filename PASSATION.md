@@ -1,6 +1,6 @@
 # SlicyWeb : résumé de passation
 
-Date : 2026-11-09. Lot 94 (analyse de la phase 11) sur `main` (f87bead), vérifié identique. Lot 95 (onglet Imprimante à chaque démarrage, Q3 B) : à envoyer sur GitHub. Phase 11 : réponses de Noam reçues (D1 à D8 : A, décision 95), lots 96 à 99 ensuite. Dernière entrée du CHANGELOG : 0.1.95 (lot 95, In Progress).
+Date : 2026-11-09. Lot 95 (onglet Imprimante à chaque démarrage) sur `main` (95d3045), vérifié identique, validé par Noam (décision 96). Lots 96 (documentation de la phase 11) et 97 (recherche d'orientation) : à envoyer sur GitHub, livrés ensemble. Dernière entrée du CHANGELOG : 0.1.97 (lot 97, In Progress).
 
 ---
 
@@ -82,7 +82,7 @@ Date : 2026-11-09. Lot 94 (analyse de la phase 11) sur `main` (f87bead), vérifi
 | 8 | Material Database | Completed (2026-11-01) | 0.1.67 à 0.1.75 |
 | 9 | Model Analysis | Completed (2026-11-02) | 0.1.77 à 0.1.82 |
 | 10 | Classification and Recommendation Engine | Completed (2026-11-08, après le contrôle de durée du lot 92 ; ADR-035 ; lot 84 documentation, 85 classification, 86 presets, 87 moteur de recommandation, 88 interface, 89 hébreu, 90 clôture, 91 maillage, 92 performance) | 0.1.84 à 0.1.93 |
-| 11 | Optimization Engine | Analysée au lot 94 (`lot94-phase11-analyse/PHASE11-ANALYSE.md`) ; réponses de Noam D1 à D8 : A (décision 95) ; lots 96 à 99 | — |
+| 11 | Optimization Engine | In Progress (ADR-036 ; analyse au lot 94, réponses de Noam D1 à D8 : A, décision 95 ; lot 96 documentation et 97 calcul livrés ensemble ; 98 interface, 99 clôture) | 0.1.96 à … |
 | 12 à 16 | Cost, Project Persistence, Slicer Export, Advanced Features, Production Release | À venir | — |
 
 ### Ce que fait l'application aujourd'hui
@@ -130,21 +130,24 @@ Date : 2026-11-09. Lot 94 (analyse de la phase 11) sur `main` (f87bead), vérifi
 
 | Document | Version |
 |---|---|
-| DATA_SCHEMA.md | 3.12.0 (lot 95 : `gui` retiré du User Preferences Schema, un `settings.json` du lot 93 reste lu ; lot 93 : `gui.propertiesTab` ; lot 91 : ANA_002 seulement pour une arête à nombre impair de triangles, ANA_005 ; phase 10 : `classification.source`, Preset Settings, `supports {enabled, type}` sans `organic`, `temperature {nozzle, bed}`, `filamentId` nullable, règle 11 ; dans le code : `classification.source` au lot 85, presets au lot 86, recommandation au lot 87 ; règle 11 au lot 88) |
+| DATA_SCHEMA.md | 3.13.0 (lot 96 : règles de l'Optimization Result Schema, rien d'enregistré ; lot 95 : `gui` retiré du User Preferences Schema, un `settings.json` du lot 93 reste lu ; lot 93 : `gui.propertiesTab` ; lot 91 : ANA_002 seulement pour une arête à nombre impair de triangles, ANA_005 ; phase 10 : `classification.source`, Preset Settings, `supports {enabled, type}` sans `organic`, `temperature {nozzle, bed}`, `filamentId` nullable, règle 11 ; dans le code : `classification.source` au lot 85, presets au lot 86, recommandation au lot 87 ; règle 11 au lot 88) |
 | Format WYPROJ | 3.0.0 (les fichiers 2.0.0 sont refusés) |
 | USER_SETTINGS_SPEC.md | 2.2.0 (lot 95 : aucun réglage GUI enregistré, `propertiesTab` du lot 93 ignoré à la lecture) |
 | IMPORT_EXPORT_SPEC.md | 3.0.0 |
-| ERROR_CODES_SPEC.md | 2.5.0 (lot 91 : ANA_005 information, maillage non conforme ; ANA_001 ; ANA_002 avertissement non bloquant ; REC_001, REC_002 information, REC_003 non utilisé en phase 10 ; SCH_001 aussi pour un fichier de preset refusé) |
+| ERROR_CODES_SPEC.md | 2.6.0 (lot 96 : OPT_002 pour un objet, OPT_001 non utilisé en phase 11 ; lot 91 : ANA_005 information, maillage non conforme ; ANA_001 ; ANA_002 avertissement non bloquant ; REC_001, REC_002 information, REC_003 non utilisé en phase 10 ; SCH_001 aussi pour un fichier de preset refusé) |
 | OBJECT_CLASSIFICATION_SPEC.md | 1.2.2 (lot 91 : `holes` non calculé pour un maillage non conforme ; `classificationVersion` « 1.2.2 » ; 10 caractéristiques, 5 catégories automatiques, choix de l'utilisateur ; `open_top` avec les parois autour du fond) |
 | PRINT_PRESETS_SPEC.md | 1.3.1 (11 presets livrés, valeurs, `tree` ; id de l'enveloppe = catégorie) |
-| RECOMMENDATION_RULES.md | 1.1.3 (lot 91 : aucune baisse de confiance pour un maillage seulement non conforme ; limites, températures, rétraction, supports, 13 avertissements, confiance ; déplacement 150 mm/s quand `maxTravelSpeed` vaut `null` ; jamais d'avertissement pour le déplacement) |
+| RECOMMENDATION_RULES.md | 1.1.4 (lot 96 : Optimization Rules = règles de fiabilité de la recherche d'orientation ; lot 91 : aucune baisse de confiance pour un maillage seulement non conforme ; limites, températures, rétraction, supports, 13 avertissements, confiance ; déplacement 150 mm/s quand `maxTravelSpeed` vaut `null` ; jamais d'avertissement pour le déplacement) |
 | SUPPORT_GENERATION_SPEC.md | 1.1.0 (Organic et Tree = `tree`) |
-| PERFORMANCE_SPEC.md | 1.3.0 (analyse et classification : 1 million de triangles en moins de 5 s ; enveloppe convexe, lot 90 ; arêtes et BVH partagés, boîte englobante, lot 92) |
-| ARCHITECTURE_DECISION_MATRIX.md | 2.7.0 |
+| PERFORMANCE_SPEC.md | 1.4.0 (lot 96 : optimisation, 1 million de triangles en moins de 5 s, méthode ; analyse et classification : 1 million de triangles en moins de 5 s ; enveloppe convexe, lot 90 ; arêtes et BVH partagés, boîte englobante, lot 92) |
+| ARCHITECTURE_DECISION_MATRIX.md | 2.8.0 (ADM-032) |
+| AI_ENGINE_SPEC.md | 1.1.0 (lot 96 : Rules Of Version 1.1.0, recherche d'orientation : candidats, note 100 − S − T − H, règles de fiabilité, aucune suggestion automatique) |
+| DOMAINS_DEPENDENCY_MATRIX.md | 2.1.0 (lot 96 : Optimization ne dépend plus de Recommendation, D7) |
+| ROADMAP.md | 2.2.0 (lot 96 : phase 9 de la feuille de route limitée à l'orientation ; temps, matériau et presets en phase 13, phase 15 du plan technique) |
 | API_SPEC.md | 2.1.0 (voir §5, points en attente ; PresetIPC Channels au lot 86) |
 | SLICER_EXPORT_SPEC.md | 1.1.0 (températures réglées, mode vase manquant : KI-029) |
-| UNDO_REDO_SPEC.md | 2.2.0 (50 étapes ; phase 6 : transformations seulement ; Ctrl+Z dans un champ) |
-| Dernier ADR | ADR-035 ; dernier ADM : ADM-031 |
+| UNDO_REDO_SPEC.md | 2.3.0 (lot 96 : Orientation Optimization, une action OPTIMIZATION pour tous les objets tournés ; 50 étapes ; phase 6 : transformations ; Ctrl+Z dans un champ) |
+| Dernier ADR | ADR-036 ; dernier ADM : ADM-032 |
 
 ---
 
@@ -250,6 +253,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 | 93 | Onglets du panneau Propriétés (décisions 90 et 93, hors phase) : `tabs.tsx` (shadcn), `propertiesPanelStore.ts` et `PropertiesTabService.ts` (nouveaux), `RightSidebar.tsx` (ligne Projet, 3 onglets, point rouge, défilement par onglet), menus Sélectionner… qui ouvrent l'onglet Imprimante (`focusTab`) ; `gui.propertiesTab` dans `settings.json` (DATA_SCHEMA 3.11.0, USER_SETTINGS_SPEC 2.1.0, `settings:update`, aucun canal ajouté) ; GUI_SPEC (Properties Tabs) ; 5 clés (475) ; 7 tests (501 + 1), 3 e2e (42), les autres e2e ouvrent l'onglet de leur section (`openTab`) ; aucune suppression | 0.1.94 |
 | 94 | Phase 11, inventaire et décisions (aucun code) : `PHASE11-ANALYSE.md` (documentation de la phase, inventaire de `src/optimization_engine/` jamais appelé et sans mesure, 8 décisions D1 à D8, découpage en lots 95 à 98) ; 0.1.94 passe en Completed avec les résultats de Noam | — |
 | 95 | Onglet Imprimante à chaque démarrage (décision 95, Q3 B, hors phase) : onglet non enregistré ; `gui` retiré du User Preferences Schema (DATA_SCHEMA 3.12.0, USER_SETTINGS_SPEC 2.2.0) ; un `settings.json` du lot 93 avec `gui` lu sans erreur ni perte de réglage, `gui` absent du fichier après l'écriture suivante ; GUI_SPEC (Properties Tabs), API_SPEC (`settings:update` refuse `gui`, version inchangée) ; suppressions : `GuiPreferencesSchema`, `GuiPreferences`, `readGui`, `PropertiesTabService.load`, `restoreTab` et `chosen` du store ; aucune clé (475) ; tests 498 + 1, 43 e2e | 0.1.95 |
+| 96 | Documentation de la phase 11 (décision 95, D1 à D8 : A) : ADR-036, ADM-032, AI_ENGINE_SPEC 1.1.0, DATA_SCHEMA 3.13.0, RECOMMENDATION_RULES 1.1.4, GUI_SPEC (Tools, Optimize, « Optimisation… », message du résultat), UNDO_REDO_SPEC 2.3.0, ERROR_CODES_SPEC 2.6.0, DOMAINS_DEPENDENCY_MATRIX 2.1.0, PERFORMANCE_SPEC 1.4.0, TEST_PLAN, plan (phase 11 In Progress, phase 15), ROADMAP 2.2.0 ; KI-030 ; 0.1.95 passe en Completed | 0.1.96 |
+| 97 | Recherche d'orientation (ADR-036 D2, D3), livrée avec le lot 96 : `OrientationOptimizer.ts` et `OptimizationEngine.ts` réécrits, `OptimizationError.ts`, `OptimizationRunner.ts`, `workers/orientationSearch.worker.ts`, `OptimizationConstants.ts` ; `OptimizationSchema` strict ; suppressions D8 : `SupportOptimizer.ts`, `SpeedOptimizer.ts`, `MaterialOptimizer.ts` ; 25 tests (tour couchée sur son côté gauche, vases debout gardés, figurine gardée debout) ; aucune clé (475), aucun canal (29) ; tests 523 + 1 attendus | 0.1.97 |
 
 ---
 
@@ -385,6 +390,8 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 
 95. **Lot 94 envoyé, onglets Q3 B, phase 11 (Noam, 2026-11-09) :** lot 94 sur `main` (f87bead), identique. Onglets : Q3 passe de A à B : l'onglet Imprimante s'ouvre à chaque démarrage (la scène est vide, Objet et Réglages n'auraient rien à montrer), le dernier onglet n'est plus retenu dans `settings.json` ; un `settings.json` du lot 93 avec ce champ reste lu sans erreur et sans perte de réglage, avec un test (lot 95, contrôle manuel : relancer l'application). Phase 11 : D1 à D8 option A. Pour D3, modèles de test en plus : un vase ouvert debout (l'optimisation le laisse debout, mode vase) ; une figurine (qualité de surface non mesurée, montrer le résultat) ; une tour de 20 × 20 × 100 mm (dire dans le `LOTN.md` quelle orientation est choisie et pourquoi). Lots de la phase 11 renumérotés : 96 documentation (ADR-036 ; DATA_SCHEMA 3.13.0, car 3.12.0 est pris par le lot 95), 97 calcul, 98 interface, 99 clôture.
 
+96. **Lot 95 validé (Noam, 2026-11-09) :** 475 clés, 29 canaux, typecheck et lint sans erreur, 498 + 1, 43 e2e, contrôles 1 à 4 OK ; `main` 95d3045 identique (21 fichiers). Lots 96 et 97 livrés ensemble (aucune question, aucun contrôle manuel).
+
 **Méthode**
 
 27. Règle de décision (§1) : l'option « Recommandé » peut être appliquée sans demander, hors des 5 cas listés.
@@ -403,7 +410,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
 6. **Phase 9 : Model Analysis** (Completed, ADR-034) : analyse au lot 75 ; réponses de Noam (décisions 79 à 81) ; 76 documentation ; 77 calcul de base dans un Worker ; 78 surplombs et ponts ; 79 parois fines ; 80 interface (tous validés) ; 81 clôture et format des nombres (décision 82). Close le 2026-11-02, confirmée par les contrôles de Noam sur le lot 81 (2026-11-03). Lot 82 : surplombs en rouge (décisions 81 et 83). Suite : la phase 10. La contradiction du plan (classification en phase 9 et 10) est réglée : classification en phase 10.
 7. **Phase 10 : Classification and Recommendation Engine** (Completed le 2026-11-08, après le contrôle de durée du lot 92 : environ 4 s ; ADR-035) : analyse au lot 83 (validé) ; réponses de Noam (décision 84) ; 84 documentation (validé) ; 85 classification (validé) ; 86 presets et 87 moteur de recommandation (livrés ensemble, validés) ; 88 interface (validé) ; 89 valeurs avec unité en hébreu (validé) ; 90 clôture (enveloppe convexe accélérée ; seuils de la classification et durée vérifiés sur les modèles de Noam, contrôles manuels du lot 90) ; 91 maillage non conforme (validé) ; 92 analyse plus rapide (validé, clôture). Si un modèle de Noam est mal classé, le changement de seuil est un choix visible : question à Noam, puis un lot à part (nouvelle version d'OBJECT_CLASSIFICATION_SPEC).
 8. **Onglets du panneau Propriétés (idée de Noam, 2026-11-07) :** réponses Q1 à Q6 option A (décision 90), menus Sélectionner… : A (décision 93) ; lot 93 validé par Noam le 2026-11-09 (décision 94).
-9. **Phase 11 : Optimization Engine** : analyse au lot 94 (`PHASE11-ANALYSE.md`, D1 à D8, option A recommandée partout : orientation seule, posée sur une face plane, note 0 à 100 avec règles de fiabilité, appliquée à la demande en une action annulable, rien d'enregistré, pas de suggestion automatique, cycle Optimization / Recommendation de DOMAINS_DEPENDENCY_MATRIX corrigé, 3 optimiseurs supprimés). Réponses de Noam : D1 à D8 option A, avec trois modèles de test en plus pour D3 (décision 95). Lot 95 avant la phase : onglet Imprimante à chaque démarrage. Découpage : 96 documentation (ADR-036, DATA_SCHEMA 3.13.0), 97 calcul, 98 interface, 99 clôture ; 96 et 97 livrables ensemble s'ils ne posent pas de question.
+9. **Phase 11 : Optimization Engine** : analyse au lot 94 (`PHASE11-ANALYSE.md`, D1 à D8, option A recommandée partout : orientation seule, posée sur une face plane, note 0 à 100 avec règles de fiabilité, appliquée à la demande en une action annulable, rien d'enregistré, pas de suggestion automatique, cycle Optimization / Recommendation de DOMAINS_DEPENDENCY_MATRIX corrigé, 3 optimiseurs supprimés). Réponses de Noam : D1 à D8 option A, avec trois modèles de test en plus pour D3 (décision 95). Lot 95 avant la phase : onglet Imprimante à chaque démarrage (validé, décision 96). Découpage : 96 documentation (ADR-036, DATA_SCHEMA 3.13.0) et 97 calcul, livrés ensemble ; 98 interface (menu et bouton actifs, une action d'historique, message du résultat, traductions, 4 clés supprimées, e2e ; contrôles manuels) ; 99 clôture (modèles de Noam, poids ajustés si besoin avec sa réponse, durée sur son PC).
 10. **Phases 12 à 16**, dans l'ordre du plan technique.
    - **Pas urgent (remarque de Noam, 2026-11-06, décision 87) :** type d'extrudeur des 24 imprimantes à « unknown » (dont toutes les Bambu Lab) : le revérifier sur les fiches des fabricants, seulement si la fiche le dit clairement, puis publier une nouvelle version des profils dans `slicyweb-profiles` (même règle de tag qu'à la v1.1.0).
 11. **Known Issues ouverts** (CHANGELOG, KNOWN ISSUES) :
@@ -422,6 +429,7 @@ Les livrables des lots 9 à 42 sont dans `/mnt/project-files/slicyweb/` ; ceux d
    | KI-027 | npm audit : deepmerge (GHSA-gcqx-w48m-w2h4, faible), via shadcn, outil de développement seulement, absent de l'application livrée | Phase 16 |
    | KI-028 | npm audit : minimatch (GHSA-g3hv-75wg-m249, modérée), via eslint, typescript-eslint et ts-morph (shadcn), outils de développement seulement | Phase 16 |
    | KI-029 | Mode vase : aucun champ dans le profil recommandé | Phase 14 |
+   | KI-030 | Optimization API HTTP d'API_SPEC (orientation, supports, temps, matériau) : aucune API HTTP, à aligner sur ADR-036 | Implémentation d'une API HTTP |
 
 12. **Points signalés, en attente d'une décision de Noam :**
    - API_SPEC.md devrait passer en 3.0.0 : la réponse Generate Recommendation est un changement cassant (lié à KI-007).

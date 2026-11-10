@@ -125,6 +125,10 @@ export const WarningSchema = z.object({
   recommendedAction: z.string()
 });
 
+/**
+ * Optimization Result Schema (DATA_SCHEMA.md 3.13.0, Optimization Result
+ * Rules; ADR-036 D5): never stored, strict (ADR-036 D8).
+ */
 export const OptimizationSchema =
   z.object({
     orientationScore: z.number(),
@@ -134,7 +138,8 @@ export const OptimizationSchema =
     timeReduction: z.number(),
 
     materialReduction: z.number()
-  });
+  })
+  .strict();
 
 /**
  * Recommendation Schema (DATA_SCHEMA.md).

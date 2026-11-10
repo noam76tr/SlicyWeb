@@ -2,7 +2,7 @@
 
 # UNDO REDO SPECIFICATION
 
-Version: 2.2.0
+Version: 2.3.0
 
 Status: Approved
 
@@ -241,6 +241,8 @@ Be Deterministic
 # Implementation Status
 
 Phase 6 (Transform System, decision of Noam, 2026-10-20): only the transform actions are undoable (MOVE, ROTATE, SCALE): fields of the Transform section, Reset and Center On Bed, gizmos, drag on the plate. TransformService (src/services/TransformService.ts) records each change; a gesture (drag on the plate, drag of a handle of a gizmo) is recorded as one action. The other categories come with their phase (import, delete, duplicate, printer, material, settings).
+
+Phase 11 (2.3.0, ADR-036 D4; lot 98): Orientation Optimization is undoable (Optimization Actions).
 
 
 
@@ -850,9 +852,13 @@ Apply Optimized Orientation
 
 ```
 
+Phase 11 (2.3.0, ADR-036 D4): one action of type OPTIMIZATION for all the objects turned by one search (Tools > Optimize Orientation or the button Optimize); before and after hold the transform of each object turned (rotation and position: the object is placed back on the plate), by objectId. The objects whose orientation is kept are not in the action; when no object is turned, no action is recorded. Undo and redo select the objects of the action again, as for a group (Multiple Object Transformations). After an undo or a redo, the analysis and the recommendation become outdated and are computed again, as after any rotation.
+
 ---
 
 ## Support Optimization
+
+Not in Phase 11 (ADR-036 D1): the supports are reduced by the orientation (Orientation Optimization); no support strategy is optimized on its own.
 
 Undo:
 

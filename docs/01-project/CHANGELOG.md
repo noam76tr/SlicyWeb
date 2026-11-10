@@ -3528,7 +3528,7 @@ Release Type:
 Graphical User Interface (Printer tab at start)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-09
@@ -3552,6 +3552,87 @@ Date:
 - tests/unit/services/PropertiesTab.test.ts: Printer at start; tab chosen opened and never saved (2 tests instead of 5)
 - tests/e2e/tabs.spec.ts: Printer again after a restart; new test: a settings.json of lot 93 (last tab Object) opens Printer and keeps the language, the printer, the material and the filament, at two starts (43 e2e)
 - tests/e2e/printer.spec.ts: the default preferences no longer hold gui
+
+## Validation Result
+
+- Windows 11 (2026-11-09): lot 95 on GitHub (95d3045, identical to the lot, 21 files); npm run check:locales 475 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 498 tests passed and 1 skipped, npm run test:e2e 43 tests passed (Noam)
+- Manual checks 1 to 4 of LOT95.md passed (Noam, 2026-11-09): settings.json of lot 93 read without error, Printer tab at every start, printer, material and filament kept, Select Printer from the Object tab
+
+---
+
+# VERSION 0.1.96
+
+Release Type:
+Architecture Decision
+
+Status:
+In Progress
+
+Date:
+2026-11-09
+
+## Added
+
+- ADR-036 (DECISIONS.md) and ADM-032 (ARCHITECTURE_DECISION_MATRIX.md 2.8.0): orientation optimization of Phase 11 (decisions D1 to D8 of Noam, 2026-11-09, all A; analysis of lot 94): orientation only, time, material and preset optimization in Phase 15; the object laid on one of its flat sides (6 axes, faces of the convex hull of at least 1 %, 50 at most); Orientation Score 100 - S - T - H; Reliability Rules (risk 100, build volume, risk above 60); applied only with 5 points more; Tools > Optimize Orientation and Optimize on the selected objects, in a Web Worker, one history action, message of the result, never automatic; nothing stored; no automatic suggestion; Optimization no longer depends on Recommendation; three optimizers removed; test models of Noam (open vase standing, figurine, tower of 20 x 20 x 100 mm)
+- AI_ENGINE_SPEC.md 1.1.0: Rules Of Version 1.1.0 (Phase 11): Orientation Candidates, Orientation Score (weights and examples; finish quality, volume of the supports, time and material not measured), Reliability Rules, Optimization Notifications (none automatic); Layer 6: the components of Phase 11
+- DATA_SCHEMA.md 3.13.0: Optimization Result Rules (never stored; orientationScore; supportReduction: fall of the area beyond 45 degrees in % of the area before; timeReduction and materialReduction 0 before Phase 12; OptimizationSchema strict); no field added or removed, WYPROJ format unchanged
+
+## Changed
+
+- RECOMMENDATION_RULES.md 1.1.4, Optimization Rules: "Reliability Not Reduced" written as the Reliability Rules of the orientation search; the recommendation does not depend on the optimization
+- GUI_SPEC.md: Tools Menu (Optimize Orientation), Toolbar Buttons (Optimize), Status Bar ("Optimizing…"), AI Assistant Displays (no Optimization Suggestions in Phase 11), Error Handling UI (message of the result, one line per object)
+- UNDO_REDO_SPEC.md 2.3.0: Orientation Optimization (one action OPTIMIZATION for all the objects turned; no action when nothing is turned); Support Optimization not in Phase 11
+- ERROR_CODES_SPEC.md 2.6.0: OPT_002 (one object: mesh, transform or build volume that cannot be used, or failure; its orientation does not change); OPT_001 not used in Phase 11
+- DOMAINS_DEPENDENCY_MATRIX.md 2.1.0: the Optimization Domain no longer depends on the Recommendation Domain (cycle removed, ADR-036 D7)
+- PERFORMANCE_SPEC.md 1.4.0: Optimization Performance (1 million triangles in less than 5 s; method; durations measured in lot 97)
+- TEST_PLAN.md: Optimization Tests (models of lot 97 with the tower, the open vases and the figurine asked by Noam; interface of lot 98; closure)
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 11 In Progress, its decisions and the order of the lots 94 to 99; Phase 15: time, material and preset optimization
+- ROADMAP.md 2.2.0: Phase 9 (technical Phase 11) limited to the orientation; time, material and preset optimization in Phase 13 (technical Phase 15)
+- PASSATION.md: lots 96 and 97, Phase 11 In Progress, versions of the documents
+- 0.1.95 Completed with the results of Noam
+- KNOWN ISSUES: KI-030 added (HTTP Optimization API of API_SPEC.md)
+
+## Known Limitations
+
+- Documentation only for this version; the computation comes with 0.1.97 (lot 97), the interface with lot 98
+- The weights of the Orientation Score are a first setting, checked on the models of Noam before the closure of Phase 11
+
+---
+
+# VERSION 0.1.97
+
+Release Type:
+Optimization Engine
+
+Status:
+In Progress
+
+Date:
+2026-11-09
+
+## Added
+
+- Orientation search of one object (ADR-036 D2, D3; AI_ENGINE_SPEC.md 1.1.0, Rules Of Version 1.1.0): candidates (current orientation, 5 other axes, faces of the convex hull of at least 1 %, 50 at most, 1 degree), smallest turn bringing each direction down (top: half turn around X), each orientation measured with the functions of the analysis (overhangs, stability, dimensions), Orientation Score 100 - S - T - H, Reliability Rules, applied only with 5 points more, equal scores: smallest turn then order; Optimization Result (DATA_SCHEMA.md 3.13.0)
+- src/optimization_engine/OptimizationError.ts (OPT_002, OptimizationCancelledError), src/optimization_engine/OptimizationRunner.ts (one search in a Web Worker, copy transferred, AbortSignal), src/optimization_engine/workers/orientationSearch.worker.ts
+- src/constants/OptimizationConstants.ts: candidates, convex hull of the candidates (128 directions, exact hull up to 20 000 vertices, otherwise 512 directions), weights of the score, Reliability Rules
+- Tests: tests/unit/optimization_engine/OrientationOptimizer.test.ts (25 tests): cube, tower of 20 x 20 x 100 mm standing (lies on its left side, 66 to 98), lying, in a small build volume; cone tip down; plate standing; L bracket; box with 3 points more (kept); T; open vases standing stay standing; open vase lying stood up; figurine (stays standing, 42); sphere; deterministic; orientation applied then analyzed: same measures; candidates (axes, slanted face of the hull); score; Reliability Rules; OptimizationSchema strict; OPT_002; Web Worker
+
+## Changed
+
+- src/optimization_engine/OptimizationEngine.ts and OrientationOptimizer.ts rewritten under the same names (ADR-036 D8): real search of the orientation instead of a score of the current orientation without a measure; isOptimal removed
+- src/schemas/RecommendationSchema.ts: OptimizationSchema strict (ADR-036 D8)
+- PERFORMANCE_SPEC.md 1.4.0 and TEST_PLAN.md: durations and results of this lot
+- DIRECTORY_PURPOSES.md, FILE_STRUCTURE.md: src/optimization_engine/ and OptimizationConstants.ts
+
+## Removed
+
+- src/optimization_engine/SupportOptimizer.ts, SpeedOptimizer.ts, MaterialOptimizer.ts: numbers without a measure, never called (ADR-036 D8, decision of Noam, 2026-11-09)
+
+## Known Limitations
+
+- The search is not started from the interface yet: Tools > Optimize Orientation and Optimize stay disabled until lot 98
+- Durations measured in the unit tests on Linux (sphere of 998 000 triangles: 1.4 to 1.5 s); the measure in the application and on the PC of Noam comes with lots 98 and 99
+- The keys optimization.title, .run, .material and .time are removed in lot 98, with the texts of the message (475 keys unchanged in this lot)
 
 ---
 
@@ -4524,6 +4605,20 @@ Issue: The Vase preset gives one wall, no top layer and no infill (PRINT_PRESETS
 Resolve Before: Phase 14 - Target Slicer Export (technical plan)
 
 Planned Resolution: Add a vase mode value to the recommended profile (DATA_SCHEMA.md), set by the Vase preset, and map it in SLICER_EXPORT_SPEC.md.
+
+---
+
+Identifier: KI-030
+
+Since: 0.1.96
+
+Affected Module: docs/02-architecture/API_SPEC.md (Optimization API)
+
+Issue: API_SPEC.md describes an HTTP Optimization API (/api/optimization/orientation, /supports, /time, /material). No HTTP API exists in the application (as KI-007); Phase 11 optimizes the orientation in a Web Worker started by the interface (ADR-036 D4), and the time and the material are optimized only in Phase 15 (ADR-036 D1).
+
+Resolve Before: Implementation of an HTTP API
+
+Planned Resolution: Documentation lot: align the Optimization API of API_SPEC.md on ADR-036 (orientation only, result of DATA_SCHEMA.md 3.13.0), with the decision on the API_SPEC.md version (KI-007).
 
 ---
 

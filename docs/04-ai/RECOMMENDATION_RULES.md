@@ -2,7 +2,7 @@
 
 # RECOMMENDATION RULES
 
-Version: 1.1.3
+Version: 1.1.4
 
 Status: Approved
 
@@ -2500,6 +2500,8 @@ Time Reduction
 Material Reduction
 
 ```
+
+Phase 11 (1.1.4, ADR-036): the optimization is the search of the best orientation (AI_ENGINE_SPEC.md 1.1.0, Rules Of Version 1.1.0). "Reliability Not Reduced" is written as its Reliability Rules: an orientation is never chosen when its center of gravity is outside its contact hull, when it does not fit in the build volume, or when its tip risk goes above 60. The supports come first through the Orientation Score (S, at most 60 points); the time counts only through the height (H, at most 10 points) before Phase 12; the material is not optimized before Phase 15. The recommendation does not depend on the optimization: after a new orientation, the recommendation is generated again from the new analysis (DATA_SCHEMA.md, Object Reference Rules, rules 8 and 9).
 
 
 

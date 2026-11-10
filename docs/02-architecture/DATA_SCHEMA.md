@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.12.0
+Version: 3.13.0
 
 Status: Approved
 
@@ -2087,6 +2087,41 @@ critical
 
 ```
 
+Optimization Result Rules (3.13.0, ADR-036 D5; AI_ENGINE_SPEC.md 1.1.0, Rules Of Version 1.1.0):
+
+```text
+Storage:
+  never stored: not in the Project Schema, not in a recommendation, not in
+  a WYPROJ file; the result of the optimization is the new rotation of the
+  object (Transform Schema); the Optimization Result lives in memory for
+  the message of the result only
+  one result for each object optimized
+
+orientationScore:
+  Orientation Score of the orientation kept (the one applied, or the
+  current one when it stays the best), whole number 0 to 100
+  (AI_ENGINE_SPEC.md 1.1.0, Orientation Score)
+
+supportReduction:
+  fall of the area of the surface beyond 45 degrees (overhangs.percentage)
+  between the orientation before and the orientation kept, in % of the
+  area before, rounded to the nearest whole number:
+    (before - after) / before x 100
+  0 when there was no area beyond 45 degrees before, or when the
+  orientation is kept; below 0 when the area grows (the stability gained
+  more points); at most 100
+  the supports are measured as an area, not a volume (no volume is
+  defined, ADR-036 D3)
+
+timeReduction, materialReduction:
+  0: not measured before Phase 12 (Cost Estimation); their optimization
+  moves to Phase 15 (ADR-036 D1)
+
+Validation:
+  OptimizationSchema (Zod) refuses any other field (strict)
+```
+
+Compatibility: no field is added or removed; no change of the WYPROJ format (3.0.0).
 
 ---
 

@@ -2696,6 +2696,94 @@ Reason:
 
 ---
 
+# ADR-036
+
+Title: Orientation Optimization
+
+Status: Accepted
+
+Date: 2026-11-09
+
+## Context
+
+Phase 11 (Optimization Engine) must "optimize settings" (PHASES_IMPLEMENTATION_PLAN.md): orientation, time, material and supports, plus Preset Optimization in ROADMAP.md. The documents give the factors of an Orientation Score (support volume, stability, finish quality, print duration, AI_ENGINE_SPEC.md 1.0.0) without weights, without a method and without units; the Optimization Result Schema of DATA_SCHEMA.md has four numbers without a definition and no place in the project; no screen, message or start is described. The five files of src/optimization_engine/ are never called and give numbers without a measure (no orientation tried, a fixed time gain of 15 %, an infill lowered by 5 points). No estimate of the print time or of the filament exists before Phase 12 (Cost Estimation). DOMAINS_DEPENDENCY_MATRIX.md lets Optimization depend on Recommendation and Recommendation on Optimization: a cycle. The analysis of Phase 9 already measures what matters for an orientation (overhangs, stability, dimensions), in a Web Worker. Analysis: lot 94 (PHASE11-ANALYSE.md), decisions D1 to D8 of Noam (2026-11-09, all A), with three more test models for D3.
+
+## Decision
+
+- Scope (D1): Phase 11 searches the best orientation of the objects and applies it at the request of the user; it is both the Orientation Search and the Support Optimization of the plan (SUPPORT_GENERATION_SPEC.md: turn the object before adding supports). Time Optimization, Material Optimization and Preset Optimization move to Phase 15 (Advanced Features), after the estimation of Phase 12, with the manual choice of a preset; they are measurable only then (ROADMAP.md: "Optimization measurable").
+- Candidates (D2): the object is laid on one of its flat sides, as "Lay on face" in Bambu Studio and OrcaSlicer: the 6 directions of the axes of the plate of the object as it is placed now (bottom, top, left, right, front, back), then the faces of its convex hull whose area is at least 1 % of the area of the hull, the 50 largest at most; two directions closer than 1 degree count as one. Each candidate is the smallest turn that brings its direction down, so that the turn around the vertical axis stays the closest to the current one; the top is brought down by a half turn around the X axis of the plate. The current orientation is always measured too, for the comparison. A turn around the vertical axis alone is never a candidate: it changes neither the supports nor the stability.
+- Orientation Score (D3): each candidate is measured with the definitions of the analysis (DATA_SCHEMA.md, Analysis Rules) and gets 100 - S - T - H, rounded to the nearest whole number: S (supports, at most 60) = 30 when the recommendation would enable the supports (overhangs.maxAngle above 60 degrees, RECOMMENDATION_RULES.md 1.1.0; a bridge is always beyond 80 degrees, so the rule of the bridge longer than 50 mm adds nothing) + overhangs.percentage x 2, at most 30; T (stability, at most 30) = stability.riskScore x 0.3; H (height, at most 10) = height / largest dimension of the oriented object x 10. Not measured in Phase 11: the finish quality (no measure is defined) and the volume of the supports (the analysis gives an area).
+- Reliability Rules (D3; RECOMMENDATION_RULES.md, Optimization Rules: "Reliability Not Reduced"): a candidate is never chosen when its center of gravity is outside its contact hull (risk 100), when it does not fit in the build volume of the selected printer (the same test as OBJECT_TOO_LARGE; without a printer, no test), or when its risk is above 60 (above "moderate") while the current risk is not. The best candidate is applied only when it gains at least 5 points on the current orientation; otherwise the current orientation is the best. Equal scores: the smallest turn wins, then the fixed order of the candidates: the result is always the same for the same object.
+- Start and application (D4): Tools > Optimize Orientation and the toolbar button Optimize do the same thing, on the selected objects (all the objects when none is selected), enabled as soon as the scene has an object (no printer needed). The search runs in a Web Worker, one object at a time, with "Optimizing…" in the status bar; it is dropped when the object is removed or turned meanwhile. The orientation found is applied at once, in one history action for all the objects (type OPTIMIZATION, UNDO_REDO_SPEC.md: Undo gives back the previous orientation); position X and Y do not change and the object is placed back on the plate (Transform Rules). Then, as after any rotation, the analysis and the recommendation become outdated and are computed again (Object Reference Rules, rules 8 and 9). A message over the viewport gives the result of each object. Never started by itself. Target: less than 5 seconds for an object of 1 million triangles.
+- Result (D5): nothing is stored. The result of the optimization is the new rotation of the object, already in the Transform Schema (saved in a project in Phase 13). The Optimization Result Schema stays as it is; DATA_SCHEMA.md 3.13.0 gives its rules (orientationScore, supportReduction, timeReduction and materialReduction 0 before Phase 12); it lives in memory for the message only. No change of the WYPROJ format, no new IPC channel (29 channels).
+- Suggestion (D6): no automatic suggestion in Phase 11 (no information "Optimization available"); nothing more is computed after each analysis. The warning LOW_STABILITY of the recommendation stays as it is.
+- Dependencies (D7): the Optimization Domain no longer depends on the Recommendation Domain (DOMAINS_DEPENDENCY_MATRIX.md); the Recommendation Domain keeps the right to depend on the Optimization Domain (for a later suggestion). The cycle is removed.
+- Files (D8): OptimizationEngine.ts and OrientationOptimizer.ts rewritten under the same names (real search; isOptimal removed); SupportOptimizer.ts, SpeedOptimizer.ts and MaterialOptimizer.ts removed (lot 97); the keys optimization.title, optimization.run, optimization.material and optimization.time removed in the three languages (lot 98, with the texts of the message); OptimizationResult and OptimizationSchema kept, the schema strict. Each removal is recalled in the LOTN.md of its lot; any other removal is asked first.
+- Test models (Noam, 2026-11-09): besides the cube, the cone tip down, the L bracket, the plate standing and the tower, an open vase standing must stay standing (vase mode), a figurine is tried to show the result (its finish quality is not measured), and the orientation chosen for a tower of 20 x 20 x 100 mm is explained in the LOTN.md of the computation lot.
+
+## Consequences
+
+Advantages:
+
+- Every orientation tried is measured with the same definitions as the Analysis section, and the score has written weights
+- The supports and the tip risk are reduced at the request of the user, never in silence; Ctrl+Z gives back the orientation
+- No new stored field, no new IPC channel, no change of the WYPROJ format
+
+Disadvantages:
+
+- The time and the material are not optimized before Phase 15
+- The finish quality is not measured: an orientation can be good for the supports and show the layers on a visible face
+- A tilted orientation that does not lie on a face of the hull is never tried
+
+## Alternatives Considered
+
+Grid of angles every 15 degrees around X and Y (D2, option B)
+
+Rejected
+
+Reason:
+
+- The orientations found often rest on an edge or a point (poor adhesion), and the search takes three times longer
+
+Time and material suggestions without a figure (D1, option B)
+
+Rejected
+
+Reason:
+
+- Nothing measures the time or the material before Phase 12
+
+Preview of the orientation with Apply and Cancel (D4, option B)
+
+Rejected
+
+Reason:
+
+- Ctrl+Z gives back the orientation; more interface for the same result
+
+Result stored by object and in the project (D5, option B)
+
+Rejected
+
+Reason:
+
+- A new field of the Project Schema and a new WYPROJ version for a value that the rotation already gives
+
+## Related Documents
+
+- AI_ENGINE_SPEC.md 1.1.0 (Rules Of Version 1.1.0: Orientation Candidates, Orientation Score, Reliability Rules)
+- DATA_SCHEMA.md 3.13.0 (Optimization Result Schema, Optimization Result Rules; Transform Schema; Analysis Rules)
+- RECOMMENDATION_RULES.md (Optimization Rules, Supports And Adhesion), SUPPORT_GENERATION_SPEC.md
+- GUI_SPEC.md (Tools Menu, Toolbar Buttons, Status Bar, Error Handling UI), UNDO_REDO_SPEC.md (Orientation Optimization)
+- ERROR_CODES_SPEC.md (Optimization Errors), PERFORMANCE_SPEC.md (Optimization Performance), TEST_PLAN.md (Optimization Tests)
+- DOMAINS_DEPENDENCY_MATRIX.md (Optimization Domain)
+- PHASES_IMPLEMENTATION_PLAN.md (Phase 11, Phase 15), ROADMAP.md (Phase 9, Phase 13)
+- ADR-026, ADR-031, ADR-034, ADR-035
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-032)
+
+---
+
+
 # Future Decision Template
 
 Copy and complete:
