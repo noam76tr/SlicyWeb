@@ -14,7 +14,10 @@
  * scene has no object. Generate (Phase 10 lot 88) does the same as Tools >
  * Generate Recommendations (RecommendationService); it is disabled while
  * the scene has no object, or no printer or no material is selected
- * (ADR-035 D11). The other buttons are visible and
+ * (ADR-035 D11). Optimize (Phase 11 lot 98) does the same as Tools >
+ * Optimize Orientation (OptimizationService); it is disabled while the
+ * scene has no object or while a search runs (ADR-036 D4). The other
+ * buttons are visible and
  * disabled until the phase that provides their action. They use aria-disabled
  * instead of disabled, so that their tooltip ("available in a later
  * version") is still shown and they stay reachable with the keyboard.
@@ -40,11 +43,13 @@ import {
 } from "lucide-react";
 
 import { AnalysisService } from "../../services/AnalysisService";
+import { optimizeOrientation } from "../../services/OptimizationService";
 import { generateRecommendations } from "../../services/RecommendationService";
 import { TransformService } from "../../services/TransformService";
 import { useHistoryStore } from "../../state/historyStore";
 import { useMaterialStore } from "../../state/materialStore";
 import { useObjectStore } from "../../state/objectStore";
+import { useOptimizationTaskStore } from "../../state/optimizationTaskStore";
 import { usePrinterStore } from "../../state/printerStore";
 import { useTranslation } from "../hooks/useTranslation";
 import { IMPORT_ACCEPT, openImportDialog } from "../import/openImportDialog";
@@ -72,6 +77,9 @@ interface ToolbarButtonDefinition {
 
   /** Enabled only when a printer and a material are selected */
   needsPrinterAndMaterial?: boolean;
+
+  /** Disabled while an orientation search runs */
+  needsNoSearch?: boolean;
 }
 
 /** Groups of buttons, separated by a line */
@@ -114,7 +122,13 @@ const TOOLBAR_GROUPS: ToolbarButtonDefinition[][] = [
       needsObjects: true,
       action: () => AnalysisService.analyzeModels(),
     },
-    { key: "toolbar.optimize", icon: Sparkles },
+    {
+      key: "toolbar.optimize",
+      icon: Sparkles,
+      needsObjects: true,
+      needsNoSearch: true,
+      action: optimizeOrientation,
+    },
     {
       key: "toolbar.generate",
       icon: WandSparkles,
@@ -134,6 +148,7 @@ export default function Toolbar(): JSX.Element {
   const hasMaterial = useMaterialStore(
     (state) => state.selectedMaterial !== null,
   );
+  const optimizing = useOptimizationTaskStore((state) => state.running);
 
   const notAvailable = t("app.notAvailable");
 
@@ -162,7 +177,8 @@ export default function Toolbar(): JSX.Element {
               (button.history === "redo" && !canRedo) ||
               (button.needsObjects === true && !hasObjects) ||
               (button.needsPrinterAndMaterial === true &&
-                !(hasPrinter && hasMaterial));
+                !(hasPrinter && hasMaterial)) ||
+              (button.needsNoSearch === true && optimizing);
             const disabled = notYet || empty;
             const title = notYet
               ? `${label} (${notAvailable})`

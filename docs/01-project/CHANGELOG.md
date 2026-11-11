@@ -3566,7 +3566,7 @@ Release Type:
 Architecture Decision
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-09
@@ -3597,6 +3597,11 @@ Date:
 - Documentation only for this version; the computation comes with 0.1.97 (lot 97), the interface with lot 98
 - The weights of the Orientation Score are a first setting, checked on the models of Noam before the closure of Phase 11
 
+## Validation Result
+
+- Windows 11 (2026-11-10): lots 96 and 97 on GitHub (fdf635f, identical to the lots, 25 files); npm run check:locales 475 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 523 tests passed and 1 skipped, npm run test:e2e 43 tests passed (Noam)
+- Results of the tower, the open vases and the figurine accepted (Noam, 2026-11-10)
+
 ---
 
 # VERSION 0.1.97
@@ -3605,7 +3610,7 @@ Release Type:
 Optimization Engine
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-09
@@ -3633,6 +3638,53 @@ Date:
 - The search is not started from the interface yet: Tools > Optimize Orientation and Optimize stay disabled until lot 98
 - Durations measured in the unit tests on Linux (sphere of 998 000 triangles: 1.4 to 1.5 s); the measure in the application and on the PC of Noam comes with lots 98 and 99
 - The keys optimization.title, .run, .material and .time are removed in lot 98, with the texts of the message (475 keys unchanged in this lot)
+
+## Validation Result
+
+- Windows 11 (2026-11-10): lots 96 and 97 on GitHub (fdf635f, identical to the lots, 25 files); npm run check:locales 475 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 523 tests passed and 1 skipped, npm run test:e2e 43 tests passed (Noam)
+- SupportOptimizer.ts, SpeedOptimizer.ts and MaterialOptimizer.ts removed on GitHub and in the local folder; results of the tower, the open vases and the figurine accepted (Noam, 2026-11-10)
+
+---
+
+# VERSION 0.1.98
+
+Release Type:
+Graphical User Interface (Orientation Optimization)
+
+Status:
+In Progress
+
+Date:
+2026-11-10
+
+## Added
+
+- Tools > Optimize Orientation and the toolbar button Optimize enabled (ADR-036 D4; GUI_SPEC.md, Tools Menu, Toolbar Buttons): the best orientation of the selected objects (all the objects when none is selected) is searched and applied at once; enabled as soon as the scene has an object (no printer needed; with a printer, its build volume is used), disabled while a search runs; never started by itself (ADR-036 D6)
+- src/services/OptimizationService.ts: one search at a time, the objects one at a time in the order of the scene, in the Web Worker of lot 97; a search dropped when its object is removed, turned or scaled meanwhile (no line); each result checked with OptimizationSchema; at the end, after any gesture, the orientations applied together by TransformService (rotation turn · R around the position, X and Y unchanged, the object placed back on the plate); the analysis and the recommendation become outdated and are computed again (Object Reference Rules 8 and 9); nothing stored (ADR-036 D5)
+- One history action OPTIMIZATION for all the objects turned (UNDO_REDO_SPEC.md 2.3.0, Orientation Optimization): Ctrl+Z gives back the orientations, Ctrl+Y applies them again; no action when nothing is turned
+- src/state/optimizationTaskStore.ts (search running, messages; never saved) and src/gui/optimization/OptimizationMessages.tsx: one message over the viewport, under those of the import and of the analysis, until closed, one line per object searched in the order of the scene (GUI_SPEC.md, Error Handling UI): orientation optimized with the score before and after, then only what changed (overhangs less or more, supports no longer needed, tip risk before and after); "already the best" with its score; OPT_002
+- Status bar: "Optimizing…" in the place of the Analysis Status while a search runs
+- 8 keys in the three languages (optimization.optimizing, .applied, .overhangsLess, .overhangsMore, .supportsRemoved, .tipRiskChange, .kept, .error.OPT_002): 479 keys
+
+## Changed
+
+- src/state/historyStore.ts: action type OPTIMIZATION; src/services/TransformService.ts: option actionType of applyMany (the type of the action instead of MOVE, ROTATE or SCALE)
+- src/gui/menus/MenuBar.tsx, src/gui/toolbars/Toolbar.tsx, src/gui/statusbar/StatusBar.tsx, src/gui/import/ImportDropZone.tsx
+- TEST_PLAN.md (interface of lot 98), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
+- 0.1.96 and 0.1.97 Completed with the results of Noam
+
+## Removed
+
+- Keys optimization.title, optimization.run, optimization.material and optimization.time in the three languages (never used; ADR-036 D8)
+
+## Tests
+
+- tests/unit/services/OptimizationService.test.ts (14 tests): tower laid on its left side (one action OPTIMIZATION, X and Y kept, on the plate, message 66 to 98, risk 80 to 0); Undo and Redo; cube kept (no action); three objects (one action, lines in the order of the scene); only the objects asked; build volume of the printer; OPT_002 for one object, the others applied; object without geometry; object turned or removed during its search; object turned after its search; never applied during a gesture; one search at a time; message closed
+- tests/e2e/optimization.spec.ts (2 tests): tower laid down by the button Optimize (message, analysis 100 x 20 x 20 computed again, recommendation computed again without LOW_STABILITY, Undo and Redo); Tools > Optimize Orientation on a cube: "already the best", no history action (45 e2e)
+
+## Known Limitations
+
+- The duration in the application for 1 million triangles and the models of Noam are checked at the closure of Phase 11 (lot 99)
 
 ---
 

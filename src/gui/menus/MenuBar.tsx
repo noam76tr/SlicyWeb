@@ -42,6 +42,10 @@
  *   generates again the recommendations of the selected objects (all the
  *   objects when none is selected; RecommendationService); disabled while
  *   the scene has no object, or no printer or no material is selected;
+ * - Tools > Optimize Orientation (Phase 11 lot 98, ADR-036 D4): searches
+ *   and applies the best orientation of the selected objects (all the
+ *   objects when none is selected; OptimizationService); disabled while
+ *   the scene has no object or while a search runs;
  * - the other items are visible and disabled until the phase that
  *   provides their action.
  *
@@ -62,12 +66,14 @@ import type { PropertiesTab } from "../../types/UserPreferences";
 import { AnalysisService } from "../../services/AnalysisService";
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
 import { PropertiesTabService } from "../../services/PropertiesTabService";
+import { optimizeOrientation } from "../../services/OptimizationService";
 import { generateRecommendations } from "../../services/RecommendationService";
 import { useMaterialStore } from "../../state/materialStore";
 import { usePrinterStore } from "../../state/printerStore";
 import { TransformService } from "../../services/TransformService";
 import { useHistoryStore } from "../../state/historyStore";
 import { useObjectStore } from "../../state/objectStore";
+import { useOptimizationTaskStore } from "../../state/optimizationTaskStore";
 import {
   useViewportStore,
   type ViewPreset,
@@ -118,9 +124,9 @@ interface MenuItemDefinition {
   /**
    * Enabled only when the scene has objects, or objects are selected, or
    * the scene has objects and a printer and a material are selected
-   * (recommend)
+   * (recommend), or the scene has objects and no search runs (optimize)
    */
-  needs?: "objects" | "selection" | "recommend";
+  needs?: "objects" | "selection" | "recommend" | "optimize";
 }
 
 interface MenuDefinition {
@@ -281,7 +287,11 @@ const MENUS: MenuDefinition[] = [
           needs: "recommend",
           action: generateRecommendations,
         },
-        { key: "tools.optimizeOrientation" },
+        {
+          key: "tools.optimizeOrientation",
+          needs: "optimize",
+          action: optimizeOrientation,
+        },
       ],
     ],
   },
@@ -337,6 +347,7 @@ export default function MenuBar(): JSX.Element {
     (state) => state.selectedMaterial !== null,
   );
   const canRecommend = hasPrinter && hasMaterial;
+  const optimizing = useOptimizationTaskStore((state) => state.running);
   const focusTarget = useRef<string | null>(null);
 
   /** Element of focusId of the item chosen, otherwise the menu title */
@@ -352,7 +363,8 @@ export default function MenuBar(): JSX.Element {
     (item.history === "redo" && !canRedo) ||
     (item.needs === "objects" && !hasObjects) ||
     (item.needs === "selection" && !hasSelection) ||
-    (item.needs === "recommend" && !(hasObjects && canRecommend));
+    (item.needs === "recommend" && !(hasObjects && canRecommend)) ||
+    (item.needs === "optimize" && !(hasObjects && !optimizing));
 
   const renderMenu = (
     menu: MenuDefinition,

@@ -447,6 +447,18 @@ Every file should be placed in the directory that matches its responsibility.
 
 ---
 
+## src/gui/optimization/
+
+**Purpose:** Orientation Optimization User Interface
+
+**Files:**
+
+| File | Role |
+|------|------|
+| `OptimizationMessages.tsx` | Message of the result of each orientation search over the viewport (GUI_SPEC.md, Error Handling UI, Phase 11 lot 98): one line per object searched, in the order of the scene (orientation optimized with the score before and after and what changed, already the best, OPT_002), translated, until closed; the clicks in the viewport go through it |
+
+---
+
 ## src/gui/dialogs/
 
 **Purpose:** Dialogs of the main window
@@ -562,7 +574,7 @@ Every file should be placed in the directory that matches its responsibility.
 |------|------|
 | `OptimizationEngine.ts` | Orientation optimization of one object (Phase 11 lot 97): checks the mesh, the transform and the build volume (OPT_002), places the object as the analysis does, then searches its best orientation; the result is a turn around the axes of the plate, applied by the caller; nothing stored (ADR-036 D5) |
 | `OptimizationError.ts` | Optimization errors with their code of ERROR_CODES_SPEC.md (OPT_002); OptimizationCancelledError when a search is no longer needed |
-| `OptimizationRunner.ts` | Runs the orientation search of one object in the Web Worker: copy of the triangle data transferred, worker terminated at the end, AbortSignal to drop the search (ADR-036 D4); used by the interface from lot 98 |
+| `OptimizationRunner.ts` | Runs the orientation search of one object in the Web Worker: copy of the triangle data transferred, worker terminated at the end, AbortSignal to drop the search (ADR-036 D4); used by OptimizationService (lot 98) |
 | `OrientationOptimizer.ts` | Candidates (6 axes, faces of the convex hull of at least 1 %), Orientation Score 100 - S - T - H, Reliability Rules, choice with 5 points more (AI_ENGINE_SPEC.md 1.1.0; ADR-036 D2, D3); measures each orientation with the functions of the analysis |
 | `workers/orientationSearch.worker.ts` | Web Worker running OptimizationEngine (ADR-036 D4; no Electron, KI-024) |
 
@@ -992,8 +1004,9 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `ProjectService.ts` | Project service: complete lifecycle (creation, validation, serialization) |
 | `RecommendationService.ts` | Recommendation service (Phase 10 lots 87 and 88, ADR-035 D3, D11): reads the presets (preset:getAll, PresetSchema); generates the recommendation of each object with the RecommendationEngine once its analysis is up to date and a printer and a material are selected, and again after a change of the selection or of the object type (rule 11); Tools > Generate Recommendations; object type chosen by the user or Automatic; REC_001 and REC_002 in recommendationTaskStore |
 | `StorageService.ts` | Storage service for projects, cache and user settings |
-| `TransformService.ts` | The only way to change the transform of an object (fields, actions, gizmos): refuses invalid values, places the object on the plate (except the live steps of a rotation with the gizmo), writes the object store; records each change for undo and redo (a gesture is one action), undo(), redo() groups of objects (moveGroup, rotateGroup, scaleGroup, setGroupSize, groupInfo); |
+| `TransformService.ts` | The only way to change the transform of an object (fields, actions, gizmos): refuses invalid values, places the object on the plate (except the live steps of a rotation with the gizmo), writes the object store; records each change for undo and redo (a gesture is one action), undo(), redo() groups of objects (moveGroup, rotateGroup, scaleGroup, setGroupSize, groupInfo); option actionType of applyMany: the orientations of the optimization recorded as one action OPTIMIZATION (Phase 11 lot 98); |
 | `MaterialSelectionService.ts` | Materials and filaments of the window (Phase 8 lot 70): reads material:getAll and filament:getAll (checked with MaterialSchema and FilamentSchema), materials in the order of the families, filaments by brand and name; last material and filament selected again (material.autoloadLastMaterial); a filament selects its family, a material of another family clears the filament; each choice saved (settings:update); filament:add, update and remove (lot 71), then the filaments read again, the selected filament follows its update or is cleared |
+| `OptimizationService.ts` | Orientation optimization at the request of the user (Phase 11 lot 98, ADR-036 D4, D5, D6): Tools > Optimize Orientation and Optimize on the selected objects (all when none is selected); one search at a time, the objects one at a time in the Web Worker (OptimizationRunner), a search dropped when its object is removed or turned meanwhile; results checked with OptimizationSchema; the orientations applied together by TransformService as one history action OPTIMIZATION, after any gesture; message of the result in optimizationTaskStore; nothing stored |
 | `PropertiesTabService.ts` | Open tab of the Properties Panel (lot 93): choose() opens the tab chosen by the user; nothing is saved (lot 95, Q3 B: Printer at every start) |
 | `PrinterSelectionService.ts` | Printers of the window: reads printer:getAll (checked with PrinterSchema), sorted by brand and model, in the printer store; chooses the last printer again (settings, printer.defaultPrinter, when autoloadLastPrinter is true and the printer is still loaded); select() saves the choice (settings:update); add(), update(), remove(): printers of the user (printer:add, printer:update, printer:remove), then the printers are read again and the selected printer follows; refresh(): checks the profile repository (printer:refresh) in the background at start and with Printer > Refresh Profiles, origin and tag of the profiles and message in the printer store, printers read again after an update. Outside Electron: nothing |
 | `ProfileSyncService.ts` | Check of the SlicyWeb profile repository: at most once every 24 hours unless forced, one check at a time; new index.json kept in the cache, then the printers loaded again; failure keeps the profiles in use; each check saved; a cache lost after a successful check is rebuilt at once; profiles older than those of the application (tag vX.Y.Z) are never kept. No Electron or Node.js module: the cache is a ProfileCacheStore |
@@ -1053,10 +1066,11 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `printerStore.ts` | Zustand store for printers (list and selection) |
 | `recommendationStore.ts` | Zustand store for print recommendations |
 | `recommendationTaskStore.ts` | Zustand store of the generation of the recommendations (Phase 10 lot 88): error of the last generation of each object (REC_001, REC_002), shown in the Recommendation section only; not saved |
+| `optimizationTaskStore.ts` | Zustand store of the orientation search (Phase 11 lot 98): search running (status bar "Optimizing…", menu and button disabled), messages of the result, one line per object; not saved |
 | `importStore.ts` | Zustand store for the imports in progress (file, phase, progress, error code) |
 | `sceneStore.ts` | Zustand store for the 3D scene (scene of the project) |
 | `viewportStore.ts` | Zustand store for the viewport (projection, requested view preset, mode of the gizmo, lock of the scale, Overhang Display on or off, lot 82) |
-| `historyStore.ts` | Zustand store of undo and redo: two stacks of actions (UNDO_REDO_SPEC.md, History Entry Schema), 50 actions at most |
+| `historyStore.ts` | Zustand store of undo and redo: two stacks of actions (UNDO_REDO_SPEC.md, History Entry Schema), 50 actions at most; types MOVE, ROTATE, SCALE and OPTIMIZATION (Phase 11 lot 98) |
 | `propertiesPanelStore.ts` | Zustand store of the open tab of the Properties Panel (lot 93): tab, Printer at start, chooseTab (lot 95) |
 
 **Selection Reference:** each selection is stored once, in the store of its domain, next to its list (KI-014 resolved, CHANGELOG 0.1.41):

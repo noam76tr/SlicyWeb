@@ -8,7 +8,8 @@
  * with a message.
  *
  * Messages over the viewport, top end: the imports (ImportStatus), then
- * the messages of the analysis (AnalysisMessages, Phase 9 lot 80).
+ * the messages of the analysis (AnalysisMessages, Phase 9 lot 80), then
+ * the messages of the optimization (OptimizationMessages, Phase 11 lot 98).
  *
  * Wraps the viewport in the GUI, so that the Viewport Domain does not
  * depend on the import (DOMAINS_DEPENDENCY_MATRIX.md).
@@ -24,6 +25,7 @@ import { ImportService } from "../../services/ImportService";
 import { useTranslation } from "../hooks/useTranslation";
 
 import AnalysisMessages from "../analysis/AnalysisMessages";
+import OptimizationMessages from "../optimization/OptimizationMessages";
 
 import ImportStatus from "./ImportStatus";
 
@@ -82,6 +84,7 @@ export default function ImportDropZone({
       <div className="pointer-events-none absolute end-3 top-3 flex w-80 max-w-[calc(100%-1.5rem)] flex-col gap-2">
         <ImportStatus />
         <AnalysisMessages />
+        <OptimizationMessages />
       </div>
     </div>
   );

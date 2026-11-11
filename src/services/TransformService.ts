@@ -13,6 +13,11 @@
  * transforms of the action and select its object. Selection changes are
  * not recorded.
  *
+ * Orientation optimization (Phase 11 lot 98; UNDO_REDO_SPEC.md 2.3.0):
+ * the orientations found by one search are applied with applyMany() and
+ * the option actionType "OPTIMIZATION", one action for all the objects
+ * turned.
+ *
  * Gesture state (Phase 9 lot 80): isGestureActive() and onGestureEnd() let
  * the analysis wait for the end of a gesture before computing again
  * (ADR-034 D7: never while dragging).
@@ -74,6 +79,12 @@ export interface ApplyOptions {
    * this option).
    */
   live?: boolean;
+
+  /**
+   * Type of the history action instead of MOVE, ROTATE or SCALE
+   * (OPTIMIZATION: orientations applied by the optimization, lot 98)
+   */
+  actionType?: "OPTIMIZATION";
 }
 
 /** Smallest scale factor accepted (0.1 %) */
@@ -159,6 +170,7 @@ function actionType(
 function record(
   before: Record<string, Transform>,
   after: Record<string, Transform>,
+  type?: HistoryActionType,
 ): void {
   const changed = Object.keys(after).filter(
     (id) => before[id] && !sameTransform(before[id], after[id]),
@@ -173,7 +185,7 @@ function record(
 
   useHistoryStore.getState().record({
     actionId: crypto.randomUUID(),
-    type: actionType(pick(before), pick(after)),
+    type: type ?? actionType(pick(before), pick(after)),
     timestamp: new Date().toISOString(),
     before: pick(before),
     after: pick(after),
@@ -321,7 +333,7 @@ export const TransformService = {
 
     // Inside a gesture, recorded once at its end
     if (!gesture && !options.live) {
-      record(before, after);
+      record(before, after, options.actionType);
     }
 
     return true;

@@ -2292,6 +2292,14 @@ Interface (lot 98, end-to-end): Tools > Optimize Orientation and the
   button Optimize enabled with an object; a tower turned, the message of
   the result, one history action (Ctrl+Z gives back the orientation),
   analysis and recommendation computed again; a cube: "already the best"
+  (tests/e2e/optimization.spec.ts, 2 tests)
+Interface (lot 98, tests/unit/services/OptimizationService.test.ts): the
+  selected objects or all; one action OPTIMIZATION for all the objects
+  turned, none when nothing is turned; Undo and Redo; position X and Y
+  kept, the object on the plate; lines in the order of the scene; build
+  volume of the printer; OPT_002 for one object, the others applied; a
+  search dropped (object removed or turned during or after its search);
+  never applied during a gesture; one search at a time
 
 Closure (lot 99): the models of Noam; duration for 1 million triangles
   (PERFORMANCE_SPEC.md, Optimization Performance)

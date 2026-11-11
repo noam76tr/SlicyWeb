@@ -405,6 +405,8 @@ src/gui/
 │   └── ImportStatus.tsx       = progress, Cancel, confirmation and errors of the imports
 ├── analysis/
 │   └── AnalysisMessages.tsx   = messages ANA_001 and ANA_002 over the viewport (Phase 9)
+├── optimization/
+│   └── OptimizationMessages.tsx = message of the result of the orientation search over the viewport (Phase 11)
 ├── statusbar/
 │   └── StatusBar.tsx
 ├── layouts/
@@ -784,6 +786,7 @@ src/services/
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
 ├── PrinterSelectionService.ts = printers of the window, last printer (Phase 7)
 ├── MaterialSelectionService.ts = materials and filaments of the window, last choice (Phase 8)
+├── OptimizationService.ts     = orientation search of the objects at the request of the user, one history action (Phase 11)
 ├── PropertiesTabService.ts    = tab chosen in the Properties Panel, not saved (lots 93 and 95)
 ├── ProfileSyncService.ts      = check of the profile repository, once a day or forced (Phase 7)
 └── StorageService.ts
@@ -806,6 +809,7 @@ src/state/
 ├── analysisTaskStore.ts       = objects being analyzed, warnings and messages of the analysis (Phase 9), triangles beyond 45 degrees (lot 82)
 ├── recommendationStore.ts
 ├── recommendationTaskStore.ts = errors of the last generation of each recommendation (Phase 10), not saved
+├── optimizationTaskStore.ts   = orientation search running, messages of the result (Phase 11), not saved
 ├── importStore.ts             = imports in progress and their result
 ├── historyStore.ts            = undo and redo stacks (Phase 6)
 ├── propertiesPanelStore.ts    = open tab of the Properties Panel (lot 93)

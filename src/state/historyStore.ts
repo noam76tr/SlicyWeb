@@ -12,14 +12,16 @@
  * - clear(): empties both stacks (project closed or opened, Phase 13).
  *
  * Actions are recorded by TransformService (Phase 6: transforms only,
- * decision of Noam). The toolbar and the Edit menu read canUndo and
- * canRedo.
+ * decision of Noam; Phase 11 lot 98: the orientations applied by the
+ * optimization, one action OPTIMIZATION). The toolbar and the Edit menu
+ * read canUndo and canRedo.
  *
  * No business logic.
  *
  * Based on:
  * - UNDO_REDO_SPEC.md (History Architecture, History Entry Schema,
- *   Action Types, Redo Clearing Rule, Maximum History Size)
+ *   Action Types, Redo Clearing Rule, Maximum History Size; 2.3.0:
+ *   Orientation Optimization)
  */
 
 import { create } from "zustand";
@@ -28,8 +30,11 @@ import { MAX_HISTORY_SIZE } from "../constants/HistoryConstants";
 
 import type { Transform } from "../types/Object3D";
 
-/** Action types of Phase 6 (UNDO_REDO_SPEC.md, Action Types) */
-export type HistoryActionType = "MOVE" | "ROTATE" | "SCALE";
+/**
+ * Action types of Phase 6 and Phase 11 (UNDO_REDO_SPEC.md, Action Types;
+ * OPTIMIZATION: Orientation Optimization, 2.3.0)
+ */
+export type HistoryActionType = "MOVE" | "ROTATE" | "SCALE" | "OPTIMIZATION";
 
 /**
  * Entry of the history (UNDO_REDO_SPEC.md, History Entry Schema).
