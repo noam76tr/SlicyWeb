@@ -728,6 +728,28 @@ Properties tabs (lot 93; lot 95, Q3 B):
     (openTab, tests/e2e/fixtures.ts)
   manual (Noam): the same in French and Hebrew on the PC of Noam
 
+Delete and Duplicate (lot 100; UNDO_REDO_SPEC.md 2.4.0):
+  unit (ObjectEdit.test.ts): objects deleted with their analysis,
+    recommendation, geometry and red triangles, one action DELETE, left
+    out of the selection; undo puts them back at their place, selected,
+    same geometry, analysis kept (analysisId, category chosen), red
+    triangles and ANA_002 kept; redo deletes again; a move made before a
+    deletion is undone after it; nothing during a gesture; a copy: new
+    objectId, same file name, no analysis, own geometry, right of the
+    original (size + 5 mm), same Y and Z, selected, one action DUPLICATE;
+    a group copied as a block; undo takes the copies out, redo puts them
+    back with their analysis; the copy kept when the original is deleted;
+    a new action clears the redo stack; ObjectDuplicator keeps the file
+    name (rule 7)
+  end to end (tests/e2e/edit.spec.ts): Delete key on one object, Ctrl+Z
+    puts it back analyzed, Ctrl+Y deletes again; two objects: the
+    confirmation (Delete focused), Escape deletes nothing, Edit > Delete
+    then Enter, one Ctrl+Z puts both back; Edit > Duplicate and Delete
+    disabled without selection; Edit > Duplicate: "cube (1)", "cube (2)",
+    copy selected at X 25, analyzed; Ctrl+D; undo and redo; the
+    confirmation in French
+  manual (Noam): the same in French and Hebrew on the PC of Noam
+
 Mesh defects (lot 91):
   unit (ModelAnalyzer.test.ts): two cubes touching along an edge: closed,
     not manifold, volume exact; an edge with three triangles: open; a cube:

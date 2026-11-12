@@ -13,6 +13,10 @@
  * transforms of the action and select its object. Selection changes are
  * not recorded.
  *
+ * Delete and Duplicate (lot 100; UNDO_REDO_SPEC.md 2.4.0): their actions
+ * (DELETE, DUPLICATE) are recorded by ObjectEditService; undo() and redo()
+ * take the objects out of the scene or put them back (ObjectSnapshots).
+ *
  * Orientation optimization (Phase 11 lot 98; UNDO_REDO_SPEC.md 2.3.0):
  * the orientations found by one search are applied with applyMany() and
  * the option actionType "OPTIMIZATION", one action for all the objects
@@ -61,10 +65,12 @@ import {
   worldBounds,
   type Vector3Mm,
 } from "../scene/ObjectTransform";
+import { redoSceneEntry, undoSceneEntry } from "../scene/ObjectSnapshots";
 import {
+  isSceneEntry,
   useHistoryStore,
-  type HistoryActionType,
   type HistoryEntry,
+  type TransformActionType,
 } from "../state/historyStore";
 import { useObjectStore } from "../state/objectStore";
 
@@ -151,7 +157,7 @@ function sameTransform(a: Transform, b: Transform): boolean {
 function actionType(
   before: Record<string, Transform>,
   after: Record<string, Transform>,
-): HistoryActionType {
+): TransformActionType {
   const ids = Object.keys(after);
 
   if (ids.some((id) => !sameVector(before[id].rotation, after[id].rotation))) {
@@ -170,7 +176,7 @@ function actionType(
 function record(
   before: Record<string, Transform>,
   after: Record<string, Transform>,
-  type?: HistoryActionType,
+  type?: TransformActionType,
 ): void {
   const changed = Object.keys(after).filter(
     (id) => before[id] && !sameTransform(before[id], after[id]),
@@ -521,6 +527,17 @@ export const TransformService = {
       return false;
     }
 
+    // Delete and Duplicate (lot 100): objects taken out or put back
+    if (isSceneEntry(entry)) {
+      const done = undoSceneEntry(entry);
+
+      if (done) {
+        history.pushRedo(done);
+      }
+
+      return done !== null;
+    }
+
     if (!restore(entry.before)) {
       // Not restored: the action is dropped, the scene is kept
       return false;
@@ -537,6 +554,16 @@ export const TransformService = {
 
     if (!entry) {
       return false;
+    }
+
+    if (isSceneEntry(entry)) {
+      const done = redoSceneEntry(entry);
+
+      if (done) {
+        history.pushUndo(done);
+      }
+
+      return done !== null;
     }
 
     if (!restore(entry.after)) {

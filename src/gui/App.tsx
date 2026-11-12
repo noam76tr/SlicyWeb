@@ -18,7 +18,10 @@
  * The buttons Move, Rotate, Scale (TransformModeBar) are shown over the
  * viewport. Undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z
  * (useUndoRedoShortcuts), toolbar and Edit menu (TransformService).
- * Ctrl+A selects all the objects (useSelectAllShortcut).
+ * Ctrl+A selects all the objects (useSelectAllShortcut). Delete and
+ * Ctrl+D delete and duplicate the selected objects (useEditShortcuts, lot
+ * 100); several objects are deleted after a confirmation
+ * (DeleteObjectsDialog).
  *
  * At start, the printers loaded by the main process are read, and the
  * last printer is selected again (PrinterSelectionService, Phase 7).
@@ -58,8 +61,10 @@ import { TransformService } from "../services/TransformService";
 import { usePrinterStore } from "../state/printerStore";
 
 import MainLayout from "./MainLayout";
+import DeleteObjectsDialog from "./dialogs/DeleteObjectsDialog";
 import FilamentManagerDialog from "./dialogs/FilamentManagerDialog";
 import PrinterManagerDialog from "./dialogs/PrinterManagerDialog";
+import { useEditShortcuts } from "./hooks/useEditShortcuts";
 import { useTranslation } from "./hooks/useTranslation";
 import { useSelectAllShortcut } from "./hooks/useSelectAllShortcut";
 import { useUndoRedoShortcuts } from "./hooks/useUndoRedoShortcuts";
@@ -80,6 +85,7 @@ export default function App(): JSX.Element {
   );
   useUndoRedoShortcuts();
   useSelectAllShortcut();
+  useEditShortcuts();
 
   useEffect(() => {
     document.title = "SlicyWeb";
@@ -153,6 +159,7 @@ export default function App(): JSX.Element {
       />
       <PrinterManagerDialog />
       <FilamentManagerDialog />
+      <DeleteObjectsDialog />
     </DirectionProvider>
   );
 }

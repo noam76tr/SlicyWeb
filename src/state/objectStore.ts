@@ -40,6 +40,19 @@ interface ObjectStore {
   removeObject: (objectId: string) => void;
 
   /**
+   * Removes several objects at once (Delete, lot 100), their analysis and
+   * their recommendation (Object Reference Rule 6); they leave the
+   * selection.
+   */
+  removeObjects: (objectIds: string[]) => void;
+
+  /**
+   * Puts objects at these places in the list (undo of Delete, redo of
+   * Duplicate; lot 100), in the order of the places.
+   */
+  insertObjects: (entries: { object: Object3D; index: number }[]) => void;
+
+  /**
    * Updates the transform of an object. A change of rotation or
    * scale makes its analysis and recommendation outdated
    * (Object Reference Rule 8).
@@ -95,6 +108,45 @@ export const useObjectStore = create<ObjectStore>((set, get) => ({
     useAnalysisStore.getState().removeAnalysis(objectId);
     useRecommendationStore.getState().removeRecommendation(objectId);
   },
+
+  removeObjects: (objectIds) => {
+    const removed = new Set(objectIds);
+
+    set((state) => {
+      const selectedObjectIds = state.selectedObjectIds.filter(
+        (id) => !removed.has(id),
+      );
+
+      return {
+        objects: state.objects.filter(
+          (object) => !removed.has(object.objectId),
+        ),
+        selectedObjectIds,
+        selectedObjectId:
+          selectedObjectIds[selectedObjectIds.length - 1] ?? null,
+      };
+    });
+
+    for (const objectId of removed) {
+      useAnalysisStore.getState().removeAnalysis(objectId);
+      useRecommendationStore.getState().removeRecommendation(objectId);
+    }
+  },
+
+  insertObjects: (entries) =>
+    set((state) => {
+      const objects = [...state.objects];
+
+      for (const entry of [...entries].sort((a, b) => a.index - b.index)) {
+        objects.splice(
+          Math.min(Math.max(entry.index, 0), objects.length),
+          0,
+          entry.object,
+        );
+      }
+
+      return { objects };
+    }),
 
   updateObjectTransform: (objectId, transform) => {
     const current = get().objects.find(

@@ -3700,7 +3700,7 @@ Release Type:
 Phase 11 Closure
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-12
@@ -3716,6 +3716,51 @@ Date:
 
 - No change of code: the weights of the Orientation Score (AI_ENGINE_SPEC.md 1.1.0) are unchanged; they are checked on the models of Noam (manual checks of lot 99); a change of a weight is a visible choice and comes in its own lot, with a new version of AI_ENGINE_SPEC.md
 - The duration on the PC of Noam is measured with the manual checks of lot 99 (target less than 5 s for 1 million triangles); measured only on Linux in this lot
+
+## Validation Result
+
+- Windows 11 (2026-11-12): lot 99 on GitHub (b991d1b, identical to the lot, 4 files); npm run check:locales 479 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 537 tests passed and 1 skipped, npm run test:e2e 45 tests passed (Noam)
+- Manual checks of lot 99 passed (Noam, 2026-11-12): tower of 1 016 576 triangles optimized in less than 5 s on the PC of Noam, laid down (66 to 98), view smooth; sphere of 998 000 triangles kept (score 1); model Seckit kept (score 50), also when it is partly outside the build plate (the orientation search does not read the position, ADR-036 D1); Phase 11 Completed
+
+---
+
+# VERSION 0.1.100
+
+Release Type:
+Graphical User Interface (Delete and Duplicate)
+
+Status:
+In Progress
+
+Date:
+2026-11-12
+
+## Added
+
+- Edit > Delete (Del) and Edit > Duplicate (Ctrl+D) enabled, on the selected objects, disabled while no object is selected (request of Noam, outside the phases, before Phase 12; GUI_SPEC.md, Edit Menu, Keyboard Shortcuts)
+- Delete: the objects leave the scene with their analysis and their recommendation (DATA_SCHEMA.md, Object Reference Rule 6), and with their geometry; one object at once, several after a confirmation "Delete 3 objects?" (GUI_SPEC.md, Delete Confirmation; Delete focused, Escape or Cancel deletes nothing)
+- Duplicate: one copy of each object with a new objectId and the same file name ("cube (1)", "cube (2)" in the Object Panel), without analysis, recommendation or object type chosen (Object Reference Rule 7); the objects copied as a block to the right (+X) of the group, 5 mm from it, same Y; the copies selected and analyzed by themselves
+- Undo and Redo of Delete and Duplicate (UNDO_REDO_SPEC.md 2.4.0): one action DELETE or DUPLICATE for all the objects; undo of Delete puts the objects back at their place, selected, with their analysis as it was (category chosen by the user, triangles beyond 45 degrees, ANA_002, ANA_005; no new analysis), the recommendation generated again at once (rule 11); undo of Duplicate takes the copies out
+- src/services/ObjectEditService.ts, src/scene/ObjectSnapshots.ts, src/gui/dialogs/DeleteObjectsDialog.tsx, src/gui/hooks/useEditShortcuts.ts
+- 2 keys in the three languages (edit.deleteConfirmTitle, edit.deleteConfirmUndo): 481 keys
+
+## Changed
+
+- src/state/historyStore.ts: types DELETE and DUPLICATE, ObjectSnapshot, TransformHistoryEntry and SceneHistoryEntry; src/state/objectStore.ts: removeObjects, insertObjects; src/services/TransformService.ts: undo() and redo() of DELETE and DUPLICATE (ObjectSnapshots)
+- src/object_manager/ObjectDuplicator.ts: the copy keeps the file name of the original (the suffix "_copy" is no longer added; no text of a language in the project) and gets its own geometry and mesh statistics objects
+- src/gui/menus/MenuBar.tsx, src/gui/App.tsx
+- UNDO_REDO_SPEC.md 2.4.0 (Implementation Status, Delete Actions, Duplicate Actions, History Entry Schema, Geometry Storage Rules), GUI_SPEC.md (Edit Menu, Delete Confirmation, Keyboard Shortcuts: Ctrl+D), TEST_PLAN.md, FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
+- 0.1.99 Completed with the results of Noam
+
+## Tests
+
+- tests/unit/services/ObjectEdit.test.ts (11 tests): Delete (analysis, recommendation, geometry and red triangles removed, one action, selection); undo at the same place with the analysis kept, redo; a move undone after the undo of a deletion; nothing during a gesture; Duplicate (new objectId, same file name, no analysis, own geometry, X + size + 5 mm, selected); group as a block; undo and redo of a copy; copy kept when the original is deleted; redo stack cleared; ObjectDuplicator
+- tests/e2e/edit.spec.ts (4 tests): Delete key, Ctrl+Z puts the object back analyzed, Ctrl+Y; confirmation for two objects; Edit > Duplicate and Ctrl+D, undo and redo; the confirmation in French (49 e2e)
+
+## Known Limitations
+
+- A copy can be placed outside the build plate; a visible warning when an object goes outside the plate and an Arrange button come in their own lot (request of Noam)
+- The geometry of deleted objects stays in memory while their action is in the history (at most 50 actions)
 
 ---
 

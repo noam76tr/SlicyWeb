@@ -63,6 +63,8 @@
   "edit.redo": "Rétablir",
   "edit.duplicate": "Dupliquer",
   "edit.delete": "Supprimer",
+  "edit.deleteConfirmTitle": "Supprimer {count} objets ?",
+  "edit.deleteConfirmUndo": "Ctrl+Z les remet.",
   "edit.selectAll": "Tout sélectionner",
   "edit.deselectAll": "Tout désélectionner",
   "edit.preferences": "Préférences",

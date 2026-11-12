@@ -406,6 +406,15 @@ Preferences
 
 Undo and Redo (Phase 6) undo and redo the last change of transform; they are disabled while their history is empty (UNDO_REDO_SPEC.md).
 
+Duplicate (Ctrl+D) and Delete (Del) (lot 100, request of Noam) act on the selected objects; they are disabled while no object is selected, and do nothing during a gesture (drag, gizmo). Undo and Redo also undo and redo them (UNDO_REDO_SPEC.md 2.4.0).
+
+- Delete: the objects leave the scene with their analysis and their recommendation (DATA_SCHEMA.md, Object Reference Rule 6). One object is deleted at once; several objects after the Delete Confirmation. Undo puts them back at their place, selected, with their analysis as it was.
+- Duplicate: one copy of each object, with a new objectId, without analysis, recommendation or object type chosen (Object Reference Rule 7); the copy is analyzed by itself, like an imported object. The objects are copied as a block, placed to the right (+X) of the group, 5 mm from it, at the same Y; the copy can be outside the build plate. The copies become the selection. A copy keeps the file name of its original: the Object Panel shows "cube (1)", "cube (2)" (IMPORT_EXPORT_SPEC.md, Duplicate Names).
+
+## Delete Confirmation
+
+Before deleting several objects (lot 100): a window "Delete 3 objects?", with the line "Ctrl+Z puts them back." and the buttons Cancel and Delete. Delete has the focus when the window opens (Delete then Enter deletes). Escape or Cancel deletes nothing. The objects deleted are those selected when the window opened.
+
 
 
 ---
@@ -2023,7 +2032,11 @@ CTRL + SHIFT + Z  Redo (UNDO_REDO_SPEC.md)
 
 DELETE       Delete Object
 
+CTRL + D     Duplicate (lot 100)
+
 ```
+
+Delete and Ctrl+D act on the selected objects, not in a text field (the keys keep their usual meaning there), nor in an open window or menu (lot 100). The letter D is read from the key typed, or from the key position when the layout has no Latin letters (Hebrew).
 
 
 

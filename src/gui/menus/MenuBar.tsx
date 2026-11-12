@@ -18,7 +18,12 @@
  * - Edit > Select All, Edit > Deselect All (Phase 6): selects all the
  *   objects, clears the object selection;
  * - Edit > Undo, Edit > Redo (Phase 6): last change of transform
- *   (TransformService), disabled while their history is empty;
+ *   (TransformService), disabled while their history is empty; also
+ *   Delete and Duplicate (lot 100);
+ * - Edit > Duplicate (Ctrl+D), Edit > Delete (Del) (lot 100): duplicate
+ *   (ObjectEditService) or delete (DeleteObjectsDialog, confirmation for
+ *   several objects) the selected objects; disabled while no object is
+ *   selected;
  * - Printer > Select Printer (Phase 7): moves the focus to the printer
  *   selector of the Properties Panel (PrinterSection), when the menu
  *   closes (otherwise the menu gives the focus back to its title);
@@ -64,6 +69,7 @@ import { Fragment, useRef } from "react";
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
 import type { PropertiesTab } from "../../types/UserPreferences";
 import { AnalysisService } from "../../services/AnalysisService";
+import { ObjectEditService } from "../../services/ObjectEditService";
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
 import { PropertiesTabService } from "../../services/PropertiesTabService";
 import { optimizeOrientation } from "../../services/OptimizationService";
@@ -93,6 +99,7 @@ import {
 } from "../components/ui/menubar";
 import { LANGUAGE_NAME_KEYS, useTranslation } from "../hooks/useTranslation";
 import { IMPORT_ACCEPT, openImportDialog } from "../import/openImportDialog";
+import { deleteSelectedObjects } from "../dialogs/DeleteObjectsDialog";
 import { openFilamentManager } from "../dialogs/FilamentManagerDialog";
 import { openPrinterManager } from "../dialogs/PrinterManagerDialog";
 import { FILAMENT_SELECTOR_ID } from "../sidebar/FilamentSection";
@@ -198,7 +205,22 @@ const MENUS: MenuDefinition[] = [
           },
         },
       ],
-      [{ key: "edit.duplicate" }, { key: "edit.delete", shortcut: "Del" }],
+      [
+        {
+          key: "edit.duplicate",
+          shortcut: "Ctrl+D",
+          needs: "selection",
+          action: () => {
+            ObjectEditService.duplicateSelection();
+          },
+        },
+        {
+          key: "edit.delete",
+          shortcut: "Del",
+          needs: "selection",
+          action: deleteSelectedObjects,
+        },
+      ],
       [
         {
           key: "edit.selectAll",

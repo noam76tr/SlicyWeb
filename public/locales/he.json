@@ -63,6 +63,8 @@
   "edit.redo": "בצע שוב",
   "edit.duplicate": "שכפל",
   "edit.delete": "מחק",
+  "edit.deleteConfirmTitle": "למחוק {count} אובייקטים?",
+  "edit.deleteConfirmUndo": "אפשר להחזיר אותם עם Ctrl+Z.",
   "edit.selectAll": "בחר הכל",
   "edit.deselectAll": "בטל בחירה",
   "edit.preferences": "העדפות",

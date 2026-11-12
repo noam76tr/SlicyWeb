@@ -356,6 +356,7 @@ Every file should be placed in the directory that matches its responsibility.
 | `components/ui/tabs.tsx` | shadcn/ui Tabs component (style base-nova, Base UI Tabs, logical sides for right to left; lot 93): Tabs, TabsList, TabsTrigger, TabsContent |
 | `components/I18nProvider.tsx` | Loads the dictionary of the current language and provides it to the GUI; sets `lang` and `dir` (right-to-left for Hebrew) on the document |
 | `hooks/useTranslation.ts` | Hook giving GUI components the translated texts, the current language and the language change |
+| `hooks/useEditShortcuts.ts` | Keyboard shortcuts Delete and Ctrl+D (lot 100): delete (confirmation for several objects) and duplicate the selected objects; not in a text field, nor in an open window or menu |
 | `hooks/useSelectAllShortcut.ts` | Keyboard shortcut Ctrl+A: selects all the objects; not in a text field |
 | `hooks/useUndoRedoShortcuts.ts` | Keyboard shortcuts Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z (undo, redo through TransformService); not in a text field, where the fields of the Transform section use the same keys (`undoRedoCommand`, UNDO_REDO_SPEC.md) |
 
@@ -467,6 +468,7 @@ Every file should be placed in the directory that matches its responsibility.
 
 | File | Role |
 |------|------|
+| `DeleteObjectsDialog.tsx` | Delete Confirmation (GUI_SPEC.md, lot 100): deleteSelectedObjects() deletes one selected object at once, several after the window "Delete 3 objects?" (Cancel, Delete focused; Escape deletes nothing); calls ObjectEditService |
 | `FilamentManagerDialog.tsx` | Filament Manager (GUI_SPEC.md, Filament Manager, Phase 8 lot 71): list of the filaments of the user, New filament, Copy a filament, form ("Edit: name" or "New filament" at its top; errors shown as soon as a value is typed, Save disabled while an error is shown), Save, Delete with a confirmation; opened by Filament > Manage Filaments and by "Manage…" (openFilamentManager), on the selected filament when it is one of the user; calls MaterialSelectionService |
 | `filamentForm.ts` | Values of the form of the Filament Manager and their conversion to a filament: required fields, empty value = null, empty color = null, comma as decimal separator, minimum not above its maximum, fan 0 to 100 %, errors by field (translation keys) |
 | `PrinterManagerDialog.tsx` | Printer Manager (GUI_SPEC.md, Printer Manager, Phase 7): list of the printers of the user, New printer, Copy a printer, form ("Edit: name" or "New printer" at its top; errors shown as soon as a value is typed, Save disabled while an error is shown; lot 71), Save, Delete with a confirmation; opened by Printer > Manage Printers and by "Manage…" (openPrinterManager), on the selected printer when it is one of the user; calls PrinterSelectionService |
@@ -527,6 +529,7 @@ Every file should be placed in the directory that matches its responsibility.
 | `SceneValidator.ts` | Validates scenes and allowed operations |
 | `GeometryRegistry.ts` | Triangle geometry of the scene objects, indexed by objectId (local coordinates, origin at the center of the object, ADR-031) |
 | `ObjectTransform.ts` | Meaning of the transform (DATA_SCHEMA.md, Transform Rules, ADR-031): matrix of the object, lowest point, placement on the plate, 3MF export transform |
+| `ObjectSnapshots.ts` | Objects taken out of the scene with their analysis, recommendation and geometry (Object Reference Rule 6), and put back at their place with their analysis as it was (lot 100, UNDO_REDO_SPEC.md 2.4.0): Delete, Duplicate and their undo and redo; the geometry is referenced, not copied |
 | `SceneIntegration.ts` | Registers imported models: centered on the origin at Z = 0 (the objects of one 3MF file keep their layout), local origin at the center of each object, geometry and mesh statistics, objects added, first one selected (ADR-029, ADR-030) |
 
 ---
@@ -548,7 +551,7 @@ Every file should be placed in the directory that matches its responsibility.
 
 | File | Role |
 |------|------|
-| `ObjectDuplicator.ts` | Duplicates 3D objects with a new ID and transformations |
+| `ObjectDuplicator.ts` | Duplicates 3D objects with a new ID and transformations; the copy keeps the file name of the original (lot 100) |
 | `ObjectFactory.ts` | Creates 3D objects with default values |
 | `ObjectManager.ts` | Stores and retrieves 3D objects |
 | `ObjectRepository.ts` | In-memory storage repository for 3D objects |
@@ -1004,7 +1007,8 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `ProjectService.ts` | Project service: complete lifecycle (creation, validation, serialization) |
 | `RecommendationService.ts` | Recommendation service (Phase 10 lots 87 and 88, ADR-035 D3, D11): reads the presets (preset:getAll, PresetSchema); generates the recommendation of each object with the RecommendationEngine once its analysis is up to date and a printer and a material are selected, and again after a change of the selection or of the object type (rule 11); Tools > Generate Recommendations; object type chosen by the user or Automatic; REC_001 and REC_002 in recommendationTaskStore |
 | `StorageService.ts` | Storage service for projects, cache and user settings |
-| `TransformService.ts` | The only way to change the transform of an object (fields, actions, gizmos): refuses invalid values, places the object on the plate (except the live steps of a rotation with the gizmo), writes the object store; records each change for undo and redo (a gesture is one action), undo(), redo() groups of objects (moveGroup, rotateGroup, scaleGroup, setGroupSize, groupInfo); option actionType of applyMany: the orientations of the optimization recorded as one action OPTIMIZATION (Phase 11 lot 98); |
+| `TransformService.ts` | The only way to change the transform of an object (fields, actions, gizmos): refuses invalid values, places the object on the plate (except the live steps of a rotation with the gizmo), writes the object store; records each change for undo and redo (a gesture is one action), undo(), redo() (also of Delete and Duplicate through ObjectSnapshots, lot 100) groups of objects (moveGroup, rotateGroup, scaleGroup, setGroupSize, groupInfo); option actionType of applyMany: the orientations of the optimization recorded as one action OPTIMIZATION (Phase 11 lot 98); |
+| `ObjectEditService.ts` | Edit > Delete and Edit > Duplicate (lot 100): objects deleted as one history action DELETE; a copy of each object (new objectId, no analysis, Object Reference Rule 7, own geometry) placed as a block right of the group, 5 mm from it, selected, one action DUPLICATE; nothing during a gesture |
 | `MaterialSelectionService.ts` | Materials and filaments of the window (Phase 8 lot 70): reads material:getAll and filament:getAll (checked with MaterialSchema and FilamentSchema), materials in the order of the families, filaments by brand and name; last material and filament selected again (material.autoloadLastMaterial); a filament selects its family, a material of another family clears the filament; each choice saved (settings:update); filament:add, update and remove (lot 71), then the filaments read again, the selected filament follows its update or is cleared |
 | `OptimizationService.ts` | Orientation optimization at the request of the user (Phase 11 lot 98, ADR-036 D4, D5, D6): Tools > Optimize Orientation and Optimize on the selected objects (all when none is selected); one search at a time, the objects one at a time in the Web Worker (OptimizationRunner), a search dropped when its object is removed or turned meanwhile; results checked with OptimizationSchema; the orientations applied together by TransformService as one history action OPTIMIZATION, after any gesture; message of the result in optimizationTaskStore; nothing stored |
 | `PropertiesTabService.ts` | Open tab of the Properties Panel (lot 93): choose() opens the tab chosen by the user; nothing is saved (lot 95, Q3 B: Printer at every start) |
@@ -1061,7 +1065,7 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `analysisTaskStore.ts` | Zustand store of the computation of the analyses (Phase 9 lot 80): objects being analyzed or waiting, objects with a mesh not closed (ANA_002), messages ANA_001 and ANA_002, triangles beyond 45 degrees of the last analysis of each object (Overhang Display, lot 82); not saved |
 | `filamentStore.ts` | Zustand store for filaments (list and selection) |
 | `materialStore.ts` | Zustand store for materials (list and selection) |
-| `objectStore.ts` | Zustand store for 3D objects (list, selection of one or several objects, add, remove) |
+| `objectStore.ts` | Zustand store for 3D objects (list, selection of one or several objects, add, remove; several removed or put back at their place at once, lot 100) |
 | `presetStore.ts` | Zustand store for print presets (list and selection) |
 | `printerStore.ts` | Zustand store for printers (list and selection) |
 | `recommendationStore.ts` | Zustand store for print recommendations |
@@ -1070,7 +1074,7 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `importStore.ts` | Zustand store for the imports in progress (file, phase, progress, error code) |
 | `sceneStore.ts` | Zustand store for the 3D scene (scene of the project) |
 | `viewportStore.ts` | Zustand store for the viewport (projection, requested view preset, mode of the gizmo, lock of the scale, Overhang Display on or off, lot 82) |
-| `historyStore.ts` | Zustand store of undo and redo: two stacks of actions (UNDO_REDO_SPEC.md, History Entry Schema), 50 actions at most; types MOVE, ROTATE, SCALE and OPTIMIZATION (Phase 11 lot 98) |
+| `historyStore.ts` | Zustand store of undo and redo: two stacks of actions (UNDO_REDO_SPEC.md, History Entry Schema), 50 actions at most; types MOVE, ROTATE, SCALE and OPTIMIZATION (Phase 11 lot 98), DELETE and DUPLICATE (lot 100: the objects taken out or put back, ObjectSnapshot) |
 | `propertiesPanelStore.ts` | Zustand store of the open tab of the Properties Panel (lot 93): tab, Printer at start, chooseTab (lot 95) |
 
 **Selection Reference:** each selection is stored once, in the store of its domain, next to its list (KI-014 resolved, CHANGELOG 0.1.41):
@@ -1744,6 +1748,7 @@ Run with Vitest (`npm test`, vitest.config.mts). One folder per source folder:
 | `services/AnalysisService.test.ts` | Start of the analysis (Phase 9 lot 80): after the import (valid Complete Analysis Schema, classification null), one object at a time, after a rotation (analysisId kept), not after a move, after the end of a gesture only, computation dropped after a new rotation or a removal, ANA_001 not retried by itself then retried by Analyze Models, result refused by AnalysisSchema, object without geometry, ANA_002 shown once, Recompute Analysis, stop |
 | `services/GroupTransform.test.ts` | Several objects: Ctrl+click and Ctrl+A selection; group moved, turned and scaled around its center, objects on the plate; one undo per change of the group |
 | `services/MaterialSelection.test.ts` | Materials and filaments of the window: order, last choice selected again or ignored, filament selects its family, other family clears the filament, choice saved, invalid response refused; families of a printer with the aliases and the warning; filaments of the user: the selected filament follows its update and its family, is cleared when removed, errors of a refused change; reload after a synchronization (selection kept, or cleared when no longer listed) |
+| `services/ObjectEdit.test.ts` | Delete and Duplicate (lot 100): objects removed with their analysis, recommendation, geometry and red triangles; undo puts them back at their place with their analysis; redo; copy right of the original, same file name, no analysis, own geometry, selected; group as a block; undo and redo of a copy; nothing during a gesture |
 | `services/PrinterSelection.test.ts` | Printers of the window: sorted by brand and model, last printer chosen again, autoload off, last printer no longer loaded ignored, invalid response refused, nothing outside Electron; choice saved, autoloadLastPrinter kept, "No printer", unknown printer ignored; printers of the user added, updated (selected printer follows) and removed (selection and saved choice cleared), refused change; profiles checked in the background at start without a message (not when autoCheckProfiles is off), setting saved with the other printer settings, updated profiles read again (printer no longer listed cleared), result of Refresh Profiles (no version published included), failure in the background silent; materials and filaments updated read again, combined message |
 | `services/ProfileSync.test.ts` | Check of the profile repository: new index.json written then printers reloaded, once a day unless forced (also after a restart), damaged cache rebuilt, profiles older than the application never kept, failed download keeps the profiles (SYNC_002), repository without a published version (notPublished), cache not written (SYNC_001), one check at a time; cache used only when complete and unchanged, file name with a folder refused, tag of data/printers/index.json |
 | `services/PropertiesTab.test.ts` | Open tab of the Properties Panel (lot 95): Printer at start, tab chosen opened and never saved |
@@ -1801,6 +1806,7 @@ Run with Playwright (`npm run test:e2e`: builds the application, then starts it 
 | `fixtures.ts` | Starts the built application (dist/electron/main.js) in a new user data folder; writes the test files (STL cube); imports with the Import button; openTab() opens a tab of the Properties Panel (lot 93) |
 | `analysis.spec.ts` | Analysis (Phase 9 lot 80): cube of 20 mm analyzed after the import (Up to date, 20 × 20 × 20 mm, 8 cm³, 24 cm², no overhang, no bridge, contact 4 cm², risk 0 Very low, status bar); analyzed again after a scale of 50 %; mesh not closed: ANA_002 over the viewport and in the section, closed; Tools menu and Analyze button disabled without object, Recompute Analysis; "Select a single object" for two objects |
 | `app.spec.ts` | Main window without console error, 9 menus, toolbar, no Node.js in the window; language changed and kept after a restart; Hebrew from right to left; numbers in the format of the language (lot 81: comma in French in the Printer, Filament, Transform and Analysis sections, value typed with a comma, point again in English) |
+| `edit.spec.ts` | Delete and Duplicate (lot 100): Delete key, Ctrl+Z puts the object back analyzed, Ctrl+Y; confirmation for two objects (Delete focused, Escape, Enter); Edit > Duplicate and Ctrl+D, "cube (1)", "cube (2)", copy at X 25 analyzed, undo and redo; confirmation in French |
 | `import.spec.ts` | STL import centered and standing on the plate; several files, same names numbered; 3MF import; unsupported and corrupted files refused with their message, error closed with its Close button |
 | `preset.spec.ts` | The 11 presets of data/presets/ served by preset:getAll (Phase 10 lot 86), without error in the window |
 | `material.spec.ts` | The 5 materials and the 11 filaments of data/ served; the filament of the user served by filament:getAll with its id in userFilamentIds; damaged filament file refused without error in the window |

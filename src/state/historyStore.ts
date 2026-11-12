@@ -13,37 +13,78 @@
  *
  * Actions are recorded by TransformService (Phase 6: transforms only,
  * decision of Noam; Phase 11 lot 98: the orientations applied by the
- * optimization, one action OPTIMIZATION). The toolbar and the Edit menu
- * read canUndo and canRedo.
+ * optimization, one action OPTIMIZATION) and by ObjectEditService (lot 100:
+ * Delete and Duplicate, actions DELETE and DUPLICATE). The toolbar and the
+ * Edit menu read canUndo and canRedo.
  *
  * No business logic.
  *
  * Based on:
  * - UNDO_REDO_SPEC.md (History Architecture, History Entry Schema,
  *   Action Types, Redo Clearing Rule, Maximum History Size; 2.3.0:
- *   Orientation Optimization)
+ *   Orientation Optimization; 2.4.0: Delete Actions, Duplicate Actions,
+ *   Geometry Storage Rules)
  */
 
 import { create } from "zustand";
 
 import { MAX_HISTORY_SIZE } from "../constants/HistoryConstants";
 
-import type { Transform } from "../types/Object3D";
+import type { BufferGeometry } from "three";
+
+import type { Analysis } from "../types/Analysis";
+import type { Object3D, Transform } from "../types/Object3D";
 
 /**
- * Action types of Phase 6 and Phase 11 (UNDO_REDO_SPEC.md, Action Types;
+ * Action types of a transform (UNDO_REDO_SPEC.md, Action Types; Phase 6;
  * OPTIMIZATION: Orientation Optimization, 2.3.0)
  */
-export type HistoryActionType = "MOVE" | "ROTATE" | "SCALE" | "OPTIMIZATION";
+export type TransformActionType = "MOVE" | "ROTATE" | "SCALE" | "OPTIMIZATION";
 
 /**
- * Entry of the history (UNDO_REDO_SPEC.md, History Entry Schema).
- * before and after: transform of each object changed, by objectId.
+ * Action types of the objects of the scene (UNDO_REDO_SPEC.md 2.4.0,
+ * Delete Actions, Duplicate Actions; lot 100)
  */
-export interface HistoryEntry {
+export type SceneActionType = "DELETE" | "DUPLICATE";
+
+export type HistoryActionType = TransformActionType | SceneActionType;
+
+/**
+ * An object of the scene as it was when it left the scene (deleted, or
+ * a copy removed by undo), to put it back as it was (UNDO_REDO_SPEC.md
+ * 2.4.0). Kept in memory only, never saved. The geometry is referenced,
+ * not copied (Geometry Storage Rules).
+ */
+export interface ObjectSnapshot {
+  object: Object3D;
+
+  /** Place of the object in the list of the scene */
+  index: number;
+
+  geometry: BufferGeometry;
+
+  /** Its analysis (with the category chosen by the user), or null */
+  analysis: Analysis | null;
+
+  /** Triangles beyond 45 degrees of its analysis, or null */
+  overhangTriangles: Uint32Array | null;
+
+  /** Its last analysis found a mesh not closed (ANA_002) */
+  openMesh: boolean;
+
+  /** Its last analysis found parts touching along an edge (ANA_005) */
+  nonManifold: boolean;
+}
+
+/**
+ * Entry of the history (UNDO_REDO_SPEC.md, History Entry Schema) for a
+ * transform: before and after hold the transform of each object changed,
+ * by objectId.
+ */
+export interface TransformHistoryEntry {
   actionId: string;
 
-  type: HistoryActionType;
+  type: TransformActionType;
 
   /** ISO 8601 */
   timestamp: string;
@@ -51,6 +92,32 @@ export interface HistoryEntry {
   before: Record<string, Transform>;
 
   after: Record<string, Transform>;
+}
+
+/**
+ * Entry of the history for Delete and Duplicate (lot 100): before holds
+ * the objects present before the action and absent after it (DELETE),
+ * after the objects absent before and present after it (DUPLICATE), by
+ * objectId; the other side is empty.
+ */
+export interface SceneHistoryEntry {
+  actionId: string;
+
+  type: SceneActionType;
+
+  /** ISO 8601 */
+  timestamp: string;
+
+  before: Record<string, ObjectSnapshot>;
+
+  after: Record<string, ObjectSnapshot>;
+}
+
+export type HistoryEntry = TransformHistoryEntry | SceneHistoryEntry;
+
+/** The entry is a Delete or a Duplicate */
+export function isSceneEntry(entry: HistoryEntry): entry is SceneHistoryEntry {
+  return entry.type === "DELETE" || entry.type === "DUPLICATE";
 }
 
 interface HistoryState {

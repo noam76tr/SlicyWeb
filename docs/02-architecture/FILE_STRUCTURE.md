@@ -412,6 +412,7 @@ src/gui/
 ├── layouts/
 ├── windows/
 ├── dialogs/
+│   ├── DeleteObjectsDialog.tsx = confirmation before deleting several objects (lot 100)
 │   ├── FilamentManagerDialog.tsx = Filament Manager: filaments entered by the user (Phase 8)
 │   ├── filamentForm.ts        = form of the Filament Manager and its conversion to a filament
 │   ├── PrinterManagerDialog.tsx = Printer Manager: printers entered by the user (Phase 7)
@@ -426,6 +427,7 @@ src/gui/
 │   └── ui/                    = shadcn/ui components (button, dialog, dropdown-menu, menubar, resizable, tabs)
 ├── themes/
 ├── hooks/
+│   ├── useEditShortcuts.ts    = Delete, Ctrl+D (lot 100)
 │   ├── useSelectAllShortcut.ts = Ctrl+A (Phase 6)
 │   ├── useTranslation.ts      = access to translations from GUI components
 │   └── useUndoRedoShortcuts.ts = Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z (Phase 6)
@@ -556,6 +558,7 @@ src/scene/
 ├── SceneValidator.ts
 ├── GeometryRegistry.ts        = triangle geometry of the objects, by objectId (ADR-029)
 ├── ObjectTransform.ts         = meaning of the transform: matrix, placement on the plate, 3MF export (ADR-031)
+├── ObjectSnapshots.ts         = objects taken out of the scene and put back as they were (Delete, Duplicate, undo; lot 100)
 └── SceneIntegration.ts        = registers imported models in the scene (ADR-029, ADR-030)
 ```
 
@@ -783,6 +786,7 @@ src/services/
 ├── ProjectService.ts
 ├── RecommendationService.ts  = recommendation of one object through the engine (Phase 10)
 ├── ImportService.ts           = import queue, progress, cancel and errors for the GUI (ADR-029)
+├── ObjectEditService.ts       = Edit > Delete and Edit > Duplicate, one history action each (lot 100)
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
 ├── PrinterSelectionService.ts = printers of the window, last printer (Phase 7)
 ├── MaterialSelectionService.ts = materials and filaments of the window, last choice (Phase 8)
@@ -811,7 +815,7 @@ src/state/
 ├── recommendationTaskStore.ts = errors of the last generation of each recommendation (Phase 10), not saved
 ├── optimizationTaskStore.ts   = orientation search running, messages of the result (Phase 11), not saved
 ├── importStore.ts             = imports in progress and their result
-├── historyStore.ts            = undo and redo stacks (Phase 6)
+├── historyStore.ts            = undo and redo stacks (Phase 6; Delete and Duplicate, lot 100)
 ├── propertiesPanelStore.ts    = open tab of the Properties Panel (lot 93)
 └── viewportStore.ts           = projection and view presets of the viewport, Overhang Display on or off (lot 82)
 ```
@@ -971,6 +975,7 @@ tests/
 │   └── services/
 │       ├── AnalysisService.test.ts = automatic analysis, gesture, dropped computation, ANA_001, ANA_002, Tools menu (Phase 9)
 │       ├── GroupTransform.test.ts = several objects selected (Phase 6)
+│       ├── ObjectEdit.test.ts = Delete and Duplicate, undo and redo (lot 100)
 │       ├── MaterialSelection.test.ts = materials and filaments of the window, last choice, families of a printer (Phase 8)
 │       ├── PrinterSelection.test.ts = printers of the window, last printer, profiles (Phase 7)
 │       ├── ProfileSync.test.ts = check of the profile repository, cache (Phase 7)
@@ -982,6 +987,7 @@ tests/
     ├── fixtures.ts = starts the built application, test files, opens a tab of the Properties Panel
     ├── analysis.spec.ts = analysis shown after the import and a change of scale, ANA_002, Tools menu (Phase 9)
     ├── app.spec.ts = main window, languages, numbers in the format of the language
+    ├── edit.spec.ts = Edit > Delete and Edit > Duplicate, Delete key, Ctrl+D, confirmation, undo (lot 100)
     ├── import.spec.ts = STL and 3MF import, refused files
     ├── material.spec.ts = materials and filaments served by the main process (Phase 8)
     ├── preset.spec.ts = presets served by the main process (Phase 10)

@@ -2,7 +2,7 @@
 
 # UNDO REDO SPECIFICATION
 
-Version: 2.3.0
+Version: 2.4.0
 
 Status: Approved
 
@@ -244,6 +244,8 @@ Phase 6 (Transform System, decision of Noam, 2026-10-20): only the transform act
 
 Phase 11 (2.3.0, ADR-036 D4; lot 98): Orientation Optimization is undoable (Optimization Actions).
 
+Lot 100 (2.4.0, outside the phases, request of Noam): Delete and Duplicate are undoable (Delete Actions, Duplicate Actions). Import, printer, material and settings actions are still not recorded.
+
 
 
 ---
@@ -480,6 +482,8 @@ Delete Object Again
 
 ```
 
+Lot 100 (2.4.0): Edit > Delete and the Delete key delete the selected objects (GUI_SPEC.md, Delete Confirmation): one action DELETE for all of them. before holds each object deleted (by objectId): the object, its place in the list of the scene, a reference to its geometry, its analysis (with the category chosen by the user) and what the analysis shows (triangles beyond 45 degrees, ANA_002, ANA_005); after is empty. Undo puts the objects back at their place, selected, with their analysis as it was: no analysis is computed again; their recommendation is generated again at once with the printer and the material selected at that time (DATA_SCHEMA.md, Object Reference Rule 11). Redo deletes them again. While the objects are deleted, their analysis and recommendation are not in the project (Object Reference Rule 6): they are kept only in the history, in memory.
+
 
 
 ---
@@ -515,6 +519,8 @@ Redo:
 Restore Duplicate
 
 ```
+
+Lot 100 (2.4.0): Edit > Duplicate and Ctrl+D copy the selected objects (DATA_SCHEMA.md, Object Reference Rule 7): one action DUPLICATE for all the copies. before is empty; after holds each copy, as for Delete Actions. Undo removes the copies, keeping what they got since (their analysis) for redo; redo puts them back, selected.
 
 
 
@@ -1106,6 +1112,8 @@ when appropriate.
 
 Phase 6 (src/state/historyStore.ts): before and after hold the transform of each object changed, by objectId. The history is kept in memory only; it is not saved in WYPROJ files.
 
+Lot 100 (2.4.0): for DELETE and DUPLICATE, before and after hold objects instead of transforms (Delete Actions, Duplicate Actions).
+
 
 
 ---
@@ -1221,6 +1229,8 @@ Instead of:
 Duplicate Mesh Data
 
 ```
+
+Lot 100 (2.4.0): a Delete or Duplicate action references the geometry of its objects; it is never copied by the history. A copy made by Duplicate is a new object of the scene and gets its own geometry. The geometry of deleted objects stays in memory while their action is in the history (at most 50 actions, Maximum History Size; dropped with the redo stack after a new action).
 
 
 
