@@ -3652,7 +3652,7 @@ Release Type:
 Graphical User Interface (Orientation Optimization)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-10
@@ -3685,6 +3685,37 @@ Date:
 ## Known Limitations
 
 - The duration in the application for 1 million triangles and the models of Noam are checked at the closure of Phase 11 (lot 99)
+
+
+## Validation Result
+
+- Windows 11 (2026-11-12): lot 98 on GitHub (0114140, identical to the lot, 19 files); npm run check:locales 479 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 537 tests passed and 1 skipped, npm run test:e2e 45 tests passed (Noam)
+- Manual checks 1 to 10 of lot 98 passed (Noam, 2026-11-12): buttons disabled without an object; tower laid on its left side (66 to 98, tip risk 80 to 0), one step of Undo and Redo; cube kept (90); cone tip down turned on its base (8 to 98, overhangs 100 % less, supports no longer needed); L bracket laid on its side (92 to 97); open vase kept standing (74); several objects in one message and one action; Hebrew; message closed, click through to the viewport
+
+---
+
+# VERSION 0.1.99
+
+Release Type:
+Phase 11 Closure
+
+Status:
+In Progress
+
+Date:
+2026-11-12
+
+## Changed
+
+- PHASES_IMPLEMENTATION_PLAN.md: Phase 11 Completed (2026-11-12), progress, validation result (Printability Improves, Reliability Maintained, duration) and open issues; confirmed by the manual checks of Noam on his models and his PC (lot 99), back to In Progress if one fails
+- PERFORMANCE_SPEC.md 1.4.1: Optimization Performance measured in the application built (Linux, lot 99): "Optimizing…" shown 2.4 to 2.9 s for a tower of 1 016 576 triangles (laid down, 66 to 98) and 2.4 s for a sphere of 998 000 triangles (kept); 3.0 to 3.9 s from the click to the message; the search alone 1.0 to 1.9 s in Node.js
+- PASSATION.md: lot 98 validated (decision 98), lot 99, Phase 11 Completed
+- 0.1.98 Completed with the results of Noam
+
+## Known Limitations
+
+- No change of code: the weights of the Orientation Score (AI_ENGINE_SPEC.md 1.1.0) are unchanged; they are checked on the models of Noam (manual checks of lot 99); a change of a weight is a visible choice and comes in its own lot, with a new version of AI_ENGINE_SPEC.md
+- The duration on the PC of Noam is measured with the manual checks of lot 99 (target less than 5 s for 1 million triangles); measured only on Linux in this lot
 
 ---
 

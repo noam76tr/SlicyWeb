@@ -4,7 +4,7 @@
 
 
 
-Version: 1.4.0
+Version: 1.4.1
 
 
 
@@ -259,6 +259,8 @@ Convex hull of the candidates (AI_ENGINE_SPEC.md 1.1.0, Orientation
 ```
 
 Measured on Linux in lot 97, in the unit tests (Node.js, not yet in the application: the search is started from the interface in lot 98): sphere of 998 000 triangles, 6 orientations: 1.4 to 1.5 s; cup with 40 flat sides holding a sphere, 998 316 triangles, 48 orientations: 2.5 s. The analysis of the same sphere takes 1.8 to 2.3 s in the application (lot 92).
+
+Measured on Linux in lot 99, in the application built (1.4.1; Tools > Optimize Orientation after the analysis, Prusa MK4S selected, 3 runs each): tower of 20 x 20 x 100 mm made of 1 016 576 triangles, laid down (66 to 98): "Optimizing…" shown 2.4 to 2.9 s, 3.0 to 3.9 s from the click to the message; sphere of 998 000 triangles (every orientation has a risk of 100, kept): 2.4 s shown, 3.4 to 3.6 s from the click to the message. The search alone (Node.js, same models): 1.4 to 1.9 s and 1.0 to 1.2 s; the rest is outside the search (copy of the triangles to the Web Worker, check of the result, the viewport drawn on the same computer). The duration on the PC of Noam is checked at the closure (lot 99).
 
 ---
 

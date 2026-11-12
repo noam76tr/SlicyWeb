@@ -1825,7 +1825,7 @@ Warnings Produced
 
 # OPTIMIZATION ENGINE
 
-Status: In Progress (since 2026-11-09)
+Status: Completed (2026-11-12, lot 99; confirmed by the manual checks of Noam on his models and his PC, back to In Progress if one fails)
 
 Decisions (ADR-036, decisions D1 to D8 of Noam, 2026-11-09, all A; analysis of lot 94):
 
@@ -1850,7 +1850,18 @@ Order of the lots:
 Progress:
 
 - Analysis (lot 94, CHANGELOG 0.1.94 unchanged: analysis only) and documentation (lot 96, CHANGELOG 0.1.96)
-- Computation (lot 97, CHANGELOG 0.1.97): delivered with lot 96 (lots grouped, Noam, 2026-11-06)
+- Computation (lot 97, CHANGELOG 0.1.97): delivered with lot 96 (lots grouped, Noam, 2026-11-06); lots 96 and 97 validated by Noam (2026-11-10; tower, open vases and figurine accepted)
+- Interface (lot 98, CHANGELOG 0.1.98): Tools > Optimize Orientation and the button Optimize, OptimizationService (selected objects or all, one at a time in the Web Worker, applied together after any gesture), one history action OPTIMIZATION, message of the result, "Optimizing…" in the status bar, 8 keys added and 4 removed (479 keys); validated by Noam (2026-11-12, manual checks 1 to 10)
+- Closure (lot 99, CHANGELOG 0.1.99): duration measured in the application (PERFORMANCE_SPEC.md 1.4.1); weights of the Orientation Score unchanged, checked on the models of Noam (manual checks of lot 99); no change of code
+
+Validation result (checks of Noam, lots 96 to 98, 2026-11-10 to 2026-11-12; all passed):
+
+- Printability Improves: the tower of 20 x 20 x 100 mm is laid on its left side (score 66 to 98, tip risk 80 to 0, answer of Noam on D3); a cone tip down is turned on its base (8 to 98, overhangs 100 % less, supports no longer needed); an L bracket is laid on its side (92 to 97); unit tests of lots 97 and 98, end-to-end tests and manual checks 2, 5 and 6 of lot 98
+- Reliability Maintained: Reliability Rules (never a risk of 100, never outside the build volume, never a risk above 60 unless the current one is above) and 5 points more needed; a cube (90), an open vase standing (74, vase mode) and a figurine (42) are kept; a sphere is never turned; one history action (Ctrl+Z gives back the orientations); the analysis and the recommendation computed again after the turn; never started by itself; manual checks 3, 4, 7, 8 and 10 of lot 98
+- Duration (target less than 5 s for 1 million triangles, PERFORMANCE_SPEC.md 1.4.1): on Linux in the application built, "Optimizing…" shown 2.4 to 2.9 s (tower of 1 016 576 triangles) and 2.4 s (sphere of 998 000 triangles); on the PC of Noam: manual checks of lot 99
+- With lot 98 (CHANGELOG 0.1.98, 2026-11-12): npm run check:locales 479 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 537 tests passed and 1 skipped, npm run test:e2e 45 tests passed, manual checks 1 to 10 passed (Hebrew included)
+
+Open issues after the closure: nothing about the optimization is saved in a project (ADR-036 D5); Time Optimization, Material Optimization and Preset Optimization in Phase 15, after the estimation of Phase 12; the Optimization API of API_SPEC.md (KI-030); the finish quality of the surface is not measured; in a narrow window, the messages over the viewport can hide the text of the button Overhangs (remark of lot 98, nothing changed). Next: Phase 12 (Cost Estimation).
 
 ---
 
