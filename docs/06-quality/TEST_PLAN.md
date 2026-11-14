@@ -750,6 +750,22 @@ Delete and Duplicate (lot 100; UNDO_REDO_SPEC.md 2.4.0):
     confirmation in French
   manual (Noam): the same in French and Hebrew on the PC of Noam
 
+Free move and Move arrows (lot 102; GUI_SPEC.md, Move Gizmo):
+  unit (MoveGizmo.test.ts): tips 12 px after the edge of the box seen from
+    above, 18 px long; from oblique cameras at every zoom, the tips never
+    inside the outline of the box, 18 px long; the arrow along the camera
+    hidden; the arrows of a group from its center; the tip grabbed with
+    6 px around it, never the line nor the object; position along the
+    axis under the pointer
+  end to end (tests/e2e/move.spec.ts): a drag on the line of the arrow X,
+    over the cube, moves it in X and Y (move cursor); a drag of the tip X
+    moves along X only, Ctrl+Z puts it back (hand over the tip); arrows
+    only in the Move mode, move cursor in the Rotate mode, normal cursor
+    in the empty space
+  manual (Noam): a cube of 10 mm seen from far: the tips stay easy to
+    grab and the cube can be taken anywhere; a large object; a group; the
+    views Top and Front (arrow Y hidden)
+
 Mesh defects (lot 91):
   unit (ModelAnalyzer.test.ts): two cubes touching along an edge: closed,
     not manifold, volume exact; an edge with three triangles: open; a cube:

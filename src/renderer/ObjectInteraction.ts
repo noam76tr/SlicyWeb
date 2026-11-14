@@ -22,6 +22,13 @@
  * Phase 6).
  * Presses on a handle of the gizmo are left to the gizmo.
  *
+ * Cursor (lot 102, decision of Noam Q5 A): over an object, the move
+ * cursor, in every mode (a drag on an object always moves it); over a tip
+ * of the Move arrows, a hand; elsewhere, and over a handle of Rotate or
+ * Scale, the normal cursor. The object under the pointer is looked for at
+ * most once per frame, only after a rest of the pointer when one search
+ * is slow (HOVER_PICK_SLOW_MS).
+ *
  * Moves are sent to onMove, which applies them through TransformService
  * (given by the GUI: the Viewport Domain does not depend on the Service
  * Domain); onGesture marks the start and the end of a drag, recorded as
@@ -36,9 +43,14 @@
 
 import * as THREE from "three";
 
-import { DRAG_THRESHOLD_PX } from "../constants/ViewportConstants";
+import {
+  DRAG_THRESHOLD_PX,
+  HOVER_PICK_REST_MS,
+  HOVER_PICK_SLOW_MS,
+} from "../constants/ViewportConstants";
 
 import type { ScreenRect } from "./ObjectRenderer";
+import type { GizmoHover } from "./TransformGizmo";
 
 import type { Object3D, Transform } from "../types/Object3D";
 
@@ -49,6 +61,8 @@ export interface ObjectInteractionOptions {
   pick: (raycaster: THREE.Raycaster) => string | null;
   /** True while a handle of the gizmo is pressed or dragged */
   isGizmoActive: () => boolean;
+  /** Gizmo under the pointer (cursor) */
+  getGizmoHover: () => GizmoHover;
   getObject: (objectId: string) => Object3D | undefined;
   /** Selected objects */
   getSelection: () => string[];
@@ -96,7 +110,20 @@ export class ObjectInteraction {
   /** Selection rectangle shown over the canvas */
   private readonly box: HTMLDivElement;
 
+  /** Last pointer position without a button pressed (cursor) */
+  private hoverPoint: { clientX: number; clientY: number } | null = null;
+
+  /** Cursor update waiting for the next frame or for a rest */
+  private hoverFrame: number | null = null;
+
+  private hoverTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** The last search of the object under the pointer was slow */
+  private slowPick = false;
+
   private readonly onPointerDown = (event: PointerEvent): void => {
+    this.cancelHover();
+
     if (event.button !== 0 || this.options.isGizmoActive()) {
       return;
     }
@@ -117,6 +144,10 @@ export class ObjectInteraction {
 
   private readonly onPointerMove = (event: PointerEvent): void => {
     const press = this.press;
+
+    if (!press && event.buttons === 0 && !this.options.isGizmoActive()) {
+      this.scheduleHover(event);
+    }
 
     if (!press || event.pointerId !== press.pointerId) {
       return;
@@ -182,6 +213,7 @@ export class ObjectInteraction {
       press.dragging = true;
       press.startPoint = start;
       press.startTransforms = startTransforms;
+      this.setCursor("move");
 
       if (!selection.includes(press.objectId)) {
         this.options.select(press.objectId);
@@ -283,6 +315,7 @@ export class ObjectInteraction {
     element.addEventListener("pointermove", this.onPointerMove);
     element.addEventListener("pointerup", this.onPointerUp);
     element.addEventListener("pointercancel", this.onPointerUp);
+    element.addEventListener("pointerleave", this.onPointerLeave);
   }
 
   public dispose(): void {
@@ -291,7 +324,88 @@ export class ObjectInteraction {
     element.removeEventListener("pointermove", this.onPointerMove);
     element.removeEventListener("pointerup", this.onPointerUp);
     element.removeEventListener("pointercancel", this.onPointerUp);
+    element.removeEventListener("pointerleave", this.onPointerLeave);
+    this.cancelHover();
+    this.setCursor("");
     this.box.remove();
+  }
+
+  private readonly onPointerLeave = (): void => {
+    this.cancelHover();
+
+    if (!this.press && !this.options.isGizmoActive()) {
+      this.setCursor("");
+    }
+  };
+
+  private setCursor(cursor: string): void {
+    if (this.options.domElement.style.cursor !== cursor) {
+      this.options.domElement.style.cursor = cursor;
+    }
+  }
+
+  private cancelHover(): void {
+    this.hoverPoint = null;
+
+    if (this.hoverFrame !== null) {
+      cancelAnimationFrame(this.hoverFrame);
+      this.hoverFrame = null;
+    }
+
+    if (this.hoverTimer !== null) {
+      clearTimeout(this.hoverTimer);
+      this.hoverTimer = null;
+    }
+  }
+
+  /**
+   * Cursor for the pointer position: at the next frame, or after a rest
+   * of the pointer when the last search of the object was slow
+   */
+  private scheduleHover(event: PointerEvent): void {
+    this.hoverPoint = { clientX: event.clientX, clientY: event.clientY };
+
+    if (this.slowPick) {
+      if (this.hoverTimer !== null) {
+        clearTimeout(this.hoverTimer);
+      }
+
+      this.hoverTimer = setTimeout(() => {
+        this.hoverTimer = null;
+        this.updateHover();
+      }, HOVER_PICK_REST_MS);
+    } else if (this.hoverFrame === null) {
+      this.hoverFrame = requestAnimationFrame(() => {
+        this.hoverFrame = null;
+        this.updateHover();
+      });
+    }
+  }
+
+  private updateHover(): void {
+    const point = this.hoverPoint;
+
+    if (!point || this.press || this.options.isGizmoActive()) {
+      return;
+    }
+
+    const gizmo = this.options.getGizmoHover();
+
+    if (gizmo === "move-handle") {
+      this.setCursor("pointer");
+      return;
+    }
+
+    if (gizmo === "handle") {
+      this.setCursor("");
+      return;
+    }
+
+    this.setRay(point.clientX, point.clientY);
+    const started = performance.now();
+    const objectId = this.options.pick(this.raycaster);
+    this.slowPick = performance.now() - started > HOVER_PICK_SLOW_MS;
+    this.setCursor(objectId ? "move" : "");
   }
 
   /** Shows the selection rectangle between two pointer positions */

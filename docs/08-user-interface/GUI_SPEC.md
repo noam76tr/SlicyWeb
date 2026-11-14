@@ -1020,10 +1020,12 @@ Right Mouse = Rotate Camera
 Left mouse (objects):
 
 - a click on an object selects it; a click in the empty space clears the selection;
-- pressing on an object and dragging moves it on the build plate (X, Y), as in Bambu Studio and OrcaSlicer;
+- pressing on an object and dragging moves it on the build plate (X, Y), as in Bambu Studio and OrcaSlicer, anywhere on the object and in every gizmo mode, also where the line of a Move arrow passes over it (lot 102);
 - the move starts only after 4 pixels: a selection click never moves the object;
 - a drag that starts in the empty space draws a selection rectangle (Multi Selection);
 - a press on a handle of the gizmo is left to the gizmo.
+
+Cursor (lot 102): over an object, the move cursor (four arrows), in every gizmo mode; over the tip of a Move arrow, a hand; elsewhere, and over a handle of Rotate or Scale, the normal cursor. On a model of about a million triangles, the cursor is updated once the pointer rests (80 ms), so that the view stays fluid.
 
 
 
@@ -1181,6 +1183,14 @@ Z
 ```
 
 The gizmo moves the object along X and Y only: the object always stands on the build plate (Position Z is computed, Transform Section).
+
+Arrows (lot 102, decisions of Noam Q1 to Q4 A), as in Bambu Studio and OrcaSlicer:
+- one arrow per axis, toward +X (red) and +Y (green), from the center of the object (of the group when several objects are selected), at its mid-height;
+- the tip of each arrow is placed 12 pixels after the edge of the box of the object as seen from the camera: never on the object; the tip is 18 pixels long, the same size at every zoom; the arrows are long on a large object and short on a small one;
+- only the tip can be grabbed (with 6 pixels around it): a drag of the tip moves the object along that axis only, in both directions, as one action of the history; a press on the line goes to the object (free move, Viewport Controls);
+- an arrow almost along the direction of the camera (front, back, left or right view) is hidden, its tip would be over the object;
+- the arrow under the pointer is drawn in yellow;
+- no Z arrow and no plane handle: a drag on the object moves it freely on the plate.
 
 
 

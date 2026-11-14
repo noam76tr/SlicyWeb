@@ -448,8 +448,9 @@ src/renderer/
 ├── LightingManager.ts
 ├── SceneRenderer.ts
 ├── ObjectRenderer.ts          = meshes of the scene objects in the viewport
-├── ObjectInteraction.ts       = click to select, drag an object on the build plate (Phase 6)
+├── ObjectInteraction.ts       = click to select, drag an object on the build plate (Phase 6), cursor (lot 102)
 ├── TransformGizmo.ts          = Move, Rotate and Scale gizmos of the selected object (Phase 6)
+├── MoveGizmo.ts               = arrows of the Move gizmo, tips beside the object (lot 102)
 ├── NavigationCube.ts          = layout of the navigation cube from the camera orientation (lot 74)
 ├── SelectionRenderer.ts
 └── helpers/

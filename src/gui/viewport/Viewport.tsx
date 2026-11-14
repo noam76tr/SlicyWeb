@@ -26,7 +26,9 @@
  * (or the group it belongs to) to move it on the plate
  * (ObjectInteraction); gizmo on the selected object or at the center of
  * the group (TransformGizmo): Move, Rotate, Scale, chosen with the mode
- * buttons over the viewport (GUI) or the keys G, R, S; the lock of the scale
+ * buttons over the viewport (GUI) or the keys G, R, S; the tips of the Move
+ * arrows are placed beside the selected objects, from their box (lot 102),
+ * and the cursor shows what a drag does; the lock of the scale
  * (keepProportions) applies to the Scale gizmo as to the Transform section;
  * Escape clears the selection (GUI_SPEC.md, Keyboard Shortcuts).
  *
@@ -65,7 +67,8 @@ import { WorkspaceHelpers } from "../../renderer/helpers/WorkspaceHelpers";
 import { GeometryRegistry } from "../../scene/GeometryRegistry";
 import {
   boundsCenter,
-  groupBounds,
+  worldBounds,
+  type Bounds,
   type Vector3Mm,
 } from "../../scene/ObjectTransform";
 import { useAnalysisStore } from "../../state/analysisStore";
@@ -89,18 +92,108 @@ const TRANSFORM_KEYS: Record<string, TransformMode> = {
   KeyS: "scale",
 };
 
+/**
+ * Box of an object around its position, kept while its geometry, rotation
+ * and scale do not change: a move (drag on the plate, every frame of the
+ * gesture) does not read its vertices again (lot 102)
+ */
+interface RelativeBounds {
+  geometry: unknown;
+  key: string;
+  bounds: Bounds;
+}
+
+const relativeBounds = new Map<string, RelativeBounds>();
+
+/** Box of the objects on the plate (one object or a group) */
+function selectionBounds(objects: Object3D[]): Bounds | null {
+  let result: Bounds | null = null;
+
+  for (const object of objects) {
+    const geometry = GeometryRegistry.get(object.objectId);
+    const positions = geometry?.getAttribute("position")?.array;
+
+    if (!geometry || !positions) {
+      continue;
+    }
+
+    const { rotation, scale, position } = object.transform;
+    const key = [
+      rotation.x,
+      rotation.y,
+      rotation.z,
+      scale.x,
+      scale.y,
+      scale.z,
+    ].join(" ");
+    let cached = relativeBounds.get(object.objectId);
+
+    if (!cached || cached.geometry !== geometry || cached.key !== key) {
+      cached = {
+        geometry,
+        key,
+        bounds: worldBounds(
+          { ...object.transform, position: { x: 0, y: 0, z: 0 } },
+          positions,
+        ),
+      };
+      relativeBounds.set(object.objectId, cached);
+    }
+
+    const { min, max } = cached.bounds;
+
+    if (!Number.isFinite(min.x)) {
+      continue;
+    }
+
+    const box: Bounds = {
+      min: {
+        x: min.x + position.x,
+        y: min.y + position.y,
+        z: min.z + position.z,
+      },
+      max: {
+        x: max.x + position.x,
+        y: max.y + position.y,
+        z: max.z + position.z,
+      },
+    };
+
+    result = result
+      ? {
+          min: {
+            x: Math.min(result.min.x, box.min.x),
+            y: Math.min(result.min.y, box.min.y),
+            z: Math.min(result.min.z, box.min.z),
+          },
+          max: {
+            x: Math.max(result.max.x, box.max.x),
+            y: Math.max(result.max.y, box.max.y),
+            z: Math.max(result.max.z, box.max.z),
+          },
+        }
+      : box;
+  }
+
+  return result;
+}
+
 /** Center of the bounding box of a group of objects, on the plate */
 function groupCenter(objects: Object3D[]): Vector3Mm | null {
-  const bounds = groupBounds(
-    objects.flatMap((object) => {
-      const positions = GeometryRegistry.get(object.objectId)?.getAttribute(
-        "position",
-      )?.array;
-      return positions ? [{ transform: object.transform, positions }] : [];
-    }),
-  );
+  const bounds = selectionBounds(objects);
 
   return bounds ? boundsCenter(bounds) : null;
+}
+
+/** Forgets the boxes of the objects no longer in the scene */
+function forgetBounds(objects: Object3D[]): void {
+  const present = new Set(objects.map((object) => object.objectId));
+
+  for (const objectId of [...relativeBounds.keys()]) {
+    if (!present.has(objectId)) {
+      relativeBounds.delete(objectId);
+    }
+  }
 }
 
 /**
@@ -253,6 +346,7 @@ export default function Viewport({
       getCamera: () => cameraManager.getCamera(),
       pick: (raycaster) => objectRenderer.pick(raycaster),
       isGizmoActive: () => gizmo.isDragging(),
+      getGizmoHover: () => gizmo.getHover(),
       getObject: findObject,
       getSelection: () => useObjectStore.getState().selectedObjectIds,
       select: (objectId) => useObjectStore.getState().selectObject(objectId),
@@ -294,6 +388,18 @@ export default function Viewport({
 
     sceneRenderer.start(() => {
       cameraManager.update();
+      gizmo.update();
+
+      // Tips of the Move arrows on the screen, read by the end-to-end tests
+      const handles = gizmo.describeMoveHandles();
+      const described = handles ? JSON.stringify(handles) : "";
+      if ((container.dataset.moveHandles ?? "") !== described) {
+        if (described) {
+          container.dataset.moveHandles = described;
+        } else {
+          delete container.dataset.moveHandles;
+        }
+      }
       cubeRef.current?.update(cameraManager.getCamera().quaternion);
       workspace.updateGridSpacing(
         cameraManager.getPixelsPerMillimeter(rendererManager.getHeight()),
@@ -322,9 +428,11 @@ export default function Viewport({
       const selected = objects.filter((object) =>
         selectedObjectIds.includes(object.objectId),
       );
+      forgetBounds(objects);
       gizmo.attach(
         selected,
         selected.length > 1 ? groupCenter(selected) : null,
+        selectionBounds(selected),
       );
     };
     syncObjects();

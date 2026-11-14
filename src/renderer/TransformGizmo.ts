@@ -2,9 +2,12 @@
  * SlicyWeb
  * Transform Gizmo
  *
- * Gizmos of the selected object (GUI_SPEC.md, Object Gizmos), with the
- * TransformControls of Three.js:
- * - Move: along X and Y only (the object always stands on the plate);
+ * Gizmos of the selected object (GUI_SPEC.md, Object Gizmos):
+ * - Move: the arrows of SlicyWeb (MoveGizmo, lot 102), along X and Y only
+ *   (the object always stands on the plate); their tips are placed beside
+ *   the object, so that a drag anywhere on it moves it freely
+ *   (ObjectInteraction);
+ * - Rotate and Scale, with the TransformControls of Three.js;
  * - Rotate: rings X, Y, Z around the axes of the plate, free, by steps of
  *   15 degrees while Shift is held; the object turns around its center
  *   (local origin, ADR-031) and may go under the plate during the gesture;
@@ -15,16 +18,17 @@
  *   scale closed (keepProportions, as in the Transform section), an axis
  *   handle also scales uniformly.
  *
- * The gizmo moves a proxy placed at the local origin of the object (its
- * center, ADR-031), never the mesh: each change is sent to onChange,
- * which applies it through TransformService (the only way to change a
- * transform); the store then updates the mesh and the proxy.
+ * The Rotate and Scale gizmos move a proxy placed at the local origin of
+ * the object (its center, ADR-031), never the mesh: each change is sent
+ * to onChange, which applies it through TransformService (the only way to
+ * change a transform); the store then updates the mesh and the proxy.
  *
  * Several objects selected (group, decisions of Noam, Phase 6): the proxy
  * is placed at the center of the group (center of its bounding box), in
- * the axes of the plate; the drag of a handle moves, turns (around the
- * center of the group, free during the gesture, each object placed back
- * on the plate on release) or scales the group, always uniformly.
+ * the axes of the plate; the drag of a handle moves (MoveGizmo), turns
+ * (around the center of the group, free during the gesture, each object
+ * placed back on the plate on release) or scales the group, always
+ * uniformly.
  *
  * Domain: Viewport. The change callback is given by the GUI (the Viewport
  * Domain does not depend on the Service Domain).
@@ -45,8 +49,11 @@ import {
   rotationEuler,
   roundDegrees,
   scaleAroundPoint,
+  type Bounds,
   type Vector3Mm,
 } from "../scene/ObjectTransform";
+
+import { MoveGizmo } from "./MoveGizmo";
 
 import type { TransformMode } from "../state/viewportStore";
 import type { Object3D, Transform } from "../types/Object3D";
@@ -143,6 +150,12 @@ export type GizmoGesture = (
   phase: "start" | "end",
 ) => void;
 
+/**
+ * Gizmo under the pointer: a tip of the Move arrows ("move-handle"), a
+ * handle of Rotate or Scale ("handle"), or none
+ */
+export type GizmoHover = "move-handle" | "handle" | null;
+
 /** State saved when the drag of a handle starts */
 interface DragStart {
   transforms: Record<string, Transform>;
@@ -152,6 +165,9 @@ interface DragStart {
 
 export class TransformGizmo {
   private readonly controls: TransformControls;
+
+  /** Arrows of the Move mode */
+  private readonly move: MoveGizmo;
 
   private readonly proxy = new THREE.Object3D();
 
@@ -193,6 +209,16 @@ export class TransformGizmo {
     this.onGesture = onGesture;
     this.proxy.name = "transform-gizmo-proxy";
     scene.add(this.proxy);
+
+    // Arrows of the Move mode, before the object interaction: they receive
+    // the presses on their tips first
+    this.move = new MoveGizmo(scene, camera, domElement, {
+      onChange: (transforms) => {
+        this.onChange(transforms, false);
+      },
+      onGesture,
+      onDragging,
+    });
 
     this.controls = new TransformControls(camera, domElement);
     this.controls.setSpace("world");
@@ -256,11 +282,31 @@ export class TransformGizmo {
 
   /** True while a handle of the gizmo is dragged */
   public isDragging(): boolean {
-    return this.controls.dragging;
+    return this.controls.dragging || this.move.isDragging();
+  }
+
+  /** Gizmo under the pointer */
+  public getHover(): GizmoHover {
+    if (this.mode === "translate") {
+      return this.move.isHovered() ? "move-handle" : null;
+    }
+
+    return this.controls.axis !== null ? "handle" : null;
+  }
+
+  /** Places the arrows of the Move mode; called at each frame */
+  public update(): void {
+    this.move.update();
+  }
+
+  /** Arrows of the Move mode on the screen (end-to-end tests) */
+  public describeMoveHandles(): Record<string, [number, number]> | null {
+    return this.move.describe();
   }
 
   public setCamera(camera: THREE.Camera): void {
     this.controls.camera = camera;
+    this.move.setCamera(camera);
   }
 
   /** Lock of the scale: closed, every handle scales uniformly */
@@ -270,24 +316,44 @@ export class TransformGizmo {
 
   public setMode(mode: TransformMode): void {
     this.mode = mode;
-    this.controls.setMode(mode);
 
-    // Move: X, Y and the XY plane only (Z is computed)
-    this.controls.showZ = mode !== "translate";
+    // Move: the arrows of SlicyWeb; Rotate and Scale: TransformControls
+    this.move.setEnabled(mode === "translate");
+    this.controls.enabled = mode !== "translate";
 
-    // Rotate: the rings X, Y, Z only (no screen ring, no free trackball)
+    if (mode === "translate") {
+      this.controls.detach();
+    } else {
+      this.controls.setMode(mode);
+      this.attachControls();
+    }
+
+    // Rotate: the rings X, Y, Z only (no screen ring, no free trackball);
+    // Scale: also the center handle (uniform)
     this.controls.showE = false;
-    this.controls.showXYZE = mode !== "rotate";
+    this.controls.showXYZE = mode === "scale";
   }
 
   /**
    * Shows the gizmo on the selected objects (none: hidden); groupCenter is
-   * the center of the group when several objects are selected. Called
-   * after each change of the object store.
+   * the center of the group when several objects are selected; bounds:
+   * box of the selected objects on the plate (Move arrows). Called after
+   * each change of the object store.
    */
-  public attach(objects: Object3D[], groupCenter: Vector3Mm | null): void {
+  public attach(
+    objects: Object3D[],
+    groupCenter: Vector3Mm | null,
+    bounds: Bounds | null,
+  ): void {
     this.objects = objects;
     this.groupCenter = groupCenter;
+    this.move.attach(
+      objects,
+      objects.length > 1
+        ? groupCenter
+        : (objects[0]?.transform.position ?? null),
+      bounds,
+    );
 
     if (objects.length === 0) {
       this.controls.detach();
@@ -299,9 +365,7 @@ export class TransformGizmo {
       this.syncProxy();
     }
 
-    if (this.controls.object !== this.proxy) {
-      this.controls.attach(this.proxy);
-    }
+    this.attachControls();
   }
 
   public dispose(): void {
@@ -311,6 +375,18 @@ export class TransformGizmo {
     this.scene.remove(this.controls.getHelper());
     this.scene.remove(this.proxy);
     this.controls.dispose();
+    this.move.dispose();
+  }
+
+  /** TransformControls on the proxy, in the Rotate and Scale modes only */
+  private attachControls(): void {
+    if (
+      this.mode !== "translate" &&
+      this.objects.length > 0 &&
+      this.controls.object !== this.proxy
+    ) {
+      this.controls.attach(this.proxy);
+    }
   }
 
   private isGroup(): boolean {
@@ -379,7 +455,7 @@ export class TransformGizmo {
     };
   }
 
-  /** Transforms of the group, from the move of the proxy since the start */
+  /** Transforms of the group, from the change of the proxy since the start */
   private groupTransforms(start: DragStart): Record<string, Transform> {
     const pivot: Vector3Mm = {
       x: start.pivot.x,
@@ -389,16 +465,7 @@ export class TransformGizmo {
     const result: Record<string, Transform> = {};
 
     for (const [objectId, transform] of Object.entries(start.transforms)) {
-      if (this.mode === "translate") {
-        result[objectId] = {
-          ...transform,
-          position: {
-            x: transform.position.x + this.proxy.position.x - pivot.x,
-            y: transform.position.y + this.proxy.position.y - pivot.y,
-            z: transform.position.z,
-          },
-        };
-      } else if (this.mode === "rotate") {
+      if (this.mode === "rotate") {
         result[objectId] = rotateAroundPoint(
           transform,
           this.proxy.quaternion,
@@ -444,8 +511,8 @@ export class TransformGizmo {
       position: {
         x: this.proxy.position.x,
         y: this.proxy.position.y,
-        // Kept during a rotation; otherwise computed by TransformService
-        // (the object stands on the plate)
+        // Kept during a rotation; after a scale, computed by
+        // TransformService (the object stands on the plate)
         z: object.transform.position.z,
       },
       rotation: {

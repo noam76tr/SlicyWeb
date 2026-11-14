@@ -124,3 +124,35 @@ export const ROTATION_SNAP_DEGREES = 15;
  * empty space clears the selection (Phase 6, decision of Noam).
  */
 export const DRAG_THRESHOLD_PX = 4;
+
+/**
+ * Arrows of the Move gizmo (GUI_SPEC.md, Move Gizmo, lot 102, decisions
+ * of Noam Q1 to Q3 A): one arrow per axis of the plate, toward +X and +Y,
+ * from the center of the object; its tip is placed MOVE_HANDLE_GAP_PX
+ * after the edge of the box of the object seen from the camera, never on
+ * the object. Sizes in pixels of the screen, the same at every zoom.
+ * Only the tip can be grabbed, with MOVE_HANDLE_GRAB_MARGIN_PX around it
+ * (Q2 A): a press on the line goes to the object (free move).
+ * An arrow almost along the direction of the camera (cosine of the angle
+ * above MOVE_HANDLE_HIDE_COSINE) is hidden: its tip would be over the
+ * object. Colors of the gizmos of Three.js (Rotate, Scale), and their
+ * yellow for the arrow under the pointer.
+ */
+export const MOVE_HANDLE_GAP_PX = 12;
+export const MOVE_HANDLE_TIP_LENGTH_PX = 18;
+export const MOVE_HANDLE_TIP_RADIUS_PX = 6;
+export const MOVE_HANDLE_LINE_RADIUS_PX = 1;
+export const MOVE_HANDLE_GRAB_MARGIN_PX = 6;
+export const MOVE_HANDLE_HIDE_COSINE = 0.97;
+export const MOVE_HANDLE_X_COLOR = 0xff0000;
+export const MOVE_HANDLE_Y_COLOR = 0x00ff00;
+export const MOVE_HANDLE_HOVER_COLOR = 0xffff00;
+
+/**
+ * Cursor over the viewport (lot 102, Q5 A): the object under the pointer
+ * is looked for at most once per frame; when one search took more than
+ * HOVER_PICK_SLOW_MS (a model of about a million triangles), only after
+ * the pointer has rested HOVER_PICK_REST_MS, so that the view stays fluid.
+ */
+export const HOVER_PICK_SLOW_MS = 8;
+export const HOVER_PICK_REST_MS = 80;

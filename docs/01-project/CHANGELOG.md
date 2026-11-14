@@ -3730,7 +3730,7 @@ Release Type:
 Graphical User Interface (Delete and Duplicate)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-12
@@ -3761,6 +3761,51 @@ Date:
 
 - A copy can be placed outside the build plate; a visible warning when an object goes outside the plate and an Arrange button come in their own lot (request of Noam)
 - The geometry of deleted objects stays in memory while their action is in the history (at most 50 actions)
+
+## Validation Result
+
+- Windows 11 (2026-11-13): lot 100 on GitHub (f18e6ad, identical to the lot, 22 files); npm run check:locales 481 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 548 tests passed and 1 skipped, npm run test:e2e 49 tests passed (Noam)
+- Answers of Noam to the questions of lot 100: Q1 to Q5 A (the options of the lot); manual checks 1 to 9 of lot 100 passed (Noam, 2026-11-13)
+
+---
+
+# VERSION 0.1.102
+
+Release Type:
+Graphical User Interface (Free Move)
+
+Status:
+In Progress
+
+Date:
+2026-11-14
+
+## Added
+
+- Arrows of the Move gizmo drawn by SlicyWeb (src/renderer/MoveGizmo.ts; request of Noam, outside the phases; answers Q1 to Q6 A; GUI_SPEC.md, Move Gizmo), as in Bambu Studio and OrcaSlicer: one arrow toward +X (red) and one toward +Y (green), from the center of the object or of the group; the tip 12 pixels after the edge of the box of the objects as seen from the camera, never on the object, 18 pixels long at every zoom; only the tip can be grabbed (6 pixels around it), a drag of the tip moves along that axis only, one action of the history; an arrow almost along the direction of the camera is hidden; the arrow under the pointer in yellow
+- Cursor over the 3D viewport (GUI_SPEC.md, Viewport Controls): the move cursor over an object, in every gizmo mode; a hand over the tip of a Move arrow; the normal cursor elsewhere and over a handle of Rotate or Scale; on a model of about a million triangles, updated once the pointer rests (80 ms)
+
+## Changed
+
+- A drag anywhere on an object moves it freely on the plate, also where the line of a Move arrow passes over it: the grab zones of the Move gizmo of Three.js (cones up to about 50 pixels wide, over the object) are gone (GUI_SPEC.md, Viewport Controls)
+- src/renderer/TransformGizmo.ts: the Move mode uses MoveGizmo; the TransformControls of Three.js are kept for Rotate and Scale only, attached in these modes; getHover(), update(), describeMoveHandles(); attach() also receives the box of the selected objects
+- src/renderer/ObjectInteraction.ts: cursor; src/gui/viewport/Viewport.tsx: box of the selected objects kept while their rotation and scale do not change (a move does not read the vertices again), arrows placed at each frame, data-move-handles for the end-to-end tests; src/constants/ViewportConstants.ts: sizes and colors of the arrows, cursor delays
+- GUI_SPEC.md (Viewport Controls, Move Gizmo), TEST_PLAN.md, FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
+- 0.1.100 Completed with the results of Noam
+
+## Removed
+
+- Move mode: the arrows of the TransformControls of Three.js (two per axis) and the plane handle (blue square, free move); the move of a group by the TransformControls (its part in TransformGizmo.groupTransforms); approved by Noam (Q1 A and Q4 A). The number 0.1.101 is kept for the lot of the warning outside the plate and Arrange (questions asked, lot 101)
+
+## Tests
+
+- tests/unit/renderer/MoveGizmo.test.ts (8 tests): tips beside the box seen from above (gap, length, radius), from oblique cameras at every zoom (never inside the outline of the box, 18 pixels long), arrow along the camera hidden, group; grab of the tip with its margin, never the line nor the object; position along the axis under the pointer, ray along the axis
+- tests/e2e/move.spec.ts (3 tests): a drag on the line of the arrow X, over the cube, moves it in X and Y (move cursor); a drag of the tip X moves along X only, Ctrl+Z puts it back (hand over the tip); arrows only in the Move mode, move cursor also in the Rotate mode, normal cursor in the empty space (52 e2e)
+
+## Known Limitations
+
+- The tip is placed from the box of the objects (axes of the plate), not from their exact shape: on a turned object, the tip can be a little away from its edge
+- Rotate and Scale keep the gizmos of Three.js (Q6 A): their rings and handles can still cover a small object; to see again if they hinder
 
 ---
 
