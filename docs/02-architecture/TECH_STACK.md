@@ -810,7 +810,7 @@ For:
 
 ```text
 
-TransformControls
+Line2, LineMaterial (rings of the Rotate gizmo, lot 103; the gizmos are drawn by SlicyWeb, TransformControls is no longer used)
 
 
 

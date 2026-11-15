@@ -135,8 +135,8 @@ export const DRAG_THRESHOLD_PX = 4;
  * (Q2 A): a press on the line goes to the object (free move).
  * An arrow almost along the direction of the camera (cosine of the angle
  * above MOVE_HANDLE_HIDE_COSINE) is hidden: its tip would be over the
- * object. Colors of the gizmos of Three.js (Rotate, Scale), and their
- * yellow for the arrow under the pointer.
+ * object. Colors of the axes of the gizmos (X red, Y green; Z:
+ * GIZMO_Z_COLOR), and yellow for the handle under the pointer.
  */
 export const MOVE_HANDLE_GAP_PX = 12;
 export const MOVE_HANDLE_TIP_LENGTH_PX = 18;
@@ -147,6 +147,46 @@ export const MOVE_HANDLE_HIDE_COSINE = 0.97;
 export const MOVE_HANDLE_X_COLOR = 0xff0000;
 export const MOVE_HANDLE_Y_COLOR = 0x00ff00;
 export const MOVE_HANDLE_HOVER_COLOR = 0xffff00;
+
+/**
+ * Rings of the Rotate gizmo (GUI_SPEC.md, Rotate Gizmo, lot 103, decisions
+ * of Noam Q1 to Q3 A): one full ring per axis of the plate, around the
+ * object: its radius is the distance from the center of the object to the
+ * farthest corner of its box, plus ROTATE_RING_GAP_PX, and at least
+ * ROTATE_RING_MIN_RADIUS_PX on the screen. The line is ROTATE_RING_WIDTH_PX
+ * wide; it can be grabbed ROTATE_RING_GRAB_MARGIN_PX around it, only
+ * outside the selected objects (Q3 A: over them, a press goes to the
+ * object, free move). A ring seen almost edge on (cosine between its axis
+ * and the view below ROTATE_RING_EDGE_COSINE) turns with the pointer
+ * along the ring on the screen, not around its center.
+ */
+export const ROTATE_RING_GAP_PX = 12;
+export const ROTATE_RING_MIN_RADIUS_PX = 60;
+export const ROTATE_RING_WIDTH_PX = 3;
+export const ROTATE_RING_GRAB_MARGIN_PX = 6;
+export const ROTATE_RING_SEGMENTS = 128;
+export const ROTATE_RING_EDGE_COSINE = 0.2;
+
+/**
+ * Handles of the Scale gizmo (GUI_SPEC.md, Scale Gizmo, lot 103, decisions
+ * of Noam Q4 A and Q5 B): one handle per axis of the object, from its
+ * center, toward the right, the front or the top of the plate; the handle
+ * (a cube of SCALE_HANDLE_SIZE_PX) is placed SCALE_HANDLE_GAP_PX after the
+ * edge of the box of the object seen from the camera, never on the
+ * object. Only the handle can be grabbed, with SCALE_HANDLE_GRAB_MARGIN_PX
+ * around it. A handle almost along the direction of the camera (cosine
+ * above SCALE_HANDLE_HIDE_COSINE) is hidden. SCALE_MIN_FACTOR: smallest
+ * factor of one drag (the handle crossed over the center).
+ */
+export const SCALE_HANDLE_GAP_PX = 12;
+export const SCALE_HANDLE_SIZE_PX = 12;
+export const SCALE_HANDLE_LINE_RADIUS_PX = 1;
+export const SCALE_HANDLE_GRAB_MARGIN_PX = 6;
+export const SCALE_HANDLE_HIDE_COSINE = 0.97;
+export const SCALE_MIN_FACTOR = 0.01;
+
+/** Color of the Z axis of the gizmos (Rotate, Scale), blue */
+export const GIZMO_Z_COLOR = 0x0000ff;
 
 /**
  * Cursor over the viewport (lot 102, Q5 A): the object under the pointer

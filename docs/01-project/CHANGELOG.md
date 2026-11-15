@@ -3775,7 +3775,7 @@ Release Type:
 Graphical User Interface (Free Move)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-14
@@ -3809,7 +3809,58 @@ Date:
 ## Known Limitations
 
 - The tip is placed from the box of the objects (axes of the plate), not from their exact shape: on a turned object, the tip can be a little away from its edge
-- Rotate and Scale keep the gizmos of Three.js (Q6 A): their rings and handles can still cover a small object; to see again if they hinder
+- Rotate and Scale keep the gizmos of Three.js (Q6 A): their rings and handles can still cover a small object; to see again if they hinder (done in 0.1.103)
+
+## Validation Result
+
+- Windows 11 (2026-11-15): lot 102 version 2 on GitHub (1de4447, identical to the lot, 14 files); npm run check:locales 481 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 556 tests passed and 1 skipped, npm run test:e2e 52 tests passed (Noam)
+- Manual checks 1 to 8 of lot 102 passed (Noam, 2026-11-15)
+
+---
+
+# VERSION 0.1.103
+
+Release Type:
+Graphical User Interface (Rotate Rings, Scale Handles)
+
+Status:
+In Progress
+
+Date:
+2026-11-15
+
+## Added
+
+- Rings of the Rotate gizmo drawn by SlicyWeb (src/renderer/RotateGizmo.ts; request of Noam, outside the phases; answers Q1 to Q3 A; GUI_SPEC.md, Rotate Gizmo), as in Bambu Studio and OrcaSlicer: three full rings X, Y, Z of the plate around the object (or the group): radius = farthest corner of its box + 12 pixels, at least 60 pixels on the screen, 3 pixels wide at every zoom; a ring is grabbed on its line (6 pixels around it) only outside the selected objects: where it passes over them, a press goes to the object (free move); drag: free rotation around the axis, by 15 degrees with Shift, the object placed back on the plate on release, one action of the history; the ring under the pointer in yellow
+- Handles of the Scale gizmo drawn by SlicyWeb (src/renderer/ScaleGizmo.ts; answers Q4 A and Q5 B; GUI_SPEC.md, Scale Gizmo): one handle per axis of the object, a small cube placed 12 pixels after the edge of the box of the object seen from the camera, never on it, 12 pixels at every zoom; only the handle can be grabbed; a drag scales by the ratio of the distances along the handle, one axis or uniform (lock closed, group); handle along the camera hidden; the handle under the pointer in yellow
+- Hand cursor over a Rotate ring (outside the object) and over a Scale handle
+
+## Changed
+
+- src/renderer/TransformGizmo.ts: Move, Rotate and Scale use MoveGizmo, RotateGizmo and ScaleGizmo; its constructor also receives the search of the object under the pointer (ObjectRenderer.pick) for the rings; describeRotateRings(), describeScaleHandles()
+- src/renderer/MoveGizmo.ts: the placement of a tip beside the box (placeTip, boxCorners) and the distance to a segment are shared with the Scale handles (same results; MoveGizmo tests unchanged)
+- src/renderer/ObjectInteraction.ts: hand cursor over a ring or a handle; src/gui/viewport/Viewport.tsx: data-rotate-rings and data-scale-handles for the end-to-end tests; src/constants/ViewportConstants.ts: sizes of the rings and the handles, blue of the axis Z
+- GUI_SPEC.md (Viewport Controls, Rotate Gizmo, Scale Gizmo), TECH_STACK.md (three/examples: Line2 instead of TransformControls), TEST_PLAN.md, FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
+- 0.1.102 Completed with the results of Noam
+
+## Fixed
+
+- Scale gizmo: the blue handle (Z) pointed down, and X left or Y back, on an object turned by 180 degrees around X or Y (rotation typed, optimization, 3MF). The gizmo of Three.js is always in the axes of the object in the Scale mode, and the side of the handles (right, front, top, decision of Noam, Phase 6) was chosen once, in these axes. The side is now chosen on the plate (scaleHandleSides, Q4 A): each handle keeps the color of its axis of the object and goes to the right, the front or the top of the closest axis of the plate. Not turned, nothing changes
+
+## Removed
+
+- The gizmo of Three.js (TransformControls) for Rotate and Scale: its rings (half circles, grab zone about 30 pixels wide over the object), its Scale handles (two cones from the center and the center box, over the object), the center handle of Scale (uniform scale: the lock), the proxy object, the step of 15 degrees given to it with Shift, keepScaleHandles; approved by Noam (Q1 A, Q4, Q5 B). The number 0.1.101 is still kept for lot 101
+
+## Tests
+
+- tests/unit/renderer/RotateGizmo.test.ts (6 tests): radius of the rings (farthest corner + gap, minimum on the screen); rings closed, outside the box; grab of the line with its margin; angle around the axis; steps of 15 degrees
+- tests/unit/renderer/ScaleGizmo.test.ts (12 tests): sides not turned and after 180 degrees; the handle Z above the center of the object, X on the right, Y in front, not turned, after X = 180, Y = 180, Z = 90, Z = 180; the green handle on top after X = 90; handles beside the box at every zoom; handle along the camera hidden; grab of the handle only; factor of a drag
+- tests/e2e/rotate-scale.spec.ts (5 tests): the ring over a cube of 80 mm lets the cube be moved, the ring Z outside turns it around Z only, one action; rings and handles only in their mode; Z on top, X right, Y front, also after X = 180; the cube taken outside the handles, a handle with the lock open changes one axis, Ctrl+Z; after X = 90 the green handle on top changes Scale Y (57 e2e)
+
+## Known Limitations
+
+- The rings are placed from the box of the objects (axes of the plate): on a turned object they can be a little larger than needed
+- Where a ring passes over another object (not selected), the ring is grabbed, as the tips of the Move arrows
 
 ---
 

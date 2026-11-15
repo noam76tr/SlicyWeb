@@ -75,7 +75,7 @@ export interface MoveHandle {
 }
 
 /** Point of the viewport of a point of the scene; null behind the camera */
-function toScreen(
+export function toScreen(
   point: THREE.Vector3,
   camera: THREE.Camera,
   width: number,
@@ -134,7 +134,7 @@ function exitDistance(
 }
 
 /** Millimeters per pixel of the screen at a point of the scene */
-function millimetersPerPixel(
+export function millimetersPerPixel(
   point: THREE.Vector3,
   camera: THREE.Camera,
   height: number,
@@ -157,7 +157,7 @@ function millimetersPerPixel(
 }
 
 /** Direction from the camera to a point of the scene */
-function viewDirection(
+export function viewDirection(
   point: THREE.Vector3,
   camera: THREE.Camera,
 ): THREE.Vector3 {
@@ -166,6 +166,164 @@ function viewDirection(
   }
 
   return camera.getWorldDirection(new THREE.Vector3());
+}
+
+/**
+ * Corners of a box on the screen; null when one is behind the camera.
+ */
+export function boxCorners(
+  bounds: Bounds,
+  camera: THREE.Camera,
+  width: number,
+  height: number,
+): ScreenPoint[] | null {
+  const corners: ScreenPoint[] = [];
+
+  for (const x of [bounds.min.x, bounds.max.x]) {
+    for (const y of [bounds.min.y, bounds.max.y]) {
+      for (const z of [bounds.min.z, bounds.max.z]) {
+        const corner = toScreen(
+          new THREE.Vector3(x, y, z),
+          camera,
+          width,
+          height,
+        );
+
+        if (!corner) {
+          return null;
+        }
+
+        corners.push(corner);
+      }
+    }
+  }
+
+  return corners;
+}
+
+/** Tip of a handle placed along a direction, beside a box */
+export interface PlacedTip {
+  /** Base and point of the tip, in millimeters */
+  base: THREE.Vector3;
+  apex: THREE.Vector3;
+  /** Base and point of the tip on the screen */
+  screenBase: ScreenPoint;
+  screenApex: ScreenPoint;
+}
+
+/**
+ * Tip of a handle from origin along direction (unit vector, in the
+ * scene): its base gap pixels after the outline of the corners on the
+ * screen (corners: boxCorners), its point length pixels further. null
+ * when it cannot be placed on the screen (direction along the view, or
+ * behind the camera). Used by the Move arrows and the Scale handles
+ * (lot 103).
+ */
+export function placeTip(
+  camera: THREE.Camera,
+  origin: THREE.Vector3,
+  direction: THREE.Vector3,
+  corners: ScreenPoint[],
+  width: number,
+  height: number,
+  gap: number,
+  length: number,
+): PlacedTip | null {
+  const start = toScreen(origin, camera, width, height);
+
+  if (!start) {
+    return null;
+  }
+
+  // Direction of the axis on the screen
+  const step = toScreen(
+    origin.clone().addScaledVector(direction, 1e-3),
+    camera,
+    width,
+    height,
+  );
+
+  if (!step) {
+    return null;
+  }
+
+  const stepLength = Math.hypot(step[0] - start[0], step[1] - start[1]);
+
+  if (stepLength < 1e-9) {
+    return null;
+  }
+
+  const dir: ScreenPoint = [
+    (step[0] - start[0]) / stepLength,
+    (step[1] - start[1]) / stepLength,
+  ];
+
+  /** Distance on the screen of the point of the axis at t mm */
+  const screenDistance = (t: number): number | null => {
+    const point = toScreen(
+      origin.clone().addScaledVector(direction, t),
+      camera,
+      width,
+      height,
+    );
+
+    return point
+      ? (point[0] - start[0]) * dir[0] + (point[1] - start[1]) * dir[1]
+      : null;
+  };
+
+  /** Millimeters along the axis for a distance on the screen */
+  const parameterAt = (distance: number): number | null => {
+    let low = 0;
+    let high = 1;
+
+    for (;;) {
+      const reached = screenDistance(high);
+
+      if (reached === null || high > 1e7) {
+        return null;
+      }
+
+      if (reached >= distance) {
+        break;
+      }
+
+      low = high;
+      high *= 2;
+    }
+
+    for (let i = 0; i < 50; i += 1) {
+      const middle = (low + high) / 2;
+      const reached = screenDistance(middle);
+
+      if (reached !== null && reached >= distance) {
+        high = middle;
+      } else {
+        low = middle;
+      }
+    }
+
+    return high;
+  };
+
+  const baseDistance = exitDistance(start, dir, corners) + gap;
+  const baseParameter = parameterAt(baseDistance);
+  const apexParameter = parameterAt(baseDistance + length);
+
+  if (baseParameter === null || apexParameter === null) {
+    return null;
+  }
+
+  const base = origin.clone().addScaledVector(direction, baseParameter);
+  const apex = origin.clone().addScaledVector(direction, apexParameter);
+  const screenBase = toScreen(base, camera, width, height);
+  const screenApex = toScreen(apex, camera, width, height);
+
+  if (!screenBase || !screenApex) {
+    return null;
+  }
+
+  return { base, apex, screenBase, screenApex };
 }
 
 /**
@@ -187,29 +345,9 @@ export function placeMoveHandles(
   }
 
   const origin = new THREE.Vector3(center.x, center.y, center.z);
-  const start = toScreen(origin, camera, width, height);
-  const corners: ScreenPoint[] = [];
+  const corners = boxCorners(bounds, camera, width, height);
 
-  for (const x of [bounds.min.x, bounds.max.x]) {
-    for (const y of [bounds.min.y, bounds.max.y]) {
-      for (const z of [bounds.min.z, bounds.max.z]) {
-        const corner = toScreen(
-          new THREE.Vector3(x, y, z),
-          camera,
-          width,
-          height,
-        );
-
-        if (!corner) {
-          return [];
-        }
-
-        corners.push(corner);
-      }
-    }
-  }
-
-  if (!start) {
+  if (!corners || !toScreen(origin, camera, width, height)) {
     return [];
   }
 
@@ -223,107 +361,31 @@ export function placeMoveHandles(
       continue;
     }
 
-    // Direction of the axis on the screen
-    const step = toScreen(
-      origin.clone().addScaledVector(direction, 1e-3),
+    const tip = placeTip(
       camera,
+      origin,
+      direction,
+      corners,
       width,
       height,
+      MOVE_HANDLE_GAP_PX,
+      MOVE_HANDLE_TIP_LENGTH_PX,
     );
 
-    if (!step) {
+    if (!tip) {
       continue;
     }
 
-    const length = Math.hypot(step[0] - start[0], step[1] - start[1]);
-
-    if (length < 1e-9) {
-      continue;
-    }
-
-    const dir: ScreenPoint = [
-      (step[0] - start[0]) / length,
-      (step[1] - start[1]) / length,
-    ];
-
-    /** Distance on the screen of the point of the axis at t mm */
-    const screenDistance = (t: number): number | null => {
-      const point = toScreen(
-        origin.clone().addScaledVector(direction, t),
-        camera,
-        width,
-        height,
-      );
-
-      return point
-        ? (point[0] - start[0]) * dir[0] + (point[1] - start[1]) * dir[1]
-        : null;
-    };
-
-    /** Millimeters along the axis for a distance on the screen */
-    const parameterAt = (distance: number): number | null => {
-      let low = 0;
-      let high = 1;
-
-      for (;;) {
-        const reached = screenDistance(high);
-
-        if (reached === null || high > 1e7) {
-          return null;
-        }
-
-        if (reached >= distance) {
-          break;
-        }
-
-        low = high;
-        high *= 2;
-      }
-
-      for (let i = 0; i < 50; i += 1) {
-        const middle = (low + high) / 2;
-        const reached = screenDistance(middle);
-
-        if (reached !== null && reached >= distance) {
-          high = middle;
-        } else {
-          low = middle;
-        }
-      }
-
-      return high;
-    };
-
-    const baseDistance = exitDistance(start, dir, corners) + MOVE_HANDLE_GAP_PX;
-    const baseParameter = parameterAt(baseDistance);
-    const apexParameter = parameterAt(baseDistance + MOVE_HANDLE_TIP_LENGTH_PX);
-
-    if (baseParameter === null || apexParameter === null) {
-      continue;
-    }
-
-    const base = origin.clone().addScaledVector(direction, baseParameter);
-    const apex = origin.clone().addScaledVector(direction, apexParameter);
-    const screenBase = toScreen(base, camera, width, height);
-    const screenApex = toScreen(apex, camera, width, height);
-
-    if (!screenBase || !screenApex) {
-      continue;
-    }
-
-    const perPixel = millimetersPerPixel(base, camera, height);
+    const perPixel = millimetersPerPixel(tip.base, camera, height);
 
     handles.push({
       axis,
       origin: origin.clone(),
-      base,
-      apex,
+      ...tip,
       radius: MOVE_HANDLE_TIP_RADIUS_PX * perPixel,
       lineRadius:
         MOVE_HANDLE_LINE_RADIUS_PX *
         millimetersPerPixel(origin, camera, height),
-      screenBase,
-      screenApex,
     });
   }
 
@@ -343,23 +405,10 @@ export function hitMoveHandle(
   let bestDistance = MOVE_HANDLE_TIP_RADIUS_PX + MOVE_HANDLE_GRAB_MARGIN_PX;
 
   for (const handle of handles) {
-    const [ax, ay] = handle.screenBase;
-    const ex = handle.screenApex[0] - ax;
-    const ey = handle.screenApex[1] - ay;
-    const squared = ex * ex + ey * ey;
-    const u =
-      squared > 0
-        ? Math.min(
-            1,
-            Math.max(
-              0,
-              ((point[0] - ax) * ex + (point[1] - ay) * ey) / squared,
-            ),
-          )
-        : 0;
-    const distance = Math.hypot(
-      point[0] - (ax + u * ex),
-      point[1] - (ay + u * ey),
+    const distance = segmentDistance(
+      point,
+      handle.screenBase,
+      handle.screenApex,
     );
 
     if (distance <= bestDistance) {
@@ -369,6 +418,27 @@ export function hitMoveHandle(
   }
 
   return best;
+}
+
+/** Distance on the screen from a point to the segment a, b */
+export function segmentDistance(
+  point: ScreenPoint,
+  a: ScreenPoint,
+  b: ScreenPoint,
+): number {
+  const [ax, ay] = a;
+  const ex = b[0] - ax;
+  const ey = b[1] - ay;
+  const squared = ex * ex + ey * ey;
+  const u =
+    squared > 0
+      ? Math.min(
+          1,
+          Math.max(0, ((point[0] - ax) * ex + (point[1] - ay) * ey) / squared),
+        )
+      : 0;
+
+  return Math.hypot(point[0] - (ax + u * ex), point[1] - (ay + u * ey));
 }
 
 /**

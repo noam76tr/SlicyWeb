@@ -27,8 +27,9 @@
  * (ObjectInteraction); gizmo on the selected object or at the center of
  * the group (TransformGizmo): Move, Rotate, Scale, chosen with the mode
  * buttons over the viewport (GUI) or the keys G, R, S; the tips of the Move
- * arrows are placed beside the selected objects, from their box (lot 102),
- * and the cursor shows what a drag does; the lock of the scale
+ * arrows (lot 102) and the handles of Scale are placed beside the selected
+ * objects, from their box, and the Rotate rings around them (lot 103), and
+ * the cursor shows what a drag does; the lock of the scale
  * (keepProportions) applies to the Scale gizmo as to the Transform section;
  * Escape clears the selection (GUI_SPEC.md, Keyboard Shortcuts).
  *
@@ -273,6 +274,28 @@ interface ViewportProps {
   onTransformGesture: (objectIds: string[], phase: "start" | "end") => void;
 }
 
+/**
+ * Writes the handles of a gizmo on the screen in a data attribute of the
+ * container (end-to-end tests); removed when the gizmo is hidden
+ */
+function describeHandles(
+  container: HTMLElement,
+  key: "moveHandles" | "rotateRings" | "scaleHandles",
+  handles: Record<string, [number, number]> | null,
+): void {
+  const described = handles ? JSON.stringify(handles) : "";
+
+  if ((container.dataset[key] ?? "") === described) {
+    return;
+  }
+
+  if (described) {
+    container.dataset[key] = described;
+  } else {
+    delete container.dataset[key];
+  }
+}
+
 export default function Viewport({
   label,
   unavailableMessage,
@@ -337,6 +360,7 @@ export default function Viewport({
       (transforms, live) => onTransformRef.current(transforms, live),
       (dragging) => cameraManager.setControlsEnabled(!dragging),
       (objectIds, phase) => onGestureRef.current(objectIds, phase),
+      (raycaster) => objectRenderer.pick(raycaster),
     );
     gizmo.setMode(useViewportStore.getState().transformMode);
     gizmo.setUniform(useViewportStore.getState().keepProportions);
@@ -390,16 +414,11 @@ export default function Viewport({
       cameraManager.update();
       gizmo.update();
 
-      // Tips of the Move arrows on the screen, read by the end-to-end tests
-      const handles = gizmo.describeMoveHandles();
-      const described = handles ? JSON.stringify(handles) : "";
-      if ((container.dataset.moveHandles ?? "") !== described) {
-        if (described) {
-          container.dataset.moveHandles = described;
-        } else {
-          delete container.dataset.moveHandles;
-        }
-      }
+      // Handles of the gizmos on the screen, read by the end-to-end tests:
+      // tips of the Move arrows, Rotate rings, Scale handles
+      describeHandles(container, "moveHandles", gizmo.describeMoveHandles());
+      describeHandles(container, "rotateRings", gizmo.describeRotateRings());
+      describeHandles(container, "scaleHandles", gizmo.describeScaleHandles());
       cubeRef.current?.update(cameraManager.getCamera().quaternion);
       workspace.updateGridSpacing(
         cameraManager.getPixelsPerMillimeter(rendererManager.getHeight()),

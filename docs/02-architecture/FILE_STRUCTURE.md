@@ -451,6 +451,8 @@ src/renderer/
 ├── ObjectInteraction.ts       = click to select, drag an object on the build plate (Phase 6), cursor (lot 102)
 ├── TransformGizmo.ts          = Move, Rotate and Scale gizmos of the selected object (Phase 6)
 ├── MoveGizmo.ts               = arrows of the Move gizmo, tips beside the object (lot 102)
+├── RotateGizmo.ts             = rings of the Rotate gizmo, around the object (lot 103)
+├── ScaleGizmo.ts              = handles of the Scale gizmo, beside the object (lot 103)
 ├── NavigationCube.ts          = layout of the navigation cube from the camera orientation (lot 74)
 ├── SelectionRenderer.ts
 └── helpers/

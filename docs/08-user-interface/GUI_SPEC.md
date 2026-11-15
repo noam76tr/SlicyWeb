@@ -1025,7 +1025,7 @@ Left mouse (objects):
 - a drag that starts in the empty space draws a selection rectangle (Multi Selection);
 - a press on a handle of the gizmo is left to the gizmo.
 
-Cursor (lot 102): over an object, the move cursor (four arrows), in every gizmo mode; over the tip of a Move arrow, a hand; elsewhere, and over a handle of Rotate or Scale, the normal cursor. On a model of about a million triangles, the cursor is updated once the pointer rests (80 ms), so that the view stays fluid.
+Cursor (lot 102, lot 103): over an object, the move cursor (four arrows), in every gizmo mode; over the tip of a Move arrow, a ring of Rotate (outside the object) or a handle of Scale, a hand; elsewhere, the normal cursor. On a model of about a million triangles, the cursor is updated once the pointer rests (80 ms), so that the view stays fluid.
 
 
 
@@ -1237,7 +1237,14 @@ Incremental
 ```
 
 Free by default; with Shift held, by steps of 15 degrees.
-The gizmo shows three rings, one per axis of the build plate. As in Bambu Studio and OrcaSlicer, during the gesture the object turns freely around its center (it may go under the plate for a moment); on release it is placed back on the plate: only Position Z changes, the rotation and Position X, Y (center of the object) are kept. Rotations typed in the Transform section are placed on the plate at once.
+The gizmo shows three rings, one per axis of the build plate.
+
+Rings (lot 103, decisions of Noam Q1 to Q3 A), drawn by SlicyWeb, as in Bambu Studio and OrcaSlicer:
+- full rings, X (red), Y (green), Z (blue), around the center of the object (of the group when several objects are selected);
+- the rings are around the object: their radius is the distance from the center to the farthest corner of the box of the object, plus 12 pixels, and at least 60 pixels on the screen; they never touch the object in 3D; they are large on a large object and small on a small one; the line is 3 pixels wide at every zoom;
+- a ring is grabbed on its line, with 6 pixels around it, only outside the selected objects: where a ring passes in front of the object on the screen, the line is drawn but a press goes to the object (free move, Viewport Controls); every ring always has a part outside the object;
+- the ring under the pointer is drawn in yellow; the rings are drawn over the objects;
+- a ring seen almost edge on turns the object as the pointer moves along the ring on the screen. As in Bambu Studio and OrcaSlicer, during the gesture the object turns freely around its center (it may go under the plate for a moment); on release it is placed back on the plate: only Position Z changes, the rotation and Position X, Y (center of the object) are kept. Rotations typed in the Transform section are placed on the plate at once.
 
 
 
@@ -1263,7 +1270,15 @@ Non Uniform
 
 ```
 
-One handle per axis of the object, on one side only: X on the right, Y in front, Z on top; and the center handle, which scales uniformly (decision of Noam, Phase 6).
+One handle per axis of the object, on one side only: X on the right, Y in front, Z on top (decision of Noam, Phase 6).
+
+Handles (lot 103, decisions of Noam Q4 A and Q5 B), drawn by SlicyWeb, like the Move arrows:
+- each handle keeps the color of its axis of the object: red changes Scale X, green Scale Y, blue Scale Z (the fields of the Transform section);
+- the side is chosen on the build plate: the handle of an axis of the object goes to the right, the front or the top of the axis of the plate closest to it, also when the object is turned (after X = 180 degrees, the blue handle is on top again; after X = 90 degrees, the axis Z of the object lies down: the green handle is on top and the blue one in front);
+- the handle (a small cube, 12 pixels at every zoom) is placed 12 pixels after the edge of the box of the object as seen from the camera, never on the object; only the handle can be grabbed (with 6 pixels around it): a press on the line, or anywhere on the object, goes to the object (free move);
+- a drag of a handle scales by the ratio of the distances from the center along the handle; one action of the history;
+- a handle almost along the direction of the camera is hidden; the handle under the pointer is drawn in yellow;
+- no center handle: the uniform scale is made with the lock closed (it was a handle of the Three.js gizmo, removed with it, Q5 B).
 
 The lock of the Scale row (Transform Section) applies to the gizmo too: closed, every handle scales uniformly; open, an axis handle scales along that axis of the object only. After a change the object is placed back on the plate.
 

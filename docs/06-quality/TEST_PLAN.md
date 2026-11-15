@@ -766,6 +766,33 @@ Free move and Move arrows (lot 102; GUI_SPEC.md, Move Gizmo):
     grab and the cube can be taken anywhere; a large object; a group; the
     views Top and Front (arrow Y hidden)
 
+Rotate rings and Scale handles (lot 103; GUI_SPEC.md, Rotate Gizmo,
+Scale Gizmo):
+  unit (RotateGizmo.test.ts): radius of the rings = farthest corner of the
+    box + 12 px, at least 60 px on the screen; three closed rings, every
+    point outside the box; the line grabbed with its margin, not the
+    inside of the ring; angle of the pointer around the axis, ray
+    parallel to the plane; steps of 15 degrees with Shift
+  unit (ScaleGizmo.test.ts): sides right, front, top on an object not
+    turned and after half a turn around X or Y; the handle Z above the
+    center of the object, X on the right (+X), Y in front (-Y), not
+    turned, after X = 180, Y = 180, Z = 90 and Z = 180; the handle Y
+    (green) on top after X = 90; handles beside the box, 12 px at every
+    zoom; handle along the camera hidden; grab of the handle only, never
+    the center; factor of a drag
+  end to end (tests/e2e/rotate-scale.spec.ts): a cube of 80 mm: where the
+    ring X passes over it, a drag moves it (move cursor), a drag of the
+    ring Z outside it turns it around Z only, one action; rings only in
+    the Rotate mode, handles only in the Scale mode; Scale: Z on top, X
+    on the right, Y in front, not turned and after X = 180; the cube
+    grabbed outside the handles, the handle Z with the lock open changes
+    Scale Z only, Ctrl+Z; after X = 90, the green handle on top changes
+    Scale Y only
+  manual (Noam): a cube of 20 mm in the Rotate mode, taken anywhere
+    outside the lines; turned X = 180, the blue handle on top; turned
+    X = 90, the green handle on top changes Scale Y; in the Scale mode,
+    the cube taken anywhere outside the handles
+
 Mesh defects (lot 91):
   unit (ModelAnalyzer.test.ts): two cubes touching along an edge: closed,
     not manifold, volume exact; an edge with three triangles: open; a cube:

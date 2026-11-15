@@ -24,8 +24,8 @@
  *
  * Cursor (lot 102, decision of Noam Q5 A): over an object, the move
  * cursor, in every mode (a drag on an object always moves it); over a tip
- * of the Move arrows, a hand; elsewhere, and over a handle of Rotate or
- * Scale, the normal cursor. The object under the pointer is looked for at
+ * of the Move arrows, a ring of Rotate or a handle of Scale (lot 103), a
+ * hand; elsewhere, the normal cursor. The object under the pointer is looked for at
  * most once per frame, only after a rest of the pointer when one search
  * is slow (HOVER_PICK_SLOW_MS).
  *
@@ -391,13 +391,8 @@ export class ObjectInteraction {
 
     const gizmo = this.options.getGizmoHover();
 
-    if (gizmo === "move-handle") {
+    if (gizmo === "move-handle" || gizmo === "handle") {
       this.setCursor("pointer");
-      return;
-    }
-
-    if (gizmo === "handle") {
-      this.setCursor("");
       return;
     }
 
