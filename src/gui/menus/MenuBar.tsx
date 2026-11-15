@@ -372,10 +372,21 @@ export default function MenuBar(): JSX.Element {
   const optimizing = useOptimizationTaskStore((state) => state.running);
   const focusTarget = useRef<string | null>(null);
 
-  /** Element of focusId of the item chosen, otherwise the menu title */
+  /**
+   * Element of focusId of the item chosen, otherwise the menu title; when
+   * the item opened a window (Delete Objects, Manage Printers…), the focus
+   * stays where the window put it: given back to the menu title at the
+   * end of its closing animation, it left the Delete button of the
+   * confirmation, and Enter opened the menu again (lot 102, slow PC)
+   */
   const finalFocus = (): HTMLElement | boolean => {
     const id = focusTarget.current;
     focusTarget.current = null;
+
+    if (document.querySelector('[role="dialog"][data-open]')) {
+      return false;
+    }
+
     return (id && document.getElementById(id)) || true;
   };
 

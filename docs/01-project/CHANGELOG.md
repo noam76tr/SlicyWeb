@@ -3793,6 +3793,10 @@ Date:
 - GUI_SPEC.md (Viewport Controls, Move Gizmo), TEST_PLAN.md, FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md
 - 0.1.100 Completed with the results of Noam
 
+## Fixed
+
+- Menus (src/gui/menus/MenuBar.tsx): an item that opens a window (Edit > Delete with several objects, Manage Printers, Manage Filaments) no longer gives the focus back to the menu title when the menu closes; on a slow PC this came at the end of the closing animation of the menu, after the window had focused its Delete button, and Enter then opened the menu again instead of deleting (tests/e2e/edit.spec.ts "asks before deleting several objects" failed twice on the PC of Noam; reproduced with the processor slowed down 8 times: 0 of 6 passed before, 6 of 6 after). The behavior validated in lot 100 is unchanged
+
 ## Removed
 
 - Move mode: the arrows of the TransformControls of Three.js (two per axis) and the plane handle (blue square, free move); the move of a group by the TransformControls (its part in TransformGizmo.groupTransforms); approved by Noam (Q1 A and Q4 A). The number 0.1.101 is kept for the lot of the warning outside the plate and Arrange (questions asked, lot 101)
