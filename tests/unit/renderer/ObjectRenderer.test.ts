@@ -164,3 +164,29 @@ describe("Overhang Display (lot 82)", () => {
     expect(red(scene, "a")).toBeUndefined();
   });
 });
+
+describe("Plate Check colors (lot 101)", () => {
+  function color(scene: THREE.Scene, objectId: string): number {
+    const mesh = scene.getObjectByName(`object-${objectId}`) as THREE.Mesh;
+    return (mesh.material as THREE.MeshStandardMaterial).color.getHex();
+  }
+
+  it("draws an object out of the build volume in orange, bright when selected", () => {
+    const scene = new THREE.Scene();
+    const objects = new ObjectRenderer(scene);
+
+    objects.sync(
+      [cube("a", 0), cube("b", 50), cube("c", -50)],
+      ["a", "c"],
+      ["a", "b"],
+    );
+
+    expect(color(scene, "a")).toBe(0xffb020);
+    expect(color(scene, "b")).toBe(0xa86a08);
+    expect(color(scene, "c")).toBe(0x4fa3ff);
+
+    objects.sync([cube("a", 0), cube("b", 50), cube("c", -50)], ["a"], []);
+    expect(color(scene, "a")).toBe(0x4fa3ff);
+    expect(color(scene, "b")).toBe(0xb4b8c0);
+  });
+});

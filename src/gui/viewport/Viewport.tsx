@@ -39,6 +39,10 @@
  * is up to date: nothing during a rotation or a scale, until the object is
  * analyzed again. The viewport only draws them: it computes nothing.
  *
+ * Plate Check (lot 101): the objects out of the build volume, found by
+ * PlateCheckService (plate check store), are drawn in orange, also during
+ * a gesture; the viewport only draws them.
+ *
  * Domain: Viewport (DOMAINS_DEPENDENCY_MATRIX.md). It does not depend
  * on the GUI: the GUI mounts it and passes its translated label, and the
  * function that applies a transform (TransformService).
@@ -50,7 +54,7 @@
  * Based on:
  * - ARCHITECTURE.md
  * - GUI_SPEC.md (3D Viewport, Viewport Controls, Camera Views, Navigation Cube,
- *   Overhang Display)
+ *   Overhang Display, Plate Check)
  * - FILE_STRUCTURE.md
  * - DECISIONS.md (ADR-027, ADR-031)
  */
@@ -75,6 +79,7 @@ import {
 import { useAnalysisStore } from "../../state/analysisStore";
 import { useAnalysisTaskStore } from "../../state/analysisTaskStore";
 import { useObjectStore } from "../../state/objectStore";
+import { usePlateCheckStore } from "../../state/plateCheckStore";
 import { usePrinterStore } from "../../state/printerStore";
 import {
   useViewportStore,
@@ -441,8 +446,10 @@ export default function Viewport({
     // Objects of the scene (imported models)
     const syncObjects = (): void => {
       const { objects, selectedObjectIds } = useObjectStore.getState();
-      objectRenderer.sync(objects, selectedObjectIds);
+      const { outsideObjectIds } = usePlateCheckStore.getState();
+      objectRenderer.sync(objects, selectedObjectIds, outsideObjectIds);
       syncOverhangs();
+      container.dataset.outsideObjects = String(outsideObjectIds.length);
 
       const selected = objects.filter((object) =>
         selectedObjectIds.includes(object.objectId),
@@ -456,6 +463,15 @@ export default function Viewport({
     };
     syncObjects();
     const unsubscribeObjects = useObjectStore.subscribe(syncObjects);
+    // Objects out of the build volume, in orange (lot 101); their number is
+    // read by the end-to-end tests
+    const unsubscribePlateCheck = usePlateCheckStore.subscribe(
+      (state, previous) => {
+        if (state.outsideObjectIds !== previous.outsideObjectIds) {
+          syncObjects();
+        }
+      },
+    );
     const unsubscribeAnalyses = useAnalysisStore.subscribe(
       (state, previous) => {
         if (state.analysis !== previous.analysis) {
@@ -547,6 +563,7 @@ export default function Viewport({
       unsubscribePrinter();
       unsubscribeOverhangs();
       unsubscribeAnalyses();
+      unsubscribePlateCheck();
       unsubscribeObjects();
       resizeObserver.disconnect();
       interaction.dispose();

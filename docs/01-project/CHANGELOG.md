@@ -3824,7 +3824,7 @@ Release Type:
 Graphical User Interface (Rotate Rings, Scale Handles)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-15
@@ -3861,6 +3861,56 @@ Date:
 
 - The rings are placed from the box of the objects (axes of the plate): on a turned object they can be a little larger than needed
 - Where a ring passes over another object (not selected), the ring is grabbed, as the tips of the Move arrows
+
+## Validation Result
+
+- Windows 11 (2026-11-15): lot 103 on GitHub (94754c8, identical to the lot, 17 files); npm run check:locales 481 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 574 tests passed and 1 skipped, npm run test:e2e 57 tests passed (Noam)
+- Manual checks 1 to 10 of lot 103 passed (Noam, 2026-11-15)
+
+---
+
+# VERSION 0.1.101
+
+Release Type:
+Graphical User Interface (Plate Check, Arrange)
+
+Status:
+In Progress
+
+Date:
+2026-11-16
+
+## Added
+
+- Plate Check (request of Noam, outside the phases, before Phase 12; decision 103: answers Q1 to Q10 A; GUI_SPEC.md, Plate Check): as soon as an object goes out of the build volume of the selected printer (box seen from above out of the plate, or higher than the build height), it is drawn in orange in the 3D viewport (bright when selected, darker otherwise; also during a gesture), its row of the Object Panel shows the warning icon, and one message over the viewport says "cube is outside the build volume" or "3 objects are outside the build volume" (SCN_001, warning, no Close button, goes away by itself; message and icon at the end of a gesture). No printer: no warning. Nothing saved
+- Arrange (Edit > Arrange, key A, button Arrange next to Optimize; GUI_SPEC.md, Edit Menu): all the objects placed on the plate without contact, in rows (the deepest first, left to right, then toward the back), 5 mm apart, the block centered; orientation never changed; the objects that do not fit in a row to the right of the plate, outside it; without a printer, the block centered on the origin; one action ARRANGE (UNDO_REDO_SPEC.md 2.5.0); the selection kept
+- src/scene/ObjectBounds.ts, src/scene/PlateLayout.ts, src/state/plateCheckStore.ts, src/services/PlateCheckService.ts, src/services/ArrangeService.ts, src/gui/plate/PlateMessage.tsx
+- 3 keys in the three languages (edit.arrange, plate.outsideOne, plate.outsideMany): 484 keys
+- ERROR_CODES_SPEC.md 2.7.0: Scene Errors, SCN_001
+
+## Changed
+
+- Duplicate (remark of Noam on lot 100, Q10 A): the copy goes to a free place inside the build plate, to the right of the group when that place is free, otherwise the free place nearest to the group; the other objects never move; no free place or no printer: to the right of the group, 5 mm from it, as in 0.1.100, with the warning when it goes out of the plate (src/services/ObjectEditService.ts)
+- src/state/historyStore.ts: type ARRANGE; src/services/TransformService.ts: option actionType "ARRANGE"; src/renderer/ObjectRenderer.ts: orange materials; src/constants/ViewportConstants.ts: OUTSIDE_SELECTED_OBJECT_COLOR, OUTSIDE_OBJECT_COLOR; src/gui/viewport/Viewport.tsx: objects out in orange, data-outside-objects for the end-to-end tests
+- src/gui/sidebar/LeftSidebar.tsx, src/gui/import/ImportDropZone.tsx, src/gui/toolbars/Toolbar.tsx, src/gui/menus/MenuBar.tsx, src/gui/hooks/useEditShortcuts.ts, src/gui/App.tsx
+- GUI_SPEC.md (Edit Menu: Arrange, place of the copy; Toolbar Buttons; Plate Check; Keyboard Shortcuts: A; Error Handling UI), UNDO_REDO_SPEC.md 2.5.0 (Arrange Actions, Action Types), TEST_PLAN.md, FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md, PASSATION.md (decision 103; rule: LOTn.md and LOTn-QUESTIONS.md in docs/lots/)
+- docs/lots/LOT101.md and docs/lots/LOT101-QUESTIONS.md (rule of Noam, 2026-11-16: the notes of each lot on GitHub with the lot)
+- 0.1.103 Completed with the results of Noam
+
+## Tests
+
+- tests/unit/scene/PlateLayout.test.ts (12 tests): inside against an edge, outside in X, in Y, too high; rows without contact, block centered, deepest first; new row toward the back; objects too wide or too high and the rest when the plate is full to the right of the plate; block centered on the origin without a printer; place of a copy to the right, nearest free place against the right edge, past a neighbour, none on a full plate
+- tests/unit/services/Arrange.test.ts (10 tests): plate check after a move and a change of printer, none without a printer, too high, reported at the end of a gesture; Arrange (all objects, X and Y only, selection kept, one action ARRANGE, undo and redo), nothing when nothing moves or during a gesture, without a printer; Duplicate to the right, inside the plate near the right edge, to the right with the warning on a full plate, group as a block
+- tests/unit/renderer/ObjectRenderer.test.ts (1 test): orange bright and darker, accent color back once inside
+- tests/e2e/plate.spec.ts (2 tests): message, icon and orange count when the cube leaves the plate, none without a printer, inside against the right edge; key A and the button Arrange; Ctrl+Z; Ctrl+D against the right edge puts the copy inside the plate; message for two objects (59 e2e)
+- tests/e2e/app.spec.ts: 9 buttons in the toolbar (Arrange added)
+
+## Known Limitations
+
+- An object is taken as its box seen from above: a turned object whose box only goes beyond the plate is shown out (Q1 A); Arrange does not nest objects in one another (Q7 A)
+- The box of an object around its position is computed both by the viewport (Move gizmo, lot 102) and by ObjectBounds (this lot): same computation, kept apart so as not to remove code from Viewport.tsx without the approval of Noam
+- No warning for objects that overlap each other (not asked; Arrange separates them)
+- On a narrow window, the messages over the viewport can pass under the buttons Move, Rotate, Scale and Overhangs (already the case for the messages of the import; remark of lot 98, a lot of its own if Noam wants it)
 
 ---
 

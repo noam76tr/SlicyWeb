@@ -16,7 +16,10 @@
  * the scene has no object, or no printer or no material is selected
  * (ADR-035 D11). Optimize (Phase 11 lot 98) does the same as Tools >
  * Optimize Orientation (OptimizationService); it is disabled while the
- * scene has no object or while a search runs (ADR-036 D4). The other
+ * scene has no object or while a search runs (ADR-036 D4). Arrange (lot
+ * 101, Q5 A), next to Optimize, does the same as Edit > Arrange and the
+ * key A (ArrangeService); it is disabled while the scene has no object.
+ * The other
  * buttons are visible and
  * disabled until the phase that provides their action. They use aria-disabled
  * instead of disabled, so that their tooltip ("available in a later
@@ -31,6 +34,7 @@
 
 import { Fragment } from "react";
 import {
+  LayoutGrid,
   Redo2,
   RotateCcw,
   Save,
@@ -43,6 +47,7 @@ import {
 } from "lucide-react";
 
 import { AnalysisService } from "../../services/AnalysisService";
+import { ArrangeService } from "../../services/ArrangeService";
 import { optimizeOrientation } from "../../services/OptimizationService";
 import { generateRecommendations } from "../../services/RecommendationService";
 import { TransformService } from "../../services/TransformService";
@@ -128,6 +133,15 @@ const TOOLBAR_GROUPS: ToolbarButtonDefinition[][] = [
       needsObjects: true,
       needsNoSearch: true,
       action: optimizeOrientation,
+    },
+    {
+      key: "edit.arrange",
+      icon: LayoutGrid,
+      needsObjects: true,
+      shortcut: "A",
+      action: () => {
+        ArrangeService.arrange();
+      },
     },
     {
       key: "toolbar.generate",

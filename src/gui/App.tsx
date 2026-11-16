@@ -40,6 +40,10 @@
  * and a material are selected, and again after a change of the selection
  * or of the object type (ADR-035 D11).
  *
+ * The objects out of the build volume are found as soon as they go out
+ * (PlateCheckService, lot 101): orange in the viewport, warning icon in
+ * the Object Panel, message over the viewport.
+ *
  * The Printer tab of the Properties Panel is open at every start (lot 95,
  * Q3 B: the tab is not saved).
  *
@@ -55,6 +59,7 @@ import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { formatQuantities } from "../i18n/NumberFormatter";
 import { AnalysisService } from "../services/AnalysisService";
 import { MaterialSelectionService } from "../services/MaterialSelectionService";
+import { PlateCheckService } from "../services/PlateCheckService";
 import { PrinterSelectionService } from "../services/PrinterSelectionService";
 import { RecommendationService } from "../services/RecommendationService";
 import { TransformService } from "../services/TransformService";
@@ -97,6 +102,8 @@ export default function App(): JSX.Element {
   useEffect(() => AnalysisService.start(), []);
 
   useEffect(() => RecommendationService.start(), []);
+
+  useEffect(() => PlateCheckService.start(), []);
 
   const header = (
     <header className="shrink-0">

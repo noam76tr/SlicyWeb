@@ -24,6 +24,9 @@
  *   (ObjectEditService) or delete (DeleteObjectsDialog, confirmation for
  *   several objects) the selected objects; disabled while no object is
  *   selected;
+ * - Edit > Arrange (A) (lot 101, Q5 A): all the objects placed on the
+ *   build plate without contact (ArrangeService); disabled while the scene
+ *   has no object;
  * - Printer > Select Printer (Phase 7): moves the focus to the printer
  *   selector of the Properties Panel (PrinterSection), when the menu
  *   closes (otherwise the menu gives the focus back to its title);
@@ -69,6 +72,7 @@ import { Fragment, useRef } from "react";
 import type { SupportedLanguage } from "../../i18n/LanguageManager";
 import type { PropertiesTab } from "../../types/UserPreferences";
 import { AnalysisService } from "../../services/AnalysisService";
+import { ArrangeService } from "../../services/ArrangeService";
 import { ObjectEditService } from "../../services/ObjectEditService";
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
 import { PropertiesTabService } from "../../services/PropertiesTabService";
@@ -219,6 +223,16 @@ const MENUS: MenuDefinition[] = [
           shortcut: "Del",
           needs: "selection",
           action: deleteSelectedObjects,
+        },
+      ],
+      [
+        {
+          key: "edit.arrange",
+          shortcut: "A",
+          needs: "objects",
+          action: () => {
+            ArrangeService.arrange();
+          },
         },
       ],
       [

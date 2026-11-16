@@ -2,7 +2,7 @@
 
 # UNDO REDO SPECIFICATION
 
-Version: 2.4.0
+Version: 2.5.0
 
 Status: Approved
 
@@ -245,6 +245,8 @@ Phase 6 (Transform System, decision of Noam, 2026-10-20): only the transform act
 Phase 11 (2.3.0, ADR-036 D4; lot 98): Orientation Optimization is undoable (Optimization Actions).
 
 Lot 100 (2.4.0, outside the phases, request of Noam): Delete and Duplicate are undoable (Delete Actions, Duplicate Actions). Import, printer, material and settings actions are still not recorded.
+
+Lot 101 (2.5.0, outside the phases, request of Noam): Arrange Objects is undoable (Arrange Actions).
 
 
 
@@ -816,6 +818,18 @@ Apply Recommendation Again
 
 
 
+# Arrange Actions
+
+
+
+Lot 101 (2.5.0, decision 103 of Noam): Edit > Arrange, the key A and the button Arrange of the toolbar place all the objects of the scene on the build plate (GUI_SPEC.md, Edit Menu, Arrange): one action of type ARRANGE for all the objects moved. before and after hold the transform of each object moved (only Position X and Y change), by objectId; the objects that do not move are not in the action; when no object moves, no action is recorded. Undo puts the objects back where they were, redo arranges them again; both select the objects of the action, as for a group (Multiple Object Transformations). The analysis and the recommendation do not become outdated (a move, ADR-026).
+
+
+
+---
+
+
+
 # Optimization Actions
 
 
@@ -1167,6 +1181,10 @@ CHANGE_SETTINGS
 
 
 OPTIMIZATION
+
+
+
+ARRANGE
 
 
 

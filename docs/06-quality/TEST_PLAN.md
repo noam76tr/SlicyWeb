@@ -793,6 +793,33 @@ Scale Gizmo):
     X = 90, the green handle on top changes Scale Y; in the Scale mode,
     the cube taken anywhere outside the handles
 
+Plate Check, Arrange and place of a copy (lot 101; GUI_SPEC.md, Plate
+Check, Edit Menu; UNDO_REDO_SPEC.md 2.5.0):
+  unit (PlateLayout.test.ts): inside against an edge; outside in X, in Y,
+    higher than the build height; Arrange: rows without contact, 5 mm
+    apart, deepest first, block centered, new row toward the back,
+    objects too wide or too high and the rest of a full plate in a row to
+    the right of the plate, block centered on the origin without a
+    printer; free place of a copy: to the right when free, the nearest
+    one against the right edge, past a neighbour, none on a full plate
+  unit (Arrange.test.ts): Plate Check after a move and a change of
+    printer, none without a printer, too high, message only at the end of
+    a gesture; Arrange: all the objects, X and Y only, selection kept,
+    one action ARRANGE, undo and redo, nothing when nothing moves or
+    during a gesture, without a printer; Duplicate inside the plate, to
+    the right with the warning when no place is free, group as a block
+  unit (ObjectRenderer.test.ts): orange bright when selected, darker
+    otherwise, usual colors once inside
+  end to end (tests/e2e/plate.spec.ts): no warning without a printer;
+    cube out of the plate: orange, message, icon of the Object Panel;
+    inside against the right edge; key A and button Arrange, Ctrl+Z;
+    Ctrl+D against the right edge puts the copy inside the plate; message
+    for two objects
+  manual (Noam): the color while dragging toward the edge, the message at
+    the release; Arrange on his models; Ctrl+D on an object against the
+    right edge of the plate: the copy stays inside the plate (request of
+    Noam, 2026-11-16)
+
 Mesh defects (lot 91):
   unit (ModelAnalyzer.test.ts): two cubes touching along an edge: closed,
     not manifold, volume exact; an edge with three triangles: open; a cube:

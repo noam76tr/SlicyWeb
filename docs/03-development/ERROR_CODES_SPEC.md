@@ -3,7 +3,7 @@
 # ERROR CODES SPECIFICATION
 
 
-Version: 2.6.0
+Version: 2.7.0
 
 Status: Approved
 
@@ -695,6 +695,30 @@ Orientation Search Failed
 ```
 
 Severity: Error, for one object. The mesh of the object is empty or cannot be read, its transform or the build volume of the printer cannot be used, or the computation fails. The orientation of this object does not change; the other objects of the same search are applied. Tools > Optimize Orientation tries again.
+
+
+
+---
+
+
+
+# Scene Errors
+
+
+
+Lot 101 (2.7.0, decision 103 of Noam): the Plate Check of the scene (GUI_SPEC.md, Plate Check).
+
+## SCN_001
+
+
+
+```text
+
+Object Outside The Build Volume
+
+```
+
+Severity: Warning, non-blocking. One or several objects go out of the build volume of the selected printer: their box seen from above goes out of the build plate, or they are higher than the build height. One message over the viewport: "cube is outside the build volume" for one object, "3 objects are outside the build volume" for several. No Close button: the message goes away by itself when every object is back inside (moved, Edit > Arrange, undo, object deleted, other printer). Never shown without a printer. Not saved. The scene checks before an export (SLICER_EXPORT_SPEC.md) are still done at export.
 
 
 

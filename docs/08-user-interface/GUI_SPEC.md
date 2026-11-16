@@ -392,6 +392,10 @@ Delete
 
 
 
+Arrange
+
+
+
 Select All
 
 
@@ -409,7 +413,16 @@ Undo and Redo (Phase 6) undo and redo the last change of transform; they are dis
 Duplicate (Ctrl+D) and Delete (Del) (lot 100, request of Noam) act on the selected objects; they are disabled while no object is selected, and do nothing during a gesture (drag, gizmo). Undo and Redo also undo and redo them (UNDO_REDO_SPEC.md 2.4.0).
 
 - Delete: the objects leave the scene with their analysis and their recommendation (DATA_SCHEMA.md, Object Reference Rule 6). One object is deleted at once; several objects after the Delete Confirmation. Undo puts them back at their place, selected, with their analysis as it was.
-- Duplicate: one copy of each object, with a new objectId, without analysis, recommendation or object type chosen (Object Reference Rule 7); the copy is analyzed by itself, like an imported object. The objects are copied as a block, placed to the right (+X) of the group, 5 mm from it, at the same Y; the copy can be outside the build plate. The copies become the selection. A copy keeps the file name of its original: the Object Panel shows "cube (1)", "cube (2)" (IMPORT_EXPORT_SPEC.md, Duplicate Names).
+- Duplicate: one copy of each object, with a new objectId, without analysis, recommendation or object type chosen (Object Reference Rule 7); the copy is analyzed by itself, like an imported object. The objects are copied as a block (same layout between them). The copies become the selection.
+- Place of the copy (lot 101, request of Noam on lot 100, Q10 A): a free place inside the build plate, found as for Arrange: to the right (+X) of the group, 5 mm from it, at the same Y, when that place is inside the plate and 5 mm away from every other object; otherwise the free place of the plate nearest to the group (the right side first on a tie). The other objects never move. When no place is free, the copy is still made, to the right of the group, 5 mm from it, and gets the warning of the Plate Check. Without a printer (no plate), the copy goes to the right of the group, 5 mm from it. A copy keeps the file name of its original: the Object Panel shows "cube (1)", "cube (2)" (IMPORT_EXPORT_SPEC.md, Duplicate Names).
+
+Arrange (lot 101, decision 103 of Noam, Q5 to Q9 A; shortcut A; also the button Arrange of the toolbar) places all the objects of the scene on the build plate, without contact. It is disabled while the scene has no object and does nothing during a gesture.
+
+- All the objects, always; the selection is not used and does not change (Q6 A).
+- Rows: the deepest object first; each row is filled from left to right, then the next row toward the back (+Y); 5 mm between two objects; the whole block centered on the plate. Each object is taken as its box seen from above; its orientation never changes: only Position X and Y move (Q7 A).
+- The objects that do not fit (wider, deeper or higher than the build volume, or no room left) are put in a row to the right of the plate, outside it, and keep the warning of the Plate Check (Q8 A).
+- Without a printer (no plate), Arrange still works: rows, the block centered on the origin, no limit of size (Q9 A).
+- One action of the history (UNDO_REDO_SPEC.md 2.5.0, Arrange Actions); nothing is recorded when no object moves. A move does not make the analysis outdated (ADR-026).
 
 ## Delete Confirmation
 
@@ -676,6 +689,10 @@ Optimize
 
 
 
+Arrange
+
+
+
 Generate
 
 ```
@@ -685,6 +702,8 @@ Undo and Redo (Phase 6) undo and redo the last change of transform, disabled whi
 Generate (Phase 10, ADR-035 D11) does the same as Tools > Generate Recommendations, with the same rule to be enabled.
 
 Optimize (Phase 11, ADR-036 D4) does the same as Tools > Optimize Orientation, with the same rule to be enabled.
+
+Arrange (lot 101, Q5 A), next to Optimize, does the same as Edit > Arrange (shortcut A), disabled while the scene has no object.
 
 
 
@@ -1105,6 +1124,23 @@ Decision of Noam (2026-11-01, ADR-034 D8 option B), lot 82; choices of Noam (202
 - They are shown only while the analysis of the object is up to date: nothing during a rotation or a scale, until the object is analyzed again; nothing for an object whose analysis failed (ANA_001).
 - The selection does not change the display (a selected object keeps its accent color under the red faces); a hidden object shows nothing; the red faces never stop a click on the object.
 - Turned on and off with the button Overhangs over the viewport and View > Show Overhangs; off at each start, not saved (no setting, nothing in a project).
+
+
+
+---
+
+
+
+# Plate Check
+
+Request of Noam (2026-11-12), lot 101, decision 103 (Q1 to Q4 A): a visible warning as soon as an object goes out of the build volume, not only before an export.
+
+- Rule (Q1 A): an object is out when its box seen from above goes out of the rectangle of the build plate (X or Y; origin at the center of the plate, ADR-028), or when it is higher than the build height (Z) of the selected printer. The rounded corners of the sheet are not counted; an object that touches an edge without going beyond it is inside.
+- Display (Q2 A): the object is drawn in orange (#FFB020, the warning color; the red stays for the overhangs) in the 3D viewport; its row of the Object Panel shows the warning icon in orange instead of its cube icon, with the text of the warning (tooltip, screen readers); one message over the viewport, with the messages of the import: "cube is outside the build volume", or "3 objects are outside the build volume" (SCN_001, warning, blocks nothing). The message has no Close button: it goes away by itself when every object is back inside (moved, Arrange, undo, object deleted, other printer).
+- Selected object (Q3 A): bright orange; not selected: darker orange. The orange comes before the accent color of the selection.
+- When (Q4 A): the color changes during a gesture (drag of the object, of an arrow of the Move gizmo, of a ring of the Rotate gizmo, of a handle of the Scale gizmo); the message and the icon follow at the end of the gesture, so that the text does not blink.
+- Checked again after every change of the objects (import, transform, Arrange, Delete, Duplicate, undo, redo) and of the selected printer. No printer selected: no plate, no warning.
+- Nothing is saved: the check is computed again every time (no field in DATA_SCHEMA.md). The scene checks before an export (SLICER_EXPORT_SPEC.md) are still done at export.
 
 
 
@@ -2059,9 +2095,11 @@ DELETE       Delete Object
 
 CTRL + D     Duplicate (lot 100)
 
+A            Arrange (lot 101)
+
 ```
 
-Delete and Ctrl+D act on the selected objects, not in a text field (the keys keep their usual meaning there), nor in an open window or menu (lot 100). The letter D is read from the key typed, or from the key position when the layout has no Latin letters (Hebrew).
+Delete and Ctrl+D act on the selected objects, not in a text field (the keys keep their usual meaning there), nor in an open window or menu (lot 100). The letter D is read from the key typed, or from the key position when the layout has no Latin letters (Hebrew). A arranges all the objects (Edit Menu, Arrange), with the same rules; Ctrl+A still selects all the objects.
 
 
 
@@ -2289,6 +2327,8 @@ No technical stack traces visible to user.
 Analysis messages (Phase 9, ADR-034 D6; lot 80): ANA_001 (no analysis: empty or unreadable mesh, or failure of the computation) is an error; ANA_002 ("Mesh not closed: volume and wall thickness are approximate") is a warning that does not block: the analysis is shown. Both are translated and shown like the messages of the import.
 
 Lot 80 details: the messages of the analysis are shown under those of the import and stay until closed. ANA_002 is shown over the viewport once per object (not at each new computation); the Analysis section shows it as long as the last analysis of the object found a mesh not closed. After ANA_001, the object is not analyzed again by itself until its rotation or scale changes; Tools > Analyze Models and Recompute Analysis try again.
+
+Plate message (lot 101; Plate Check): SCN_001 ("cube is outside the build volume", "3 objects are outside the build volume") is a warning that blocks nothing, shown under the messages of the import and over those of the analysis, in the warning color, without a Close button: it goes away by itself when every object is back inside the build volume.
 
 
 

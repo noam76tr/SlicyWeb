@@ -10,16 +10,23 @@
  * - duplicate(): one copy of each object (Object Reference Rule 7: new
  *   objectId, no analysis, no recommendation, no category chosen; the
  *   copy is analyzed by itself like an imported object). The objects are
- *   copied as a block, placed to the right (+X) of the group, DUPLICATE_GAP_MM
- *   from it, same Y (lot 100, Q1); the copies become the selection (Q2);
- *   one action DUPLICATE; undo takes the copies out.
+ *   copied as a block (same layout between them), the copies become the
+ *   selection (lot 100, Q2); one action DUPLICATE; undo takes the copies
+ *   out. Place of the block (lot 101, decision 103 of Noam, Q10 A): a free
+ *   place inside the build plate, found as for Arrange (PlateLayout.
+ *   findFreePlace): to the right (+X) of the group, DUPLICATE_GAP_MM from
+ *   it, same Y, when that place is free; otherwise the free place nearest
+ *   to the group. The other objects never move. No free place, or no
+ *   printer (no plate): to the right of the group, DUPLICATE_GAP_MM from
+ *   it, as in lot 100; the copy then gets the off-plate warning when it
+ *   goes out of the plate (PlateCheckService).
  *
  * Nothing is done during a gesture (drag, gizmo). The confirmation asked
  * before deleting several objects is shown by the GUI
  * (DeleteObjectsDialog).
  *
  * Domain: Service. Depends on the Scene Domain (GeometryRegistry,
- * ObjectSnapshots), the Object Management Domain (ObjectDuplicator) and
+ * ObjectSnapshots, ObjectBounds, PlateLayout), the Object Management Domain (ObjectDuplicator) and
  * State Management (DOMAINS_DEPENDENCY_MATRIX.md).
  *
  * Based on:
@@ -30,15 +37,22 @@
 
 import { ObjectDuplicator } from "../object_manager/ObjectDuplicator";
 import { GeometryRegistry } from "../scene/GeometryRegistry";
+import { objectBounds } from "../scene/ObjectBounds";
+import type { Bounds } from "../scene/ObjectTransform";
 import { snapshotObjects, takeOut } from "../scene/ObjectSnapshots";
+import { findFreePlace, OBJECT_GAP_MM, type Shift } from "../scene/PlateLayout";
 import { useHistoryStore } from "../state/historyStore";
 import { useObjectStore } from "../state/objectStore";
+import { usePrinterStore } from "../state/printerStore";
 import type { Object3D } from "../types/Object3D";
 
 import { TransformService } from "./TransformService";
 
-/** Space between the group and its copy, in millimeters (lot 100, Q1) */
-export const DUPLICATE_GAP_MM = 5;
+/**
+ * Space between the group and its copy, in millimeters (lot 100, Q1); the
+ * same space as between two objects arranged (lot 101)
+ */
+export const DUPLICATE_GAP_MM = OBJECT_GAP_MM;
 
 const duplicator = new ObjectDuplicator();
 
@@ -49,6 +63,60 @@ function inSceneOrder(objectIds: string[]): Object3D[] {
   return useObjectStore
     .getState()
     .objects.filter((object) => wanted.has(object.objectId));
+}
+
+/** Box of several boxes (none: null) */
+function unionOf(boxes: Bounds[]): Bounds | null {
+  if (boxes.length === 0) {
+    return null;
+  }
+
+  return boxes.reduce((a, b) => ({
+    min: {
+      x: Math.min(a.min.x, b.min.x),
+      y: Math.min(a.min.y, b.min.y),
+      z: Math.min(a.min.z, b.min.z),
+    },
+    max: {
+      x: Math.max(a.max.x, b.max.x),
+      y: Math.max(a.max.y, b.max.y),
+      z: Math.max(a.max.z, b.max.z),
+    },
+  }));
+}
+
+/**
+ * Shift of the block of copies from the originals (lot 101, Q10 A): the
+ * free place of the plate to the right of the group, or the nearest one;
+ * to the right of the group when no place is free or no printer is
+ * selected.
+ */
+function placeOfCopies(originals: Object3D[], groupWidth: number): Shift {
+  const right: Shift = { dx: groupWidth + DUPLICATE_GAP_MM, dy: 0 };
+  const volume = usePrinterStore.getState().selectedPrinter?.buildVolume;
+  const block = unionOf(
+    originals.flatMap((object) => {
+      const bounds = objectBounds(object);
+      return bounds ? [bounds] : [];
+    }),
+  );
+
+  if (!volume || !block) {
+    return right;
+  }
+
+  // Every object of the scene, originals included, stays where it is
+  const others = useObjectStore.getState().objects.flatMap((object) => {
+    const bounds = objectBounds(object);
+    return bounds ? [bounds] : [];
+  });
+
+  return (
+    findFreePlace(block, others, volume, right, {
+      x: (block.min.x + block.max.x) / 2,
+      y: (block.min.y + block.max.y) / 2,
+    }) ?? right
+  );
 }
 
 export const ObjectEditService = {
@@ -100,13 +168,13 @@ export const ObjectEditService = {
       return [];
     }
 
-    // The block of copies: right of the group, DUPLICATE_GAP_MM from it
-    const shift = group.size.x + DUPLICATE_GAP_MM;
+    const shift = placeOfCopies(originals, group.size.x);
     const store = useObjectStore.getState();
     const count = store.objects.length;
     const copies = originals.map((original) => {
       const copy = duplicator.duplicate(original);
-      copy.transform.position.x += shift;
+      copy.transform.position.x += shift.dx;
+      copy.transform.position.y += shift.dy;
       return { original, copy };
     });
 

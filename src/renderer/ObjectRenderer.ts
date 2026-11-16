@@ -28,6 +28,8 @@ import * as THREE from "three";
 
 import {
   OBJECT_COLOR,
+  OUTSIDE_OBJECT_COLOR,
+  OUTSIDE_SELECTED_OBJECT_COLOR,
   OVERHANG_COLOR,
   SELECTED_OBJECT_COLOR,
 } from "../constants/ViewportConstants";
@@ -170,6 +172,18 @@ export class ObjectRenderer {
     metalness: 0.05,
   });
 
+  private readonly outsideMaterial = new THREE.MeshStandardMaterial({
+    color: OUTSIDE_OBJECT_COLOR,
+    roughness: 0.6,
+    metalness: 0.05,
+  });
+
+  private readonly outsideSelectedMaterial = new THREE.MeshStandardMaterial({
+    color: OUTSIDE_SELECTED_OBJECT_COLOR,
+    roughness: 0.6,
+    metalness: 0.05,
+  });
+
   /** Red triangles of each object, built from these triangle indices */
   private readonly overhangs = new Map<
     string,
@@ -192,11 +206,17 @@ export class ObjectRenderer {
 
   /**
    * Brings the meshes in line with the objects of the scene; the selected
-   * objects (one or several) are shown in the accent color.
+   * objects (one or several) are shown in the accent color, the objects
+   * out of the build volume in orange (bright when selected).
    */
-  public sync(objects: Object3D[], selectedObjectIds: string[]): void {
+  public sync(
+    objects: Object3D[],
+    selectedObjectIds: string[],
+    outsideObjectIds: string[] = [],
+  ): void {
     const present = new Set<string>();
     const selected = new Set(selectedObjectIds);
+    const outside = new Set(outsideObjectIds);
 
     for (const object of objects) {
       const geometry = GeometryRegistry.get(object.objectId);
@@ -227,9 +247,14 @@ export class ObjectRenderer {
         mesh.scale,
       );
       mesh.visible = object.visible;
-      mesh.material = selected.has(object.objectId)
-        ? this.selectedMaterial
-        : this.material;
+      const isSelected = selected.has(object.objectId);
+      mesh.material = outside.has(object.objectId)
+        ? isSelected
+          ? this.outsideSelectedMaterial
+          : this.outsideMaterial
+        : isSelected
+          ? this.selectedMaterial
+          : this.material;
     }
 
     for (const [objectId, mesh] of this.meshes) {
@@ -357,6 +382,8 @@ export class ObjectRenderer {
     this.meshes.clear();
     this.material.dispose();
     this.selectedMaterial.dispose();
+    this.outsideMaterial.dispose();
+    this.outsideSelectedMaterial.dispose();
     this.overhangMaterial.dispose();
   }
 }

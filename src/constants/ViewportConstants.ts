@@ -87,6 +87,15 @@ export const OBJECT_COLOR = 0xb4b8c0;
 export const SELECTED_OBJECT_COLOR = 0x4fa3ff;
 
 /**
+ * Colors of an object out of the build volume (lot 101, decision 103 of
+ * Noam: Q2 A, Q3 A): orange, the warning color of GUI_SPEC.md (#FFB020),
+ * bright when the object is selected, darker otherwise. The orange comes
+ * before the accent color of the selection.
+ */
+export const OUTSIDE_SELECTED_OBJECT_COLOR = 0xffb020;
+export const OUTSIDE_OBJECT_COLOR = 0xa86a08;
+
+/**
  * Faces beyond 45 degrees of the objects (GUI_SPEC.md, Overhang
  * Display, lot 82): red, the red of the axis X
  */

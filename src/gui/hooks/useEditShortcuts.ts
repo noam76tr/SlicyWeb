@@ -2,11 +2,13 @@
  * SlicyWeb
  * Edit Shortcuts
  *
- * Keyboard shortcuts of Delete and Duplicate (lot 100; GUI_SPEC.md,
- * Keyboard Shortcuts):
+ * Keyboard shortcuts of Delete and Duplicate (lot 100) and Arrange (lot
+ * 101) (GUI_SPEC.md, Keyboard Shortcuts):
  * - Delete: deletes the selected objects (confirmation for several,
  *   DeleteObjectsDialog);
- * - Ctrl+D (Cmd+D): duplicates the selected objects (ObjectEditService).
+ * - Ctrl+D (Cmd+D): duplicates the selected objects (ObjectEditService);
+ * - A: arranges all the objects on the plate (ArrangeService; nothing
+ *   during a gesture).
  *
  * Not in a text field (the keys keep their usual meaning there), nor in an
  * open window or menu. The letter is read from the key typed, or from the
@@ -20,6 +22,7 @@
 
 import { useEffect } from "react";
 
+import { ArrangeService } from "../../services/ArrangeService";
 import { ObjectEditService } from "../../services/ObjectEditService";
 import {
   deleteSelectedObjects,
@@ -71,6 +74,11 @@ export function useEditShortcuts(): void {
       } else if (control && shortcutLetter(event) === "d") {
         event.preventDefault();
         ObjectEditService.duplicateSelection();
+      } else if (!control && shortcutLetter(event) === "a") {
+        // Arrange (lot 101, Q5 A); Ctrl+A selects all
+        // (useSelectAllShortcut)
+        event.preventDefault();
+        ArrangeService.arrange();
       }
     };
 

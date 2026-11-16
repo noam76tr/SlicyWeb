@@ -11,7 +11,10 @@
  * it to the selection or removes it; Shift+click selects the range from
  * the last object clicked to this one, as in the Windows File Explorer
  * (Ctrl+Shift+click adds the range) (Phase 6, decisions of Noam).
- * The visibility and lock toggles show the state of the object;
+ * An object out of the build volume shows the warning icon in orange
+ * instead of its cube icon, with the text of the warning for screen
+ * readers and as tooltip (lot 101, Q2 A; updated at the end of a gesture,
+ * Q4 A). The visibility and lock toggles show the state of the object;
  * changing them is not available yet (no store action exists).
  *
  * No business logic.
@@ -22,10 +25,12 @@
  */
 
 import { useMemo, useRef } from "react";
-import { Box, Eye, EyeOff, Lock, LockOpen } from "lucide-react";
+import { Box, Eye, EyeOff, Lock, LockOpen, TriangleAlert } from "lucide-react";
 
 import { useObjectStore } from "../../state/objectStore";
+import { usePlateCheckStore } from "../../state/plateCheckStore";
 import { useTranslation } from "../hooks/useTranslation";
+import { usePlateWarningText } from "../plate/PlateMessage";
 
 import { getDisplayNames } from "./objectNames";
 
@@ -38,6 +43,8 @@ export default function LeftSidebar(): JSX.Element {
     (state) => state.toggleObjectSelection,
   );
   const selectObjects = useObjectStore((state) => state.selectObjects);
+  const reported = usePlateCheckStore((state) => state.reportedObjectIds);
+  const warningText = usePlateWarningText();
 
   // Start of the Shift+click range: the last object clicked without Shift
   const anchor = useRef<string | null>(null);
@@ -57,6 +64,7 @@ export default function LeftSidebar(): JSX.Element {
     <ul className="py-1" aria-label={t("objects.title")}>
       {objects.map((object) => {
         const selected = selectedObjectIds.includes(object.objectId);
+        const outside = reported.includes(object.objectId);
 
         return (
           <li
@@ -110,7 +118,19 @@ export default function LeftSidebar(): JSX.Element {
                 }
               }}
             >
-              <Box className="size-4 shrink-0" aria-hidden="true" />
+              {outside ? (
+                <span
+                  role="img"
+                  aria-label={warningText([object.objectId])}
+                  title={warningText([object.objectId])}
+                  data-outside-icon=""
+                  className="shrink-0 text-warning"
+                >
+                  <TriangleAlert className="size-4" aria-hidden="true" />
+                </span>
+              ) : (
+                <Box className="size-4 shrink-0" aria-hidden="true" />
+              )}
               <span className="truncate">
                 {names.get(object.objectId) ?? object.fileName}
               </span>

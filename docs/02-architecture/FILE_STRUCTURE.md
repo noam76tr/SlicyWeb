@@ -161,6 +161,8 @@ docs/
 ├── 08-user-interface/
 │   └── GUI_SPEC.md                      = Spécification complète de l'interface utilisateur
 │
+├── lots/                                = notes of each lot, LOTn.md and LOTn-QUESTIONS.md (from lot 101)
+│
 ├── 09-reference/
 │   ├── ARCHITECTURE_DECISION_MATRIX.md  = Comparatif et justification des choix techniques
 │   ├── DIRECTORY_PURPOSES.md            = Description du rôle de chaque dossier
@@ -407,6 +409,8 @@ src/gui/
 │   └── AnalysisMessages.tsx   = messages ANA_001 and ANA_002 over the viewport (Phase 9)
 ├── optimization/
 │   └── OptimizationMessages.tsx = message of the result of the orientation search over the viewport (Phase 11)
+├── plate/
+│   └── PlateMessage.tsx       = message SCN_001 over the viewport, objects out of the build volume (lot 101)
 ├── statusbar/
 │   └── StatusBar.tsx
 ├── layouts/
@@ -562,6 +566,8 @@ src/scene/
 ├── GeometryRegistry.ts        = triangle geometry of the objects, by objectId (ADR-029)
 ├── ObjectTransform.ts         = meaning of the transform: matrix, placement on the plate, 3MF export (ADR-031)
 ├── ObjectSnapshots.ts         = objects taken out of the scene and put back as they were (Delete, Duplicate, undo; lot 100)
+├── ObjectBounds.ts            = box of an object on the plate, kept between two moves (lot 101)
+├── PlateLayout.ts             = out of the build volume, Arrange, free place of a copy (lot 101)
 └── SceneIntegration.ts        = registers imported models in the scene (ADR-029, ADR-030)
 ```
 
@@ -789,7 +795,9 @@ src/services/
 ├── ProjectService.ts
 ├── RecommendationService.ts  = recommendation of one object through the engine (Phase 10)
 ├── ImportService.ts           = import queue, progress, cancel and errors for the GUI (ADR-029)
-├── ObjectEditService.ts       = Edit > Delete and Edit > Duplicate, one history action each (lot 100)
+├── ObjectEditService.ts       = Edit > Delete and Edit > Duplicate, one history action each (lot 100), copy inside the plate (lot 101)
+├── ArrangeService.ts          = Edit > Arrange, one history action (lot 101)
+├── PlateCheckService.ts       = objects out of the build volume, as soon as they go out (lot 101)
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
 ├── PrinterSelectionService.ts = printers of the window, last printer (Phase 7)
 ├── MaterialSelectionService.ts = materials and filaments of the window, last choice (Phase 8)
@@ -818,7 +826,8 @@ src/state/
 ├── recommendationTaskStore.ts = errors of the last generation of each recommendation (Phase 10), not saved
 ├── optimizationTaskStore.ts   = orientation search running, messages of the result (Phase 11), not saved
 ├── importStore.ts             = imports in progress and their result
-├── historyStore.ts            = undo and redo stacks (Phase 6; Delete and Duplicate, lot 100)
+├── historyStore.ts            = undo and redo stacks (Phase 6; Delete and Duplicate, lot 100; Arrange, lot 101)
+├── plateCheckStore.ts         = objects out of the build volume (lot 101), not saved
 ├── propertiesPanelStore.ts    = open tab of the Properties Panel (lot 93)
 └── viewportStore.ts           = projection and view presets of the viewport, Overhang Display on or off (lot 82)
 ```
@@ -970,12 +979,14 @@ tests/
 │   │   ├── NavigationCube.test.ts = navigation cube: faces, axes, face looked at (lot 74)
 │   │   └── ObjectRenderer.test.ts = selection rectangle (Phase 6)
 │   ├── scene/
-│   │   └── ObjectTransform.test.ts = Transform Rules (ADR-031)
+│   │   ├── ObjectTransform.test.ts = Transform Rules (ADR-031)
+│   │   └── PlateLayout.test.ts = out of the build volume, Arrange, free place of a copy (lot 101)
 │   ├── schemas/
 │   │   └── AnalysisSchema.test.ts = Complete Analysis Schema, classification null (Phase 9)
 │   ├── storage/
 │   │   └── SettingsStorage.test.ts = settings.json, printer, material and gui settings (Phases 7 and 8, lot 93)
 │   └── services/
+│       ├── Arrange.test.ts = Plate Check, Arrange, copy inside the plate (lot 101)
 │       ├── AnalysisService.test.ts = automatic analysis, gesture, dropped computation, ANA_001, ANA_002, Tools menu (Phase 9)
 │       ├── GroupTransform.test.ts = several objects selected (Phase 6)
 │       ├── ObjectEdit.test.ts = Delete and Duplicate, undo and redo (lot 100)
@@ -992,6 +1003,7 @@ tests/
     ├── app.spec.ts = main window, languages, numbers in the format of the language
     ├── edit.spec.ts = Edit > Delete and Edit > Duplicate, Delete key, Ctrl+D, confirmation, undo (lot 100)
     ├── import.spec.ts = STL and 3MF import, refused files
+    ├── plate.spec.ts = warning out of the plate, Arrange, Ctrl+D near the edge (lot 101)
     ├── material.spec.ts = materials and filaments served by the main process (Phase 8)
     ├── preset.spec.ts = presets served by the main process (Phase 10)
     ├── printer.spec.ts = printers served by the main process, Printer section, Printer Manager, profiles (Phase 7)

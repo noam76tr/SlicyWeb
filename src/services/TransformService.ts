@@ -22,6 +22,10 @@
  * the option actionType "OPTIMIZATION", one action for all the objects
  * turned.
  *
+ * Arrange (lot 101; UNDO_REDO_SPEC.md 2.5.0): the positions found by
+ * ArrangeService are applied with applyMany() and the option actionType
+ * "ARRANGE", one action for all the objects moved.
+ *
  * Gesture state (Phase 9 lot 80): isGestureActive() and onGestureEnd() let
  * the analysis wait for the end of a gesture before computing again
  * (ADR-034 D7: never while dragging).
@@ -88,9 +92,10 @@ export interface ApplyOptions {
 
   /**
    * Type of the history action instead of MOVE, ROTATE or SCALE
-   * (OPTIMIZATION: orientations applied by the optimization, lot 98)
+   * (OPTIMIZATION: orientations applied by the optimization, lot 98;
+   * ARRANGE: positions applied by Arrange, lot 101)
    */
-  actionType?: "OPTIMIZATION";
+  actionType?: "OPTIMIZATION" | "ARRANGE";
 }
 
 /** Smallest scale factor accepted (0.1 %) */

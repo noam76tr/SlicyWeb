@@ -54,7 +54,7 @@ test("opens the main window without error", async ({ started }) => {
     window
       .getByRole("toolbar", { name: en["toolbar.title"] })
       .getByRole("button"),
-  ).toHaveCount(8);
+  ).toHaveCount(9); // Arrange added next to Optimize (lot 101)
   await expect(window.getByRole("img", { name: "3D Viewport" })).toBeVisible();
 
   // Secure window: no Node.js in the renderer

@@ -14,7 +14,8 @@
  * Actions are recorded by TransformService (Phase 6: transforms only,
  * decision of Noam; Phase 11 lot 98: the orientations applied by the
  * optimization, one action OPTIMIZATION) and by ObjectEditService (lot 100:
- * Delete and Duplicate, actions DELETE and DUPLICATE). The toolbar and the
+ * Delete and Duplicate, actions DELETE and DUPLICATE; lot 101: Arrange,
+ * one action ARRANGE). The toolbar and the
  * Edit menu read canUndo and canRedo.
  *
  * No business logic.
@@ -23,7 +24,7 @@
  * - UNDO_REDO_SPEC.md (History Architecture, History Entry Schema,
  *   Action Types, Redo Clearing Rule, Maximum History Size; 2.3.0:
  *   Orientation Optimization; 2.4.0: Delete Actions, Duplicate Actions,
- *   Geometry Storage Rules)
+ *   Geometry Storage Rules; 2.5.0: Arrange Objects)
  */
 
 import { create } from "zustand";
@@ -37,9 +38,11 @@ import type { Object3D, Transform } from "../types/Object3D";
 
 /**
  * Action types of a transform (UNDO_REDO_SPEC.md, Action Types; Phase 6;
- * OPTIMIZATION: Orientation Optimization, 2.3.0)
+ * OPTIMIZATION: Orientation Optimization, 2.3.0; ARRANGE: Arrange Objects,
+ * 2.5.0, lot 101)
  */
-export type TransformActionType = "MOVE" | "ROTATE" | "SCALE" | "OPTIMIZATION";
+export type TransformActionType =
+  "MOVE" | "ROTATE" | "SCALE" | "OPTIMIZATION" | "ARRANGE";
 
 /**
  * Action types of the objects of the scene (UNDO_REDO_SPEC.md 2.4.0,
