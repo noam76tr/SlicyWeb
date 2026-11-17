@@ -482,5 +482,10 @@
   "language.title": "Language",
   "language.english": "English",
   "language.french": "French",
-  "language.hebrew": "Hebrew"
+  "language.hebrew": "Hebrew",
+  "contextMenu.properties": "Properties",
+  "contextMenu.import": "Import…",
+  "contextMenu.resetRotationScale": "Reset rotation and scale",
+  "contextMenu.objectTitle": "Object actions",
+  "contextMenu.sceneTitle": "Scene actions"
 }

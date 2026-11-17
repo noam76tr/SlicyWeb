@@ -482,5 +482,10 @@
   "language.title": "שפה",
   "language.english": "אנגלית",
   "language.french": "צרפתית",
-  "language.hebrew": "עברית"
+  "language.hebrew": "עברית",
+  "contextMenu.properties": "מאפיינים",
+  "contextMenu.import": "ייבוא…",
+  "contextMenu.resetRotationScale": "אפס סיבוב וקנה מידה",
+  "contextMenu.objectTitle": "פעולות על האובייקט",
+  "contextMenu.sceneTitle": "פעולות על הסצנה"
 }

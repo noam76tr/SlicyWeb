@@ -777,51 +777,63 @@ Selection State
 
 # Object Context Menu
 
+The menu of the right click (lot 105, request of Noam; PASSATION.md decision 110: Q1 to Q11 A), as in the slicers.
 
+Opening:
 
-Right Click
+- right button released after a travel of less than 5 pixels since the press, whatever the time held: the menu opens at the pointer; from 5 pixels, the drag turns the view (Viewport Controls) and no menu opens, also when the drag starts on an object;
+- Menu key or Shift+F10: menu of the selection at the center of the selection on the screen (menu of the scene at the center of the viewport when nothing is selected), or under the row of the Object Panel that has the focus; the focus comes back to that row when the menu closes;
+- Escape or a click outside closes the menu without action; arrows, Enter and Escape work in the menu.
 
-
-
-Options:
-
-
+Menu of an object (right click on an object in the 3D viewport, or on a row of the Object Panel):
 
 ```text
-
-Rename
-
-
-
-Duplicate
-
-
-
-Delete
-
-
-
+Properties
+─────────────────────────────
+Move                        G
+Rotate                      R
+Scale                       S
+─────────────────────────────
+Duplicate              Ctrl+D
+Delete                    Del
+─────────────────────────────
+Optimize Orientation
 Center On Bed
-
-
-
-Hide
-
-
-
-Show
-
-
-
-Lock
-
-
-
-Unlock
-
+Reset Rotation And Scale
+─────────────────────────────
+Recompute Analysis
 ```
 
+- the items act on the selection: an object that is not selected becomes the only selected object first; an object already selected keeps the whole selection (several objects);
+- Properties opens the Object tab of the Properties Panel (Properties Tabs);
+- Move, Rotate, Scale choose the mode of the gizmo, like the buttons over the viewport and the keys G, R, S;
+- Duplicate and Delete are those of the Edit Menu (confirmation for several objects);
+- Optimize Orientation is that of the Tools Menu; Center On Bed is that of the Transform Actions (center of the group for several objects); Reset Rotation And Scale gives each selected object the rotation 0 and the scale 100 %, one action of the history (one Ctrl+Z gives both back);
+- Recompute Analysis is that of the Tools Menu.
 
+Menu of the scene (right click in the empty space of the viewport, or in the Object Panel under its rows):
+
+```text
+Import…
+─────────────────────────────
+Select All             Ctrl+A
+Arrange                     A
+─────────────────────────────
+Reset View               Home
+```
+
+- Import… opens the same file dialog as the Import button of the Toolbar (STL and 3MF);
+- the selection is kept (a right click in the empty space does not clear it).
+
+An item that cannot act now is shown disabled, at its place (no object: Select All, Arrange; a search of orientation in progress: Optimize Orientation). The shortcuts are shown only, in Latin letters in the three languages, as in the Menu Bar. In Hebrew, the menu is mirrored like the Menu Bar: the text on the right, the shortcut on the left, and it opens to the left of the pointer. The menu opens above the pointer when there is no room under it.
+
+Later (Noam, 2026-11-17; a lot of its own, with its questions):
+
+```text
+Rename           the object has no name field in DATA_SCHEMA.md (only fileName)
+Hide, Show       fields visible and locked exist (Object Schema),
+Lock, Unlock     but no behavior is described yet
+```
 
 ---
 
@@ -1043,6 +1055,8 @@ Left mouse (objects):
 - the move starts only after 4 pixels: a selection click never moves the object;
 - a drag that starts in the empty space draws a selection rectangle (Multi Selection);
 - a press on a handle of the gizmo is left to the gizmo.
+
+Right mouse (lot 105): a drag turns the camera, as before, also when it starts on an object; released after less than 5 pixels, it is a right click and opens the Object Context Menu.
 
 Cursor (lot 102, lot 103): over an object, the move cursor (four arrows), in every gizmo mode; over the tip of a Move arrow, a ring of Rotate (outside the object) or a handle of Scale, a hand; elsewhere, the normal cursor. On a model of about a million triangles, the cursor is updated once the pointer rests (80 ms), so that the view stays fluid.
 
@@ -2174,6 +2188,26 @@ S            Scale
 ```
 
 G, R and S choose the mode of the gizmo, when an object is selected. They are read by their position on the keyboard, so they work the same with an English, French or Hebrew layout. The shortcuts of the viewport (G, R, S, ESC, HOME) are not active while a text field has the focus: in a field, ESC restores the value and keeps the selection.
+
+
+
+---
+
+
+
+## Context Menu
+
+
+
+```text
+
+SHIFT + F10  Context Menu (lot 105)
+
+MENU         Context Menu (key of the menu, lot 105)
+
+```
+
+Menu of the selection at its center on the screen, or under the row of the Object Panel that has the focus (Object Context Menu). The keys of the viewport (G, R, S, ESC, HOME) are not read inside an open menu or window: ESC closes the menu and keeps the selection.
 
 
 

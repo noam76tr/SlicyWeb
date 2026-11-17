@@ -135,6 +135,14 @@ export const ROTATION_SNAP_DEGREES = 15;
 export const DRAG_THRESHOLD_PX = 4;
 
 /**
+ * Right button (lot 105, decision of Noam Q1 A): released after a travel
+ * of less than this many pixels since the press, whatever the time held,
+ * it opens the context menu; beyond, it was a rotation of the view and no
+ * menu opens.
+ */
+export const CONTEXT_MENU_THRESHOLD_PX = 5;
+
+/**
  * Arrows of the Move gizmo (GUI_SPEC.md, Move Gizmo, lot 102, decisions
  * of Noam Q1 to Q3 A): one arrow per axis of the plate, toward +X and +Y,
  * from the center of the object; its tip is placed MOVE_HANDLE_GAP_PX

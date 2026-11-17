@@ -3925,7 +3925,7 @@ Release Type:
 Graphical User Interface (Messages Over The Viewport), Maintenance
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-17
@@ -3947,6 +3947,54 @@ Date:
 
 - tests/e2e/plate.spec.ts (1 test): window of 1280 pixels, in French then in Hebrew: the warning outside the plate and the message of a new import do not touch the buttons Move, Rotate, Scale and Overhangs (60 e2e)
 - tests/e2e/transform.spec.ts: the rectangle drawn from the top corner starts in the middle of the message of the import, wherever it is (under the buttons in a narrow window); it still checks that a message does not stop the clicks under it (lot 55)
+
+## Validation Result
+
+- Windows 11 (2026-11-17): lot 104 on GitHub (7ec3f1f, identical to the lot, 13 files); npm run check:locales 484 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 597 tests passed and 1 skipped, npm run test:e2e 60 tests passed (Noam)
+- Manual checks 1 to 7 of lot 104 passed (Noam, 2026-11-17)
+
+---
+
+# VERSION 0.1.105
+
+Release Type:
+Graphical User Interface (Context Menu)
+
+Status:
+In Progress
+
+Date:
+2026-11-17
+
+## Added
+
+- Context menu of the right click (request of Noam, 2026-11-17; decision 110: Q1 to Q11 A; GUI_SPEC.md, Object Context Menu):
+  - the right button released after less than 5 pixels opens the menu, whatever the time held; a drag of the right button turns the view as before and opens no menu, also when it starts on an object (Q1 A)
+  - on an object (3D viewport or row of the Object Panel): Properties (opens the Object tab), Move G, Rotate R, Scale S, Duplicate Ctrl+D, Delete Del, Optimize Orientation, Center On Bed, Reset Rotation And Scale, Recompute Analysis (Q2 A); they act on the selection; an object not selected becomes the only selected object first, an object already selected keeps the whole selection (Q5 A)
+  - Reset Rotation And Scale: one item, rotation 0 and scale 100 % for each selected object, one action of the history (Q3 A)
+  - in the empty space (viewport, Object Panel under its rows, Q7 A): Import… (STL and 3MF), Select All Ctrl+A, Arrange A, Reset View Home (Q4 A); the selection is kept (Q6 A)
+  - an item that cannot act now is disabled (Q8 A); the Menu key or Shift+F10 opens the menu of the selection at its center on the screen, or under the row of the Object Panel that has the focus (Q9 A); in Hebrew the menu is mirrored and opens to the left of the pointer (Q11 A)
+- src/gui/menus/ContextMenu.tsx (menu, openContextMenu); src/renderer/ObjectInteraction.ts (right button: click or drag, onContextMenu); src/constants/ViewportConstants.ts (CONTEXT_MENU_THRESHOLD_PX = 5); src/services/TransformService.ts (resetGroupRotationAndScale)
+- 5 keys in en, fr and he: contextMenu.properties, contextMenu.import, contextMenu.resetRotationScale, contextMenu.objectTitle, contextMenu.sceneTitle (489 keys)
+
+## Changed
+
+- src/gui/viewport/Viewport.tsx: gives the right click to the context menu (prop onContextMenu), opens it with the Menu key or Shift+F10; its keys (G, R, S, Escape, Home) are not read inside an open menu or window: Escape closes the context menu without clearing the selection
+- src/gui/sidebar/LeftSidebar.tsx: right click on a row (menu of the selection) and under the rows (menu of the scene); Menu key or Shift+F10 on a row
+- src/gui/App.tsx: mounts the context menu
+- GUI_SPEC.md (Object Context Menu replaced by the menu of this lot; Rename, Hide, Show, Lock, Unlock kept for a later lot, Q10 A; Viewport Controls, Keyboard Shortcuts), TEST_PLAN.md, FILE_STRUCTURE.md and DIRECTORY_PURPOSES.md (src/gui/menus/ContextMenu.tsx), PASSATION.md (decisions 109 and 110)
+- docs/lots/LOT105.md and docs/lots/LOT105-QUESTIONS.md
+- 0.1.104 Completed with the results of Noam
+
+## Tests
+
+- tests/unit/renderer/ObjectInteraction.test.ts (7 tests): right click on an object not selected, on a selected object, in the empty space; under 5 pixels a click, from 5 pixels a rotation, a drag that comes back to its start opens no menu; the left button unchanged
+- tests/unit/services/GroupTransform.test.ts (1 test): Reset Rotation And Scale of a group, one action, one undo
+- tests/e2e/context-menu.spec.ts (7 tests): menu of an object and Duplicate; right drag on the object turns the view without menu; menu of the scene, Escape keeps the selection, Select All; Properties and Reset Rotation And Scale with one Ctrl+Z; Object Panel (Delete, Shift+F10 under the row, focus back); Shift+F10 in the viewport; Hebrew (67 e2e)
+
+## Known Issues
+
+- Rename, Hide / Show and Lock / Unlock of GUI_SPEC.md are not in the menu: Rename needs a name field that DATA_SCHEMA.md does not have (only fileName); Hide and Lock have their fields (visible, locked) but no described behavior. A lot of its own, with its questions (Noam, 2026-11-17)
 
 ---
 

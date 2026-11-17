@@ -33,6 +33,15 @@
  * (keepProportions) applies to the Scale gizmo as to the Transform section;
  * Escape clears the selection (GUI_SPEC.md, Keyboard Shortcuts).
  *
+ * Context menu (lot 105, decisions of Noam Q1 to Q11 A): a right click
+ * without drag on an object (selected first when it was not) or in the
+ * empty space is given to onContextMenu (ObjectInteraction); the Menu key
+ * or Shift+F10, when no other element handled it, opens the menu of the
+ * selection at the center of the selection on the screen, or the menu of
+ * the scene at the center of the view when nothing is selected (Q9 A).
+ * The keys of the viewport (G, R, S, Escape, Home) are not read inside an
+ * open menu or window: Escape closes the menu and keeps the selection.
+ *
  * Overhang Display (lot 82): when it is on (viewport store), the
  * triangles beyond 45 degrees of every object of the scene, selected or
  * not (decision of Noam, Q1 B), are drawn in red, as found by its analysis (analysis task store), only while that analysis
@@ -60,6 +69,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { Vector3 } from "three";
 
 import { CameraManager } from "../../renderer/CameraManager";
 import { LightingManager } from "../../renderer/LightingManager";
@@ -175,6 +185,22 @@ function isEditableTarget(target: EventTarget | null): boolean {
   );
 }
 
+/**
+ * Element of an open menu or window (lot 105): its keys belong to it
+ * (Escape closes the context menu without clearing the selection)
+ */
+function isInMenuOrWindow(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    target.closest('[role="menu"], [role="dialog"], [role="alertdialog"]') !==
+      null
+  );
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
 interface ViewportProps {
   /** Accessible name of the viewport, already translated */
   label: string;
@@ -214,6 +240,17 @@ interface ViewportProps {
    * (TransformService).
    */
   onTransformGesture: (objectIds: string[], phase: "start" | "end") => void;
+
+  /**
+   * Context menu asked at this position of the window (lot 105): of the
+   * selection when objectId is an object (already selected), of the scene
+   * when it is null
+   */
+  onContextMenu: (
+    objectId: string | null,
+    clientX: number,
+    clientY: number,
+  ) => void;
 }
 
 /**
@@ -246,6 +283,7 @@ export default function Viewport({
   cubeLabels,
   onTransformObjects,
   onTransformGesture,
+  onContextMenu,
 }: ViewportProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [unavailable, setUnavailable] = useState(false);
@@ -259,6 +297,8 @@ export default function Viewport({
   onTransformRef.current = onTransformObjects;
   const onGestureRef = useRef(onTransformGesture);
   onGestureRef.current = onTransformGesture;
+  const onContextMenuRef = useRef(onContextMenu);
+  onContextMenuRef.current = onContextMenu;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -340,6 +380,8 @@ export default function Viewport({
             : touched,
         );
       },
+      onContextMenu: (objectId, clientX, clientY) =>
+        onContextMenuRef.current(objectId, clientX, clientY),
     });
 
     // Printer build plate (none until a printer is selected)
@@ -471,7 +513,8 @@ export default function Viewport({
         event.altKey ||
         event.metaKey ||
         event.shiftKey ||
-        isEditableTarget(event.target)
+        isEditableTarget(event.target) ||
+        isInMenuOrWindow(event.target)
       ) {
         return;
       }
@@ -494,8 +537,54 @@ export default function Viewport({
     };
     window.addEventListener("keydown", handleKeyDown);
 
+    // Menu key or Shift+F10 (lot 105, Q9 A): the browser sends a context
+    // menu event that is not from the right button; one not handled by
+    // another element (a row of the Object Panel) opens the menu of the
+    // selection at its center on the screen, or of the scene
+    const handleContextMenu = (event: MouseEvent): void => {
+      if (
+        event.defaultPrevented ||
+        event.button === 2 ||
+        isEditableTarget(event.target) ||
+        isInMenuOrWindow(event.target)
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const { objects, selectedObjectIds } = useObjectStore.getState();
+      const selected = objects.filter((object) =>
+        selectedObjectIds.includes(object.objectId),
+      );
+      const rect = rendererManager.getCanvas().getBoundingClientRect();
+      const center = groupCenter(selected);
+      let x = rect.left + rect.width / 2;
+      let y = rect.top + rect.height / 2;
+
+      if (center) {
+        const point = new Vector3(center.x, center.y, center.z).project(
+          cameraManager.getCamera(),
+        );
+        x = clamp(
+          rect.left + ((point.x + 1) / 2) * rect.width,
+          rect.left,
+          rect.right,
+        );
+        y = clamp(
+          rect.top + ((1 - point.y) / 2) * rect.height,
+          rect.top,
+          rect.bottom,
+        );
+      }
+
+      onContextMenuRef.current(selected[0]?.objectId ?? null, x, y);
+    };
+    window.addEventListener("contextmenu", handleContextMenu);
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("contextmenu", handleContextMenu);
       unsubscribeViewport();
       unsubscribePrinter();
       unsubscribeOverhangs();

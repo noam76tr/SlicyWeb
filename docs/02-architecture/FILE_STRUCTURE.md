@@ -422,6 +422,7 @@ src/gui/
 │   ├── PrinterManagerDialog.tsx = Printer Manager: printers entered by the user (Phase 7)
 │   └── printerForm.ts         = form of the Printer Manager and its conversion to a printer
 ├── menus/
+│   ├── ContextMenu.tsx        = menu of the right click: object and scene (lot 105)
 │   └── MenuBar.tsx            = the nine menus of GUI_SPEC.md
 ├── toolbars/
 │   ├── Toolbar.tsx            = the eight toolbar buttons of GUI_SPEC.md

@@ -47,6 +47,10 @@
  * The Printer tab of the Properties Panel is open at every start (lot 95,
  * Q3 B: the tab is not saved).
  *
+ * The right click without drag in the viewport opens the context menu
+ * (ContextMenu, lot 105): of the selection on an object, of the scene in
+ * the empty space.
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - GUI_SPEC.md
@@ -73,6 +77,7 @@ import { useEditShortcuts } from "./hooks/useEditShortcuts";
 import { useTranslation } from "./hooks/useTranslation";
 import { useSelectAllShortcut } from "./hooks/useSelectAllShortcut";
 import { useUndoRedoShortcuts } from "./hooks/useUndoRedoShortcuts";
+import ContextMenu, { openContextMenu } from "./menus/ContextMenu";
 import MenuBar from "./menus/MenuBar";
 import LeftSidebar from "./sidebar/LeftSidebar";
 import RightSidebar from "./sidebar/RightSidebar";
@@ -156,6 +161,9 @@ export default function App(): JSX.Element {
                   ? TransformService.beginGesture(objectIds)
                   : TransformService.endGesture()
               }
+              onContextMenu={(objectId, x, y) =>
+                openContextMenu(objectId ? "object" : "scene", { x, y })
+              }
             />
           </ImportDropZone>
         }
@@ -166,6 +174,7 @@ export default function App(): JSX.Element {
       <PrinterManagerDialog />
       <FilamentManagerDialog />
       <DeleteObjectsDialog />
+      <ContextMenu />
     </DirectionProvider>
   );
 }

@@ -827,6 +827,27 @@ Check, Edit Menu; UNDO_REDO_SPEC.md 2.5.0):
     an object out of the plate: the message does not touch the button
     Overhangs; same with a side panel widened
 
+Context menu (lot 105; GUI_SPEC.md, Object Context Menu, Keyboard
+Shortcuts):
+  unit (ObjectInteraction.test.ts): right click on an object not
+    selected: selected alone, its menu; on a selected object: selection
+    kept; in the empty space: menu of the scene, selection kept; released
+    under 5 pixels: a click; from 5 pixels: rotation, no menu; a drag that
+    comes back to its start: no menu; the left button unchanged
+  unit (GroupTransform.test.ts): Reset Rotation And Scale of a group, one
+    action, one undo
+  end to end (tests/e2e/context-menu.spec.ts): menu of an object (order
+    of the items), Duplicate; right drag that starts on the object turns
+    the view, no menu; menu of the scene, Escape keeps the selection,
+    Select All; Properties opens the Object tab; Reset Rotation And Scale
+    and one Ctrl+Z; Object Panel: Shift+F10 under the row, focus back on
+    Escape, right click and Delete; Shift+F10 in the viewport at the
+    center of the selection; Hebrew: the menu to the left of the pointer
+  manual (Noam): each item of both menus on his models, with one and
+    several objects; Menu key; a right click then a drag: always a
+    rotation of the view without menu, also when the drag starts on an
+    object (request of Noam, 2026-11-17)
+
 Mesh defects (lot 91):
   unit (ModelAnalyzer.test.ts): two cubes touching along an edge: closed,
     not manifold, volume exact; an edge with three triangles: open; a cube:

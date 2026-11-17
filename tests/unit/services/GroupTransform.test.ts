@@ -5,7 +5,8 @@
  * Several objects selected (Phase 6, decisions of Noam): Ctrl+click and
  * Ctrl+A selection; the group moves, turns and scales (uniformly) around
  * its center, each object placed back on the plate; one action of the
- * history for a change of the group.
+ * history for a change of the group; Reset Rotation And Scale of the
+ * context menu (lot 105, Q3 A) is one action.
  *
  * Based on:
  * - GUI_SPEC.md (Multi Selection, Transform Section)
@@ -168,6 +169,26 @@ describe("Group transforms", () => {
     expect(get(A).transform.rotation).toEqual({ x: 0, y: 0, z: 0 });
     expect(get(B).transform.scale).toEqual({ x: 1, y: 1, z: 1 });
     expectOnPlate(B);
+  });
+
+  it("resets the rotation and the scale together, one action (context menu, lot 105 Q3 A)", () => {
+    TransformService.rotateGroup(GROUP, "x", 30);
+    TransformService.scaleGroup(GROUP, 2);
+    const turned = get(A).transform;
+    const actions = useHistoryStore.getState().undoStack.length;
+
+    expect(TransformService.resetGroupRotationAndScale(GROUP)).toBe(true);
+    expect(get(A).transform.rotation).toEqual({ x: 0, y: 0, z: 0 });
+    expect(get(A).transform.scale).toEqual({ x: 1, y: 1, z: 1 });
+    expect(get(B).transform.rotation).toEqual({ x: 0, y: 0, z: 0 });
+    expect(get(B).transform.scale).toEqual({ x: 1, y: 1, z: 1 });
+    expectOnPlate(A);
+    expectOnPlate(B);
+    expect(useHistoryStore.getState().undoStack.length).toBe(actions + 1);
+
+    // One Ctrl+Z puts back both the rotation and the scale
+    expect(TransformService.undo()).toBe(true);
+    expect(get(A).transform).toEqual(turned);
   });
 
   it("one undo for a change of the group, the group selected again", () => {

@@ -26,6 +26,8 @@
  * ArrangeService are applied with applyMany() and the option actionType
  * "ARRANGE", one action for all the objects moved.
  *
+ * Reset Rotation And Scale of the context menu (lot 105, Q3 A): one
+ * action for the rotation and the scale of all the objects selected.
  * Gesture state (Phase 9 lot 80): isGestureActive() and onGestureEnd() let
  * the analysis wait for the end of a gesture before computing again
  * (ADR-034 D7: never while dragging).
@@ -518,6 +520,21 @@ export const TransformService = {
     return this.applyMany(
       mapTransforms(objectIds, (transform) => ({
         ...transform,
+        scale: { x: 1, y: 1, z: 1 },
+      })),
+    );
+  },
+
+  /**
+   * Group: rotation back to 0 and scale back to 100 % for each object
+   * (around its own center), one action of the history (context menu,
+   * lot 105, decision of Noam Q3 A)
+   */
+  resetGroupRotationAndScale(objectIds: string[]): boolean {
+    return this.applyMany(
+      mapTransforms(objectIds, (transform) => ({
+        ...transform,
+        rotation: { x: 0, y: 0, z: 0 },
         scale: { x: 1, y: 1, z: 1 },
       })),
     );

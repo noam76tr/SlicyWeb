@@ -22,6 +22,15 @@
  * Phase 6).
  * Presses on a handle of the gizmo are left to the gizmo.
  *
+ * Right button (lot 105, decisions of Noam Q1 A, Q5 A): the camera turns
+ * the view while it is dragged, as before; released after a travel of
+ * less than CONTEXT_MENU_THRESHOLD_PX pixels, it opens the context menu
+ * (onContextMenu) of the object under the pointer, or of the scene in the
+ * empty space. An object that is not selected becomes the only selected
+ * object first; an object already selected keeps the whole selection; the
+ * empty space keeps the selection (Q6 A). A drag of the right button that
+ * starts on an object turns the view and opens no menu.
+ *
  * Cursor (lot 102, decision of Noam Q5 A): over an object, the move
  * cursor, in every mode (a drag on an object always moves it); over a tip
  * of the Move arrows, a ring of Rotate or a handle of Scale (lot 103), a
@@ -44,6 +53,7 @@
 import * as THREE from "three";
 
 import {
+  CONTEXT_MENU_THRESHOLD_PX,
   DRAG_THRESHOLD_PX,
   HOVER_PICK_REST_MS,
   HOVER_PICK_SLOW_MS,
@@ -79,6 +89,15 @@ export interface ObjectInteractionOptions {
    * the objects it touches, added to the selection when add is true
    */
   selectInRect: (rect: ScreenRect, add: boolean) => void;
+  /**
+   * Right click without drag (lot 105): context menu of this object
+   * (already selected), or of the scene (null), at this pointer position
+   */
+  onContextMenu: (
+    objectId: string | null,
+    clientX: number,
+    clientY: number,
+  ) => void;
 }
 
 /** Plane of the build plate, Z = 0 */
@@ -107,6 +126,17 @@ export class ObjectInteraction {
     selecting: boolean;
   } | null = null;
 
+  /**
+   * Press of the right button (lot 105): a context menu on release, unless
+   * the pointer went beyond CONTEXT_MENU_THRESHOLD_PX (rotation of the view)
+   */
+  private rightPress: {
+    pointerId: number;
+    startX: number;
+    startY: number;
+    moved: boolean;
+  } | null = null;
+
   /** Selection rectangle shown over the canvas */
   private readonly box: HTMLDivElement;
 
@@ -123,6 +153,16 @@ export class ObjectInteraction {
 
   private readonly onPointerDown = (event: PointerEvent): void => {
     this.cancelHover();
+
+    if (event.button === 2 && !this.press && !this.options.isGizmoActive()) {
+      this.rightPress = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        moved: false,
+      };
+      return;
+    }
 
     if (event.button !== 0 || this.options.isGizmoActive()) {
       return;
@@ -143,6 +183,17 @@ export class ObjectInteraction {
   };
 
   private readonly onPointerMove = (event: PointerEvent): void => {
+    const right = this.rightPress;
+
+    if (
+      right &&
+      event.pointerId === right.pointerId &&
+      Math.hypot(event.clientX - right.startX, event.clientY - right.startY) >=
+        CONTEXT_MENU_THRESHOLD_PX
+    ) {
+      right.moved = true;
+    }
+
     const press = this.press;
 
     if (!press && event.buttons === 0 && !this.options.isGizmoActive()) {
@@ -248,6 +299,15 @@ export class ObjectInteraction {
   };
 
   private readonly onPointerUp = (event: PointerEvent): void => {
+    if (event.type === "pointercancel") {
+      this.rightPress = null;
+    }
+
+    if (event.button === 2) {
+      this.releaseRight(event);
+      return;
+    }
+
     const press = this.press;
 
     if (!press || event.pointerId !== press.pointerId) {
@@ -328,6 +388,34 @@ export class ObjectInteraction {
     this.cancelHover();
     this.setCursor("");
     this.box.remove();
+  }
+
+  /**
+   * Release of the right button: the context menu, when the pointer stayed
+   * within CONTEXT_MENU_THRESHOLD_PX of the press (not a rotation)
+   */
+  private releaseRight(event: PointerEvent): void {
+    const right = this.rightPress;
+    this.rightPress = null;
+
+    if (
+      !right ||
+      event.pointerId !== right.pointerId ||
+      right.moved ||
+      Math.hypot(event.clientX - right.startX, event.clientY - right.startY) >=
+        CONTEXT_MENU_THRESHOLD_PX ||
+      this.options.isGizmoActive()
+    ) {
+      return;
+    }
+
+    const objectId = this.pickAt(event);
+
+    if (objectId && !this.options.getSelection().includes(objectId)) {
+      this.options.select(objectId);
+    }
+
+    this.options.onContextMenu(objectId, event.clientX, event.clientY);
   }
 
   private readonly onPointerLeave = (): void => {
