@@ -14,8 +14,9 @@
  * toolbar, pressed while the display is on, grayed out while the scene has
  * no object; the display is off at each start (not saved).
  *
- * Mounted by the GUI over the viewport: the Viewport Domain does not
- * depend on the GUI.
+ * Mounted by the GUI over the viewport, in the top row of the import drop
+ * zone (ImportDropZone, lot 104), before the messages: the Viewport Domain
+ * does not depend on the GUI.
  *
  * No business logic.
  *
@@ -64,7 +65,7 @@ export default function TransformModeBar(): JSX.Element {
   const overhangsLabel = t("view.overhangs");
 
   return (
-    <div className="absolute start-2 top-2 z-10 flex gap-2">
+    <div className="pointer-events-auto flex gap-2">
       <div
         role="toolbar"
         aria-label={t("transform.title")}

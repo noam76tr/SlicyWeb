@@ -69,10 +69,9 @@ import { RendererManager } from "../../renderer/RendererManager";
 import { SceneRenderer } from "../../renderer/SceneRenderer";
 import { TransformGizmo } from "../../renderer/TransformGizmo";
 import { WorkspaceHelpers } from "../../renderer/helpers/WorkspaceHelpers";
-import { GeometryRegistry } from "../../scene/GeometryRegistry";
+import { keepBoundsOf, objectBounds } from "../../scene/ObjectBounds";
 import {
   boundsCenter,
-  worldBounds,
   type Bounds,
   type Vector3Mm,
 } from "../../scene/ObjectTransform";
@@ -99,71 +98,20 @@ const TRANSFORM_KEYS: Record<string, TransformMode> = {
 };
 
 /**
- * Box of an object around its position, kept while its geometry, rotation
- * and scale do not change: a move (drag on the plate, every frame of the
- * gesture) does not read its vertices again (lot 102)
+ * Box of the objects on the plate (one object or a group): the box of each
+ * object comes from ObjectBounds, which keeps it while its geometry,
+ * rotation and scale do not change (a move does not read its vertices
+ * again; lot 104)
  */
-interface RelativeBounds {
-  geometry: unknown;
-  key: string;
-  bounds: Bounds;
-}
-
-const relativeBounds = new Map<string, RelativeBounds>();
-
-/** Box of the objects on the plate (one object or a group) */
 function selectionBounds(objects: Object3D[]): Bounds | null {
   let result: Bounds | null = null;
 
   for (const object of objects) {
-    const geometry = GeometryRegistry.get(object.objectId);
-    const positions = geometry?.getAttribute("position")?.array;
+    const box = objectBounds(object);
 
-    if (!geometry || !positions) {
+    if (!box) {
       continue;
     }
-
-    const { rotation, scale, position } = object.transform;
-    const key = [
-      rotation.x,
-      rotation.y,
-      rotation.z,
-      scale.x,
-      scale.y,
-      scale.z,
-    ].join(" ");
-    let cached = relativeBounds.get(object.objectId);
-
-    if (!cached || cached.geometry !== geometry || cached.key !== key) {
-      cached = {
-        geometry,
-        key,
-        bounds: worldBounds(
-          { ...object.transform, position: { x: 0, y: 0, z: 0 } },
-          positions,
-        ),
-      };
-      relativeBounds.set(object.objectId, cached);
-    }
-
-    const { min, max } = cached.bounds;
-
-    if (!Number.isFinite(min.x)) {
-      continue;
-    }
-
-    const box: Bounds = {
-      min: {
-        x: min.x + position.x,
-        y: min.y + position.y,
-        z: min.z + position.z,
-      },
-      max: {
-        x: max.x + position.x,
-        y: max.y + position.y,
-        z: max.z + position.z,
-      },
-    };
 
     result = result
       ? {
@@ -189,17 +137,6 @@ function groupCenter(objects: Object3D[]): Vector3Mm | null {
   const bounds = selectionBounds(objects);
 
   return bounds ? boundsCenter(bounds) : null;
-}
-
-/** Forgets the boxes of the objects no longer in the scene */
-function forgetBounds(objects: Object3D[]): void {
-  const present = new Set(objects.map((object) => object.objectId));
-
-  for (const objectId of [...relativeBounds.keys()]) {
-    if (!present.has(objectId)) {
-      relativeBounds.delete(objectId);
-    }
-  }
 }
 
 /**
@@ -454,7 +391,7 @@ export default function Viewport({
       const selected = objects.filter((object) =>
         selectedObjectIds.includes(object.objectId),
       );
-      forgetBounds(objects);
+      keepBoundsOf(objects);
       gizmo.attach(
         selected,
         selected.length > 1 ? groupCenter(selected) : null,

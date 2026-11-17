@@ -238,10 +238,11 @@ test.describe("several objects", () => {
       }
 
       // Top: under the import messages, shown at the top of the view
-      // (lot 55: a message must not stop the clicks under it)
+      // (lot 55: a message must not stop the clicks under it); in a narrow
+      // window, the messages are under the buttons (lot 104)
       const corner = {
         x: box.x + box.width - 20,
-        y: start === "top" ? box.y + 20 : box.y + box.height - 20,
+        y: box.y + box.height - 20,
       };
       const end = {
         x: box.x + 20,
@@ -254,10 +255,9 @@ test.describe("several objects", () => {
           .filter({ hasText: "a.stl" })
           .boundingBox();
         expect(message).not.toBeNull();
+        corner.y = message!.y + message!.height / 2;
         expect(corner.x).toBeGreaterThan(message!.x);
         expect(corner.x).toBeLessThan(message!.x + message!.width);
-        expect(corner.y).toBeGreaterThan(message!.y);
-        expect(corner.y).toBeLessThan(message!.y + message!.height);
       }
 
       // A click in the empty space clears the selection

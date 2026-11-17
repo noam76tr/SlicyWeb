@@ -13,11 +13,17 @@
  * 80), then the messages of the optimization (OptimizationMessages, Phase
  * 11 lot 98).
  *
+ * Top row (lot 104, decision of Noam, Q1 A): the buttons over the viewport
+ * (Move, Rotate, Scale, Overhangs; given by the GUI) on the start side, the
+ * messages on the end side. When the viewport is too narrow for both, the
+ * messages go just under the buttons (the row wraps): they never pass under
+ * a button, at any size of the window or of the side panels.
+ *
  * Wraps the viewport in the GUI, so that the Viewport Domain does not
  * depend on the import (DOMAINS_DEPENDENCY_MATRIX.md).
  *
  * Based on:
- * - GUI_SPEC.md (Drag And Drop)
+ * - GUI_SPEC.md (Drag And Drop, Messages Over The Viewport)
  * - DECISIONS.md (ADR-029)
  */
 
@@ -34,6 +40,9 @@ import ImportStatus from "./ImportStatus";
 
 interface ImportDropZoneProps {
   children: ReactNode;
+
+  /** Buttons over the viewport, top row, start side (TransformModeBar) */
+  toolbar: ReactNode;
 }
 
 function hasFiles(event: DragEvent<HTMLDivElement>): boolean {
@@ -42,6 +51,7 @@ function hasFiles(event: DragEvent<HTMLDivElement>): boolean {
 
 export default function ImportDropZone({
   children,
+  toolbar,
 }: ImportDropZoneProps): JSX.Element {
   const { t } = useTranslation();
   const [dragging, setDragging] = useState(false);
@@ -84,11 +94,18 @@ export default function ImportDropZone({
         </div>
       )}
 
-      <div className="pointer-events-none absolute end-3 top-3 flex w-80 max-w-[calc(100%-1.5rem)] flex-col gap-2">
-        <ImportStatus />
-        <PlateMessage />
-        <AnalysisMessages />
-        <OptimizationMessages />
+      <div className="pointer-events-none absolute inset-x-2 top-2 z-10 flex flex-wrap items-start gap-2">
+        {toolbar}
+
+        <div
+          data-viewport-messages
+          className="ms-auto me-1 mt-1 flex w-80 max-w-[calc(100%-0.25rem)] flex-col gap-2"
+        >
+          <ImportStatus />
+          <PlateMessage />
+          <AnalysisMessages />
+          <OptimizationMessages />
+        </div>
       </div>
     </div>
   );

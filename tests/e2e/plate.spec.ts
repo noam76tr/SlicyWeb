@@ -12,12 +12,18 @@
  * - Ctrl+D on an object against the right edge of the plate puts the copy
  *   inside the plate.
  *
+ * Lot 104 (decision of Noam, Q1 A): in a window of 1280 px (its minimum
+ * width), in French and in Hebrew, the message over the viewport never
+ * touches the buttons Move, Rotate, Scale and Overhangs.
+ *
  * Based on:
  * - TEST_PLAN.md (End-To-End Testing)
  * - GUI_SPEC.md
  */
 
 import en from "../../public/locales/en.json";
+import fr from "../../public/locales/fr.json";
+import he from "../../public/locales/he.json";
 
 import {
   cubeStl,
@@ -29,7 +35,43 @@ import {
   transformField,
 } from "./fixtures";
 
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
+
+type Texts = Record<string, string>;
+
+/** The message does not touch the buttons over the viewport */
+async function expectApart(
+  window: Page,
+  texts: Texts,
+  locator: Locator,
+): Promise<void> {
+  const message = await locator.boundingBox();
+  expect(message).not.toBeNull();
+
+  for (const name of [texts["transform.title"], texts["view.showOverhangs"]]) {
+    const bar = await window.getByRole("toolbar", { name }).boundingBox();
+    expect(bar).not.toBeNull();
+
+    const apart =
+      message!.x >= bar!.x + bar!.width ||
+      bar!.x >= message!.x + message!.width ||
+      message!.y >= bar!.y + bar!.height ||
+      bar!.y >= message!.y + message!.height;
+    expect(apart, `message over "${name}"`).toBe(true);
+  }
+}
+
+/** Chooses a language in the Language menu, from the texts shown */
+async function chooseLanguage(
+  window: Page,
+  texts: Texts,
+  language: "french" | "hebrew",
+): Promise<void> {
+  await window.getByRole("menuitem", { name: texts["menu.language"] }).click();
+  await window
+    .getByRole("menuitemradio", { name: texts[`language.${language}`] })
+    .click();
+}
 
 function viewport(window: Page) {
   return window.getByRole("img", { name: en["viewport.title"] });
@@ -153,6 +195,56 @@ test("Ctrl+D near the right edge puts the copy inside the plate", async ({
     en["plate.outsideMany"].replace("{count}", "2"),
   );
   await expect(viewport(window)).toHaveAttribute("data-outside-objects", "2");
+
+  expect(started.errors).toEqual([]);
+});
+
+test("the messages over the viewport never touch the buttons at 1280 px", async ({
+  window,
+  files,
+  started,
+}) => {
+  // Minimum width of the window (main process: minWidth 1280)
+  await started.app.evaluate(({ BrowserWindow }) => {
+    BrowserWindow.getAllWindows()[0].setContentSize(1280, 720);
+  });
+  await importFiles(window, [files("cube.stl", cubeStl("cube", 20))]);
+  await expect(objectRows(window)).toHaveText(["cube.stl"]);
+  await selectPrinter(window);
+  await setPositionX(window, "300");
+  await expect(plateWarning(window)).toBeVisible();
+  // The message of the import goes away by itself (3 s): the warning is
+  // then the first message, at the top of the viewport
+  await expect(
+    window.getByText(en["import.done"].replace("{name}", "cube.stl")),
+  ).toHaveCount(0);
+
+  for (const [texts, previous, language] of [
+    [fr, en, "french"],
+    [he, fr, "hebrew"],
+  ] as const) {
+    await chooseLanguage(window, previous, language);
+    await expect(plateWarning(window)).toHaveText(
+      texts["plate.outsideOne"].replace("{name}", "cube.stl"),
+    );
+    await expectApart(window, texts, plateWarning(window));
+
+    // A new import: its message comes first, above the warning
+    const chooser = window.waitForEvent("filechooser");
+    await window
+      .getByRole("toolbar", { name: texts["toolbar.title"] })
+      .getByRole("button", { name: texts["toolbar.import"] })
+      .click();
+    await (
+      await chooser
+    ).setFiles([files(`${language}.stl`, cubeStl(language, 10))]);
+    const imported = window.getByText(
+      texts["import.done"].replace("{name}", `${language}.stl`),
+    );
+    await expect(imported).toBeVisible();
+    await expectApart(window, texts, imported);
+    await expectApart(window, texts, plateWarning(window));
+  }
 
   expect(started.errors).toEqual([]);
 });

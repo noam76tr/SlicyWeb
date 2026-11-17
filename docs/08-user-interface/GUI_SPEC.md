@@ -697,7 +697,7 @@ Generate
 
 ```
 
-Undo and Redo (Phase 6) undo and redo the last change of transform, disabled while their history is empty (UNDO_REDO_SPEC.md). Analyze (Phase 9, lot 80) does the same as Tools > Analyze Models, disabled while the scene has no object. Move, Rotate and Scale are not in the toolbar: they are shown over the 3D viewport only, at the top on the start side (decision of Noam, Phase 6). They choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. They are active only when an object is selected, and grayed out otherwise. Next to them, in its own group, the button Overhangs (lot 82) turns the Overhang Display on and off (pressed while it is on), like View > Show Overhangs; it is grayed out while the scene has no object.
+Undo and Redo (Phase 6) undo and redo the last change of transform, disabled while their history is empty (UNDO_REDO_SPEC.md). Analyze (Phase 9, lot 80) does the same as Tools > Analyze Models, disabled while the scene has no object. Move, Rotate and Scale are not in the toolbar: they are shown over the 3D viewport only, at the top on the start side (decision of Noam, Phase 6). They choose the mode of the gizmo of the selected object (Move by default, shortcuts G, R, S); the active button is highlighted. They are active only when an object is selected, and grayed out otherwise. Next to them, in its own group, the button Overhangs (lot 82) turns the Overhang Display on and off (pressed while it is on), like View > Show Overhangs; it is grayed out while the scene has no object. The messages over the viewport never pass under these buttons (Error Handling UI, Messages Over The Viewport; lot 104).
 
 Generate (Phase 10, ADR-035 D11) does the same as Tools > Generate Recommendations, with the same rule to be enabled.
 
@@ -2351,6 +2351,8 @@ OPT_002: "The orientation search failed"; the orientation of this object
 Texts in the three languages. A search dropped (object removed or turned meanwhile) gives no line.
 
 The import messages shown over the 3D viewport (progress, confirmation, error) never stop the clicks in the viewport under them: only their Cancel and Close buttons receive the pointer (decision of Noam, lot 55).
+
+Messages Over The Viewport (lot 104, remark of Noam on lot 98, Q1 A): the buttons over the viewport (Move, Rotate, Scale, Overhangs) and the messages (import, plate, analysis, optimization, in this order) share the top row of the 3D viewport: the buttons on the start side, the messages on the end side, 320 pixels wide (less in a narrower viewport). When the viewport is too narrow for both (window of 1280 pixels, its minimum width, in French or in Hebrew; side panel widened), the messages go just under the buttons, still on the end side. They never pass under a button; the buttons never move.
 
 
 

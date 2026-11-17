@@ -16,7 +16,7 @@
  * The viewport receives the function that applies a transform
  * (TransformService, Phase 6): gizmos and dragging on the plate.
  * The buttons Move, Rotate, Scale (TransformModeBar) are shown over the
- * viewport. Undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z
+ * viewport, in the top row of the drop zone, before the messages (lot 104). Undo and redo: Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z
  * (useUndoRedoShortcuts), toolbar and Edit menu (TransformService).
  * Ctrl+A selects all the objects (useSelectAllShortcut). Delete and
  * Ctrl+D delete and duplicate the selected objects (useEditShortcuts, lot
@@ -123,7 +123,7 @@ export default function App(): JSX.Element {
         leftTitle={t("objects.title")}
         leftPanel={<LeftSidebar />}
         centerPanel={
-          <ImportDropZone>
+          <ImportDropZone toolbar={<TransformModeBar />}>
             <Viewport
               label={t("viewport.title")}
               unavailableMessage={t("viewport.unavailable")}
@@ -157,7 +157,6 @@ export default function App(): JSX.Element {
                   : TransformService.endGesture()
               }
             />
-            <TransformModeBar />
           </ImportDropZone>
         }
         rightTitle={t("properties.title")}

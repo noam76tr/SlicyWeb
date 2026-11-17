@@ -3875,7 +3875,7 @@ Release Type:
 Graphical User Interface (Plate Check, Arrange)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-16
@@ -3908,9 +3908,45 @@ Date:
 ## Known Limitations
 
 - An object is taken as its box seen from above: a turned object whose box only goes beyond the plate is shown out (Q1 A); Arrange does not nest objects in one another (Q7 A)
-- The box of an object around its position is computed both by the viewport (Move gizmo, lot 102) and by ObjectBounds (this lot): same computation, kept apart so as not to remove code from Viewport.tsx without the approval of Noam
+- The box of an object around its position is computed both by the viewport (Move gizmo, lot 102) and by ObjectBounds (this lot): same computation, kept apart so as not to remove code from Viewport.tsx without the approval of Noam (done in 0.1.104)
 - No warning for objects that overlap each other (not asked; Arrange separates them)
-- On a narrow window, the messages over the viewport can pass under the buttons Move, Rotate, Scale and Overhangs (already the case for the messages of the import; remark of lot 98, a lot of its own if Noam wants it)
+- On a narrow window, the messages over the viewport can pass under the buttons Move, Rotate, Scale and Overhangs (already the case for the messages of the import; remark of lot 98, a lot of its own if Noam wants it; done in 0.1.104)
+
+## Validation Result
+
+- Windows 11 (2026-11-16): lot 101 on GitHub (0773338, identical to the lot, 36 files); npm run check:locales 484 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 597 tests passed and 1 skipped, npm run test:e2e 59 tests passed (Noam)
+- Manual checks 1 to 9 of lot 101 passed (Noam, 2026-11-16)
+
+---
+
+# VERSION 0.1.104
+
+Release Type:
+Graphical User Interface (Messages Over The Viewport), Maintenance
+
+Status:
+In Progress
+
+Date:
+2026-11-17
+
+## Changed
+
+- Messages over the viewport (remark of Noam on lot 98; decision 108: Q1 A; GUI_SPEC.md, Messages Over The Viewport): the buttons Move, Rotate, Scale and Overhangs and the messages (import, plate, analysis, optimization) are in one row at the top of the viewport, the buttons on the start side, the messages on the end side; when the viewport is too narrow for both (window of 1280 pixels in French or in Hebrew, side panel widened), the messages go just under the buttons, on the end side: they never pass under a button. Wide viewport: nothing changes. Same order, same width (320 pixels, less in a narrower viewport)
+- src/gui/import/ImportDropZone.tsx: top row with the buttons (property toolbar) and the messages (data-viewport-messages); src/gui/toolbars/TransformModeBar.tsx: placed by this row (no longer absolute); src/gui/App.tsx: gives TransformModeBar to ImportDropZone
+- src/gui/viewport/Viewport.tsx: the box of each selected object (place of the arrows, rings and handles) comes from src/scene/ObjectBounds.ts, as for the Plate Check and Arrange; one box kept per object for both; nothing visible changes
+- GUI_SPEC.md (Toolbar Buttons, Error Handling UI: Messages Over The Viewport), TEST_PLAN.md, PASSATION.md (decisions 107 and 108)
+- docs/lots/LOT104.md and docs/lots/LOT104-QUESTIONS.md
+- 0.1.101 Completed with the results of Noam
+
+## Removed
+
+- src/gui/viewport/Viewport.tsx: its own copy of the box of an object around its position (RelativeBounds, the table relativeBounds, the computation in selectionBounds, forgetBounds, replaced by keepBoundsOf of ObjectBounds); approved by Noam (2026-11-16)
+
+## Tests
+
+- tests/e2e/plate.spec.ts (1 test): window of 1280 pixels, in French then in Hebrew: the warning outside the plate and the message of a new import do not touch the buttons Move, Rotate, Scale and Overhangs (60 e2e)
+- tests/e2e/transform.spec.ts: the rectangle drawn from the top corner starts in the middle of the message of the import, wherever it is (under the buttons in a narrow window); it still checks that a message does not stop the clicks under it (lot 55)
 
 ---
 

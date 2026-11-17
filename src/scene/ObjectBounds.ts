@@ -3,7 +3,8 @@
  * Object Bounds
  *
  * Bounding box of an object on the plate, for the plate check and the
- * arrangement (lot 101). The box around the position is kept while the
+ * arrangement (lot 101), and for the place of the gizmos in the viewport
+ * (Viewport.tsx, lot 104: one box per object for both). The box around the position is kept while the
  * geometry, the rotation and the scale of the object do not change: a move
  * (drag on the plate, every frame of the gesture) does not read its
  * vertices again.

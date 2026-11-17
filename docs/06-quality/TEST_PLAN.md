@@ -815,10 +815,17 @@ Check, Edit Menu; UNDO_REDO_SPEC.md 2.5.0):
     inside against the right edge; key A and button Arrange, Ctrl+Z;
     Ctrl+D against the right edge puts the copy inside the plate; message
     for two objects
+  end to end (tests/e2e/plate.spec.ts, lot 104): window of 1280 pixels,
+    in French then in Hebrew: the warning outside the plate and the
+    message of a new import do not touch the buttons Move, Rotate, Scale
+    and Overhangs
   manual (Noam): the color while dragging toward the edge, the message at
     the release; Arrange on his models; Ctrl+D on an object against the
     right edge of the plate: the copy stays inside the plate (request of
     Noam, 2026-11-16)
+  manual (Noam, lot 104): window of 1280 pixels, in French and in Hebrew,
+    an object out of the plate: the message does not touch the button
+    Overhangs; same with a side panel widened
 
 Mesh defects (lot 91):
   unit (ModelAnalyzer.test.ts): two cubes touching along an edge: closed,
