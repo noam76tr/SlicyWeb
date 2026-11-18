@@ -3990,7 +3990,7 @@ Date:
 
 - tests/unit/renderer/ObjectInteraction.test.ts (7 tests): right click on an object not selected, on a selected object, in the empty space; under 5 pixels a click, from 5 pixels a rotation, a drag that comes back to its start opens no menu; the left button unchanged
 - tests/unit/services/GroupTransform.test.ts (1 test): Reset Rotation And Scale of a group, one action, one undo
-- tests/e2e/context-menu.spec.ts (7 tests): menu of an object and Duplicate; right drag on the object turns the view without menu; menu of the scene, Escape keeps the selection, Select All; Properties and Reset Rotation And Scale with one Ctrl+Z; Object Panel (Delete, Shift+F10 under the row, focus back); Shift+F10 in the viewport; Hebrew (67 e2e)
+- tests/e2e/context-menu.spec.ts (7 tests): menu of an object and Duplicate; right drag on the object turns the view without menu; menu of the scene, Escape keeps the selection, Select All; Properties and Reset Rotation And Scale with one Ctrl+Z; Object Panel (Delete, Shift+F10 under the row, focus back); Shift+F10 in the viewport, in a high window (menu under the center) and in the lowest window (menu above it, once its opening animation has ended); Hebrew (67 e2e)
 
 ## Known Issues
 

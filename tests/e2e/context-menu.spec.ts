@@ -12,7 +12,8 @@
  * - Properties opens the Object tab; Reset Rotation And Scale, one Ctrl+Z;
  * - Object Panel: right click on a row, Delete; Shift+F10 on a row opens
  *   the menu under it, and Escape gives the focus back to the row;
- * - Shift+F10 in the viewport: menu of the selection at its center;
+ * - Shift+F10 in the viewport: menu of the selection at its center, under
+ *   it, or above it in a low window (lot 105 v2, failure on Windows);
  * - Hebrew: the menu opens to the left of the pointer.
  *
  * Based on:
@@ -34,7 +35,7 @@ import {
   transformField,
 } from "./fixtures";
 
-import type { Page } from "@playwright/test";
+import type { ElectronApplication, Page } from "@playwright/test";
 
 type Point = [number, number];
 
@@ -237,20 +238,77 @@ test("Object Panel: right click on a row, Delete; Shift+F10 opens the menu under
   await expectObjectCount(window, 0);
 });
 
-test("Shift+F10 in the viewport: menu of the selection at its center", async ({
-  window,
-}) => {
+/**
+ * Shift+F10 with no element focused, in a window of this content size:
+ * the menu of the selection opens inside the window, with the center of
+ * the selection on the corner of its start side
+ */
+async function openWithShiftF10(
+  window: Page,
+  started: { app: ElectronApplication },
+  width: number,
+  height: number,
+): Promise<void> {
+  const size = await started.app.evaluate(
+    ({ BrowserWindow }, [w, h]) => {
+      const main = BrowserWindow.getAllWindows()[0];
+      main.setContentSize(w, h);
+      return main.getContentSize();
+    },
+    [width, height],
+  );
+
+  // Size reached (the system may limit it), and the view drawn again
+  await expect
+    .poll(() => window.evaluate(() => [innerWidth, innerHeight]))
+    .toEqual(size);
+  await window.evaluate(
+    () =>
+      new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve)),
+      ),
+  );
+
   const center = await objectCenter(window);
 
-  await window.locator("body").click({ position: { x: 1, y: 1 } });
   await window.evaluate(() => (document.activeElement as HTMLElement).blur());
   await window.keyboard.press("Shift+F10");
-  await expect(objectMenu(window)).toBeVisible();
 
-  const box = await objectMenu(window).boundingBox();
-  // Within a few pixels (opening animation)
-  expect(Math.abs(box!.x - center[0])).toBeLessThan(12);
-  expect(Math.abs(box!.y - center[1])).toBeLessThan(12);
+  const menu = objectMenu(window);
+  await expect(menu).toBeVisible();
+
+  // End of the opening animation: the menu at its place and size
+  await menu.evaluate((element) =>
+    Promise.all(element.getAnimations().map((animation) => animation.finished)),
+  );
+
+  // The center is on the top corner when the menu opens under it, on the
+  // bottom corner when there is no room under it and the menu opens above
+  // (2 pixels apart, sideOffset)
+  const box = (await menu.boundingBox())!;
+  const side = await menu.getAttribute("data-side");
+  const edge = side === "top" ? box.y + box.height : box.y;
+
+  expect(["top", "bottom"]).toContain(side);
+  expect(Math.abs(box.x - center[0])).toBeLessThanOrEqual(1);
+  expect(Math.abs(edge - center[1])).toBeLessThanOrEqual(3);
+  expect(box.y).toBeGreaterThanOrEqual(0);
+  expect(box.y + box.height).toBeLessThanOrEqual(size[1]);
+
+  await window.keyboard.press("Escape");
+  await expect(menu).toHaveCount(0);
+}
+
+test("Shift+F10 in the viewport: menu of the selection at its center", async ({
+  window,
+  started,
+}) => {
+  // High window: room under the center; lowest window (1280 × 720,
+  // minimum size; on Windows the title bar and the taskbar take part of
+  // the 900 pixels): the menu opens above the center (failure of the
+  // first version of the test on Windows)
+  await openWithShiftF10(window, started, 1600, 1000);
+  await openWithShiftF10(window, started, 1280, 720);
 });
 
 test("Hebrew: the menu opens to the left of the pointer", async ({

@@ -842,7 +842,8 @@ Shortcuts):
     Select All; Properties opens the Object tab; Reset Rotation And Scale
     and one Ctrl+Z; Object Panel: Shift+F10 under the row, focus back on
     Escape, right click and Delete; Shift+F10 in the viewport at the
-    center of the selection; Hebrew: the menu to the left of the pointer
+    center of the selection, under it in a high window, above it in the
+    lowest window (after the opening animation); Hebrew: the menu to the left of the pointer
   manual (Noam): each item of both menus on his models, with one and
     several objects; Menu key; a right click then a drag: always a
     rotation of the view without menu, also when the drag starts on an
