@@ -18,7 +18,13 @@
  *   the block is deep). The orientation never changes: only X and Y move.
  *   The objects that do not fit (too wide, too deep or too high for the
  *   plate, or no room left) are put in a row to the right of the plate,
- *   outside it (Q8 A).
+ *   outside it (Q8 A). Objects locked (lot 106, decision 112 of Noam,
+ *   Q12 A) are obstacles: they do not move, and no object is put
+ *   OBJECT_GAP_MM or less from them. When the rows touch an obstacle,
+ *   the objects are placed one at a time (the deepest first), each at the
+ *   free place nearest to its place in the rows (findFreePlace); those
+ *   without a free place go to the row to the right of the plate, after
+ *   the obstacles.
  *
  * - findFreePlace(): place of a copy (Duplicate, Q10 A): first to the
  *   right of the original group (preferred place), otherwise the free
@@ -101,24 +107,130 @@ interface Row {
   depth: number;
 }
 
+/** Box moved by a shift */
+function shifted(bounds: Bounds, shift: Shift): Bounds {
+  return {
+    min: {
+      ...bounds.min,
+      x: bounds.min.x + shift.dx,
+      y: bounds.min.y + shift.dy,
+    },
+    max: {
+      ...bounds.max,
+      x: bounds.max.x + shift.dx,
+      y: bounds.max.y + shift.dy,
+    },
+  };
+}
+
+/** Two boxes seen from above are at least gap apart */
+function boxesApart(a: Bounds, b: Bounds, gap: number): boolean {
+  return apart(a.min.x, a.min.y, width(a), depth(a), b, gap);
+}
+
+/**
+ * Plate used to place objects around obstacles without a printer (no
+ * plate, Q9 A): large enough never to be a limit
+ */
+const NO_PLATE: BuildVolume = { x: 1e6, y: 1e6, z: Infinity };
+
 /**
  * Arrange: the shift of each object (by id), so that the objects stand in
  * rows without touching, the block centered on the plate (Q7, Q8, Q9: A).
- * volume: build volume of the selected printer, or null (no plate).
+ * volume: build volume of the selected printer, or null (no plate);
+ * obstacles: boxes of the objects locked (lot 106), which do not move.
  */
 export function arrangeLayout(
   items: LayoutItem[],
   volume: BuildVolume | null,
   gap: number = OBJECT_GAP_MM,
+  obstacles: Bounds[] = [],
 ): Record<string, Shift> {
-  const shifts: Record<string, Shift> = {};
+  const rowsLayout = arrangeRows(items, volume, gap);
 
-  if (items.length === 0) {
-    return shifts;
+  if (
+    obstacles.length === 0 ||
+    items.every(
+      (item) =>
+        !rowsLayout[item.id] ||
+        obstacles.every((obstacle) =>
+          boxesApart(shifted(item.bounds, rowsLayout[item.id]), obstacle, gap),
+        ),
+    )
+  ) {
+    return rowsLayout;
   }
 
-  // The deepest first, then the widest; same size: order of the scene
-  const ordered = items
+  return arrangeAround(items, volume, gap, obstacles, rowsLayout);
+}
+
+/**
+ * The objects placed one at a time around the obstacles: the deepest
+ * first, each at the free place nearest to its place in the rows
+ */
+function arrangeAround(
+  items: LayoutItem[],
+  volume: BuildVolume | null,
+  gap: number,
+  obstacles: Bounds[],
+  rowsLayout: Record<string, Shift>,
+): Record<string, Shift> {
+  const plate = volume ?? NO_PLATE;
+  const shifts: Record<string, Shift> = {};
+  const taken = [...obstacles];
+  const overflow: LayoutItem[] = [];
+
+  for (const item of ordered(items)) {
+    const target = rowsLayout[item.id] ?? { dx: 0, dy: 0 };
+    const place = shifted(item.bounds, target);
+    const free = findFreePlace(
+      item.bounds,
+      taken,
+      plate,
+      target,
+      {
+        x: (place.min.x + place.max.x) / 2,
+        y: (place.min.y + place.max.y) / 2,
+      },
+      gap,
+    );
+
+    if (!free || !isInsidePlate(shifted(item.bounds, free), volume)) {
+      overflow.push(item);
+      continue;
+    }
+
+    shifts[item.id] = free;
+    taken.push(shifted(item.bounds, free));
+  }
+
+  // The objects without a free place: a row to the right of the plate,
+  // after the obstacles (Q8 A)
+  let minX =
+    Math.max(
+      volume ? volume.x / 2 : -Infinity,
+      ...taken.map((box) => box.max.x),
+    ) + gap;
+
+  for (const item of overflow) {
+    shifts[item.id] = {
+      dx: minX - item.bounds.min.x,
+      dy: -depth(item.bounds) / 2 - item.bounds.min.y,
+    };
+    minX += width(item.bounds) + gap;
+  }
+
+  return shifts;
+}
+
+/** Inside the build volume, or no printer (no limit) */
+function isInsidePlate(bounds: Bounds, volume: BuildVolume | null): boolean {
+  return volume === null || !isOutsideBuildVolume(bounds, volume);
+}
+
+/** The deepest first, then the widest; same size: order of the scene */
+function ordered(items: LayoutItem[]): LayoutItem[] {
+  return items
     .map((item, index) => ({ item, index }))
     .sort(
       (a, b) =>
@@ -127,6 +239,19 @@ export function arrangeLayout(
         a.index - b.index,
     )
     .map(({ item }) => item);
+}
+
+/** Arrange without obstacle: the rows of lot 101 */
+function arrangeRows(
+  items: LayoutItem[],
+  volume: BuildVolume | null,
+  gap: number,
+): Record<string, Shift> {
+  const shifts: Record<string, Shift> = {};
+
+  if (items.length === 0) {
+    return shifts;
+  }
 
   // Without a plate: rows about as wide as the block is deep
   const area = items.reduce(
@@ -142,7 +267,7 @@ export function arrangeLayout(
   const overflow: LayoutItem[] = [];
   let usedDepth = 0;
 
-  for (const item of ordered) {
+  for (const item of ordered(items)) {
     const w = width(item.bounds);
     const d = depth(item.bounds);
 

@@ -1,7 +1,7 @@
 # SlicyWeb SMART SLICER
 # IMPORT EXPORT SPECIFICATION
 
-Version: 3.0.0
+Version: 3.1.0
 
 Status: Approved
 
@@ -356,6 +356,8 @@ Default:
 Source File Name
 ```
 
+Name given by the user (3.1.0, lot 106, PASSATION.md decision 112 of Noam): an object renamed in the Object Panel shows its name (DATA_SCHEMA.md 3.14.0, Object Schema: name) instead of the file name; the file name is kept (fileName). An empty name gives the file name back. The name is written in the project, never translated.
+
 ---
 
 # Duplicate Names
@@ -373,6 +375,8 @@ cube (1)
 
 cube (2)
 ```
+
+The rule applies to every name shown, given or not (lot 106, Q4 A): two objects named "Support" are shown "Support (1)" and "Support (2)", in their order in the scene. The extension is taken off a file name only. The numbers are shown, never written in the project.
 
 ---
 

@@ -10,7 +10,8 @@
  * - during a gesture (drag, gizmo), outsideObjectIds only (orange in the
  *   viewport); the message and the icon of the Object Panel follow at the
  *   end of the gesture (reportedObjectIds).
- * No printer selected (no plate): no object is out (Q9 A).
+ * No printer selected (no plate): no object is out (Q9 A). A hidden object
+ * is never out (lot 106, decision 112 of Noam, Q7 A).
  *
  * The rule (box seen from above out of the plate, or higher than the
  * build height) is PlateLayout.isOutsideBuildVolume; the box of an object
@@ -43,8 +44,13 @@ export function outsideObjectIds(): string[] {
     return [];
   }
 
+  // A hidden object is set aside: no warning (lot 106, Q7 A)
   return objects
     .filter((object) => {
+      if (!object.visible) {
+        return false;
+      }
+
       const bounds = objectBounds(object);
       return bounds !== null && isOutsideBuildVolume(bounds, volume);
     })

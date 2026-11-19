@@ -7,7 +7,8 @@
  * kept outside the object). The copy keeps the file name of the original
  * (lot 100, Q3): the Object Panel shows "cube (1)", "cube (2)"
  * (IMPORT_EXPORT_SPEC.md, Duplicate Names); no text of a language is
- * written in the project.
+ * written in the project. Lot 106 (decision 112 of Noam): the copy keeps
+ * the name given by the user (Q5 A), is not locked (Q13 A) and is shown.
  *
  * Based on:
  * - ARCHITECTURE.md
@@ -27,6 +28,14 @@ export class ObjectDuplicator {
       objectId: crypto.randomUUID(),
 
       fileName: object.fileName,
+
+      // Lot 106: the copy keeps the name given (Q5 A); it is never locked
+      // (Q13 A) and always shown, so that it can be seen where it is put
+      name: object.name,
+
+      visible: true,
+
+      locked: false,
 
       transform: {
         position: {

@@ -2,7 +2,7 @@
 
 # UNDO REDO SPECIFICATION
 
-Version: 2.5.0
+Version: 2.6.0
 
 Status: Approved
 
@@ -248,6 +248,8 @@ Lot 100 (2.4.0, outside the phases, request of Noam): Delete and Duplicate are u
 
 Lot 101 (2.5.0, outside the phases, request of Noam): Arrange Objects is undoable (Arrange Actions).
 
+Lot 106 (2.6.0, outside the phases, decision 112 of Noam, Q17 A): Rename, Hide and Show, Lock and Unlock are undoable (Visibility Actions, Rename Actions).
+
 
 
 ---
@@ -333,6 +335,10 @@ Lock Object
 Unlock Object
 
 ```
+
+Lot 106 (2.6.0, decision 112 of Noam, Q17 A; ObjectStateService): each change is one action. Hide or Show (eye of a row, the line of the context menu, the key H) records one action VISIBILITY for all the objects changed; View > Show All and Alt+H one action VISIBILITY for all the objects shown again. Lock or Unlock (padlock of a row, the line of the context menu) records one action LOCK. before and after hold the field changed of each object (visible or locked), by objectId; the objects that do not change are not in the action, and nothing is recorded when none changes. Undo and redo write the field back; the objects of the action that are shown become the selection, the hidden ones leave it (GUI_SPEC.md, Object Panel). Nothing is recorded during a gesture.
+
+Rename Actions (lot 106): a name applied in the Object Panel records one action RENAME (before and after: the field name of the object, null for the name of the file). Undo gives the name before back, redo the new name; the object is selected.
 
 
 
@@ -1185,6 +1191,18 @@ OPTIMIZATION
 
 
 ARRANGE
+
+
+
+RENAME
+
+
+
+VISIBILITY
+
+
+
+LOCK
 
 
 

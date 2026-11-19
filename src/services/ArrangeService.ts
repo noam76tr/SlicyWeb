@@ -17,6 +17,11 @@
  * Objects); nothing is recorded when no object moves. A move does not
  * make the analysis outdated (ADR-026). Nothing is done during a gesture.
  *
+ * Lot 106 (decision 112 of Noam): a hidden object is set aside: it does
+ * not move and the others are arranged as if it were not there (Q7 A); a
+ * locked object does not move and the others are arranged around it,
+ * without touching it (Q12 A; PlateLayout, obstacles).
+ *
  * Domain: Service. Depends on the Scene Domain (ObjectBounds, PlateLayout)
  * and on State Management (DOMAINS_DEPENDENCY_MATRIX.md).
  *
@@ -26,7 +31,11 @@
  */
 
 import { objectBounds } from "../scene/ObjectBounds";
-import { arrangeLayout, type LayoutItem } from "../scene/PlateLayout";
+import {
+  arrangeLayout,
+  OBJECT_GAP_MM,
+  type LayoutItem,
+} from "../scene/PlateLayout";
 import { useObjectStore } from "../state/objectStore";
 import { usePrinterStore } from "../state/printerStore";
 
@@ -45,9 +54,14 @@ export const ArrangeService = {
     }
 
     const { objects } = useObjectStore.getState();
-    const items: LayoutItem[] = objects.flatMap((object) => {
-      const bounds = objectBounds(object);
+    const shown = objects.filter((object) => object.visible);
+    const items: LayoutItem[] = shown.flatMap((object) => {
+      const bounds = object.locked ? null : objectBounds(object);
       return bounds ? [{ id: object.objectId, bounds }] : [];
+    });
+    const obstacles = shown.flatMap((object) => {
+      const bounds = object.locked ? objectBounds(object) : null;
+      return bounds ? [bounds] : [];
     });
 
     if (items.length === 0) {
@@ -56,7 +70,7 @@ export const ArrangeService = {
 
     const volume =
       usePrinterStore.getState().selectedPrinter?.buildVolume ?? null;
-    const shifts = arrangeLayout(items, volume);
+    const shifts = arrangeLayout(items, volume, OBJECT_GAP_MM, obstacles);
     const transforms: Record<string, Transform> = {};
 
     for (const object of objects) {

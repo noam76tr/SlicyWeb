@@ -31,7 +31,9 @@
  * objects, from their box, and the Rotate rings around them (lot 103), and
  * the cursor shows what a drag does; the lock of the scale
  * (keepProportions) applies to the Scale gizmo as to the Transform section;
- * Escape clears the selection (GUI_SPEC.md, Keyboard Shortcuts).
+ * Escape clears the selection (GUI_SPEC.md, Keyboard Shortcuts). Lot 106:
+ * no gizmo while an object of the selection is locked or hidden; a hidden
+ * object is not drawn, not picked, not in a rectangle (ObjectRenderer).
  *
  * Context menu (lot 105, decisions of Noam Q1 to Q11 A): a right click
  * without drag on an object (selected first when it was not) or in the
@@ -434,10 +436,17 @@ export default function Viewport({
         selectedObjectIds.includes(object.objectId),
       );
       keepBoundsOf(objects);
+      // No handles on a selection with an object locked or hidden (lot
+      // 106, Q11 A, Q12 A, Q15 A)
+      const movable = selected.every(
+        (object) => object.visible && !object.locked,
+      )
+        ? selected
+        : [];
       gizmo.attach(
-        selected,
-        selected.length > 1 ? groupCenter(selected) : null,
-        selectionBounds(selected),
+        movable,
+        movable.length > 1 ? groupCenter(movable) : null,
+        selectionBounds(movable),
       );
     };
     syncObjects();

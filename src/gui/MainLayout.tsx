@@ -17,7 +17,8 @@
  * (GUI_SPEC.md, Object Panel, Properties Panel, Responsive Behavior).
  * Their width is kept when the window is resized; the viewport takes
  * the remaining space. A collapsed panel stays visible as a narrow
- * bar with a button to expand it.
+ * bar with a button to expand it. A collapsed Object Panel opens when a
+ * rename is asked (lot 106: leftExpandRequest changes).
  *
  * In Hebrew (dir="rtl"), the start side is on the right: the Object
  * Panel and the Properties Panel swap sides.
@@ -32,7 +33,7 @@
  * - FILE_STRUCTURE.md
  */
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -62,6 +63,9 @@ interface MainLayoutProps {
   rightPanel: ReactNode;
 
   statusBar?: ReactNode;
+
+  /** Each new value opens the Object Panel when it is collapsed */
+  leftExpandRequest?: number;
 }
 
 /** Width of a collapsed panel, in pixels */
@@ -77,6 +81,8 @@ interface SidePanelProps {
   minSize: number;
   maxSize: string;
   children: ReactNode;
+  /** Each new value expands the panel when it is collapsed */
+  expandRequest?: number;
 }
 
 function SidePanel({
@@ -87,10 +93,17 @@ function SidePanel({
   minSize,
   maxSize,
   children,
+  expandRequest = 0,
 }: SidePanelProps): JSX.Element {
   const { t } = useTranslation();
   const panelRef = usePanelRef();
   const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (expandRequest > 0 && panelRef.current?.isCollapsed()) {
+      panelRef.current.expand();
+    }
+  }, [expandRequest, panelRef]);
 
   // Icons are drawn for left-to-right; they are mirrored in
   // right-to-left (rtl:-scale-x-100), where the sides are swapped.
@@ -172,6 +185,7 @@ export default function MainLayout({
   rightTitle,
   rightPanel,
   statusBar,
+  leftExpandRequest,
 }: MainLayoutProps): JSX.Element {
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground">
@@ -186,6 +200,7 @@ export default function MainLayout({
             defaultSize={260}
             minSize={200}
             maxSize="40%"
+            expandRequest={leftExpandRequest}
           >
             {leftPanel}
           </SidePanel>

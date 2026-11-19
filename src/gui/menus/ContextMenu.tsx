@@ -14,6 +14,15 @@
  *   (STL and 3MF, like the Import button), Select All (Ctrl+A), Arrange
  *   (A), Reset View (Home).
  *
+ * Lot 106 (decision 112 of Noam, Q18 A): Rename (F2; one object selected
+ * only, Q6 A) after Properties; Hide or Show (H) and Lock or Unlock in
+ * their own group after Delete, the line saying what it does for the
+ * selection (Hide when at least one object is shown, Lock when at least
+ * one is not locked); Center On Bed and Reset Rotation And Scale disabled
+ * while an object of the selection is locked or hidden (Q11 A, Q12 A);
+ * in the empty space, Show All (Alt+H) before Reset View, disabled while
+ * no object is hidden.
+ *
  * openContextMenu() opens it at a point of the window (right click) or
  * under an element (Menu key, Shift+F10, on a row of the Object Panel).
  * It is placed after the point on the side where the text starts (to the
@@ -38,6 +47,7 @@ import { AnalysisService } from "../../services/AnalysisService";
 import { ArrangeService } from "../../services/ArrangeService";
 import { ObjectEditService } from "../../services/ObjectEditService";
 import { optimizeOrientation } from "../../services/OptimizationService";
+import { ObjectStateService } from "../../services/ObjectStateService";
 import { PropertiesTabService } from "../../services/PropertiesTabService";
 import { TransformService } from "../../services/TransformService";
 import { useObjectStore } from "../../state/objectStore";
@@ -54,6 +64,7 @@ import {
 import { deleteSelectedObjects } from "../dialogs/DeleteObjectsDialog";
 import { useTranslation } from "../hooks/useTranslation";
 import { IMPORT_ACCEPT, openImportDialog } from "../import/openImportDialog";
+import { renameSelection, useRenameStore } from "../sidebar/renameStore";
 
 export type ContextMenuKind = "object" | "scene";
 
@@ -98,6 +109,9 @@ interface ContextMenuItem {
   /** Dictionary key of the label */
   key: string;
 
+  /** Key of the label for the selection now (Hide or Show, Lock or Unlock) */
+  label?: () => string;
+
   /** Shortcut shown next to the label (GUI_SPEC.md, Keyboard Shortcuts) */
   shortcut?: string;
 
@@ -105,9 +119,17 @@ interface ContextMenuItem {
 
   /**
    * Enabled only when objects are selected, or the scene has objects, or
-   * the scene has objects and no search of orientation runs
+   * the scene has objects and no search of orientation runs; one object
+   * selected (Rename); objects selected none of them locked or hidden
+   * (lot 106); an object hidden (Show All)
    */
-  needs?: "selection" | "objects" | "optimize";
+  needs?:
+    | "selection"
+    | "objects"
+    | "optimize"
+    | "single"
+    | "movable"
+    | "hidden";
 }
 
 function selection(): string[] {
@@ -123,6 +145,12 @@ const OBJECT_MENU: ContextMenuItem[][] = [
     {
       key: "contextMenu.properties",
       action: () => PropertiesTabService.choose("object"),
+    },
+    {
+      key: "contextMenu.rename",
+      shortcut: "F2",
+      needs: "single",
+      action: renameSelection,
     },
   ],
   [
@@ -163,20 +191,45 @@ const OBJECT_MENU: ContextMenuItem[][] = [
   ],
   [
     {
+      key: "contextMenu.hide",
+      label: () =>
+        ObjectStateService.selectionVisibilityAction() === "hide"
+          ? "contextMenu.hide"
+          : "contextMenu.show",
+      shortcut: "H",
+      needs: "selection",
+      action: () => {
+        ObjectStateService.toggleSelectionVisibility();
+      },
+    },
+    {
+      key: "contextMenu.lock",
+      label: () =>
+        ObjectStateService.selectionLockAction() === "lock"
+          ? "contextMenu.lock"
+          : "contextMenu.unlock",
+      needs: "selection",
+      action: () => {
+        ObjectStateService.toggleSelectionLock();
+      },
+    },
+  ],
+  [
+    {
       key: "tools.optimizeOrientation",
       needs: "optimize",
       action: optimizeOrientation,
     },
     {
       key: "transform.centerOnBed",
-      needs: "selection",
+      needs: "movable",
       action: () => {
         TransformService.centerGroupOnBed(selection());
       },
     },
     {
       key: "contextMenu.resetRotationScale",
-      needs: "selection",
+      needs: "movable",
       action: () => {
         TransformService.resetGroupRotationAndScale(selection());
       },
@@ -216,6 +269,14 @@ const SCENE_MENU: ContextMenuItem[][] = [
   ],
   [
     {
+      key: "view.showAll",
+      shortcut: "Alt+H",
+      needs: "hidden",
+      action: () => {
+        ObjectStateService.showAll();
+      },
+    },
+    {
       key: "view.resetView",
       shortcut: "Home",
       action: () => useViewportStore.getState().requestView("reset"),
@@ -235,9 +296,24 @@ export default function ContextMenu(): JSX.Element {
   const { t } = useTranslation();
   const menu = useContextMenuStore((state) => state.menu);
   const hasObjects = useObjectStore((state) => state.objects.length > 0);
-  const hasSelection = useObjectStore(
-    (state) => state.selectedObjectIds.length > 0,
+  const selectionCount = useObjectStore(
+    (state) => state.selectedObjectIds.length,
   );
+  const hasSelection = selectionCount > 0;
+  const movable = useObjectStore(
+    (state) =>
+      state.selectedObjectIds.length > 0 &&
+      state.objects.every(
+        (object) =>
+          !state.selectedObjectIds.includes(object.objectId) ||
+          (object.visible && !object.locked),
+      ),
+  );
+  const hasHidden = useObjectStore((state) =>
+    state.objects.some((object) => !object.visible),
+  );
+  // The labels Hide / Show and Lock / Unlock follow the objects
+  useObjectStore((state) => state.objects);
   const optimizing = useOptimizationTaskStore((state) => state.running);
 
   // Kept while the menu closes (animation): its content does not change
@@ -250,7 +326,10 @@ export default function ContextMenu(): JSX.Element {
   const isDisabled = (item: ContextMenuItem): boolean =>
     (item.needs === "selection" && !hasSelection) ||
     (item.needs === "objects" && !hasObjects) ||
-    (item.needs === "optimize" && !(hasObjects && !optimizing));
+    (item.needs === "optimize" && !(hasObjects && !optimizing)) ||
+    (item.needs === "single" && selectionCount !== 1) ||
+    (item.needs === "movable" && !movable) ||
+    (item.needs === "hidden" && !hasHidden);
 
   /**
    * Focus when the menu closes: the element given at the opening (row of
@@ -258,7 +337,10 @@ export default function ContextMenu(): JSX.Element {
    * confirmation), which keeps the focus it chose
    */
   const finalFocus = (): HTMLElement | boolean => {
-    if (document.querySelector('[role="dialog"][data-open]')) {
+    if (
+      document.querySelector('[role="dialog"][data-open]') ||
+      useRenameStore.getState().objectId !== null
+    ) {
       return false;
     }
 
@@ -311,7 +393,7 @@ export default function ContextMenu(): JSX.Element {
                     disabled={isDisabled(item)}
                     onClick={() => item.action()}
                   >
-                    {t(item.key)}
+                    {t(item.label ? item.label() : item.key)}
                     {item.shortcut && (
                       <DropdownMenuShortcut dir="ltr" className="ps-6">
                         {item.shortcut}

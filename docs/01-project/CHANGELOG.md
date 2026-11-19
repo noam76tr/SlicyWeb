@@ -3961,7 +3961,7 @@ Release Type:
 Graphical User Interface (Context Menu)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-17
@@ -3994,7 +3994,55 @@ Date:
 
 ## Known Issues
 
-- Rename, Hide / Show and Lock / Unlock of GUI_SPEC.md are not in the menu: Rename needs a name field that DATA_SCHEMA.md does not have (only fileName); Hide and Lock have their fields (visible, locked) but no described behavior. A lot of its own, with its questions (Noam, 2026-11-17)
+- Rename, Hide / Show and Lock / Unlock of GUI_SPEC.md are not in the menu: Rename needs a name field that DATA_SCHEMA.md does not have (only fileName); Hide and Lock have their fields (visible, locked) but no described behavior. A lot of its own, with its questions (Noam, 2026-11-17). Resolved in 0.1.106
+
+## Validation Result
+
+- Windows 11 (2026-11-18): lot 105 v2 on GitHub (55e6aeb, identical to the lot: the 21 files of version 1 on 55183dd, the 4 files of version 2); npm run check:locales 489 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 605 tests passed and 1 skipped, npm run test:e2e 67 tests passed (Noam)
+- Manual checks 1 to 10 of lot 105 passed (Noam, 2026-11-18); check 2: the group is centered as a block, without overlap, as Noam wants (not like Cura)
+
+---
+
+# VERSION 0.1.106
+
+Release Type:
+Graphical User Interface (Object Panel, Context Menu), Data Schema (Object Schema: name)
+
+Status:
+In Progress
+
+Date:
+2026-11-18
+
+## Added
+
+- Rename, Hide, Lock (request of Noam, 2026-11-18; decision 112: Q1 to Q18 A; GUI_SPEC.md, Object Panel, Object Context Menu, Keyboard Shortcuts):
+  - name given by the user: new field name of the Object Schema (DATA_SCHEMA.md 3.14.0), null = the file name shown; fileName never changes; the WYPROJ format stays 3.0.0 (field added); the name of the object in the slicer file will be this name (SLICER_EXPORT_SPEC.md 1.2.0, Phase 14) (Q1 A)
+  - rename in the row of the Object Panel: double-click, F2 or Rename of the context menu; Enter or a click elsewhere applies, Escape cancels; the double-click keeps the selection; a collapsed Object Panel opens (Q2 A); trimmed, 100 characters, empty = the file name, a name already used accepted (Q3 A); "Support (1)", "Support (2)" for every name shown twice (Q4 A, IMPORT_EXPORT_SPEC.md 3.1.0); the copy keeps the name (Q5 A); one object at a time (Q6 A)
+  - hide: the object is set aside: not drawn, not clicked, not in a rectangle nor in Ctrl+A, no warning of the Plate Check, not moved nor counted by Arrange, analysis and recommendation still computed (Q7 A); not exported (Q8 A, SLICER_EXPORT_SPEC.md 1.2.0); the eye of a row (that row only), Hide of the context menu, the key H, Show All in the scene menu and in the View menu with Alt+H (Q9 A); a hidden object leaves the selection (Q10 A); its row in gray, still selectable from the panel, the Transform section read only (Q11 A)
+  - lock: no change of position, rotation or scale (drag, gizmo, Transform section read only with "Object locked", Center On Bed and Reset disabled); Optimize Orientation leaves it ("cube: locked, orientation not changed"); Arrange leaves it in place and arranges the others around it (Q12 A); Delete, Duplicate (copy not locked), Rename and Hide allowed (Q13 A); selectable as usual, without gizmo (Q14 A); a group with one locked object does not move (Q15 A); padlock of a row and Lock of the context menu, no key (Q16 A)
+  - one action of the history each: RENAME, VISIBILITY, LOCK (Q17 A, UNDO_REDO_SPEC.md 2.6.0); the line of the context menu says Hide or Show, Lock or Unlock for the selection (Q18 A)
+- src/services/ObjectStateService.ts; src/gui/sidebar/renameStore.ts; src/gui/hooks/useObjectStateShortcuts.ts (F2, H, Alt+H)
+- 12 keys in en, fr and he: contextMenu.rename, contextMenu.hide, contextMenu.show, contextMenu.lock, contextMenu.unlock, view.showAll, objects.nameField, transform.locked, transform.lockedInSelection, transform.hidden, transform.hiddenInSelection, optimization.locked (501 keys)
+
+## Changed
+
+- src/types/Object3D.ts (name), src/object_manager/ObjectFactory.ts (name null), src/object_manager/ObjectDuplicator.ts (name kept, not locked, shown)
+- src/state/objectStore.ts (updateObjectStates; Ctrl+A without the hidden objects; a hidden object leaves the selection), src/state/historyStore.ts (RENAME, VISIBILITY, LOCK), src/state/optimizationTaskStore.ts (line locked)
+- src/services/TransformService.ts (an object locked refuses every transform, also in a group and for a gesture; undo and redo of RENAME, VISIBILITY, LOCK), src/services/ArrangeService.ts and src/scene/PlateLayout.ts (hidden objects left out; locked objects are obstacles), src/services/PlateCheckService.ts (hidden objects never out), src/services/OptimizationService.ts (locked: not searched, not turned; without selection: the objects shown)
+- src/renderer/ObjectInteraction.ts (a drag on a locked object moves nothing; normal cursor over it), src/gui/viewport/Viewport.tsx (no gizmo while an object of the selection is locked or hidden)
+- src/gui/sidebar/LeftSidebar.tsx (name field, eye and padlock active, row of a hidden object in gray), src/gui/sidebar/objectNames.ts (name given, numbers for every name shown twice), src/gui/sidebar/TransformSection.tsx (read only while locked or hidden), src/gui/menus/ContextMenu.tsx (Rename, Hide or Show, Lock or Unlock, Show All), src/gui/menus/MenuBar.tsx (View > Show All), src/gui/optimization/OptimizationMessages.tsx (line locked), src/gui/MainLayout.tsx and src/gui/App.tsx (shortcuts, a rename opens the Object Panel)
+- DATA_SCHEMA.md 3.14.0 (Object Schema: name, Object Fields; rules 7 and 10), IMPORT_EXPORT_SPEC.md 3.1.0 (Object Naming, Duplicate Names), SLICER_EXPORT_SPEC.md 1.2.0 (hidden objects not exported, name of an object), UNDO_REDO_SPEC.md 2.6.0, GUI_SPEC.md (Object Panel, Object Context Menu: the "later" block replaced, View Menu, Arrange, Plate Check, Transform Section, Keyboard Shortcuts: Objects), TEST_PLAN.md, FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md
+- PASSATION.md: §1 rule of the subjects (all the questions of a subject at once, then one delivery and one series of manual checks; Noam, 2026-11-18), decisions 111 (lot 105 validated and this rule) and 112 (answers to lot 106)
+- docs/lots/LOT106.md and docs/lots/LOT106-QUESTIONS.md
+- 0.1.105 Completed with the results of Noam
+
+## Tests
+
+- tests/unit/services/ObjectState.test.ts (15 tests): names, rules of the name, the copy; hide (selection, Ctrl+A, Plate Check, Arrange, H); lock (transforms refused, Delete allowed, Arrange around a locked object, same layout without obstacle); history RENAME, VISIBILITY, LOCK; lines of the menu; nothing during a gesture
+- tests/unit/services/OptimizationService.test.ts (2 tests): a locked object is not searched; an object locked during its search is not turned
+- tests/e2e/object-state.spec.ts (4 tests): rename (double-click, F2, Escape, Ctrl+Z, context menu, empty name, numbers); hide (eye, Ctrl+A, H, Alt+H in English, French and Hebrew, no menu open); lock (no handles, fields read only, a drag moves nothing) (71 e2e)
+- tests/e2e/context-menu.spec.ts: the new items in the order of the menus
 
 ---
 

@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.13.0
+Version: 3.14.0
 
 Status: Approved
 
@@ -1076,6 +1076,8 @@ The same four selections also exist in the Project Schema (see Known Duplication
 
  "fileName": "",
 
+ "name": null,
+
  "fileType": "",
 
  "visible": true,
@@ -1084,6 +1086,30 @@ The same four selections also exist in the Project Schema (see Known Duplication
 
 }
 
+```
+
+Object Fields (3.14.0, lot 106, PASSATION.md decision 112 of Noam: Q1 to Q18 A):
+
+```text
+fileName  name of the source file; never changes (Object Naming,
+          IMPORT_EXPORT_SPEC.md)
+name      name given by the user, or null when none was given: the name
+          shown is then made from fileName (Duplicate Names). Text of
+          1 to 100 characters, spaces at the start and the end taken off;
+          never equal to fileName (the same text gives null). Any
+          language. Two objects may have the same name.
+          A project written before 3.14.0 has no name: read as null.
+          The WYPROJ format stays 3.0.0: the field is added (ADR-026,
+          schema changes are additive).
+visible   false: the object is hidden. It is set aside: not drawn, not
+          selected by Select All or a rectangle, not checked against the
+          build volume, not moved by Arrange, not exported
+          (SLICER_EXPORT_SPEC.md); its analysis and its recommendation
+          are still computed.
+locked    true: the position, the rotation and the scale of the object
+          cannot change (no gizmo, Transform section read only, Arrange
+          and Optimize Orientation leave it as it is). It can still be
+          deleted, duplicated, renamed and hidden.
 ```
 
 
@@ -1984,13 +2010,13 @@ Reference: ADR-026
 
 6. Object Removal: when an object is removed from the scene, its analysis and its recommendation are removed.
 
-7. Object Duplication: the copy receives a new objectId. The analysis and the recommendation of the original object are not copied. The copy has no analysis and no recommendation until it is analyzed.
+7. Object Duplication: the copy receives a new objectId. The analysis and the recommendation of the original object are not copied. The copy has no analysis and no recommendation until it is analyzed. The copy keeps the name of the original (3.14.0), is not locked and is visible.
 
 8. Object Transformation: when the rotation or the scale of an object changes (Transform Schema), the status of its analysis and of its recommendation becomes outdated. A change of position alone does not change the status.
 
 9. When the analysis of an object becomes outdated or is recomputed, the recommendation of the same object becomes outdated. A recomputed analysis keeps the analysisId of the object, so that rule 5 remains satisfied.
 
-10. An outdated analysis or recommendation must be recomputed before any export. Export is blocked for an object whose recommendation is missing or outdated (SLICER_EXPORT_SPEC.md, error EXP_003).
+10. An outdated analysis or recommendation must be recomputed before any export. Export is blocked for an object whose recommendation is missing or outdated (SLICER_EXPORT_SPEC.md, error EXP_003). A hidden object (visible false, 3.14.0) is not exported and does not block the export.
 
 11. Selection Change (3.10.0, ADR-035 D11): when the selected printer, material or filament changes, the recommendations of all the objects become outdated; when the category chosen for an object changes (classification.source), the recommendation of this object becomes outdated. They are generated again at once when an analysis up to date, a printer and a material exist; otherwise they stay outdated. The analyses do not change.
 ```

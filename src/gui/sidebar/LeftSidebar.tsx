@@ -14,8 +14,19 @@
  * An object out of the build volume shows the warning icon in orange
  * instead of its cube icon, with the text of the warning for screen
  * readers and as tooltip (lot 101, Q2 A; updated at the end of a gesture,
- * Q4 A). The visibility and lock toggles show the state of the object;
- * changing them is not available yet (no store action exists).
+ * Q4 A).
+ *
+ * Rename, Hide, Lock (lot 106, decision 112 of Noam, Q1 to Q18 A;
+ * ObjectStateService):
+ * - the name becomes a field in the row (Q2 A): double-click on the row,
+ *   F2, or Rename in the context menu (startRename); its whole text is
+ *   selected; Enter or a click elsewhere applies it, Escape cancels; a
+ *   double-click never clears the selection;
+ * - the eye hides or shows the object of its row only, the padlock locks
+ *   or unlocks it, without changing the selection (Q9 A, Q16 A);
+ * - a hidden object: the row in gray, the eye crossed out (Q11 A); a click
+ *   still selects it;
+ * - when the panel is collapsed, a rename opens it first (MainLayout).
  *
  * Context menu (lot 105, decisions of Noam Q5, Q7, Q9 A; ContextMenu):
  * a right click on a row opens the menu of the selection at the pointer
@@ -32,9 +43,19 @@
  * - ARCHITECTURE.md
  */
 
-import { useMemo, useRef, type MouseEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  type KeyboardEvent,
+  type MouseEvent,
+} from "react";
 import { Box, Eye, EyeOff, Lock, LockOpen, TriangleAlert } from "lucide-react";
 
+import {
+  MAX_NAME_LENGTH,
+  ObjectStateService,
+} from "../../services/ObjectStateService";
 import { useObjectStore } from "../../state/objectStore";
 import { usePlateCheckStore } from "../../state/plateCheckStore";
 import { useTranslation } from "../hooks/useTranslation";
@@ -42,6 +63,73 @@ import { openContextMenu } from "../menus/ContextMenu";
 import { usePlateWarningText } from "../plate/PlateMessage";
 
 import { getDisplayNames } from "./objectNames";
+import { startRename, stopRename, useRenameStore } from "./renameStore";
+
+/**
+ * Field of the name, in the row: Enter or leaving the field applies the
+ * name, Escape cancels; the focus goes back to the row
+ */
+function NameField({
+  objectId,
+  value,
+  label,
+}: {
+  objectId: string;
+  value: string;
+  label: string;
+}): JSX.Element {
+  const input = useRef<HTMLInputElement>(null);
+  const done = useRef(false);
+
+  useEffect(() => {
+    input.current?.focus();
+    input.current?.select();
+  }, []);
+
+  const finish = (apply: boolean): void => {
+    if (done.current) {
+      return;
+    }
+
+    done.current = true;
+    const text = input.current?.value ?? value;
+    const row = input.current?.closest("li");
+    stopRename();
+
+    if (apply && text !== value) {
+      ObjectStateService.rename(objectId, text);
+    }
+
+    // Back to the row (the field leaves the page)
+    requestAnimationFrame(() => {
+      row?.querySelector<HTMLElement>("[data-object-row]")?.focus();
+    });
+  };
+
+  return (
+    <input
+      ref={input}
+      type="text"
+      defaultValue={value}
+      maxLength={MAX_NAME_LENGTH}
+      aria-label={label}
+      data-name-field=""
+      className="h-5 w-full min-w-0 rounded border border-ring bg-background px-1 text-xs text-foreground outline-none ring-2 ring-ring/50"
+      onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          finish(true);
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopPropagation();
+          finish(false);
+        }
+      }}
+      onBlur={() => finish(true)}
+      onContextMenu={(event) => event.stopPropagation()}
+    />
+  );
+}
 
 export default function LeftSidebar(): JSX.Element {
   const { t } = useTranslation();
@@ -53,6 +141,7 @@ export default function LeftSidebar(): JSX.Element {
   );
   const selectObjects = useObjectStore((state) => state.selectObjects);
   const reported = usePlateCheckStore((state) => state.reportedObjectIds);
+  const renaming = useRenameStore((state) => state.objectId);
   const warningText = usePlateWarningText();
 
   // Start of the Shift+click range: the last object clicked without Shift
@@ -87,21 +176,38 @@ export default function LeftSidebar(): JSX.Element {
     );
   }
 
-  const notAvailable = t("app.notAvailable");
-
   return (
     <div className="min-h-full" onContextMenu={openSceneMenu}>
       <ul className="py-1" aria-label={t("objects.title")}>
         {objects.map((object) => {
           const selected = selectedObjectIds.includes(object.objectId);
           const outside = reported.includes(object.objectId);
+          const name = names.get(object.objectId) ?? object.fileName;
+          const icon = outside ? (
+            <span
+              role="img"
+              aria-label={warningText([object.objectId])}
+              title={warningText([object.objectId])}
+              data-outside-icon=""
+              className="shrink-0 text-warning"
+            >
+              <TriangleAlert className="size-4" aria-hidden="true" />
+            </span>
+          ) : (
+            <Box
+              className={`size-4 shrink-0 ${object.visible ? "" : "opacity-60"}`}
+              aria-hidden="true"
+            />
+          );
 
           return (
             <li
               key={object.objectId}
+              data-hidden={object.visible ? undefined : ""}
+              data-locked={object.locked ? "" : undefined}
               className={`flex items-center gap-2 px-2 py-1 text-xs ${
                 selected ? "bg-primary/20" : "hover:bg-accent"
-              }`}
+              } ${object.visible ? "" : "text-muted-foreground"}`}
               onContextMenu={(event) => {
                 event.preventDefault();
 
@@ -120,75 +226,95 @@ export default function LeftSidebar(): JSX.Element {
                 );
               }}
             >
-              <button
-                type="button"
-                className="flex min-w-0 flex-1 items-center gap-2 text-start"
-                aria-pressed={selected}
-                onClick={(event) => {
-                  const add = event.ctrlKey || event.metaKey;
+              {renaming === object.objectId ? (
+                <div className="flex min-w-0 flex-1 items-center gap-2">
+                  {icon}
+                  <NameField
+                    objectId={object.objectId}
+                    value={name}
+                    label={t("objects.nameField")}
+                  />
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  data-object-row=""
+                  className="flex min-w-0 flex-1 items-center gap-2 text-start"
+                  aria-pressed={selected}
+                  onClick={(event) => {
+                    const add = event.ctrlKey || event.metaKey;
 
-                  if (event.shiftKey) {
-                    // Range from the anchor (or the last object selected)
-                    const ids = objects.map((item) => item.objectId);
-                    const from = ids.indexOf(
-                      anchor.current ??
-                        useObjectStore.getState().selectedObjectId ??
-                        object.objectId,
-                    );
-                    const to = ids.indexOf(object.objectId);
-                    const range = ids.slice(
-                      Math.min(from, to) < 0 ? to : Math.min(from, to),
-                      Math.max(from, to) + 1,
-                    );
+                    // Second click of a double-click: the selection stays
+                    // (lot 106, Q2 A)
+                    if (event.detail > 1) {
+                      return;
+                    }
 
-                    selectObjects(
-                      add
-                        ? [
-                            ...selectedObjectIds,
-                            ...range.filter(
-                              (id) => !selectedObjectIds.includes(id),
-                            ),
-                          ]
-                        : range,
-                    );
-                    return;
-                  }
+                    if (event.shiftKey) {
+                      // Range from the anchor (or the last object selected)
+                      const ids = objects.map((item) => item.objectId);
+                      const from = ids.indexOf(
+                        anchor.current ??
+                          useObjectStore.getState().selectedObjectId ??
+                          object.objectId,
+                      );
+                      const to = ids.indexOf(object.objectId);
+                      const range = ids.slice(
+                        Math.min(from, to) < 0 ? to : Math.min(from, to),
+                        Math.max(from, to) + 1,
+                      );
 
-                  anchor.current = object.objectId;
+                      selectObjects(
+                        add
+                          ? [
+                              ...selectedObjectIds,
+                              ...range.filter(
+                                (id) => !selectedObjectIds.includes(id),
+                              ),
+                            ]
+                          : range,
+                      );
+                      return;
+                    }
 
-                  if (add) {
-                    toggleObjectSelection(object.objectId);
-                  } else if (selected && selectedObjectIds.length === 1) {
-                    selectObject(null);
-                  } else {
+                    anchor.current = object.objectId;
+
+                    if (add) {
+                      toggleObjectSelection(object.objectId);
+                    } else if (selected && selectedObjectIds.length === 1) {
+                      selectObject(null);
+                    } else {
+                      selectObject(object.objectId);
+                    }
+                  }}
+                  onDoubleClick={() => {
+                    // Rename (lot 106, Q2 A): this object only (Q6 A)
+                    anchor.current = object.objectId;
                     selectObject(object.objectId);
-                  }
-                }}
-              >
-                {outside ? (
-                  <span
-                    role="img"
-                    aria-label={warningText([object.objectId])}
-                    title={warningText([object.objectId])}
-                    data-outside-icon=""
-                    className="shrink-0 text-warning"
-                  >
-                    <TriangleAlert className="size-4" aria-hidden="true" />
-                  </span>
-                ) : (
-                  <Box className="size-4 shrink-0" aria-hidden="true" />
-                )}
-                <span className="truncate">
-                  {names.get(object.objectId) ?? object.fileName}
-                </span>
-              </button>
+                    startRename(object.objectId);
+                  }}
+                >
+                  {icon}
+                  <span className="truncate">{name}</span>
+                </button>
+              )}
 
               <button
                 type="button"
-                disabled
-                className="text-muted-foreground disabled:opacity-60"
-                title={`${t("objects.visibility")} (${notAvailable})`}
+                className={`rounded p-0.5 hover:bg-muted ${
+                  object.visible ? "text-muted-foreground" : "text-foreground"
+                }`}
+                title={t(
+                  object.visible ? "contextMenu.hide" : "contextMenu.show",
+                )}
                 aria-label={t("objects.visibility")}
+                data-visibility-toggle=""
+                onClick={() =>
+                  ObjectStateService.setVisible(
+                    [object.objectId],
+                    !object.visible,
+                  )
+                }
               >
                 {object.visible ? (
                   <Eye className="size-3.5" aria-hidden="true" />
@@ -199,10 +325,20 @@ export default function LeftSidebar(): JSX.Element {
 
               <button
                 type="button"
-                disabled
-                className="text-muted-foreground disabled:opacity-60"
-                title={`${t("objects.lock")} (${notAvailable})`}
+                className={`rounded p-0.5 hover:bg-muted ${
+                  object.locked ? "text-foreground" : "text-muted-foreground"
+                }`}
+                title={t(
+                  object.locked ? "contextMenu.unlock" : "contextMenu.lock",
+                )}
                 aria-label={t("objects.lock")}
+                data-lock-toggle=""
+                onClick={() =>
+                  ObjectStateService.setLocked(
+                    [object.objectId],
+                    !object.locked,
+                  )
+                }
               >
                 {object.locked ? (
                   <Lock className="size-3.5" aria-hidden="true" />

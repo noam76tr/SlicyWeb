@@ -422,6 +422,7 @@ Arrange (lot 101, decision 103 of Noam, Q5 to Q9 A; shortcut A; also the button 
 - Rows: the deepest object first; each row is filled from left to right, then the next row toward the back (+Y); 5 mm between two objects; the whole block centered on the plate. Each object is taken as its box seen from above; its orientation never changes: only Position X and Y move (Q7 A).
 - The objects that do not fit (wider, deeper or higher than the build volume, or no room left) are put in a row to the right of the plate, outside it, and keep the warning of the Plate Check (Q8 A).
 - Without a printer (no plate), Arrange still works: rows, the block centered on the origin, no limit of size (Q9 A).
+- Hidden and locked objects (lot 106, decision 112, Q7 A and Q12 A): a hidden object does not move and is not counted, the others are arranged as if it were not there; a locked object does not move, and the others are arranged around it, 5 mm away at least: when the rows touch it, each object (the deepest first) goes to the free place of the plate nearest to its place in the rows; one with no free place goes to the row to the right of the plate.
 - One action of the history (UNDO_REDO_SPEC.md 2.5.0, Arrange Actions); nothing is recorded when no object moves. A move does not make the analysis outdated (ADR-026).
 
 ## Delete Confirmation
@@ -484,11 +485,17 @@ Reset View
 
 
 
+Show All
+
+
+
 Show Overhangs
 
 ```
 
 Show Overhangs (lot 82) is a check item: it turns the Overhang Display on and off, like the button Overhangs over the 3D viewport; disabled while the scene has no object.
+
+Show All (lot 106, shortcut Alt+H) shows every hidden object (Object Panel, Hide), one action of the history; disabled while no object is hidden.
 
 
 
@@ -769,6 +776,14 @@ Selection State
 
 ```
 
+Rename, Hide, Lock (lot 106, request of Noam; PASSATION.md decision 112: Q1 to Q18 A):
+
+- Object Name: the name given by the user (DATA_SCHEMA.md 3.14.0, Object Schema: name), otherwise the file name; two objects with the same name are numbered, "Support (1)", "Support (2)" (IMPORT_EXPORT_SPEC.md, Duplicate Names). The same name is shown everywhere: Object tab, Status Bar, messages over the viewport.
+- Rename (Q2 A): the name becomes a field in the row, its whole text selected; opened by a double-click on the row, by F2 (one object selected, in the viewport or the panel) or by Rename of the Object Context Menu; Enter or a click elsewhere applies it, Escape cancels; the double-click keeps the object selected. Spaces at the start and the end are taken off; 100 characters at most; an empty name gives the file name back; a name already used is accepted (Q3 A). One object at a time: Rename is disabled while several objects are selected (Q6 A). A collapsed Object Panel opens for the rename.
+- Visibility Toggle (Q9 A): the eye hides or shows the object of its row only, without changing the selection; tooltip Hide or Show. A hidden object (Q7 A, Q10 A, Q11 A): its row in gray, the eye crossed out; it is not drawn in the viewport, cannot be clicked there nor taken by the selection rectangle or Select All, has no warning of the Plate Check, does not move with Arrange (the others are arranged as if it were not there), is not exported (SLICER_EXPORT_SPEC.md 1.2.0); its analysis and its recommendation are still computed. Hiding a selected object takes it out of the selection. A click on its row selects it all the same: the Object tab shows it, Rename, Show, Delete and Duplicate work; nothing is drawn, no gizmo, and the Transform section is read only ("Object hidden").
+- Lock Toggle (Q16 A): the padlock locks or unlocks the object of its row only, without changing the selection; tooltip Lock or Unlock. A locked object (Q12 A to Q15 A) keeps its position, its rotation and its scale: a drag on it moves nothing (normal cursor), no gizmo, the Transform section is read only with the line "Object locked" ("The selection contains a locked object" for a group), Center On Bed and the Reset actions are disabled; Optimize Orientation leaves it as it is (line "cube: locked, orientation not changed"); Arrange leaves it in place and arranges the others around it, without touching it. It can be selected as usual, deleted, duplicated (the copy is not locked), renamed and hidden. Nothing shows the lock in the viewport.
+- Each change is one action of the history (Q17 A; UNDO_REDO_SPEC.md 2.6.0). The copy of an object keeps its name, is not locked and is shown.
+
 
 
 ---
@@ -789,6 +804,7 @@ Menu of an object (right click on an object in the 3D viewport, or on a row of t
 
 ```text
 Properties
+Rename                     F2
 ─────────────────────────────
 Move                        G
 Rotate                      R
@@ -796,6 +812,9 @@ Scale                       S
 ─────────────────────────────
 Duplicate              Ctrl+D
 Delete                    Del
+─────────────────────────────
+Hide                        H
+Lock
 ─────────────────────────────
 Optimize Orientation
 Center On Bed
@@ -809,7 +828,10 @@ Recompute Analysis
 - Move, Rotate, Scale choose the mode of the gizmo, like the buttons over the viewport and the keys G, R, S;
 - Duplicate and Delete are those of the Edit Menu (confirmation for several objects);
 - Optimize Orientation is that of the Tools Menu; Center On Bed is that of the Transform Actions (center of the group for several objects); Reset Rotation And Scale gives each selected object the rotation 0 and the scale 100 %, one action of the history (one Ctrl+Z gives both back);
-- Recompute Analysis is that of the Tools Menu.
+- Recompute Analysis is that of the Tools Menu;
+- Rename (lot 106, Q18 A) opens the name field of the selected object in the Object Panel; disabled while several objects are selected;
+- Hide and Lock (lot 106, Q18 A): the line says what it does for the selection: Hide when at least one object selected is shown (it hides them all), otherwise Show; Lock when at least one is not locked (it locks them all), otherwise Unlock;
+- Center On Bed and Reset Rotation And Scale are disabled while an object of the selection is locked or hidden (lot 106).
 
 Menu of the scene (right click in the empty space of the viewport, or in the Object Panel under its rows):
 
@@ -819,21 +841,18 @@ Import…
 Select All             Ctrl+A
 Arrange                     A
 ─────────────────────────────
+Show All                Alt+H
 Reset View               Home
 ```
+
+Show All (lot 106) shows every hidden object (View Menu); disabled while no object is hidden.
 
 - Import… opens the same file dialog as the Import button of the Toolbar (STL and 3MF);
 - the selection is kept (a right click in the empty space does not clear it).
 
 An item that cannot act now is shown disabled, at its place (no object: Select All, Arrange; a search of orientation in progress: Optimize Orientation). The shortcuts are shown only, in Latin letters in the three languages, as in the Menu Bar. In Hebrew, the menu is mirrored like the Menu Bar: the text on the right, the shortcut on the left, and it opens to the left of the pointer. The menu opens above the pointer when there is no room under it.
 
-Later (Noam, 2026-11-17; a lot of its own, with its questions):
-
-```text
-Rename           the object has no name field in DATA_SCHEMA.md (only fileName)
-Hide, Show       fields visible and locked exist (Object Schema),
-Lock, Unlock     but no behavior is described yet
-```
+Rename, Hide and Lock, noted "later" by lot 105, came with lot 106 (Object Panel, Rename, Hide, Lock).
 
 ---
 
@@ -1155,6 +1174,7 @@ Request of Noam (2026-11-12), lot 101, decision 103 (Q1 to Q4 A): a visible warn
 - When (Q4 A): the color changes during a gesture (drag of the object, of an arrow of the Move gizmo, of a ring of the Rotate gizmo, of a handle of the Scale gizmo); the message and the icon follow at the end of the gesture, so that the text does not blink.
 - Checked again after every change of the objects (import, transform, Arrange, Delete, Duplicate, undo, redo) and of the selected printer. No printer selected: no plate, no warning.
 - Nothing is saved: the check is computed again every time (no field in DATA_SCHEMA.md). The scene checks before an export (SLICER_EXPORT_SPEC.md) are still done at export.
+- A hidden object is never out (lot 106, Q7 A): no orange, no icon, not in the message.
 
 
 
@@ -1733,6 +1753,8 @@ Reset Position, Center On Bed   center of the group at the center of the
 Reset Rotation, Reset Scale     rotation 0 or scale 100 % for each object
 ```
 
+Locked or hidden (lot 106, Q11 A, Q12 A, Q15 A): while an object of the selection is locked or hidden, the fields are read only (their values stay readable), the lock of the scale and the Transform Actions are disabled, and a line over the fields says why: "Object locked", "The selection contains a locked object", "Object hidden" or "The selection contains a hidden object".
+
 
 
 ---
@@ -2208,6 +2230,22 @@ MENU         Context Menu (key of the menu, lot 105)
 ```
 
 Menu of the selection at its center on the screen, or under the row of the Object Panel that has the focus (Object Context Menu). The keys of the viewport (G, R, S, ESC, HOME) are not read inside an open menu or window: ESC closes the menu and keeps the selection.
+
+---
+
+## Objects
+
+```text
+
+F2           Rename the selected object (lot 106; one object selected)
+
+H            Hide the selected objects (Show when they are all hidden)
+
+ALT + H      Show All (View Menu)
+
+```
+
+Lot 106 (PASSATION.md decision 112, Q2 A, Q9 A, Q16 A): not in a text field, nor in an open window or menu. H is read from the key typed, or from the key position when the layout has no Latin letters (Hebrew). Alt+H is taken by the application: no menu of the Menu Bar opens with Alt and a letter, so Alt+H never opens the Help Menu, in English, French and Hebrew (request of Noam, checked by an end-to-end test); the default window menu of Electron (File, Edit, View, Window, in English) has no Help menu and no letter H. Lock and Unlock have no key (Q16 A).
 
 
 

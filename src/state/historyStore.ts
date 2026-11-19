@@ -15,7 +15,9 @@
  * decision of Noam; Phase 11 lot 98: the orientations applied by the
  * optimization, one action OPTIMIZATION) and by ObjectEditService (lot 100:
  * Delete and Duplicate, actions DELETE and DUPLICATE; lot 101: Arrange,
- * one action ARRANGE). The toolbar and the
+ * one action ARRANGE) and by ObjectStateService (lot 106: Rename, Hide
+ * and Show, Lock and Unlock, actions RENAME, VISIBILITY, LOCK). The
+ * toolbar and the
  * Edit menu read canUndo and canRedo.
  *
  * No business logic.
@@ -24,7 +26,8 @@
  * - UNDO_REDO_SPEC.md (History Architecture, History Entry Schema,
  *   Action Types, Redo Clearing Rule, Maximum History Size; 2.3.0:
  *   Orientation Optimization; 2.4.0: Delete Actions, Duplicate Actions,
- *   Geometry Storage Rules; 2.5.0: Arrange Objects)
+ *   Geometry Storage Rules; 2.5.0: Arrange Objects; 2.6.0: Rename, Hide
+ *   And Show, Lock And Unlock)
  */
 
 import { create } from "zustand";
@@ -50,7 +53,17 @@ export type TransformActionType =
  */
 export type SceneActionType = "DELETE" | "DUPLICATE";
 
-export type HistoryActionType = TransformActionType | SceneActionType;
+/**
+ * Action types of the name, the visibility and the lock of objects
+ * (UNDO_REDO_SPEC.md 2.6.0; lot 106, decision 112 of Noam, Q17 A)
+ */
+export type ObjectStateActionType = "RENAME" | "VISIBILITY" | "LOCK";
+
+export type HistoryActionType =
+  TransformActionType | SceneActionType | ObjectStateActionType;
+
+/** Name, visibility and lock of an object (the fields an action changes) */
+export type ObjectState = Partial<Pick<Object3D, "name" | "visible" | "locked">>;
 
 /**
  * An object of the scene as it was when it left the scene (deleted, or
@@ -116,11 +129,41 @@ export interface SceneHistoryEntry {
   after: Record<string, ObjectSnapshot>;
 }
 
-export type HistoryEntry = TransformHistoryEntry | SceneHistoryEntry;
+/**
+ * Entry of the history for Rename, Hide or Show, Lock or Unlock (lot
+ * 106): before and after hold the field changed of each object, by
+ * objectId.
+ */
+export interface ObjectStateHistoryEntry {
+  actionId: string;
+
+  type: ObjectStateActionType;
+
+  /** ISO 8601 */
+  timestamp: string;
+
+  before: Record<string, ObjectState>;
+
+  after: Record<string, ObjectState>;
+}
+
+export type HistoryEntry =
+  TransformHistoryEntry | SceneHistoryEntry | ObjectStateHistoryEntry;
 
 /** The entry is a Delete or a Duplicate */
 export function isSceneEntry(entry: HistoryEntry): entry is SceneHistoryEntry {
   return entry.type === "DELETE" || entry.type === "DUPLICATE";
+}
+
+/** The entry is a Rename, a change of visibility or of lock (lot 106) */
+export function isObjectStateEntry(
+  entry: HistoryEntry,
+): entry is ObjectStateHistoryEntry {
+  return (
+    entry.type === "RENAME" ||
+    entry.type === "VISIBILITY" ||
+    entry.type === "LOCK"
+  );
 }
 
 interface HistoryState {

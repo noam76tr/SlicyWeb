@@ -2,7 +2,7 @@
 
 # SLICER EXPORT SPECIFICATION
 
-Version: 1.1.0
+Version: 1.2.0
 
 Status: Draft
 
@@ -493,6 +493,20 @@ Any failed rule blocks the export and reports an error.
 Scene checks (every exported object inside the build volume of the printer, no collision between objects) are performed again before every export.
 
 Reason: moving an object does not make its analysis outdated (DATA_SCHEMA.md, Object Reference Rules, rule 8).
+
+Objects exported (1.2.0, lot 106, PASSATION.md decision 112 of Noam, Q1 A and Q8 A; DATA_SCHEMA.md 3.14.0, Object Schema):
+
+```text
+Hidden object (visible false)  not exported; not checked by the rules above;
+                               the Export Report says how many objects
+                               hidden were not exported ("1 hidden object
+                               not exported")
+Name of an object              the name shown in the Object Panel (name
+                               given by the user, otherwise the file name;
+                               IMPORT_EXPORT_SPEC.md, Object Naming)
+```
+
+Nothing of this is implemented before Phase 14 (Slicer Export).
 
 ---
 

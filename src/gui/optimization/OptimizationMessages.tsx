@@ -59,6 +59,10 @@ export default function OptimizationMessages(): JSX.Element | null {
       return [t(`optimization.error.${line.code}`, { name })];
     }
 
+    if (line.kind === "locked") {
+      return [t("optimization.locked", { name })];
+    }
+
     if (line.kind === "kept") {
       return [t("optimization.kept", { name, score: number(line.score) })];
     }

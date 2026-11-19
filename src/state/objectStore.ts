@@ -7,6 +7,10 @@
  * is the last object added to the selection (null when nothing is
  * selected). Object selection is not project data (not in DATA_SCHEMA.md).
  *
+ * Lot 106 (decision 112 of Noam): a hidden object is never selected by
+ * Ctrl+A (Q7 A), and leaves the selection when it is hidden (Q10 A); it
+ * can still be selected from the Object Panel (Q11 A).
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
@@ -15,6 +19,7 @@
 import { create } from "zustand";
 
 import type { Object3D, Transform } from "../types/Object3D";
+import type { ObjectState } from "./historyStore";
 import { TransformValidator } from "../transform/TransformValidator";
 
 import { useAnalysisStore } from "./analysisStore";
@@ -59,6 +64,13 @@ interface ObjectStore {
    */
   updateObjectTransform: (objectId: string, transform: Transform) => void;
 
+  /**
+   * Writes the name, the visibility or the lock of objects (lot 106,
+   * ObjectStateService and undo); the objects hidden leave the selection
+   * (Q10 A).
+   */
+  updateObjectStates: (states: Record<string, ObjectState>) => void;
+
   /** Selects this object only; null clears the selection */
   selectObject: (objectId: string | null) => void;
 
@@ -68,7 +80,7 @@ interface ObjectStore {
   /** Ctrl+click: adds the object to the selection, or removes it */
   toggleObjectSelection: (objectId: string) => void;
 
-  /** Ctrl+A: selects all the objects */
+  /** Ctrl+A: selects all the objects shown (lot 106: not the hidden ones) */
   selectAllObjects: () => void;
 
   clearObjects: () => void;
@@ -168,6 +180,28 @@ export const useObjectStore = create<ObjectStore>((set, get) => ({
     }
   },
 
+  updateObjectStates: (states) =>
+    set((state) => {
+      const objects = state.objects.map((object) =>
+        states[object.objectId]
+          ? { ...object, ...states[object.objectId] }
+          : object,
+      );
+      const hidden = new Set(
+        Object.keys(states).filter((id) => states[id].visible === false),
+      );
+      const selectedObjectIds = state.selectedObjectIds.filter(
+        (id) => !hidden.has(id),
+      );
+
+      return {
+        objects,
+        selectedObjectIds,
+        selectedObjectId:
+          selectedObjectIds[selectedObjectIds.length - 1] ?? null,
+      };
+    }),
+
   selectObject: (objectId) =>
     set({
       selectedObjectId: objectId,
@@ -195,7 +229,9 @@ export const useObjectStore = create<ObjectStore>((set, get) => ({
 
   selectAllObjects: () =>
     set((state) => {
-      const selectedObjectIds = state.objects.map((object) => object.objectId);
+      const selectedObjectIds = state.objects
+        .filter((object) => object.visible)
+        .map((object) => object.objectId);
 
       return {
         selectedObjectIds,

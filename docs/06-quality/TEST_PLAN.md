@@ -849,6 +849,36 @@ Shortcuts):
     rotation of the view without menu, also when the drag starts on an
     object (request of Noam, 2026-11-17)
 
+Rename, Hide, Lock (lot 106; GUI_SPEC.md, Object Panel, Object Context
+Menu, Keyboard Shortcuts; UNDO_REDO_SPEC.md 2.6.0):
+  unit (ObjectState.test.ts): name given or file name, "(1)", "(2)" for
+    every name shown twice, extension kept for a name given; empty name
+    or the file name: null; 100 characters at most; Rename with one
+    object only; the copy keeps the name, is not locked and is shown;
+    hidden: out of the selection, out of Ctrl+A, selectable again, no
+    warning of the Plate Check, not moved nor counted by Arrange; H:
+    Hide or Show for the selection; locked: no transform for the object
+    nor for a group with it, no gesture, Delete allowed; Arrange around
+    a locked object (5 mm away, inside the plate, no contact); without
+    obstacle, the same layout as lot 101; RENAME, VISIBILITY, LOCK: one
+    action each, undo and redo, selection after undo; nothing recorded
+    without a change; Show All one action; Lock or Unlock for the
+    selection; nothing during a gesture
+  unit (OptimizationService.test.ts): a locked object is not searched,
+    line "locked"; an object locked during its search is not turned
+  end to end (tests/e2e/object-state.spec.ts): rename by double-click
+    and Enter (selection kept), F2 and Escape, Ctrl+Z, Rename of the
+    context menu and an empty name; two objects named the same: "(1)",
+    "(2)"; eye, Ctrl+A without the hidden object, H, then Alt+H in
+    English, French and Hebrew: all shown, no menu open; padlock: no
+    handles, fields read only, a drag moves nothing, unlocked: it moves
+  end to end (tests/e2e/context-menu.spec.ts): the new items in their
+    order (Rename, Hide, Lock; Show All)
+  manual (Noam): Alt+H in the three languages opens no menu (Help); a
+    hidden object then Arrange: it does not move and is not counted; a
+    locked object then Arrange: the others are arranged around it,
+    without touching it (requests of Noam, 2026-11-18)
+
 Mesh defects (lot 91):
   unit (ModelAnalyzer.test.ts): two cubes touching along an edge: closed,
     not manifold, volume exact; an edge with three triangles: open; a cube:

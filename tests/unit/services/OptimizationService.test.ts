@@ -514,3 +514,39 @@ describe("OptimizationService (Phase 11 lot 98, ADR-036 D4)", () => {
 function vitestTick(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
 }
+
+describe("OptimizationService and locked objects (lot 106, Q12 A)", () => {
+  it("a locked object is not searched, its line says it is locked", async () => {
+    addObject(h, "tower", tower(), 0, 0);
+    addObject(h, "other", tower(), 60, 0);
+    useObjectStore.getState().updateObjectStates({ tower: { locked: true } });
+    const before = transformOf("tower");
+
+    h.service.optimize(["tower", "other"]);
+    await settle(h);
+
+    expect(h.calls.map((call) => call.objectId)).toEqual(["other"]);
+    expect(transformOf("tower")).toEqual(before);
+    expect(messages()[0].lines.map((line) => line.kind)).toEqual([
+      "locked",
+      "applied",
+    ]);
+  });
+
+  it("an object locked during its search is not turned", async () => {
+    addObject(h, "tower", tower(), 0, 0);
+    h.setAutomatic(false);
+    const before = transformOf("tower");
+
+    h.service.optimize(["tower"]);
+    await Promise.resolve();
+    await Promise.resolve();
+    useObjectStore.getState().updateObjectStates({ tower: { locked: true } });
+    h.calls[0].resolve();
+    await settle(h);
+
+    expect(transformOf("tower")).toEqual(before);
+    expect(messages()[0].lines.map((line) => line.kind)).toEqual(["locked"]);
+    expect(history().undoStack).toHaveLength(0);
+  });
+});

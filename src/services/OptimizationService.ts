@@ -28,6 +28,11 @@
  * - one message over the viewport, one line for each object searched, in
  *   the order of the scene (optimizationTaskStore).
  *
+ * Lot 106 (decision 112 of Noam, Q12 A): an object locked is not
+ * searched, and an object locked during the search is not turned; its
+ * line says it is locked. Without selection, the objects shown only (a
+ * hidden object is set aside, Q7 A).
+ *
  * Nothing is stored (ADR-036 D5).
  *
  * Domain: Service. Depends on the Optimization Domain (OptimizationRunner),
@@ -146,6 +151,9 @@ interface Found {
   key: string;
 
   result: OrientationSearch | null;
+
+  /** The object is locked: not searched, or not turned (lot 106) */
+  locked?: boolean;
 }
 
 export function createOptimizationService(
@@ -244,6 +252,17 @@ export function createOptimizationService(
         continue;
       }
 
+      // Locked: not searched (lot 106, Q12 A)
+      if (now.locked) {
+        found.push({
+          objectId: now.objectId,
+          key: orientationKey(now),
+          result: null,
+          locked: true,
+        });
+        continue;
+      }
+
       const entry = await search(now);
 
       if (entry) {
@@ -264,6 +283,12 @@ export function createOptimizationService(
 
     for (const entry of kept) {
       const object = findObject(entry.objectId)!;
+
+      // Locked during the search: not turned (lot 106)
+      if (object.locked) {
+        entry.locked = true;
+        continue;
+      }
 
       if (entry.result?.turn) {
         transforms[entry.objectId] = turnedTransform(
@@ -296,6 +321,10 @@ export function createOptimizationService(
   const line = (entry: Found, applied: boolean): OptimizationLine => {
     const fileName = findObject(entry.objectId)?.fileName ?? "";
     const result = entry.result;
+
+    if (entry.locked) {
+      return { kind: "locked", objectId: entry.objectId, fileName };
+    }
 
     if (!result || (result.turn && !applied)) {
       return {
@@ -387,7 +416,8 @@ export const OptimizationService: OptimizationServiceInstance =
 
 /**
  * Tools > Optimize Orientation and the button Optimize: the selected
- * objects, all the objects when none is selected (ADR-036 D4)
+ * objects, all the objects shown when none is selected (ADR-036 D4; lot
+ * 106, Q7 A: a hidden object is set aside)
  */
 export function optimizeOrientation(): void {
   const { objects, selectedObjectIds } = useObjectStore.getState();
@@ -395,7 +425,9 @@ export function optimizeOrientation(): void {
   OptimizationService.optimize(
     selectedObjectIds.length > 0
       ? [...selectedObjectIds]
-      : objects.map((object) => object.objectId),
+      : objects
+          .filter((object) => object.visible)
+          .map((object) => object.objectId),
   );
 }
 

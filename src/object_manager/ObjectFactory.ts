@@ -70,6 +70,8 @@ export class ObjectFactory {
 
       fileName,
 
+      name: null,
+
       fileType,
 
       visible: true,

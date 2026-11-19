@@ -12,7 +12,9 @@
  * - View (Phase 4): perspective or orthographic projection, the seven
  *   view presets and Reset View (viewport store); Show Overhangs (lot 82):
  *   turns the Overhang Display on and off, like the button Overhangs over
- *   the viewport, disabled while the scene has no object;
+ *   the viewport, disabled while the scene has no object; Show All
+ *   (Alt+H, lot 106): every hidden object shown, disabled while none is
+ *   hidden;
  * - File > Import STL and File > Import 3MF (Phase 5): system file
  *   dialog, import (openImportDialog, ImportService);
  * - Edit > Select All, Edit > Deselect All (Phase 6): selects all the
@@ -74,6 +76,7 @@ import type { PropertiesTab } from "../../types/UserPreferences";
 import { AnalysisService } from "../../services/AnalysisService";
 import { ArrangeService } from "../../services/ArrangeService";
 import { ObjectEditService } from "../../services/ObjectEditService";
+import { ObjectStateService } from "../../services/ObjectStateService";
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
 import { PropertiesTabService } from "../../services/PropertiesTabService";
 import { optimizeOrientation } from "../../services/OptimizationService";
@@ -135,9 +138,10 @@ interface MenuItemDefinition {
   /**
    * Enabled only when the scene has objects, or objects are selected, or
    * the scene has objects and a printer and a material are selected
-   * (recommend), or the scene has objects and no search runs (optimize)
+   * (recommend), or the scene has objects and no search runs (optimize),
+   * or an object is hidden (hidden: View > Show All, lot 106)
    */
-  needs?: "objects" | "selection" | "recommend" | "optimize";
+  needs?: "objects" | "selection" | "recommend" | "optimize" | "hidden";
 }
 
 interface MenuDefinition {
@@ -350,6 +354,16 @@ const VIEW_MENU: MenuDefinition = {
       { key: "view.isometric", action: requestView("isometric") },
     ],
     [{ key: "view.resetView", shortcut: "Home", action: requestView("reset") }],
+    [
+      {
+        key: "view.showAll",
+        shortcut: "Alt+H",
+        needs: "hidden",
+        action: () => {
+          ObjectStateService.showAll();
+        },
+      },
+    ],
   ],
 };
 
@@ -377,6 +391,9 @@ export default function MenuBar(): JSX.Element {
   const hasObjects = useObjectStore((state) => state.objects.length > 0);
   const hasSelection = useObjectStore(
     (state) => state.selectedObjectIds.length > 0,
+  );
+  const hasHidden = useObjectStore((state) =>
+    state.objects.some((object) => !object.visible),
   );
   const hasPrinter = usePrinterStore((state) => state.selectedPrinter !== null);
   const hasMaterial = useMaterialStore(
@@ -411,7 +428,8 @@ export default function MenuBar(): JSX.Element {
     (item.needs === "objects" && !hasObjects) ||
     (item.needs === "selection" && !hasSelection) ||
     (item.needs === "recommend" && !(hasObjects && canRecommend)) ||
-    (item.needs === "optimize" && !(hasObjects && !optimizing));
+    (item.needs === "optimize" && !(hasObjects && !optimizing)) ||
+    (item.needs === "hidden" && !hasHidden);
 
   const renderMenu = (
     menu: MenuDefinition,

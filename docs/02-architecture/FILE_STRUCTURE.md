@@ -400,7 +400,8 @@ src/gui/
 │   ├── RecommendationSection.tsx = Recommendation section of the Properties Panel (Phase 10)
 │   ├── profileRows.tsx        = rows of values of the Material and Filament sections (Phase 8)
 │   ├── TransformSection.tsx   = Transform section of the Properties Panel (Phase 6)
-│   └── objectNames.ts         = display names of the objects (duplicates: "cube (1)")
+│   ├── objectNames.ts         = display names of the objects: name given or file name, "cube (1)" (lot 106)
+│   └── renameStore.ts         = object whose name is edited in its row, F2 (lot 106)
 ├── import/
 │   ├── openImportDialog.ts    = system file dialog for File > Import STL and the toolbar
 │   ├── ImportDropZone.tsx     = drag and drop of files in the viewport
@@ -433,6 +434,7 @@ src/gui/
 ├── themes/
 ├── hooks/
 │   ├── useEditShortcuts.ts    = Delete, Ctrl+D (lot 100)
+│   ├── useObjectStateShortcuts.ts = F2, H, Alt+H (lot 106)
 │   ├── useSelectAllShortcut.ts = Ctrl+A (Phase 6)
 │   ├── useTranslation.ts      = access to translations from GUI components
 │   └── useUndoRedoShortcuts.ts = Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z (Phase 6)
@@ -797,6 +799,7 @@ src/services/
 ├── RecommendationService.ts  = recommendation of one object through the engine (Phase 10)
 ├── ImportService.ts           = import queue, progress, cancel and errors for the GUI (ADR-029)
 ├── ObjectEditService.ts       = Edit > Delete and Edit > Duplicate, one history action each (lot 100), copy inside the plate (lot 101)
+├── ObjectStateService.ts      = Rename, Hide and Show, Lock and Unlock, one history action each (lot 106)
 ├── ArrangeService.ts          = Edit > Arrange, one history action (lot 101)
 ├── PlateCheckService.ts       = objects out of the build volume, as soon as they go out (lot 101)
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
@@ -991,6 +994,7 @@ tests/
 │       ├── AnalysisService.test.ts = automatic analysis, gesture, dropped computation, ANA_001, ANA_002, Tools menu (Phase 9)
 │       ├── GroupTransform.test.ts = several objects selected (Phase 6)
 │       ├── ObjectEdit.test.ts = Delete and Duplicate, undo and redo (lot 100)
+│       ├── ObjectState.test.ts = Rename, Hide, Lock, Arrange around a locked object, undo and redo (lot 106)
 │       ├── MaterialSelection.test.ts = materials and filaments of the window, last choice, families of a printer (Phase 8)
 │       ├── PrinterSelection.test.ts = printers of the window, last printer, profiles (Phase 7)
 │       ├── ProfileSync.test.ts = check of the profile repository, cache (Phase 7)
@@ -1004,6 +1008,7 @@ tests/
     ├── app.spec.ts = main window, languages, numbers in the format of the language
     ├── edit.spec.ts = Edit > Delete and Edit > Duplicate, Delete key, Ctrl+D, confirmation, undo (lot 100)
     ├── import.spec.ts = STL and 3MF import, refused files
+    ├── object-state.spec.ts = Rename, Hide, Show All (Alt+H in three languages), Lock (lot 106)
     ├── plate.spec.ts = warning out of the plate, Arrange, Ctrl+D near the edge (lot 101)
     ├── material.spec.ts = materials and filaments served by the main process (Phase 8)
     ├── preset.spec.ts = presets served by the main process (Phase 10)

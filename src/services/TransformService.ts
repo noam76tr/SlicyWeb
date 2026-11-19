@@ -28,6 +28,13 @@
  *
  * Reset Rotation And Scale of the context menu (lot 105, Q3 A): one
  * action for the rotation and the scale of all the objects selected.
+ *
+ * Lock (lot 106, decision 112 of Noam, Q12 A): applyMany() and
+ * beginGesture() refuse an object locked; nothing of the group changes
+ * (Q15 A). Rename, Hide and Show, Lock and Unlock are recorded by
+ * ObjectStateService (actions RENAME, VISIBILITY, LOCK); undo() and
+ * redo() write the fields back and select the objects of the action that
+ * are shown (UNDO_REDO_SPEC.md 2.6.0).
  * Gesture state (Phase 9 lot 80): isGestureActive() and onGestureEnd() let
  * the analysis wait for the end of a gesture before computing again
  * (ADR-034 D7: never while dragging).
@@ -73,9 +80,11 @@ import {
 } from "../scene/ObjectTransform";
 import { redoSceneEntry, undoSceneEntry } from "../scene/ObjectSnapshots";
 import {
+  isObjectStateEntry,
   isSceneEntry,
   useHistoryStore,
   type HistoryEntry,
+  type ObjectState,
   type TransformActionType,
 } from "../state/historyStore";
 import { useObjectStore } from "../state/objectStore";
@@ -279,6 +288,40 @@ function restore(transforms: Record<string, Transform>): boolean {
 }
 
 /**
+ * Writes the name, the visibility or the lock of a history entry (before
+ * or after; lot 106). Fails, nothing changed, when an object no longer
+ * exists. The objects of the action that are shown become the selection;
+ * the hidden ones leave it.
+ */
+function restoreStates(states: Record<string, ObjectState>): boolean {
+  const store = useObjectStore.getState();
+  const objectIds = Object.keys(states);
+
+  if (
+    objectIds.length === 0 ||
+    !objectIds.every((id) => findObject(id) !== undefined)
+  ) {
+    console.error("Undo or redo: object not found, history action skipped.");
+    return false;
+  }
+
+  store.updateObjectStates(states);
+
+  const shown = objectIds.filter((id) => findObject(id)?.visible);
+
+  if (shown.length > 0) {
+    store.selectObjects(shown);
+  }
+
+  return true;
+}
+
+/** One of these objects is locked (lot 106, Q12 A and Q15 A) */
+function anyLocked(objectIds: string[]): boolean {
+  return objectIds.some((id) => findObject(id)?.locked === true);
+}
+
+/**
  * New scale after one axis is set to a factor. With the lock (uniform),
  * the three factors keep their proportions.
  */
@@ -330,7 +373,8 @@ export const TransformService = {
     if (
       objectIds.length === 0 ||
       Object.keys(before).length !== objectIds.length ||
-      !objectIds.every((id) => isValid(transforms[id]))
+      !objectIds.every((id) => isValid(transforms[id])) ||
+      anyLocked(objectIds)
     ) {
       return false;
     }
@@ -358,7 +402,10 @@ export const TransformService = {
    */
   beginGesture(objectIds: string[]): void {
     const before = currentTransforms(objectIds);
-    gesture = Object.keys(before).length > 0 ? { before } : null;
+    gesture =
+      Object.keys(before).length > 0 && !anyLocked(objectIds)
+        ? { before }
+        : null;
   },
 
   /** End of the gesture: one action, unless nothing changed */
@@ -560,6 +607,16 @@ export const TransformService = {
       return done !== null;
     }
 
+    // Rename, visibility, lock (lot 106)
+    if (isObjectStateEntry(entry)) {
+      if (!restoreStates(entry.before)) {
+        return false;
+      }
+
+      history.pushRedo(entry);
+      return true;
+    }
+
     if (!restore(entry.before)) {
       // Not restored: the action is dropped, the scene is kept
       return false;
@@ -586,6 +643,15 @@ export const TransformService = {
       }
 
       return done !== null;
+    }
+
+    if (isObjectStateEntry(entry)) {
+      if (!restoreStates(entry.after)) {
+        return false;
+      }
+
+      history.pushUndo(entry);
+      return true;
     }
 
     if (!restore(entry.after)) {

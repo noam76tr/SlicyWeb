@@ -119,11 +119,14 @@ test("right click on an object not selected: selected, its menu, Duplicate", asy
   // The groups of Q2 A, in their order
   await expect(objectMenu(window).getByRole("menuitem")).toHaveText([
     en["contextMenu.properties"],
+    `${en["contextMenu.rename"]}F2`,
     `${en["transform.move"]}G`,
     `${en["transform.rotate"]}R`,
     `${en["transform.scale"]}S`,
     `${en["edit.duplicate"]}Ctrl+D`,
     `${en["edit.delete"]}Del`,
+    `${en["contextMenu.hide"]}H`,
+    en["contextMenu.lock"],
     en["tools.optimizeOrientation"],
     en["transform.centerOnBed"],
     en["contextMenu.resetRotationScale"],
@@ -167,6 +170,7 @@ test("right click in the empty space: menu of the scene, Escape keeps the select
     en["contextMenu.import"],
     `${en["edit.selectAll"]}Ctrl+A`,
     `${en["edit.arrange"]}A`,
+    `${en["view.showAll"]}Alt+H`,
     `${en["view.resetView"]}Home`,
   ]);
 

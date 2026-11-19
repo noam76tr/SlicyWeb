@@ -21,7 +21,9 @@
  * Ctrl+A selects all the objects (useSelectAllShortcut). Delete and
  * Ctrl+D delete and duplicate the selected objects (useEditShortcuts, lot
  * 100); several objects are deleted after a confirmation
- * (DeleteObjectsDialog).
+ * (DeleteObjectsDialog). F2, H and Alt+H rename, hide and show all
+ * (useObjectStateShortcuts, lot 106); a rename opens the Object Panel
+ * when it is collapsed.
  *
  * At start, the printers loaded by the main process are read, and the
  * last printer is selected again (PrinterSelectionService, Phase 7).
@@ -74,12 +76,14 @@ import DeleteObjectsDialog from "./dialogs/DeleteObjectsDialog";
 import FilamentManagerDialog from "./dialogs/FilamentManagerDialog";
 import PrinterManagerDialog from "./dialogs/PrinterManagerDialog";
 import { useEditShortcuts } from "./hooks/useEditShortcuts";
+import { useObjectStateShortcuts } from "./hooks/useObjectStateShortcuts";
 import { useTranslation } from "./hooks/useTranslation";
 import { useSelectAllShortcut } from "./hooks/useSelectAllShortcut";
 import { useUndoRedoShortcuts } from "./hooks/useUndoRedoShortcuts";
 import ContextMenu, { openContextMenu } from "./menus/ContextMenu";
 import MenuBar from "./menus/MenuBar";
 import LeftSidebar from "./sidebar/LeftSidebar";
+import { useRenameStore } from "./sidebar/renameStore";
 import RightSidebar from "./sidebar/RightSidebar";
 import StatusBar from "./statusbar/StatusBar";
 import Toolbar from "./toolbars/Toolbar";
@@ -96,6 +100,8 @@ export default function App(): JSX.Element {
   useUndoRedoShortcuts();
   useSelectAllShortcut();
   useEditShortcuts();
+  useObjectStateShortcuts();
+  const renameRequest = useRenameStore((state) => state.request);
 
   useEffect(() => {
     document.title = "SlicyWeb";
@@ -127,6 +133,7 @@ export default function App(): JSX.Element {
         header={header}
         leftTitle={t("objects.title")}
         leftPanel={<LeftSidebar />}
+        leftExpandRequest={renameRequest}
         centerPanel={
           <ImportDropZone toolbar={<TransformModeBar />}>
             <Viewport

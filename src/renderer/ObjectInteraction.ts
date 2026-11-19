@@ -38,6 +38,11 @@
  * most once per frame, only after a rest of the pointer when one search
  * is slow (HOVER_PICK_SLOW_MS).
  *
+ * Locked objects (lot 106, decision 112 of Noam, Q12 A, Q15 A): a drag on
+ * an object locked, or on a group with an object locked, moves nothing,
+ * and the cursor over a locked object stays the normal one. Hidden objects
+ * are never under the pointer (ObjectRenderer).
+ *
  * Moves are sent to onMove, which applies them through TransformService
  * (given by the GUI: the Viewport Domain does not depend on the Service
  * Domain); onGesture marks the start and the end of a drag, recorded as
@@ -245,6 +250,11 @@ export class ObjectInteraction {
       const objectIds = selection.includes(press.objectId)
         ? selection
         : [press.objectId];
+
+      // An object locked: nothing moves (lot 106, Q12 A, Q15 A)
+      if (objectIds.some((id) => this.options.getObject(id)?.locked)) {
+        return;
+      }
       const start = this.plateAt(press.startX, press.startY);
       const startTransforms: Record<string, Transform> = {};
 
@@ -488,7 +498,9 @@ export class ObjectInteraction {
     const started = performance.now();
     const objectId = this.options.pick(this.raycaster);
     this.slowPick = performance.now() - started > HOVER_PICK_SLOW_MS;
-    this.setCursor(objectId ? "move" : "");
+    this.setCursor(
+      objectId && !this.options.getObject(objectId)?.locked ? "move" : "",
+    );
   }
 
   /** Shows the selection rectangle between two pointer positions */

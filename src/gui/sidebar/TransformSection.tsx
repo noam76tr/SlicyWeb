@@ -39,6 +39,12 @@
  * and the field shows the new value. Ctrl+Y and Ctrl+Shift+Z: the redo of
  * the application when nothing is pending, nothing otherwise.
  *
+ * Locked or hidden (lot 106, decision 112 of Noam, Q11 A, Q12 A, Q15 A):
+ * while an object of the selection is locked or hidden, the fields are
+ * read only (the values stay readable) and the buttons are disabled; a
+ * line says why: "Object locked", "The selection contains a locked
+ * object", "Object hidden", "The selection contains a hidden object".
+ *
  * No business logic.
  *
  * Based on:
@@ -340,6 +346,16 @@ export default function TransformSection({
       ? objectModel(objects[0])
       : groupModel(objects.map((object) => object.objectId));
   const uniform = model.lockForced || keepProportions;
+  // Lot 106: no change while an object is locked or hidden
+  const locked = objects.some((object) => object.locked);
+  const hidden = objects.some((object) => !object.visible);
+  const blocked = locked || hidden;
+  const single = objects.length === 1;
+  const blockedText = locked
+    ? t(single ? "transform.locked" : "transform.lockedInSelection")
+    : hidden
+      ? t(single ? "transform.hidden" : "transform.hiddenInSelection")
+      : null;
   const layout = MODE_LAYOUT[mode];
   const fieldLabel = (row: string, axis: Axis): string =>
     `${row} ${axis.toUpperCase()}`;
@@ -363,6 +379,7 @@ export default function TransformSection({
               axis={axis}
               value={model.position[axis]}
               label={fieldLabel(t("transform.position"), axis)}
+              readOnly={blocked}
               onCommit={(value) => model.setPosition(axis, value)}
             />
           ),
@@ -378,6 +395,7 @@ export default function TransformSection({
             axis={axis}
             value={model.rotation[axis]}
             label={fieldLabel(t("transform.rotation"), axis)}
+            readOnly={blocked}
             onCommit={(value) => model.setRotation(axis, value)}
           />
         ))}
@@ -394,7 +412,7 @@ export default function TransformSection({
             aria-pressed={uniform}
             aria-label={t("transform.keepProportions")}
             title={t("transform.keepProportions")}
-            disabled={model.lockForced}
+            disabled={model.lockForced || blocked}
             onClick={() => setUniform(!keepProportions)}
             className={`rounded p-0.5 hover:bg-muted disabled:pointer-events-none disabled:opacity-60 ${
               uniform ? "text-primary" : "text-muted-foreground"
@@ -414,6 +432,7 @@ export default function TransformSection({
             axis={axis}
             value={model.scale[axis]}
             label={fieldLabel(t("transform.scale"), axis)}
+            readOnly={blocked}
             onCommit={(value) => model.setScale(axis, value, uniform)}
           />
         ))}
@@ -428,6 +447,7 @@ export default function TransformSection({
             axis={axis}
             value={model.size[axis]}
             label={fieldLabel(t("transform.size"), axis)}
+            readOnly={blocked}
             onCommit={(value) => model.setSize(axis, value, uniform)}
           />
         ))}
@@ -437,6 +457,12 @@ export default function TransformSection({
 
   return (
     <div className="space-y-3">
+      {blockedText && (
+        <p className="text-muted-foreground" data-transform-blocked="">
+          {blockedText}
+        </p>
+      )}
+
       {layout.rows.map((row) => (
         <Fragment key={row}>{rows[row]}</Fragment>
       ))}
@@ -453,6 +479,7 @@ export default function TransformSection({
                 ? "col-span-2"
                 : undefined
             }
+            disabled={blocked}
             onClick={() => model.actions[action]()}
           >
             {t(`transform.${action}`)}

@@ -72,8 +72,23 @@ export interface OptimizationFailedLine {
   code: "OPT_002";
 }
 
+/**
+ * Line of an object locked (lot 106, decision 112 of Noam, Q12 A): its
+ * orientation is not changed, it is not searched
+ */
+export interface OptimizationLockedLine {
+  kind: "locked";
+
+  objectId: string;
+
+  fileName: string;
+}
+
 export type OptimizationLine =
-  OptimizationAppliedLine | OptimizationKeptLine | OptimizationFailedLine;
+  | OptimizationAppliedLine
+  | OptimizationKeptLine
+  | OptimizationFailedLine
+  | OptimizationLockedLine;
 
 /** Message of the result of one search */
 export interface OptimizationMessage {
