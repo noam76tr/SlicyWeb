@@ -32,6 +32,10 @@
  *   tie; null when there is no free place. A place is free when the block
  *   is inside the plate and OBJECT_GAP_MM away from every other object.
  *
+ * - separateLayout(): after the optimization (lot 106, decision 113 of
+ *   Noam), an object turned that touches another, or is OBJECT_GAP_MM or
+ *   less from it, goes to the free place nearest to it (findFreePlace).
+ *
  * Domain: Scene. No dependency on the GUI.
  *
  * Based on:
@@ -42,8 +46,12 @@
 import type { BuildVolume } from "../types/Printer";
 import type { Bounds } from "./ObjectTransform";
 
-/** Space between two objects arranged or copied, in millimeters (Q7 A) */
-export const OBJECT_GAP_MM = 5;
+/**
+ * Space between two objects arranged, copied or turned by the
+ * optimization, in millimeters (lot 101 Q7 A: 5 mm; lot 106, decision 113
+ * of Noam, Q25 A: 10 mm; Q26 A: none from the edge of the plate)
+ */
+export const OBJECT_GAP_MM = 10;
 
 /** Rounding tolerance of the comparisons, in millimeters */
 const TOLERANCE_MM = 0.001;
@@ -210,6 +218,82 @@ function arrangeAround(
     Math.max(
       volume ? volume.x / 2 : -Infinity,
       ...taken.map((box) => box.max.x),
+    ) + gap;
+
+  for (const item of overflow) {
+    shifts[item.id] = {
+      dx: minX - item.bounds.min.x,
+      dy: -depth(item.bounds) / 2 - item.bounds.min.y,
+    };
+    minX += width(item.bounds) + gap;
+  }
+
+  return shifts;
+}
+
+/**
+ * Objects turned by the optimization (lot 106, decision 113 of Noam, Q20
+ * to Q23 A): the shift of each item that touches another box, or is less
+ * than gap from it (by id; an item with room around it is left out).
+ * Items are taken in their order (order of the scene); each goes to the
+ * free place of the plate nearest to its place (findFreePlace, as Arrange
+ * and Duplicate), the others never move; without a free place, a row to
+ * the right of the plate (as Arrange, lot 101 Q8 A). others: boxes of the
+ * objects that do not move (locked ones included, hidden ones left out by
+ * the caller); volume null: no plate, every place is free.
+ */
+export function separateLayout(
+  items: LayoutItem[],
+  others: Bounds[],
+  volume: BuildVolume | null,
+  gap: number = OBJECT_GAP_MM,
+): Record<string, Shift> {
+  const plate = volume ?? NO_PLATE;
+  const shifts: Record<string, Shift> = {};
+  const boxes = new Map(items.map((item) => [item.id, item.bounds]));
+  const overflow: LayoutItem[] = [];
+
+  const around = (id: string): Bounds[] => [
+    ...others,
+    ...[...boxes].filter(([other]) => other !== id).map(([, box]) => box),
+  ];
+
+  for (const item of items) {
+    const taken = around(item.id);
+
+    if (taken.every((box) => boxesApart(item.bounds, box, gap))) {
+      continue;
+    }
+
+    const free = findFreePlace(
+      item.bounds,
+      taken,
+      plate,
+      { dx: 0, dy: 0 },
+      {
+        x: (item.bounds.min.x + item.bounds.max.x) / 2,
+        y: (item.bounds.min.y + item.bounds.max.y) / 2,
+      },
+      gap,
+    );
+
+    if (!free || !isInsidePlate(shifted(item.bounds, free), volume)) {
+      overflow.push(item);
+      boxes.delete(item.id);
+      continue;
+    }
+
+    shifts[item.id] = free;
+    boxes.set(item.id, shifted(item.bounds, free));
+  }
+
+  // The objects without a free place: a row to the right of the plate,
+  // after every other box
+  let minX =
+    Math.max(
+      volume ? volume.x / 2 : -Infinity,
+      ...others.map((box) => box.max.x),
+      ...[...boxes.values()].map((box) => box.max.x),
     ) + gap;
 
   for (const item of overflow) {

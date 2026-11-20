@@ -736,7 +736,7 @@ Delete and Duplicate (lot 100; UNDO_REDO_SPEC.md 2.4.0):
     triangles and ANA_002 kept; redo deletes again; a move made before a
     deletion is undone after it; nothing during a gesture; a copy: new
     objectId, same file name, no analysis, own geometry, right of the
-    original (size + 5 mm), same Y and Z, selected, one action DUPLICATE;
+    original (size + 10 mm, lot 106), same Y and Z, selected, one action DUPLICATE;
     a group copied as a block; undo takes the copies out, redo puts them
     back with their analysis; the copy kept when the original is deleted;
     a new action clears the redo stack; ObjectDuplicator keeps the file
@@ -796,8 +796,8 @@ Scale Gizmo):
 Plate Check, Arrange and place of a copy (lot 101; GUI_SPEC.md, Plate
 Check, Edit Menu; UNDO_REDO_SPEC.md 2.5.0):
   unit (PlateLayout.test.ts): inside against an edge; outside in X, in Y,
-    higher than the build height; Arrange: rows without contact, 5 mm
-    apart, deepest first, block centered, new row toward the back,
+    higher than the build height; Arrange: rows without contact, 10 mm
+    apart (lot 106), deepest first, block centered, new row toward the back,
     objects too wide or too high and the rest of a full plate in a row to
     the right of the plate, block centered on the origin without a
     printer; free place of a copy: to the right when free, the nearest
@@ -859,17 +859,30 @@ Menu, Keyboard Shortcuts; UNDO_REDO_SPEC.md 2.6.0):
     warning of the Plate Check, not moved nor counted by Arrange; H:
     Hide or Show for the selection; locked: no transform for the object
     nor for a group with it, no gesture, Delete allowed; Arrange around
-    a locked object (5 mm away, inside the plate, no contact); without
+    a locked object (10 mm away, inside the plate, no contact); without
     obstacle, the same layout as lot 101; RENAME, VISIBILITY, LOCK: one
     action each, undo and redo, selection after undo; nothing recorded
     without a change; Show All one action; Lock or Unlock for the
     selection; nothing during a gesture
   unit (OptimizationService.test.ts): a locked object is not searched,
-    line "locked"; an object locked during its search is not turned
+    line "locked"; an object locked during its search is not turned;
+    case of Noam (decision 113): a tower laid down onto a locked cube,
+    3 objects: the tower moved to a free place, 10 mm from all, the
+    others not moved, line "moved", one undo gives back orientation and
+    place; a hidden object is not counted
+  unit (PlateLayout.test.ts, separateLayout, decision 113): gap 10 mm;
+    an object with room does not move; an object on another, or too
+    near, goes to the nearest free place, the other stays; two objects
+    turned onto each other: one moves; no free place: right of the
+    plate; without a printer
+  end to end (tests/e2e/optimization.spec.ts, decision 113): the tower
+    laid down onto a locked cube moves, the message says "Moved to a
+    free place", the cube keeps its place
   end to end (tests/e2e/object-state.spec.ts): rename by double-click
     and Enter (selection kept), F2 and Escape, Ctrl+Z, Rename of the
     context menu and an empty name; two objects named the same: "(1)",
-    "(2)"; eye, Ctrl+A without the hidden object, H, then Alt+H in
+    "(2)"; eye, H on the gray row selected shows it again (decision
+    113), Ctrl+A without the hidden object, H, then Alt+H in
     English, French and Hebrew: all shown, no menu open; padlock: no
     handles, fields read only, a drag moves nothing, unlocked: it moves
   end to end (tests/e2e/context-menu.spec.ts): the new items in their

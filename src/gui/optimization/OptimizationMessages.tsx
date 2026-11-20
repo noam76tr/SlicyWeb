@@ -9,7 +9,8 @@
  * of the scene:
  * - orientation applied: the Orientation Score before and after, then
  *   only what changed: the overhangs (supportReduction), "Supports no
- *   longer needed", the tip risk;
+ *   longer needed", the tip risk, "Moved to a free place" (lot 106,
+ *   decision 113 of Noam, Q24 A);
  * - orientation kept: "already the best", with its score;
  * - OPT_002: the search failed, the orientation of this object did not
  *   change.
@@ -97,6 +98,10 @@ export default function OptimizationMessages(): JSX.Element | null {
           after: number(line.riskAfter),
         }),
       );
+    }
+
+    if (line.moved) {
+      details.push(t("optimization.moved"));
     }
 
     return [

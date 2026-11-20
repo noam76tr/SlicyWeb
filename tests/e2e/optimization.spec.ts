@@ -9,6 +9,10 @@
  * back the orientation), the analysis and the recommendation computed
  * again; a cube: "already the best".
  *
+ * Lot 106 (decision 113 of Noam, Q20 to Q24 A): the tower laid down onto
+ * a cube locked is moved to a free place; the cube does not move; the
+ * message says "Moved to a free place".
+ *
  * Based on:
  * - TEST_PLAN.md (Optimization Tests: Interface, lot 98)
  * - GUI_SPEC.md (Tools Menu, Toolbar Buttons, Error Handling UI:
@@ -20,7 +24,14 @@ import type { Page } from "@playwright/test";
 
 import en from "../../public/locales/en.json";
 
-import { cubeStl, expect, importFiles, openTab, test } from "./fixtures";
+import {
+  cubeStl,
+  expect,
+  importFiles,
+  openTab,
+  test,
+  transformField,
+} from "./fixtures";
 
 /** ASCII STL of a box, sizes in mm, centered on the origin */
 function boxStl(name: string, x: number, y: number, z: number): string {
@@ -188,4 +199,58 @@ test("Tools > Optimize Orientation: a cube is already the best", async ({
 
   // Nothing turned: no history action
   await expect(toolbarButton(window, "toolbar.undo")).toBeDisabled();
+});
+
+test("the tower laid down onto a locked cube moves to a free place, the cube stays", async ({
+  window,
+  files,
+}) => {
+  await importFiles(window, [
+    files("tower.stl", boxStl("tower", 20, 20, 100)),
+    files("cube.stl", cubeStl("cube", 20)),
+  ]);
+  await openTab(window, "printer");
+  await window.getByLabel(en["printer.selector"]).selectOption("prusa_mk4s");
+  await openTab(window, "object");
+
+  const rows = window.locator("li:has([data-lock-toggle])");
+  const x = transformField(window, "position", "x");
+  const y = transformField(window, "position", "y");
+
+  /** Selects this row alone (a click on the only row selected clears it) */
+  const select = async (index: number) => {
+    const button = rows.nth(index).locator("[data-object-row]");
+
+    if ((await button.getAttribute("aria-pressed")) !== "true") {
+      await button.click();
+    }
+    await expect(button).toHaveAttribute("aria-pressed", "true");
+    await expect(x).toBeVisible();
+  };
+
+  // Cube at X = 40, locked: laid down, the tower would go from -50 to 50
+  await select(1);
+  await x.fill("40");
+  await x.press("Enter");
+  await expect(x).toHaveValue("40");
+  await rows.nth(1).locator("[data-lock-toggle]").click();
+
+  await select(0);
+  await x.fill("0");
+  await x.press("Enter");
+  await y.fill("0");
+  await y.press("Enter");
+  await toolbarButton(window, "toolbar.optimize").click();
+
+  await expect(optimizationMessage(window)).toContainText(
+    en["optimization.moved"],
+  );
+  await expect
+    .poll(async () => [await x.inputValue(), await y.inputValue()])
+    .not.toEqual(["0", "0"]);
+
+  // The cube locked has not moved
+  await select(1);
+  await expect(x).toHaveValue("40");
+  await expect(y).toHaveValue("0");
 });

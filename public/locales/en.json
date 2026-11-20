@@ -435,6 +435,7 @@
   "optimization.overhangsMore": "Overhangs: {percent} more",
   "optimization.supportsRemoved": "Supports no longer needed",
   "optimization.tipRiskChange": "Tip risk: {before}/100 before, {after}/100 after",
+  "optimization.moved": "Moved to a free place.",
   "optimization.kept": "{name}: the current orientation is already the best (score: {score}/100).",
   "optimization.locked": "{name}: locked, orientation not changed",
   "optimization.error.OPT_002": "{name}: the orientation search failed.",

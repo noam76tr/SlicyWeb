@@ -878,7 +878,7 @@ Apply Optimized Orientation
 
 ```
 
-Phase 11 (2.3.0, ADR-036 D4): one action of type OPTIMIZATION for all the objects turned by one search (Tools > Optimize Orientation or the button Optimize); before and after hold the transform of each object turned (rotation and position: the object is placed back on the plate), by objectId. The objects whose orientation is kept are not in the action; when no object is turned, no action is recorded. Undo and redo select the objects of the action again, as for a group (Multiple Object Transformations). After an undo or a redo, the analysis and the recommendation become outdated and are computed again, as after any rotation.
+Phase 11 (2.3.0, ADR-036 D4): one action of type OPTIMIZATION for all the objects turned by one search (Tools > Optimize Orientation or the button Optimize); before and after hold the transform of each object turned (rotation and position: the object is placed back on the plate), by objectId. The objects whose orientation is kept are not in the action; when no object is turned, no action is recorded. Undo and redo select the objects of the action again, as for a group (Multiple Object Transformations). Lot 106 (decision 113 of Noam, Q24 A): an object turned and then moved to a free place (no object on another) has its new position in the same action: one undo gives back its orientation and its place. After an undo or a redo, the analysis and the recommendation become outdated and are computed again, as after any rotation.
 
 ---
 

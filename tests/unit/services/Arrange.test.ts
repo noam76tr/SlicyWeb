@@ -167,10 +167,10 @@ describe("Arrange", () => {
         false,
       );
     }
-    // One row: 10 + 5 + 10 + 5 + 10 = 40 wide, centered
-    expect(boxes[0].min.x).toBeCloseTo(-20);
+    // One row: 10 + 10 + 10 + 10 + 10 = 50 wide, centered
+    expect(boxes[0].min.x).toBeCloseTo(-25);
     expect(boxes[1].min.x - boxes[0].max.x).toBeCloseTo(OBJECT_GAP_MM);
-    expect(boxes[2].max.x).toBeCloseTo(20);
+    expect(boxes[2].max.x).toBeCloseTo(25);
     expect(boxes.every((b) => Math.abs(b.min.y + 5) < 1e-6)).toBe(true);
     expect(find("a").transform.position.z).toBeCloseTo(5);
     expect(find("a").transform.rotation).toEqual(rotation);
@@ -187,7 +187,7 @@ describe("Arrange", () => {
     expect(plate().outsideObjectIds).toEqual(["c"]);
 
     expect(TransformService.redo()).toBe(true);
-    expect(objectBounds(find("c"))!.max.x).toBeCloseTo(20);
+    expect(objectBounds(find("c"))!.max.x).toBeCloseTo(25);
   });
 
   it("records nothing when no object moves, and nothing during a gesture", () => {
@@ -245,9 +245,9 @@ describe("Duplicate inside the plate", () => {
       false,
     );
     expect(plate().outsideObjectIds).toEqual([]);
-    // The nearest free place: 15 mm away (10 mm + 5 mm)
+    // The nearest free place: 20 mm away (10 mm + 10 mm)
     const { x, y } = find(copy).transform.position;
-    expect(Math.hypot(x - 45, y)).toBeCloseTo(15);
+    expect(Math.hypot(x - 45, y)).toBeCloseTo(20);
     expect(find("a").transform.position.x).toBe(45);
   });
 
@@ -257,7 +257,7 @@ describe("Duplicate inside the plate", () => {
 
     const [copy] = ObjectEditService.duplicate(["a"]);
 
-    expect(find(copy).transform.position.x).toBeCloseTo(15);
+    expect(find(copy).transform.position.x).toBeCloseTo(20);
     expect(plate().outsideObjectIds).toEqual([copy]);
     expect(plate().reportedObjectIds).toEqual([copy]);
   });

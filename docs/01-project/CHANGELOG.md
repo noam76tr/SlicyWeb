@@ -4024,6 +4024,13 @@ Date:
   - one action of the history each: RENAME, VISIBILITY, LOCK (Q17 A, UNDO_REDO_SPEC.md 2.6.0); the line of the context menu says Hide or Show, Lock or Unlock for the selection (Q18 A)
 - src/services/ObjectStateService.ts; src/gui/sidebar/renameStore.ts; src/gui/hooks/useObjectStateShortcuts.ts (F2, H, Alt+H)
 - 12 keys in en, fr and he: contextMenu.rename, contextMenu.hide, contextMenu.show, contextMenu.lock, contextMenu.unlock, view.showAll, objects.nameField, transform.locked, transform.lockedInSelection, transform.hidden, transform.hiddenInSelection, optimization.locked (501 keys)
+- Second part (checks of Noam, 2026-11-19: 501 keys, 29 channels, 622 + 1, 71 e2e, manual checks 1 to 13 OK, two requests; decision 113: Q19 to Q26 A):
+  - H on a hidden object selected (gray row of the Object Panel) shows it again: already so, now covered by a test (Q19 A)
+  - no object on another after Optimize Orientation: an object turned that touches another object shown, or is less than 10 mm from it, moves to the free place of the plate nearest to it, as Arrange and Duplicate; with no free place, to the right of the plate with the warning of the Plate Check; the other objects never move, locked ones above all; hidden objects not counted; one action OPTIMIZATION (one Ctrl+Z gives back orientation and place); line "Moved to a free place." in the message (Q20 to Q24 A; GUI_SPEC.md, Tools Menu, Optimization messages; UNDO_REDO_SPEC.md 2.6.0, Orientation Optimization)
+  - 10 mm between two objects for Arrange, Duplicate and Optimize (OBJECT_GAP_MM, 5 mm before; Q25 A); no space from the edge of the plate (Q26 A); a setting "Space between objects" later, with the Preferences window (request of Noam)
+  - src/scene/PlateLayout.ts (OBJECT_GAP_MM 10, separateLayout), src/services/OptimizationService.ts (separateTurned), src/state/optimizationTaskStore.ts (moved), src/gui/optimization/OptimizationMessages.tsx (line moved)
+  - 1 key in en, fr and he: optimization.moved (502 keys)
+  - PASSATION.md: decision 113
 
 ## Changed
 
@@ -4043,6 +4050,7 @@ Date:
 - tests/unit/services/OptimizationService.test.ts (2 tests): a locked object is not searched; an object locked during its search is not turned
 - tests/e2e/object-state.spec.ts (4 tests): rename (double-click, F2, Escape, Ctrl+Z, context menu, empty name, numbers); hide (eye, Ctrl+A, H, Alt+H in English, French and Hebrew, no menu open); lock (no handles, fields read only, a drag moves nothing) (71 e2e)
 - tests/e2e/context-menu.spec.ts: the new items in the order of the menus
+- Second part (decision 113): tests/unit/scene/PlateLayout.test.ts (6 tests, separateLayout and the gap of 10 mm; values of lot 101 for 10 mm); tests/unit/services/OptimizationService.test.ts (2 tests: case of Noam, 3 objects with one locked; a hidden object not counted); tests/unit/services/Arrange.test.ts (values for 10 mm); tests/e2e/optimization.spec.ts (1 test: the tower laid down onto a locked cube moves, the cube stays); tests/e2e/object-state.spec.ts (H on the gray row shows it again); tests/e2e/edit.spec.ts (copy at 30 mm and 60 mm) (630 + 1 tests, 72 e2e)
 
 ---
 

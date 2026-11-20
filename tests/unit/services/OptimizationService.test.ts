@@ -33,7 +33,9 @@ import {
 } from "../../../src/optimization_engine/OptimizationError";
 import type { OrientationSearch } from "../../../src/optimization_engine/OrientationOptimizer";
 import { GeometryRegistry } from "../../../src/scene/GeometryRegistry";
-import { lowestPoint } from "../../../src/scene/ObjectTransform";
+import { objectBounds } from "../../../src/scene/ObjectBounds";
+import { lowestPoint, type Bounds } from "../../../src/scene/ObjectTransform";
+import { OBJECT_GAP_MM } from "../../../src/scene/PlateLayout";
 import {
   createOptimizationService,
   type OptimizationServiceInstance,
@@ -282,6 +284,7 @@ describe("OptimizationService (Phase 11 lot 98, ADR-036 D4)", () => {
             supportsRemoved: false,
             riskBefore: 80,
             riskAfter: 0,
+            moved: false,
           },
         ],
       },
@@ -548,5 +551,72 @@ describe("OptimizationService and locked objects (lot 106, Q12 A)", () => {
     expect(transformOf("tower")).toEqual(before);
     expect(messages()[0].lines.map((line) => line.kind)).toEqual(["locked"]);
     expect(history().undoStack).toHaveLength(0);
+  });
+});
+
+/** Space between two boxes seen from above (0 when they touch) */
+function gapBetween(a: Bounds, b: Bounds): number {
+  const dx = Math.max(b.min.x - a.max.x, a.min.x - b.max.x, 0);
+  const dy = Math.max(b.min.y - a.max.y, a.min.y - b.max.y, 0);
+  return Math.max(dx, dy);
+}
+
+describe("OptimizationService: no object on another (lot 106, decision 113, Q20 to Q24 A)", () => {
+  it("case of Noam: 3 objects, one locked; the tower laid down moves to a free place, 10 mm from all", async () => {
+    h.setBuildVolume({ x: 200, y: 200, z: 200 });
+    // Laid down, the tower goes from -50 to 50 in X: onto the locked cube
+    addObject(h, "tower", tower(), 0, 0);
+    addObject(h, "locked", cube(), 40, 0);
+    addObject(h, "free", cube(), 0, 40);
+    useObjectStore.getState().updateObjectStates({ locked: { locked: true } });
+    const lockedBefore = transformOf("locked");
+    const freeBefore = transformOf("free");
+    const towerBefore = transformOf("tower");
+
+    h.service.optimize(["tower", "free", "locked"]);
+    await settle(h);
+
+    expect(direction("tower", [0, 0, 1])).toEqual([-1, 0, 0]);
+    expect(transformOf("locked")).toEqual(lockedBefore);
+    expect(transformOf("free")).toEqual(freeBefore);
+
+    const boxes = ["tower", "locked", "free"].map((id) =>
+      objectBounds(objectOf(id))!,
+    );
+    for (let i = 0; i < boxes.length; i += 1) {
+      for (let j = i + 1; j < boxes.length; j += 1) {
+        expect(gapBetween(boxes[i], boxes[j])).toBeGreaterThanOrEqual(
+          OBJECT_GAP_MM - 1e-6,
+        );
+      }
+    }
+
+    const towerLine = messages()[0].lines.find(
+      (line) => line.objectId === "tower",
+    );
+    expect(towerLine).toMatchObject({ kind: "applied", moved: true });
+
+    // One action: one Ctrl+Z gives back the orientation and the place
+    expect(history().undoStack).toHaveLength(1);
+    expect(TransformService.undo()).toBe(true);
+    expect(transformOf("tower")).toEqual(towerBefore);
+  });
+
+  it("a hidden object is not counted (Q23 A); an object with room is not moved", async () => {
+    addObject(h, "tower", tower(), 0, 0);
+    addObject(h, "hidden", cube(), 40, 0);
+    useObjectStore
+      .getState()
+      .updateObjectStates({ hidden: { visible: false } });
+
+    h.service.optimize(["tower"]);
+    await settle(h);
+
+    expect(transformOf("tower").position.x).toBeCloseTo(0);
+    expect(transformOf("tower").position.y).toBeCloseTo(0);
+    expect(messages()[0].lines[0]).toMatchObject({
+      kind: "applied",
+      moved: false,
+    });
   });
 });

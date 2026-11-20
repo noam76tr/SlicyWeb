@@ -33,10 +33,19 @@
  * line says it is locked. Without selection, the objects shown only (a
  * hidden object is set aside, Q7 A).
  *
+ * Lot 106 (decision 113 of Noam, Q20 to Q24 A): an object turned takes
+ * another place on the plate; when it touches another object shown, or is
+ * OBJECT_GAP_MM or less from it, it is moved to the free place nearest to
+ * it, as Arrange and Duplicate (PlateLayout.separateLayout); the other
+ * objects, locked ones above all, never move; hidden objects are not
+ * counted. The move is part of the same action OPTIMIZATION (one Ctrl+Z),
+ * and its line says it was moved.
+ *
  * Nothing is stored (ADR-036 D5).
  *
  * Domain: Service. Depends on the Optimization Domain (OptimizationRunner),
- * the Scene Domain (GeometryRegistry, ObjectTransform), the Validation
+ * the Scene Domain (GeometryRegistry, ObjectTransform, ObjectBounds,
+ * PlateLayout), the Validation
  * Domain (OptimizationSchema) and State Management
  * (DOMAINS_DEPENDENCY_MATRIX.md).
  *
@@ -60,7 +69,9 @@ import type {
   Turn,
 } from "../optimization_engine/OrientationOptimizer";
 import { GeometryRegistry } from "../scene/GeometryRegistry";
-import { rotateAroundPoint } from "../scene/ObjectTransform";
+import { objectBounds } from "../scene/ObjectBounds";
+import { separateLayout, type LayoutItem } from "../scene/PlateLayout";
+import { rotateAroundPoint, type Bounds } from "../scene/ObjectTransform";
 import { OptimizationSchema } from "../schemas/RecommendationSchema";
 import { useObjectStore } from "../state/objectStore";
 import {
@@ -154,6 +165,55 @@ interface Found {
 
   /** The object is locked: not searched, or not turned (lot 106) */
   locked?: boolean;
+}
+
+/**
+ * The objects turned that touch another object shown, or are too near
+ * it, moved to a free place (Q20 to Q23 A): the transforms with their new
+ * position, and the ids of the objects moved
+ */
+export function separateTurned(
+  transforms: Record<string, Transform>,
+  volume: BuildVolume | null,
+): { transforms: Record<string, Transform>; moved: Set<string> } {
+  const items: LayoutItem[] = [];
+  const others: Bounds[] = [];
+
+  for (const object of useObjectStore.getState().objects) {
+    const transform = transforms[object.objectId];
+
+    if (transform) {
+      const bounds = objectBounds({ ...object, transform });
+
+      if (bounds) {
+        items.push({ id: object.objectId, bounds });
+      }
+    } else if (object.visible) {
+      const bounds = objectBounds(object);
+
+      if (bounds) {
+        others.push(bounds);
+      }
+    }
+  }
+
+  const shifts = separateLayout(items, others, volume);
+  const result = { ...transforms };
+
+  for (const [objectId, shift] of Object.entries(shifts)) {
+    const transform = result[objectId];
+
+    result[objectId] = {
+      ...transform,
+      position: {
+        ...transform.position,
+        x: transform.position.x + shift.dx,
+        y: transform.position.y + shift.dy,
+      },
+    };
+  }
+
+  return { transforms: result, moved: new Set(Object.keys(shifts)) };
 }
 
 export function createOptimizationService(
@@ -298,8 +358,11 @@ export function createOptimizationService(
       }
     }
 
+    // Away from the other objects (lot 106, Q20 to Q23 A)
+    const separated = separateTurned(transforms, dependencies.buildVolume());
     const applied =
-      Object.keys(transforms).length === 0 || dependencies.apply(transforms);
+      Object.keys(transforms).length === 0 ||
+      dependencies.apply(separated.transforms);
 
     // Lines in the order of the scene
     const order = useObjectStore
@@ -307,7 +370,7 @@ export function createOptimizationService(
       .objects.map((object) => object.objectId);
     const lines: OptimizationLine[] = kept
       .sort((a, b) => order.indexOf(a.objectId) - order.indexOf(b.objectId))
-      .map((entry) => line(entry, applied));
+      .map((entry) => line(entry, applied, separated.moved));
 
     if (lines.length > 0) {
       useOptimizationTaskStore.getState().addMessage({
@@ -318,7 +381,11 @@ export function createOptimizationService(
   };
 
   /** Line of the message for one object */
-  const line = (entry: Found, applied: boolean): OptimizationLine => {
+  const line = (
+    entry: Found,
+    applied: boolean,
+    moved: Set<string>,
+  ): OptimizationLine => {
     const fileName = findObject(entry.objectId)?.fileName ?? "";
     const result = entry.result;
 
@@ -355,6 +422,7 @@ export function createOptimizationService(
         result.before.supportsNeeded && !result.after.supportsNeeded,
       riskBefore: result.before.riskScore,
       riskAfter: result.after.riskScore,
+      moved: moved.has(entry.objectId),
     };
   };
 

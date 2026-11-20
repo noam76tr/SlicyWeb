@@ -435,6 +435,7 @@
   "optimization.overhangsMore": "אזורים תלויים: {percent} יותר",
   "optimization.supportsRemoved": "אין עוד צורך בתמיכות",
   "optimization.tipRiskChange": "סיכון התהפכות: {before}/100 לפני, {after}/100 אחרי",
+  "optimization.moved": "הועבר למקום פנוי.",
   "optimization.kept": "{name}: כיוון ההדפסה הנוכחי הוא כבר הטוב ביותר (ציון: {score}/100).",
   "optimization.locked": "{name}: נעול, הכיוון לא שונה",
   "optimization.error.OPT_002": "{name}: החיפוש של כיוון ההדפסה נכשל.",

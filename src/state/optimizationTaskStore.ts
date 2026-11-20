@@ -47,6 +47,12 @@ export interface OptimizationAppliedLine {
   /** Tip risk before and after, out of 100 */
   riskBefore: number;
   riskAfter: number;
+
+  /**
+   * The object turned touched another object, or was too near it: moved
+   * to a free place (lot 106, decision 113 of Noam, Q24 A)
+   */
+  moved: boolean;
 }
 
 /** Line of an object whose current orientation is already the best */

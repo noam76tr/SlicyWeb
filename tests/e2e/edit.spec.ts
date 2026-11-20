@@ -9,8 +9,8 @@
  *   analysis up to date, Ctrl+Y deletes it again;
  * - several objects: confirmation "Delete 2 objects?", Escape deletes
  *   nothing, Enter deletes (Delete has the focus);
- * - Edit > Duplicate and Ctrl+D: copy right of the original (size + 5 mm),
- *   named "cube (2)", selected, analyzed by itself; undo and redo;
+ * - Edit > Duplicate and Ctrl+D: copy right of the original (size + 10 mm
+ *   since lot 106), named "cube (2)", selected, analyzed by itself; undo and redo;
  * - the confirmation in French.
  *
  * Based on:
@@ -144,12 +144,12 @@ test("duplicates with the Edit menu and Ctrl+D, undo and redo", async ({
   await openEditMenu(window);
   await editItem(window, "edit.duplicate").click();
 
-  // Right of the original: 20 mm + 5 mm; the copy is selected
+  // Right of the original: 20 mm + 10 mm (lot 106); the copy is selected
   await expect(objectRows(window)).toHaveText(["cube (1)", "cube (2)"]);
   await expect(
     objectRows(window).getByRole("button", { pressed: true }),
   ).toHaveText(["cube (2)"]);
-  await expect(transformField(window, "position", "x")).toHaveValue("25");
+  await expect(transformField(window, "position", "x")).toHaveValue("30");
   await expect(transformField(window, "position", "y")).toHaveValue("0");
   // Analyzed by itself, like an imported object
   await expectAnalysisUpToDate(window);
@@ -157,7 +157,7 @@ test("duplicates with the Edit menu and Ctrl+D, undo and redo", async ({
   await leaveField(window);
   await window.keyboard.press("ControlOrMeta+d");
   await expect(objectRows(window)).toHaveCount(3);
-  await expect(transformField(window, "position", "x")).toHaveValue("50");
+  await expect(transformField(window, "position", "x")).toHaveValue("60");
 
   await window.keyboard.press("ControlOrMeta+z");
   await expect(objectRows(window)).toHaveCount(2);
@@ -165,7 +165,7 @@ test("duplicates with the Edit menu and Ctrl+D, undo and redo", async ({
   await expect(objectRows(window)).toHaveText(["cube.stl"]);
   await window.keyboard.press("ControlOrMeta+y");
   await expect(objectRows(window)).toHaveCount(2);
-  await expect(transformField(window, "position", "x")).toHaveValue("25");
+  await expect(transformField(window, "position", "x")).toHaveValue("30");
 
   expect(started.errors).toEqual([]);
 });

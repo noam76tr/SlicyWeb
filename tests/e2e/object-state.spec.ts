@@ -6,7 +6,8 @@
  * Object Context Menu, Keyboard Shortcuts):
  * - rename by a double-click on the row (Enter), by F2 in the viewport,
  *   by the context menu; Escape cancels; the status bar shows the name;
- * - the eye hides the object of its row; H hides the selection; Alt+H
+ * - the eye hides the object of its row; H hides the selection, and
+ *   shows again a hidden object selected (gray row, decision 113); Alt+H
  *   shows all the objects, in English, French and Hebrew, and opens no
  *   menu of the Menu Bar (Help);
  * - the padlock locks: a drag on the object moves nothing, the Transform
@@ -148,6 +149,18 @@ test("hide with the eye and H, show all with Alt+H in three languages", async ({
     "aria-pressed",
     "false",
   );
+
+  // H on the gray row selected shows it again (decision 113, Q19 A),
+  // then hides it again
+  await row(window, 0).locator("[data-object-row]").click();
+  await expect(row(window, 0).locator("[data-object-row]")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await window.keyboard.press("h");
+  await expect(row(window, 0)).not.toHaveAttribute("data-hidden", "");
+  await row(window, 0).locator("[data-visibility-toggle]").click();
+  await expect(row(window, 0)).toHaveAttribute("data-hidden", "");
 
   // Ctrl+A selects the other only; H hides it
   await blur(window);

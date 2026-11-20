@@ -10,6 +10,11 @@
  * to the right of the original when that place is free, otherwise to the
  * nearest free place, and nowhere when none is free.
  *
+ * Lot 106 (decision 113 of Noam, Q20 to Q26 A): OBJECT_GAP_MM is 10 mm;
+ * after the optimization, an object turned that touches another, or is
+ * too near it, goes to the nearest free place (separateLayout); the
+ * others never move.
+ *
  * Based on:
  * - GUI_SPEC.md (Plate Check, Arrange, Edit Menu)
  * - TEST_PLAN.md
@@ -23,6 +28,7 @@ import {
   findFreePlace,
   isOutsideBuildVolume,
   OBJECT_GAP_MM,
+  separateLayout,
   type Shift,
 } from "../../../src/scene/PlateLayout";
 
@@ -95,14 +101,14 @@ describe("arrangeLayout", () => {
       }
     }
 
-    // One row: deepest first (b, a, c), left to right, 5 mm apart
+    // One row: deepest first (b, a, c), left to right, 10 mm apart
     expect(placed[1].min.x).toBeLessThan(placed[0].min.x);
     expect(placed[0].min.x).toBeLessThan(placed[2].min.x);
     expect(placed[0].min.x - placed[1].max.x).toBeCloseTo(OBJECT_GAP_MM);
 
-    // Block centered: 30 + 5 + 30 + 5 + 50 = 120 wide, 40 deep
-    expect(placed[1].min.x).toBeCloseTo(-60);
-    expect(placed[2].max.x).toBeCloseTo(60);
+    // Block centered: 30 + 10 + 30 + 10 + 50 = 130 wide, 40 deep
+    expect(placed[1].min.x).toBeCloseTo(-65);
+    expect(placed[2].max.x).toBeCloseTo(65);
     expect(placed[1].min.y).toBeCloseTo(-20);
     expect(placed[1].max.y).toBeCloseTo(20);
   });
@@ -115,11 +121,11 @@ describe("arrangeLayout", () => {
     const shifts = arrangeLayout(items, PLATE);
     const placed = items.map((item) => moved(item.bounds, shifts[item.id]));
 
-    // Two in the first row (90 + 5 + 90 = 185 ≤ 200), the third behind
+    // Two in the first row (90 + 10 + 90 = 190 ≤ 200), the third behind
     expect(placed[0].min.y).toBeCloseTo(placed[1].min.y);
     expect(placed[2].min.y - placed[0].max.y).toBeCloseTo(OBJECT_GAP_MM);
-    expect(placed[0].min.y).toBeCloseTo(-32.5);
-    expect(placed[2].max.y).toBeCloseTo(32.5);
+    expect(placed[0].min.y).toBeCloseTo(-35);
+    expect(placed[2].max.y).toBeCloseTo(35);
   });
 
   it("puts the objects that do not fit in a row to the right of the plate", () => {
@@ -147,11 +153,11 @@ describe("arrangeLayout", () => {
     const shifts = arrangeLayout(items, PLATE);
     const placed = items.map((item) => moved(item.bounds, shifts[item.id]));
 
-    // Three rows of one (60 + 5 + 60 + 5 + 60 = 190 ≤ 200), then outside
+    // Three rows of one (60 + 10 + 60 + 10 + 60 = 200 ≤ 200), then outside
     expect(
       placed.slice(0, 3).every((b) => !isOutsideBuildVolume(b, PLATE)),
     ).toBe(true);
-    expect(placed[3].min.x).toBeCloseTo(105);
+    expect(placed[3].min.x).toBeCloseTo(110);
     expect(placed[4].min.x).toBeCloseTo(placed[3].max.x + OBJECT_GAP_MM);
   });
 
@@ -170,8 +176,8 @@ describe("arrangeLayout", () => {
     expect((minX + maxX) / 2).toBeCloseTo(0);
     expect((minY + maxY) / 2).toBeCloseTo(0);
     // Two rows of two (square block)
-    expect(maxX - minX).toBeCloseTo(45);
-    expect(maxY - minY).toBeCloseTo(45);
+    expect(maxX - minX).toBeCloseTo(50);
+    expect(maxY - minY).toBeCloseTo(50);
   });
 });
 
@@ -214,13 +220,13 @@ describe("findFreePlace", () => {
     expect(gapBetween(copy, original)).toBeGreaterThanOrEqual(
       OBJECT_GAP_MM - 1e-6,
     );
-    // The nearest place: right next to it (left, front or back), 25 mm
+    // The nearest place: right next to it (left, front or back), 30 mm
     expect(
       Math.hypot(
         center(copy).x - center(original).x,
         center(copy).y - center(original).y,
       ),
-    ).toBeCloseTo(25);
+    ).toBeCloseTo(30);
   });
 
   it("goes past the objects that take the place to the right", () => {
@@ -257,5 +263,88 @@ describe("findFreePlace", () => {
         center(original),
       ),
     ).toBeNull();
+  });
+});
+
+describe("separateLayout (lot 106, decision 113 of Noam)", () => {
+  it("the gap is 10 mm (Q25 A)", () => {
+    expect(OBJECT_GAP_MM).toBe(10);
+  });
+
+  it("an object with room around it does not move", () => {
+    const items = [{ id: "turned", bounds: box(-50, -10, 100, 20) }];
+    const others = [box(-10, 30, 20, 20)];
+
+    expect(separateLayout(items, others, PLATE)).toEqual({});
+  });
+
+  it("an object on another, or too near it, goes to the nearest free place; the other stays", () => {
+    const turned = box(-50, -10, 100, 20);
+    const locked = box(30, -10, 20, 20);
+    const near = box(-10, 15, 20, 20);
+    const shifts = separateLayout(
+      [{ id: "turned", bounds: turned }],
+      [locked, near],
+      PLATE,
+    );
+    const placed = moved(turned, shifts.turned);
+
+    expect(isOutsideBuildVolume(placed, PLATE)).toBe(false);
+    expect(gapBetween(placed, locked)).toBeGreaterThanOrEqual(
+      OBJECT_GAP_MM - 1e-6,
+    );
+    expect(gapBetween(placed, near)).toBeGreaterThanOrEqual(
+      OBJECT_GAP_MM - 1e-6,
+    );
+    // Nearest: toward the front (-Y), right under the two others
+    expect(shifts.turned.dx).toBeCloseTo(0);
+    expect(placed.max.y).toBeCloseTo(-10 - OBJECT_GAP_MM);
+  });
+
+  it("two objects turned onto each other: the second one moves", () => {
+    const a = box(-30, -10, 60, 20);
+    const b = box(-10, -30, 20, 60);
+    const shifts = separateLayout(
+      [
+        { id: "a", bounds: a },
+        { id: "b", bounds: b },
+      ],
+      [],
+      PLATE,
+    );
+    const placedA = shifts.a ? moved(a, shifts.a) : a;
+    const placedB = shifts.b ? moved(b, shifts.b) : b;
+
+    expect(Object.keys(shifts)).toHaveLength(1);
+    expect(gapBetween(placedA, placedB)).toBeGreaterThanOrEqual(
+      OBJECT_GAP_MM - 1e-6,
+    );
+  });
+
+  it("no free place: to the right of the plate, as Arrange", () => {
+    const small = { x: 40, y: 40, z: 40 };
+    const turned = box(-20, -20, 30, 30);
+    const other = box(-5, -5, 25, 25);
+    const shifts = separateLayout(
+      [{ id: "turned", bounds: turned }],
+      [other],
+      small,
+    );
+
+    expect(moved(turned, shifts.turned).min.x).toBeCloseTo(20 + OBJECT_GAP_MM);
+  });
+
+  it("without a printer, every place is free", () => {
+    const turned = box(-50, -10, 100, 20);
+    const other = box(-10, -10, 20, 20);
+    const shifts = separateLayout(
+      [{ id: "turned", bounds: turned }],
+      [other],
+      null,
+    );
+
+    expect(
+      gapBetween(moved(turned, shifts.turned), other),
+    ).toBeGreaterThanOrEqual(OBJECT_GAP_MM - 1e-6);
   });
 });

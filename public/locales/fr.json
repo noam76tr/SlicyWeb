@@ -435,6 +435,7 @@
   "optimization.overhangsMore": "Surplombs : {percent} de plus",
   "optimization.supportsRemoved": "Supports plus nécessaires",
   "optimization.tipRiskChange": "Risque de bascule : {before}/100 avant, {after}/100 après",
+  "optimization.moved": "Déplacé à une place libre.",
   "optimization.kept": "{name} : l'orientation actuelle est déjà la meilleure (note : {score}/100).",
   "optimization.locked": "{name} : verrouillé, orientation non changée",
   "optimization.error.OPT_002": "{name} : la recherche d'orientation a échoué.",
