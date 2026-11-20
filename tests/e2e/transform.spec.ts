@@ -281,22 +281,27 @@ test.describe("several objects", () => {
   test("moves the group with the Transform section, one action", async ({
     window,
   }) => {
+    // Imported side by side (lot 106, decision 114): a.stl at X = 0,
+    // b.stl at X = 20, c.stl at X = 0 behind; the group spans -5 to 25,
+    // center X = 10
     await leaveField(window);
     await window.keyboard.press("ControlOrMeta+a");
     const positionX = transformField(window, "position", "x");
+    await expect(positionX).toHaveValue("10");
     await positionX.fill("40");
     await positionX.press("Enter");
     await expect(positionX).toHaveValue("40");
 
-    // Each object moved by 40 mm: select one, read its position
+    // Each object moved by 30 mm: select one, read its position
     await objectRows(window)
       .nth(0)
       .getByRole("button", { name: "a.stl" })
       .click();
-    await expect(positionX).toHaveValue("40");
+    await expect(positionX).toHaveValue("30");
 
+    // Undo selects the group again: its center is back at X = 10
     await toolbarButton(window, "toolbar.undo").click();
-    await expect(positionX).toHaveValue("0");
+    await expect(positionX).toHaveValue("10");
     await expect(toolbarButton(window, "toolbar.undo")).toBeDisabled();
   });
 });

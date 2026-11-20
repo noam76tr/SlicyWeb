@@ -30,7 +30,9 @@
  *
  * Lot 106 (decision 112 of Noam, Q12 A): an object locked is not
  * searched, and an object locked during the search is not turned; its
- * line says it is locked. Without selection, the objects shown only (a
+ * line says it is locked. A hidden object selected (decision 114 of
+ * Noam, Q29 A) is not searched nor turned either; its line says it is
+ * hidden. Without selection, the objects shown only (a
  * hidden object is set aside, Q7 A).
  *
  * Lot 106 (decision 113 of Noam, Q20 to Q24 A): an object turned takes
@@ -165,6 +167,9 @@ interface Found {
 
   /** The object is locked: not searched, or not turned (lot 106) */
   locked?: boolean;
+
+  /** The object is hidden: not searched, or not turned (Q29 A) */
+  hidden?: boolean;
 }
 
 /**
@@ -312,13 +317,15 @@ export function createOptimizationService(
         continue;
       }
 
-      // Locked: not searched (lot 106, Q12 A)
-      if (now.locked) {
+      // Locked (lot 106, Q12 A) or hidden (decision 114, Q29 A): not
+      // searched
+      if (now.locked || !now.visible) {
         found.push({
           objectId: now.objectId,
           key: orientationKey(now),
           result: null,
-          locked: true,
+          locked: now.locked,
+          hidden: !now.visible,
         });
         continue;
       }
@@ -344,9 +351,10 @@ export function createOptimizationService(
     for (const entry of kept) {
       const object = findObject(entry.objectId)!;
 
-      // Locked during the search: not turned (lot 106)
-      if (object.locked) {
-        entry.locked = true;
+      // Locked or hidden during the search: not turned (lot 106)
+      if (object.locked || !object.visible) {
+        entry.locked = object.locked;
+        entry.hidden = !object.visible;
         continue;
       }
 
@@ -391,6 +399,10 @@ export function createOptimizationService(
 
     if (entry.locked) {
       return { kind: "locked", objectId: entry.objectId, fileName };
+    }
+
+    if (entry.hidden) {
+      return { kind: "hidden", objectId: entry.objectId, fileName };
     }
 
     if (!result || (result.turn && !applied)) {

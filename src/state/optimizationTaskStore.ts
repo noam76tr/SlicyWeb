@@ -90,11 +90,24 @@ export interface OptimizationLockedLine {
   fileName: string;
 }
 
+/**
+ * Line of an object hidden and selected (lot 106, decision 114 of Noam,
+ * Q29 A): its orientation is not changed, it is not searched
+ */
+export interface OptimizationHiddenLine {
+  kind: "hidden";
+
+  objectId: string;
+
+  fileName: string;
+}
+
 export type OptimizationLine =
   | OptimizationAppliedLine
   | OptimizationKeptLine
   | OptimizationFailedLine
-  | OptimizationLockedLine;
+  | OptimizationLockedLine
+  | OptimizationHiddenLine;
 
 /** Message of the result of one search */
 export interface OptimizationMessage {

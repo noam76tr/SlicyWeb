@@ -346,6 +346,8 @@ Register Object
 Run Analysis
 ```
 
+Place of a new object (3.1.0, lot 106, PASSATION.md decision 114 of Noam, Q31 to Q33 A): a new object is placed at the center of the build plate when that place is free. When it would touch an object already on the plate, or be less than 10 mm from it, it goes to the free place of the plate nearest to the center, found as for Arrange (GUI_SPEC.md, Edit Menu, Arrange; 10 mm between two objects). The objects of one 3MF keep their layout and move together as a block. The objects already on the plate never move; hidden objects are not counted, locked ones are. With no free place, the object goes to the right of the plate and gets the warning of the Plate Check. Without a printer, every place is free. The files of one import are placed one after the other, each one around those before it.
+
 ---
 
 # Object Naming

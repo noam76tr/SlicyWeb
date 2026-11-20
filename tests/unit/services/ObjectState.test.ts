@@ -196,13 +196,13 @@ describe("Names (Q1 to Q6)", () => {
 });
 
 describe("Hide (Q7 to Q11)", () => {
-  it("the object hidden leaves the selection; Ctrl+A leaves it out", () => {
+  it("the object hidden stays selected (decision 114, Q27 A); Ctrl+A leaves it out", () => {
     addCube("a", 0);
     addCube("b", 20);
     store().selectObjects(["a", "b"]);
 
     ObjectStateService.setVisible(["a"], false);
-    expect(store().selectedObjectIds).toEqual(["b"]);
+    expect(store().selectedObjectIds).toEqual(["a", "b"]);
 
     store().selectAllObjects();
     expect(store().selectedObjectIds).toEqual(["b"]);
@@ -255,12 +255,39 @@ describe("Hide (Q7 to Q11)", () => {
     ObjectStateService.toggleSelectionVisibility();
     expect(find("a").visible).toBe(false);
     expect(find("b").visible).toBe(false);
-    expect(store().selectedObjectIds).toEqual([]);
-
-    store().selectObject("a");
+    // Still selected: H again shows them (decision 114, Q27 A)
+    expect(store().selectedObjectIds).toEqual(["a", "b"]);
     expect(ObjectStateService.selectionVisibilityAction()).toBe("show");
     ObjectStateService.toggleSelectionVisibility();
     expect(find("a").visible).toBe(true);
+    expect(find("b").visible).toBe(true);
+
+    // As many times as wanted
+    ObjectStateService.toggleSelectionVisibility();
+    ObjectStateService.toggleSelectionVisibility();
+    ObjectStateService.toggleSelectionVisibility();
+    expect(find("a").visible).toBe(false);
+    expect(store().selectedObjectIds).toEqual(["a", "b"]);
+  });
+
+  it("a hidden object selected, or a group with one, does not move (Q28 A)", () => {
+    addCube("a", 0);
+    addCube("b", 20);
+    ObjectStateService.setVisible(["a"], false);
+    const a = find("a").transform;
+    const b = find("b").transform;
+    const moved = (transform: typeof a) => ({
+      ...transform,
+      position: { ...transform.position, x: transform.position.x + 30 },
+    });
+
+    expect(TransformService.applyMany({ a: moved(a) })).toBe(false);
+    expect(TransformService.applyMany({ a: moved(a), b: moved(b) })).toBe(
+      false,
+    );
+    expect(find("a").transform).toEqual(a);
+    expect(find("b").transform).toEqual(b);
+    expect(TransformService.applyMany({ b: moved(b) })).toBe(true);
   });
 });
 
@@ -353,7 +380,7 @@ describe("History (Q17) and the lines of the menu (Q18)", () => {
     expect(find("a").locked).toBe(false);
     TransformService.undo();
     expect(find("a").visible).toBe(true);
-    // Shown again: selected
+    // The object of the action: selected
     expect(store().selectedObjectIds).toEqual(["a"]);
     TransformService.undo();
     expect(find("a").name).toBeNull();
@@ -362,7 +389,8 @@ describe("History (Q17) and the lines of the menu (Q18)", () => {
     expect(find("a").name).toBe("Base");
     TransformService.redo();
     expect(find("a").visible).toBe(false);
-    expect(store().selectedObjectIds).toEqual([]);
+    // Hidden, and still selected (decision 114, Q27 A)
+    expect(store().selectedObjectIds).toEqual(["a"]);
     TransformService.redo();
     expect(find("a").locked).toBe(true);
   });

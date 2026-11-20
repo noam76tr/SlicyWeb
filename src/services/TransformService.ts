@@ -31,10 +31,11 @@
  *
  * Lock (lot 106, decision 112 of Noam, Q12 A): applyMany() and
  * beginGesture() refuse an object locked; nothing of the group changes
- * (Q15 A). Rename, Hide and Show, Lock and Unlock are recorded by
- * ObjectStateService (actions RENAME, VISIBILITY, LOCK); undo() and
- * redo() write the fields back and select the objects of the action that
- * are shown (UNDO_REDO_SPEC.md 2.6.0).
+ * (Q15 A). An object hidden is refused the same way: it can stay selected
+ * (decision 114, Q27 A, Q28 A). Rename, Hide and Show, Lock and Unlock
+ * are recorded by ObjectStateService (actions RENAME, VISIBILITY, LOCK);
+ * undo() and redo() write the fields back and select the objects of the
+ * action (UNDO_REDO_SPEC.md 2.6.0).
  * Gesture state (Phase 9 lot 80): isGestureActive() and onGestureEnd() let
  * the analysis wait for the end of a gesture before computing again
  * (ADR-034 D7: never while dragging).
@@ -306,19 +307,21 @@ function restoreStates(states: Record<string, ObjectState>): boolean {
   }
 
   store.updateObjectStates(states);
-
-  const shown = objectIds.filter((id) => findObject(id)?.visible);
-
-  if (shown.length > 0) {
-    store.selectObjects(shown);
-  }
+  // Hidden ones too: a hidden object stays selected (decision 114, Q27 A)
+  store.selectObjects(objectIds);
 
   return true;
 }
 
-/** One of these objects is locked (lot 106, Q12 A and Q15 A) */
+/**
+ * One of these objects is locked (lot 106, Q12 A and Q15 A) or hidden
+ * (decision 114, Q28 A): nothing of the group moves
+ */
 function anyLocked(objectIds: string[]): boolean {
-  return objectIds.some((id) => findObject(id)?.locked === true);
+  return objectIds.some((id) => {
+    const object = findObject(id);
+    return object?.locked === true || object?.visible === false;
+  });
 }
 
 /**

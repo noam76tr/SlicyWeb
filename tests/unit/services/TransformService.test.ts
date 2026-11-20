@@ -182,6 +182,10 @@ describe("TransformService", () => {
       triangles.push(...vertex(a), ...vertex(c), ...vertex(d));
     }
 
+    // Empty plate: the import is at the center (lot 106, decision 114: a
+    // new object goes to a free place when the center is taken)
+    useObjectStore.getState().clearObjects();
+
     const id = registerImportedObject("cube20.stl", "stl", {
       positions: new Float32Array(triangles),
       normals: new Float32Array(triangles.length),

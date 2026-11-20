@@ -984,7 +984,8 @@ tests/
 │   │   └── ObjectRenderer.test.ts = selection rectangle (Phase 6)
 │   ├── scene/
 │   │   ├── ObjectTransform.test.ts = Transform Rules (ADR-031)
-│   │   └── PlateLayout.test.ts = out of the build volume, Arrange, free place of a copy (lot 101)
+│   │   ├── PlateLayout.test.ts = out of the build volume, Arrange, free place of a copy (lot 101); objects turned moved apart, 10 mm (lot 106)
+│   │   └── SceneIntegration.test.ts = place of a new object: center, or the nearest free place (lot 106)
 │   ├── schemas/
 │   │   └── AnalysisSchema.test.ts = Complete Analysis Schema, classification null (Phase 9)
 │   ├── storage/
@@ -1008,7 +1009,7 @@ tests/
     ├── app.spec.ts = main window, languages, numbers in the format of the language
     ├── edit.spec.ts = Edit > Delete and Edit > Duplicate, Delete key, Ctrl+D, confirmation, undo (lot 100)
     ├── import.spec.ts = STL and 3MF import, refused files
-    ├── object-state.spec.ts = Rename, Hide, Show All (Alt+H in three languages), Lock (lot 106)
+    ├── object-state.spec.ts = Rename, Hide, Unhide All (Alt+H in three languages), Lock, click in the empty part of the Object Panel (lot 106)
     ├── plate.spec.ts = warning out of the plate, Arrange, Ctrl+D near the edge (lot 101)
     ├── material.spec.ts = materials and filaments served by the main process (Phase 8)
     ├── preset.spec.ts = presets served by the main process (Phase 10)

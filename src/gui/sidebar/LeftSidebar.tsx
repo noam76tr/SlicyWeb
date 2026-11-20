@@ -166,6 +166,25 @@ export default function LeftSidebar(): JSX.Element {
     );
   };
 
+  /**
+   * Left click in the panel, not on a row: nothing selected, as in the
+   * Windows Explorer; with Ctrl or Shift, the selection stays (lot 106,
+   * decision 114 of Noam, Q30 A)
+   */
+  const clearOnEmptyClick = (event: MouseEvent<HTMLElement>): void => {
+    if (
+      event.button !== 0 ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      (event.target instanceof Element && event.target.closest("li"))
+    ) {
+      return;
+    }
+
+    selectObject(null);
+  };
+
   if (objects.length === 0) {
     return (
       <div className="min-h-full" onContextMenu={openSceneMenu}>
@@ -177,7 +196,12 @@ export default function LeftSidebar(): JSX.Element {
   }
 
   return (
-    <div className="min-h-full" onContextMenu={openSceneMenu}>
+    <div
+      className="min-h-full"
+      data-objects-empty-area=""
+      onClick={clearOnEmptyClick}
+      onContextMenu={openSceneMenu}
+    >
       <ul className="py-1" aria-label={t("objects.title")}>
         {objects.map((object) => {
           const selected = selectedObjectIds.includes(object.objectId);

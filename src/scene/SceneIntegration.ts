@@ -15,6 +15,15 @@
  * - Several objects of one file (3MF, ADR-030): the layout of the file is
  *   kept; the group is centered on the origin and its lowest point is at
  *   Z = 0; each object gets the position of its center.
+ * - Free place (lot 106, decision 114 of Noam, Q31 to Q33 A): when the new
+ *   object (or the block of the objects of one 3MF, layout kept) would
+ *   touch an object already on the plate, or be OBJECT_GAP_MM or less from
+ *   it, it goes to the free place of the plate nearest to the center, as
+ *   Arrange (PlateLayout.separateLayout); with no free place, to the right
+ *   of the plate (warning of the Plate Check). The objects already on the
+ *   plate never move; hidden objects are not counted, locked ones are;
+ *   without a printer, every place is free. The files of one import are
+ *   registered one after the other, so each one sees those before it.
  *
  * The first new object becomes the selected object.
  *
@@ -31,8 +40,12 @@ import * as THREE from "three";
 
 import { ObjectFactory } from "../object_manager/ObjectFactory";
 import { useObjectStore } from "../state/objectStore";
+import { usePrinterStore } from "../state/printerStore";
 
 import { GeometryRegistry } from "./GeometryRegistry";
+import { objectBounds } from "./ObjectBounds";
+import type { Bounds } from "./ObjectTransform";
+import { separateLayout } from "./PlateLayout";
 
 /** Triangle data of an imported model (millimeters) */
 export interface ImportedMesh {
@@ -69,6 +82,38 @@ export function registerImportedObject(
 }
 
 /**
+ * Shift of the new group from the center of the plate: none when the
+ * center is free (Q31 to Q33 A)
+ */
+function freePlaceShift(
+  groupMin: number[],
+  groupMax: number[],
+): { dx: number; dy: number } {
+  const halfX = (groupMax[0] - groupMin[0]) / 2;
+  const halfY = (groupMax[1] - groupMin[1]) / 2;
+  const block: Bounds = {
+    min: { x: -halfX, y: -halfY, z: 0 },
+    max: { x: halfX, y: halfY, z: groupMax[2] - groupMin[2] },
+  };
+  const others = useObjectStore
+    .getState()
+    .objects.filter((object) => object.visible)
+    .flatMap((object) => {
+      const bounds = objectBounds(object);
+      return bounds ? [bounds] : [];
+    });
+  const volume =
+    usePrinterStore.getState().selectedPrinter?.buildVolume ?? null;
+
+  return (
+    separateLayout([{ id: "new", bounds: block }], others, volume).new ?? {
+      dx: 0,
+      dy: 0,
+    }
+  );
+}
+
+/**
  * Registers the objects of one file, keeping their layout, and returns
  * their objectId.
  */
@@ -92,8 +137,10 @@ export function registerImportedObjects(
     }
   }
 
-  const groupCenterX = (groupMin[0] + groupMax[0]) / 2;
-  const groupCenterY = (groupMin[1] + groupMax[1]) / 2;
+  // Group centered on the origin, then moved to a free place (Q31 A)
+  const shift = freePlaceShift(groupMin, groupMax);
+  const groupCenterX = (groupMin[0] + groupMax[0]) / 2 - shift.dx;
+  const groupCenterY = (groupMin[1] + groupMax[1]) / 2 - shift.dy;
 
   const store = useObjectStore.getState();
   const objectIds: string[] = [];

@@ -41,7 +41,8 @@
  * Locked objects (lot 106, decision 112 of Noam, Q12 A, Q15 A): a drag on
  * an object locked, or on a group with an object locked, moves nothing,
  * and the cursor over a locked object stays the normal one. Hidden objects
- * are never under the pointer (ObjectRenderer).
+ * are never under the pointer (ObjectRenderer); a group with a hidden
+ * object selected moves nothing either (decision 114, Q28 A).
  *
  * Moves are sent to onMove, which applies them through TransformService
  * (given by the GUI: the Viewport Domain does not depend on the Service
@@ -251,8 +252,14 @@ export class ObjectInteraction {
         ? selection
         : [press.objectId];
 
-      // An object locked: nothing moves (lot 106, Q12 A, Q15 A)
-      if (objectIds.some((id) => this.options.getObject(id)?.locked)) {
+      // An object locked (lot 106, Q12 A, Q15 A) or hidden (decision 114,
+      // Q28 A) in the group: nothing moves
+      if (
+        objectIds.some((id) => {
+          const object = this.options.getObject(id);
+          return object?.locked || object?.visible === false;
+        })
+      ) {
         return;
       }
       const start = this.plateAt(press.startX, press.startY);

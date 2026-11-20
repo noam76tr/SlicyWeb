@@ -8,8 +8,9 @@
  * selected). Object selection is not project data (not in DATA_SCHEMA.md).
  *
  * Lot 106 (decision 112 of Noam): a hidden object is never selected by
- * Ctrl+A (Q7 A), and leaves the selection when it is hidden (Q10 A); it
- * can still be selected from the Object Panel (Q11 A).
+ * Ctrl+A (Q7 A); it can still be selected from the Object Panel (Q11 A),
+ * and it stays selected when it is hidden (decision 114 of Noam, Q27 A:
+ * replaces Q10 A).
  *
  * Based on:
  * - ARCHITECTURE.md
@@ -66,8 +67,8 @@ interface ObjectStore {
 
   /**
    * Writes the name, the visibility or the lock of objects (lot 106,
-   * ObjectStateService and undo); the objects hidden leave the selection
-   * (Q10 A).
+   * ObjectStateService and undo); the selection does not change
+   * (decision 114, Q27 A).
    */
   updateObjectStates: (states: Record<string, ObjectState>) => void;
 
@@ -180,27 +181,15 @@ export const useObjectStore = create<ObjectStore>((set, get) => ({
     }
   },
 
+  // A hidden object stays selected (lot 106, decision 114 of Noam, Q27 A)
   updateObjectStates: (states) =>
-    set((state) => {
-      const objects = state.objects.map((object) =>
+    set((state) => ({
+      objects: state.objects.map((object) =>
         states[object.objectId]
           ? { ...object, ...states[object.objectId] }
           : object,
-      );
-      const hidden = new Set(
-        Object.keys(states).filter((id) => states[id].visible === false),
-      );
-      const selectedObjectIds = state.selectedObjectIds.filter(
-        (id) => !hidden.has(id),
-      );
-
-      return {
-        objects,
-        selectedObjectIds,
-        selectedObjectId:
-          selectedObjectIds[selectedObjectIds.length - 1] ?? null,
-      };
-    }),
+      ),
+    })),
 
   selectObject: (objectId) =>
     set({

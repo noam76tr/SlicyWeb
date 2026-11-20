@@ -7,7 +7,8 @@
  * button, STL and 3MF, shown in the Object Panel and the status bar,
  * centered and standing on the plate; refused files give their
  * translated message (ERROR_CODES_SPEC.md), closed with their Close
- * button.
+ * button. Lot 106 (decision 114 of Noam, Q31 A): 4 cubes imported
+ * together on the empty plate do not touch, 10 mm apart at least.
  *
  * Based on:
  * - TEST_PLAN.md (End-To-End Testing, Import Module)
@@ -136,4 +137,49 @@ test("refuses a corrupted STL file", async ({ window, files }) => {
 
   await expect(window.getByText(/^broken\.stl: /)).toBeVisible();
   await expectObjectCount(window, 0);
+});
+
+test("4 cubes imported together: each at a free place, 10 mm apart at least (decision 114)", async ({
+  window,
+  files,
+}) => {
+  await openTab(window, "printer");
+  await window.getByLabel(en["printer.selector"]).selectOption("prusa_mk4s");
+  await openTab(window, "object");
+
+  await importFiles(
+    window,
+    [1, 2, 3, 4].map((n) => files(`cube${n}.stl`, cubeStl(`cube${n}`, 20))),
+  );
+  await expect(objectRows(window)).toHaveCount(4);
+
+  const x = transformField(window, "position", "x");
+  const y = transformField(window, "position", "y");
+  // The first at the center, each next one at the free place nearest to
+  // the center, 10 mm from the others (cubes of 20 mm: 30 mm apart)
+  const expected: [number, number][] = [
+    [0, 0],
+    [30, 0],
+    [0, 30],
+    [0, -30],
+  ];
+
+  for (let i = 0; i < 4; i += 1) {
+    for (let j = i + 1; j < 4; j += 1) {
+      const dx = Math.abs(expected[i][0] - expected[j][0]);
+      const dy = Math.abs(expected[i][1] - expected[j][1]);
+      expect(Math.max(dx, dy)).toBeGreaterThanOrEqual(30);
+    }
+  }
+
+  for (let index = 0; index < 4; index += 1) {
+    const button = objectRows(window).nth(index).getByRole("button").first();
+
+    if ((await button.getAttribute("aria-pressed")) !== "true") {
+      await button.click();
+    }
+    await expect(button).toHaveAttribute("aria-pressed", "true");
+    await expect(x).toHaveValue(String(expected[index][0]));
+    await expect(y).toHaveValue(String(expected[index][1]));
+  }
 });

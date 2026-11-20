@@ -11,7 +11,8 @@
  *   file (name null) (Q3 A); a name already used is accepted (Q3 A), the
  *   Object Panel numbers it (Q4 A); one object at a time (Q6 A);
  * - setVisible(), toggleSelectionVisibility(), showAll(): a hidden object
- *   is set aside (Q7 A) and leaves the selection (Q10 A);
+ *   is set aside (Q7 A) and stays selected, so that H shows it again
+ *   (decision 114 of Noam, Q27 A, replaces Q10 A);
  * - setLocked(), toggleSelectionLock(): a locked object keeps its
  *   position, rotation and scale (Q12 A; TransformService refuses them).
  *

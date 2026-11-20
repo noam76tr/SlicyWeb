@@ -7,7 +7,9 @@
  * - rename by a double-click on the row (Enter), by F2 in the viewport,
  *   by the context menu; Escape cancels; the status bar shows the name;
  * - the eye hides the object of its row; H hides the selection, and
- *   shows again a hidden object selected (gray row, decision 113); Alt+H
+ *   shows again a hidden object selected (gray row, decision 113); a
+ *   hidden object stays selected, H as many times as wanted (decision
+ *   114); a click in the empty part of the panel selects nothing; Alt+H
  *   shows all the objects, in English, French and Hebrew, and opens no
  *   menu of the Menu Bar (Help);
  * - the padlock locks: a drag on the object moves nothing, the Transform
@@ -162,6 +164,25 @@ test("hide with the eye and H, show all with Alt+H in three languages", async ({
   await row(window, 0).locator("[data-visibility-toggle]").click();
   await expect(row(window, 0)).toHaveAttribute("data-hidden", "");
 
+  // Hidden, it stays selected: H as many times as wanted (decision 114,
+  // Q27 A)
+  await expect(row(window, 0).locator("[data-object-row]")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  for (const hidden of [false, true, false, true]) {
+    await window.keyboard.press("h");
+    if (hidden) {
+      await expect(row(window, 0)).toHaveAttribute("data-hidden", "");
+    } else {
+      await expect(row(window, 0)).not.toHaveAttribute("data-hidden", "");
+    }
+    await expect(row(window, 0).locator("[data-object-row]")).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  }
+
   // Ctrl+A selects the other only; H hides it
   await blur(window);
   await window.keyboard.press("Control+a");
@@ -239,4 +260,34 @@ test("lock: a drag moves nothing, the Transform fields are read only", async ({
   await window.mouse.move(center[0] + 80, center[1] + 30, { steps: 10 });
   await window.mouse.up();
   await expect(transformField(window, "position", "x")).not.toHaveValue(x);
+});
+
+test("a click in the empty part of the Object Panel selects nothing (decision 114, Q30 A)", async ({
+  window,
+}) => {
+  const empty = window.locator("[data-objects-empty-area]");
+  const box = (await empty.boundingBox())!;
+  const below = { x: box.x + box.width / 2, y: box.y + box.height - 10 };
+
+  await row(window, 0).locator("[data-object-row]").click();
+  await row(window, 1)
+    .locator("[data-object-row]")
+    .click({ modifiers: ["Control"] });
+  await expect(
+    rows(window).locator("[data-object-row][aria-pressed=true]"),
+  ).toHaveCount(2);
+
+  // Ctrl+click in the empty part: the selection stays
+  await window.keyboard.down("Control");
+  await window.mouse.click(below.x, below.y);
+  await window.keyboard.up("Control");
+  await expect(
+    rows(window).locator("[data-object-row][aria-pressed=true]"),
+  ).toHaveCount(2);
+
+  // Click: nothing selected
+  await window.mouse.click(below.x, below.y);
+  await expect(
+    rows(window).locator("[data-object-row][aria-pressed=true]"),
+  ).toHaveCount(0);
 });

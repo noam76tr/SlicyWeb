@@ -4031,6 +4031,14 @@ Date:
   - src/scene/PlateLayout.ts (OBJECT_GAP_MM 10, separateLayout), src/services/OptimizationService.ts (separateTurned), src/state/optimizationTaskStore.ts (moved), src/gui/optimization/OptimizationMessages.tsx (line moved)
   - 1 key in en, fr and he: optimization.moved (502 keys)
   - PASSATION.md: decision 113
+- Third part (checks of Noam, 2026-11-20: 502 keys, 29 channels, 630 + 1, 72 e2e, manual checks OK, five requests; decision 114: Q27 to Q35 A):
+  - a hidden object stays selected: H hides and shows it again as many times as wanted; a hidden object selected, or a group with one, does not move; Rename, Unhide, Lock, Delete and Duplicate work on it; Optimize Orientation does not turn it, line "cube: hidden, orientation not changed"; undo and redo select the objects of the action, hidden ones too (Q27 to Q29 A; replaces Q10 A)
+  - a left click in the empty part of the Object Panel selects nothing, as in the Windows Explorer; Ctrl+click and Shift+click there keep the selection (Q30 A)
+  - import: a new object that would touch another goes to the free place nearest to the center, as Arrange, 10 mm away; a 3MF keeps its layout as a block; the objects already there never move; hidden objects not counted; with no free place, to the right of the plate with the warning (Q31 to Q33 A; IMPORT_EXPORT_SPEC.md 3.1.0, Scene Integration)
+  - texts: Unhide All / Unhide (EN), Tout réafficher / Réafficher (FR), בטל הסתרת הכל / בטל הסתרה (HE) instead of Show All / Show; the keys keep their names (Q34 A)
+  - src/state/objectStore.ts (a hidden object stays selected), src/services/TransformService.ts (a hidden object refused like a locked one; undo selects the objects of the action), src/renderer/ObjectInteraction.ts (a group with a hidden object does not move), src/services/OptimizationService.ts and src/state/optimizationTaskStore.ts (line hidden), src/gui/optimization/OptimizationMessages.tsx, src/gui/sidebar/LeftSidebar.tsx (click in the empty part), src/scene/SceneIntegration.ts (free place at import)
+  - 1 key in en, fr and he: optimization.hidden (503 keys)
+  - PASSATION.md: §1 rule of the manual checks (where to click, what to type, what to see, what a failure looks like; Noam, 2026-11-20); decision 114
 
 ## Changed
 
@@ -4051,6 +4059,7 @@ Date:
 - tests/e2e/object-state.spec.ts (4 tests): rename (double-click, F2, Escape, Ctrl+Z, context menu, empty name, numbers); hide (eye, Ctrl+A, H, Alt+H in English, French and Hebrew, no menu open); lock (no handles, fields read only, a drag moves nothing) (71 e2e)
 - tests/e2e/context-menu.spec.ts: the new items in the order of the menus
 - Second part (decision 113): tests/unit/scene/PlateLayout.test.ts (6 tests, separateLayout and the gap of 10 mm; values of lot 101 for 10 mm); tests/unit/services/OptimizationService.test.ts (2 tests: case of Noam, 3 objects with one locked; a hidden object not counted); tests/unit/services/Arrange.test.ts (values for 10 mm); tests/e2e/optimization.spec.ts (1 test: the tower laid down onto a locked cube moves, the cube stays); tests/e2e/object-state.spec.ts (H on the gray row shows it again); tests/e2e/edit.spec.ts (copy at 30 mm and 60 mm) (630 + 1 tests, 72 e2e)
+- Third part (decision 114): tests/unit/scene/SceneIntegration.test.ts (7 tests, new); tests/unit/services/ObjectState.test.ts (1 test, and a hidden object stays selected); tests/unit/services/OptimizationService.test.ts (1 test, line hidden); tests/unit/services/TransformService.test.ts (empty plate before the import of its cube); tests/e2e/object-state.spec.ts (H four times on a hidden object selected; 1 test, click in the empty part of the panel); tests/e2e/import.spec.ts (1 test, 4 cubes imported together); tests/e2e/transform.spec.ts (the group moved by the Transform section: the three cubes are now imported side by side, values of the group adapted) (639 + 1 tests, 74 e2e)
 
 ---
 

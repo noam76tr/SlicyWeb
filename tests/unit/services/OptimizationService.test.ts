@@ -536,6 +536,23 @@ describe("OptimizationService and locked objects (lot 106, Q12 A)", () => {
     ]);
   });
 
+  it("a hidden object selected is not searched, its line says it is hidden (decision 114, Q29 A)", async () => {
+    addObject(h, "tower", tower(), 0, 0);
+    addObject(h, "other", tower(), 80, 0);
+    useObjectStore.getState().updateObjectStates({ tower: { visible: false } });
+    const before = transformOf("tower");
+
+    h.service.optimize(["tower", "other"]);
+    await settle(h);
+
+    expect(h.calls.map((call) => call.objectId)).toEqual(["other"]);
+    expect(transformOf("tower")).toEqual(before);
+    expect(messages()[0].lines.map((line) => line.kind)).toEqual([
+      "hidden",
+      "applied",
+    ]);
+  });
+
   it("an object locked during its search is not turned", async () => {
     addObject(h, "tower", tower(), 0, 0);
     h.setAutomatic(false);

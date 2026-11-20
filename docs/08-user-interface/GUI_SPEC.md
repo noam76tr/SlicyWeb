@@ -485,7 +485,7 @@ Reset View
 
 
 
-Show All
+Unhide All
 
 
 
@@ -495,7 +495,7 @@ Show Overhangs
 
 Show Overhangs (lot 82) is a check item: it turns the Overhang Display on and off, like the button Overhangs over the 3D viewport; disabled while the scene has no object.
 
-Show All (lot 106, shortcut Alt+H) shows every hidden object (Object Panel, Hide), one action of the history; disabled while no object is hidden.
+Unhide All (lot 106, shortcut Alt+H; name of decision 114, Q34 A: EN "Unhide All", FR "Tout réafficher", HE "בטל הסתרת הכל") shows every hidden object (Object Panel, Hide), one action of the history; disabled while no object is hidden.
 
 
 
@@ -780,9 +780,10 @@ Rename, Hide, Lock (lot 106, request of Noam; PASSATION.md decision 112: Q1 to Q
 
 - Object Name: the name given by the user (DATA_SCHEMA.md 3.14.0, Object Schema: name), otherwise the file name; two objects with the same name are numbered, "Support (1)", "Support (2)" (IMPORT_EXPORT_SPEC.md, Duplicate Names). The same name is shown everywhere: Object tab, Status Bar, messages over the viewport.
 - Rename (Q2 A): the name becomes a field in the row, its whole text selected; opened by a double-click on the row, by F2 (one object selected, in the viewport or the panel) or by Rename of the Object Context Menu; Enter or a click elsewhere applies it, Escape cancels; the double-click keeps the object selected. Spaces at the start and the end are taken off; 100 characters at most; an empty name gives the file name back; a name already used is accepted (Q3 A). One object at a time: Rename is disabled while several objects are selected (Q6 A). A collapsed Object Panel opens for the rename.
-- Visibility Toggle (Q9 A): the eye hides or shows the object of its row only, without changing the selection; tooltip Hide or Show. A hidden object (Q7 A, Q10 A, Q11 A): its row in gray, the eye crossed out; it is not drawn in the viewport, cannot be clicked there nor taken by the selection rectangle or Select All, has no warning of the Plate Check, does not move with Arrange (the others are arranged as if it were not there), is not exported (SLICER_EXPORT_SPEC.md 1.2.0); its analysis and its recommendation are still computed. Hiding a selected object takes it out of the selection. A click on its row selects it all the same: the Object tab shows it, Rename, Show, Delete and Duplicate work; nothing is drawn, no gizmo, and the Transform section is read only ("Object hidden").
+- Visibility Toggle (Q9 A): the eye hides or shows the object of its row only, without changing the selection; tooltip Hide or Unhide (decision 114, Q34 A: EN "Unhide", FR "Réafficher", HE "בטל הסתרה"; the line of the Object Context Menu says the same). A hidden object (Q7 A, Q11 A; decision 114, Q27 A to Q29 A): its row in gray, the eye crossed out; it is not drawn in the viewport, cannot be clicked there nor taken by the selection rectangle or Select All, has no warning of the Plate Check, does not move with Arrange (the others are arranged as if it were not there), is not exported (SLICER_EXPORT_SPEC.md 1.2.0); its analysis and its recommendation are still computed. A selected object stays selected when it is hidden (decision 114, Q27 A, replacing Q10 A): its row stays highlighted, and the key H hides and shows it again as many times as wanted. A click on its row selects it all the same. Selected and hidden: the Object tab shows it; Rename, Unhide, Lock, Delete and Duplicate work (the copy is shown); nothing is drawn, no gizmo; Move, Rotate, Scale, Center On Bed and the Reset actions do nothing, the Transform section is read only ("Object hidden"); a group with a hidden object does not move ("The selection contains a hidden object") (Q28 A); Optimize Orientation does not turn it (line "cube: hidden, orientation not changed") (Q29 A).
 - Lock Toggle (Q16 A): the padlock locks or unlocks the object of its row only, without changing the selection; tooltip Lock or Unlock. A locked object (Q12 A to Q15 A) keeps its position, its rotation and its scale: a drag on it moves nothing (normal cursor), no gizmo, the Transform section is read only with the line "Object locked" ("The selection contains a locked object" for a group), Center On Bed and the Reset actions are disabled; Optimize Orientation leaves it as it is (line "cube: locked, orientation not changed"); Arrange leaves it in place and arranges the others around it, without touching it. It can be selected as usual, deleted, duplicated (the copy is not locked), renamed and hidden. Nothing shows the lock in the viewport.
 - Each change is one action of the history (Q17 A; UNDO_REDO_SPEC.md 2.6.0). The copy of an object keeps its name, is not locked and is shown.
+- Empty part of the panel (decision 114 of Noam, Q30 A): a left click under the rows selects nothing, as in the Windows Explorer; with Ctrl or Shift, the selection stays; a right click keeps the selection and opens the menu of the scene (lot 105).
 
 
 
@@ -841,11 +842,11 @@ Import…
 Select All             Ctrl+A
 Arrange                     A
 ─────────────────────────────
-Show All                Alt+H
+Unhide All              Alt+H
 Reset View               Home
 ```
 
-Show All (lot 106) shows every hidden object (View Menu); disabled while no object is hidden.
+Unhide All (lot 106, decision 114) shows every hidden object (View Menu); disabled while no object is hidden.
 
 - Import… opens the same file dialog as the Import button of the Toolbar (STL and 3MF);
 - the selection is kept (a right click in the empty space does not clear it).
@@ -2239,10 +2240,12 @@ Menu of the selection at its center on the screen, or under the row of the Objec
 
 F2           Rename the selected object (lot 106; one object selected)
 
-H            Hide the selected objects (Show when they are all hidden:
-             a gray row selected in the Object Panel, decision 113)
+H            Hide the selected objects (Unhide when they are all hidden:
+             a gray row selected in the Object Panel, decision 113);
+             a hidden object stays selected, so H can be pressed again
+             and again (decision 114)
 
-ALT + H      Show All (View Menu)
+ALT + H      Unhide All (View Menu)
 
 ```
 
@@ -2417,6 +2420,8 @@ Orientation applied: "Orientation optimized", the score before and after
   tip risk: the risk before and after, when it changes
   "Moved to a free place.", when the object turned touched another
     object, or was too near it (lot 106, decision 113, Q24 A)
+Hidden and selected (lot 106, decision 114, Q29 A): "cube: hidden,
+  orientation not changed"; not searched
 Orientation kept: "The current orientation is already the best", with its
   score
 OPT_002: "The orientation search failed"; the orientation of this object

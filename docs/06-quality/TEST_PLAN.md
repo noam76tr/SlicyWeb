@@ -875,6 +875,20 @@ Menu, Keyboard Shortcuts; UNDO_REDO_SPEC.md 2.6.0):
     near, goes to the nearest free place, the other stays; two objects
     turned onto each other: one moves; no free place: right of the
     plate; without a printer
+  unit (decision 114 of Noam, Q27 to Q33 A): a hidden object stays
+    selected, H as many times as wanted (ObjectState.test.ts); a hidden
+    object, or a group with one, does not move; undo and redo select
+    the objects of the action, hidden ones too; Optimize does not search
+    a hidden object selected, line "hidden" (OptimizationService.test.ts);
+    import at a free place (SceneIntegration.test.ts): center when free,
+    4 cubes 10 mm apart inside the plate, objects already there never
+    move, a 3MF keeps its layout, hidden objects not counted, no free
+    place: right of the plate, without a printer
+  end to end (decision 114): object-state.spec.ts, a hidden object stays
+    selected and H hides and shows it four times; a click in the empty
+    part of the Object Panel selects nothing, Ctrl+click keeps the
+    selection; import.spec.ts, 4 cubes imported together on the empty
+    plate, 10 mm apart at least
   end to end (tests/e2e/optimization.spec.ts, decision 113): the tower
     laid down onto a locked cube moves, the message says "Moved to a
     free place", the cube keeps its place
