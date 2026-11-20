@@ -4009,7 +4009,7 @@ Release Type:
 Graphical User Interface (Object Panel, Context Menu), Data Schema (Object Schema: name)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-18
@@ -4060,6 +4060,11 @@ Date:
 - tests/e2e/context-menu.spec.ts: the new items in the order of the menus
 - Second part (decision 113): tests/unit/scene/PlateLayout.test.ts (6 tests, separateLayout and the gap of 10 mm; values of lot 101 for 10 mm); tests/unit/services/OptimizationService.test.ts (2 tests: case of Noam, 3 objects with one locked; a hidden object not counted); tests/unit/services/Arrange.test.ts (values for 10 mm); tests/e2e/optimization.spec.ts (1 test: the tower laid down onto a locked cube moves, the cube stays); tests/e2e/object-state.spec.ts (H on the gray row shows it again); tests/e2e/edit.spec.ts (copy at 30 mm and 60 mm) (630 + 1 tests, 72 e2e)
 - Third part (decision 114): tests/unit/scene/SceneIntegration.test.ts (7 tests, new); tests/unit/services/ObjectState.test.ts (1 test, and a hidden object stays selected); tests/unit/services/OptimizationService.test.ts (1 test, line hidden); tests/unit/services/TransformService.test.ts (empty plate before the import of its cube); tests/e2e/object-state.spec.ts (H four times on a hidden object selected; 1 test, click in the empty part of the panel); tests/e2e/import.spec.ts (1 test, 4 cubes imported together); tests/e2e/transform.spec.ts (the group moved by the Transform section: the three cubes are now imported side by side, values of the group adapted) (639 + 1 tests, 74 e2e)
+
+## Validation Result
+
+- Windows 11 (2026-11-20): lot 106 version 3 on GitHub (c00a2ce, identical to the lot: 54 files); npm run check:locales 503 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 639 tests passed and 1 skipped, npm run test:e2e 74 tests passed (Noam)
+- Manual checks of version 3 passed (Noam, 2026-11-20)
 
 ---
 
