@@ -13,7 +13,9 @@
  *   manufacturer, its single values (manufacturerSettings) and its color;
  *   a value not published (null) is shown as "Not published", never as 0
  *   (DATA_SCHEMA.md 3.7.0). A shipped filament is a product line: its
- *   color and its price per kg are "Not specified";
+ *   color is "Not specified"; its price per kg is the one given in the
+ *   Costs section, or "Not specified" (Phase 12, ADR-037, Q10 A); a price
+ *   is shown with the currency of the preferences;
  * - "Manage…" opens the Filament Manager (FilamentManagerDialog, Phase 8
  *   lot 71).
  *
@@ -26,12 +28,16 @@
  * Based on:
  * - GUI_SPEC.md (Filament Section, Filament Manager)
  * - DATA_SCHEMA.md (Filament Schema 3.7.0)
- * - DECISIONS.md (ADR-033, D9)
+ * - DECISIONS.md (ADR-033, D9; ADR-037)
  */
 
 import { useMemo } from "react";
 
+import { currencyDigits } from "../../constants/CostConstants";
+import { formatMoney } from "../../i18n/NumberFormatter";
+import { CostSettingsService } from "../../services/CostSettingsService";
 import { MaterialSelectionService } from "../../services/MaterialSelectionService";
+import { useCostSettingsStore } from "../../state/costSettingsStore";
 import { useFilamentStore } from "../../state/filamentStore";
 import { useMaterialStore } from "../../state/materialStore";
 import type { Filament } from "../../types/Filament";
@@ -39,13 +45,7 @@ import { Button } from "../components/ui/button";
 import { openFilamentManager } from "../dialogs/FilamentManagerDialog";
 import { useTranslation } from "../hooks/useTranslation";
 
-import {
-  formatNumber,
-  ProfileRow,
-  SELECT_CLASS,
-  useRange,
-  useValue,
-} from "./profileRows";
+import { ProfileRow, SELECT_CLASS, useRange, useValue } from "./profileRows";
 
 export const FILAMENT_SELECTOR_ID = "filament-selector";
 
@@ -74,6 +74,12 @@ export default function FilamentSection(): JSX.Element {
   const userFilamentIds = useFilamentStore((state) => state.userFilamentIds);
   const selected = useFilamentStore((state) => state.selectedFilament);
   const material = useMaterialStore((state) => state.selectedMaterial);
+  const costSettings = useCostSettingsStore((state) => state.settings);
+  // Price of a filament of the user, or given in the Costs section
+  // (Phase 12, Q10 A), in the currency of the preferences
+  const price = selected
+    ? CostSettingsService.pricePerKgOf(selected, costSettings)
+    : null;
 
   const listed = useMemo(
     () =>
@@ -155,9 +161,14 @@ export default function FilamentSection(): JSX.Element {
             <ProfileRow
               label={t("filament.pricePerKg")}
               value={
-                selected.pricePerKg === null
+                price === null
                   ? t("filament.priceNotSpecified")
-                  : formatNumber(selected.pricePerKg, language)
+                  : formatMoney(
+                      price,
+                      costSettings.currency,
+                      currencyDigits(costSettings.currency),
+                      language,
+                    )
               }
             />
             <ProfileRow

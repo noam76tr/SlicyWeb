@@ -42,6 +42,7 @@ DATA_SCHEMA.md (priority 0) is the source of truth for the fields of a material 
 - Shipped materials (ADR-033 D2): the temperature ranges of a family are those of its shipped filaments, the smallest minimum and the largest maximum; a single value is the value published by every shipped filament of the family that publishes it, or null. A family without a shipped filament is not shipped. The filaments used for each family are listed in data/materials/SOURCES.md. Users do not enter materials.
 - Sources: written by SlicyWeb from the technical data sheets of the manufacturers, never copied from a profile file of a slicer (ADR-033 D1). Source type used: Official. Community sources are not used.
 - The sections of this document without a field in DATA_SCHEMA.md (Profile Structure, metadata, thermal with recommended temperatures, mechanical, drying, environmental behavior, compatibility, cost, color, food safety, outdoor usage, chemical and fire resistance, risk factors, AI scoring, source, profileVersion, verified) are future: they are not part of a profile until DATA_SCHEMA.md defines them. The Material Categories below are replaced by the Material Families.
+- Cost (Phase 12, ADR-037): a material has no price. The cost estimation uses the price per kg of the filament (pricePerKg of the Filament Schema, or the price given by the user for a shipped filament in the Costs section, kept in the preferences: block cost of the User Preferences Schema, DATA_SCHEMA.md 3.15.0). The block cost of Cost Data stays future.
 
 
 

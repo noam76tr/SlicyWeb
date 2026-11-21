@@ -4,7 +4,8 @@
  *
  * Fields, in the order of GUI_SPEC.md (Status Bar): Selected Printer,
  * Selected Material, Selected Object, Object Count, Analysis Status,
- * Selected Filament, Active Preset, Current Language, Project Status.
+ * Selected Filament, Active Preset, Plate Estimation, Current Language,
+ * Project Status.
  *
  * Values come from the stores. Analysis Status (Phase 9 lot 80):
  * "Analyzing…" while an analysis is computed, otherwise the status of the
@@ -12,7 +13,11 @@
  * search runs (Phase 11 lot 98, ADR-036 D4). Active Preset (Phase 10 lot
  * 88, ADR-035 D12): the preset of the recommendation of the selected object, "—"
  * otherwise (same rule as the Print Preset section). Project Status shows "None" until
- * the project state is available to the GUI.
+ * the project state is available to the GUI. Plate Estimation (Phase 12,
+ * ADR-037, Q12 and Q13 A): sum of the estimations of the visible objects
+ * (a hidden object is not counted, as at export): print time, weight and
+ * total cost when known; "(n without an estimation)" when a visible object
+ * has none yet; "—" when no object has one.
  *
  * No business logic.
  *
@@ -24,8 +29,11 @@
 import { useMemo } from "react";
 
 import { formatNumber } from "../../i18n/NumberFormatter";
+import { CostEstimationService } from "../../services/CostEstimationService";
+import { useCostSettingsStore } from "../../state/costSettingsStore";
 import { useAnalysisStore } from "../../state/analysisStore";
 import { useAnalysisTaskStore } from "../../state/analysisTaskStore";
+import { useEstimationStore } from "../../state/estimationStore";
 import { useFilamentStore } from "../../state/filamentStore";
 import { useMaterialStore } from "../../state/materialStore";
 import { useObjectStore } from "../../state/objectStore";
@@ -34,18 +42,34 @@ import { usePrinterStore } from "../../state/printerStore";
 import { useRecommendationStore } from "../../state/recommendationStore";
 import { LANGUAGE_NAME_KEYS, useTranslation } from "../hooks/useTranslation";
 import { getDisplayNames } from "../sidebar/objectNames";
+import {
+  aboutDuration,
+  aboutMoney,
+  aboutWeight,
+  joinValues,
+} from "../sidebar/estimationFormat";
 import { presetKey } from "../sidebar/RecommendationSection";
 
 interface StatusFieldProps {
   label: string;
   value: string;
+  /** Attribute of the field for the end-to-end tests */
+  testId?: string;
+  /** Never shortened: the other fields are shortened first */
+  whole?: boolean;
 }
 
-function StatusField({ label, value }: StatusFieldProps): JSX.Element {
+function StatusField({
+  label,
+  value,
+  testId,
+  whole = false,
+}: StatusFieldProps): JSX.Element {
   return (
     <div
-      className="flex min-w-0 items-center gap-1"
+      className={`flex items-center gap-1 ${whole ? "shrink-0" : "min-w-0"}`}
       title={`${label}: ${value}`}
+      data-status-field={testId}
     >
       <span className="shrink-0 text-muted-foreground">{label}:</span>
       <span className="truncate">{value}</span>
@@ -102,6 +126,39 @@ export default function StatusBar(): JSX.Element {
 
   const none = t("statusBar.none");
 
+  const estimations = useEstimationStore((state) => state.estimations);
+  const currency = useCostSettingsStore((state) => state.settings.currency);
+  const plate = useMemo(() => {
+    const total = CostEstimationService.totalOf(
+      objects
+        .filter((object) => object.visible)
+        .map((object) => object.objectId),
+      estimations,
+    );
+
+    if (total.count === 0) {
+      return "—";
+    }
+
+    const parts = [aboutDuration(total.printTime, language)];
+
+    if (total.cost.filamentWeight !== null) {
+      parts.push(aboutWeight(total.cost.filamentWeight, language));
+    }
+
+    if (total.cost.totalCost !== null) {
+      parts.push(aboutMoney(total.cost.totalCost, currency, language));
+    }
+
+    const text = joinValues(parts, language);
+
+    return total.missing > 0
+      ? `${text} ${t("statusBar.withoutEstimation", {
+          count: formatNumber(total.missing, language),
+        })}`
+      : text;
+  }, [objects, estimations, currency, language, t]);
+
   return (
     <footer className="flex h-7 shrink-0 items-center gap-4 overflow-hidden border-t border-border bg-card px-3 text-xs text-card-foreground">
       <StatusField
@@ -141,6 +198,12 @@ export default function StatusBar(): JSX.Element {
         value={
           recommendation ? t(presetKey(recommendation.preset.category)) : "—"
         }
+      />
+      <StatusField
+        label={t("statusBar.plate")}
+        value={plate}
+        testId="plate-estimation"
+        whole
       />
       <StatusField
         label={t("statusBar.language")}

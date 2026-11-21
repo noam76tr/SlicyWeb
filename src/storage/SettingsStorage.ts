@@ -12,7 +12,9 @@
  *     "printer": { "defaultPrinter": null, "autoloadLastPrinter": true,
  *       "autoCheckProfiles": true },
  *     "material": { "defaultMaterial": null, "defaultFilament": null,
- *       "autoloadLastMaterial": true } } }
+ *       "autoloadLastMaterial": true },
+ *     "cost": { "currency": "EUR", "electricityPrice": null,
+ *       "printerPower": {}, "filamentPrices": {} } } }
  *
  * Rules:
  * - Missing or unreadable file: default preferences.
@@ -23,6 +25,11 @@
  *   The fields of printer are read one by one, in the same way. A
  *   settings.json written before 3.7.0 (no material) takes the default
  *   material settings; the fields of material are read one by one.
+ * - cost (3.15.0, ADR-037): a settings.json written before 3.15.0 (no
+ *   cost) takes the currency of its language (EUR in French, ILS in
+ *   Hebrew, USD in English, Q7 A), no price and no power; the fields of
+ *   cost are read one by one, and each entry of printerPower and
+ *   filamentPrices on its own (an invalid entry is left out).
  * - gui (written by lot 93, DATA_SCHEMA.md 3.11.0, gui.propertiesTab) is
  *   no longer part of the preferences (3.12.0, lot 95): it is ignored at
  *   reading, the other fields are kept, and it is no longer in the file
@@ -45,8 +52,12 @@ import path from "node:path";
 import type { ZodType } from "zod";
 
 import {
+  CostPreferencesSchema,
+  CostPriceSchema,
+  defaultCostPreferences,
   DEFAULT_USER_PREFERENCES,
   MaterialPreferencesSchema,
+  PrinterPowerSchema,
   PrinterPreferencesSchema,
   UserPreferencesSchema,
 } from "../schemas/UserPreferencesSchema";
@@ -73,22 +84,33 @@ export class SettingsStorage {
         ...DEFAULT_USER_PREFERENCES,
         printer: readPrinter(undefined),
         material: readMaterial(undefined),
+        cost: readCost(undefined, DEFAULT_USER_PREFERENCES.language),
       };
     }
 
     const entries = stored as Record<string, unknown>;
     const shape = UserPreferencesSchema.shape;
+    const language = readField(
+      shape.language,
+      entries.language,
+      DEFAULT_USER_PREFERENCES.language,
+    );
 
     return {
-      theme: readField(shape.theme, entries.theme, DEFAULT_USER_PREFERENCES.theme),
-      language: readField(
-        shape.language,
-        entries.language,
-        DEFAULT_USER_PREFERENCES.language,
+      theme: readField(
+        shape.theme,
+        entries.theme,
+        DEFAULT_USER_PREFERENCES.theme,
       ),
-      units: readField(shape.units, entries.units, DEFAULT_USER_PREFERENCES.units),
+      language,
+      units: readField(
+        shape.units,
+        entries.units,
+        DEFAULT_USER_PREFERENCES.units,
+      ),
       printer: readPrinter(entries.printer),
       material: readMaterial(entries.material),
+      cost: readCost(entries.cost, language),
     };
   }
 
@@ -125,6 +147,7 @@ export class SettingsStorage {
       ...DEFAULT_USER_PREFERENCES,
       printer: { ...DEFAULT_USER_PREFERENCES.printer },
       material: { ...DEFAULT_USER_PREFERENCES.material },
+      cost: defaultCostPreferences(DEFAULT_USER_PREFERENCES.language),
     });
   }
 
@@ -214,11 +237,61 @@ function readMaterial(value: unknown): UserPreferences["material"] {
   };
 }
 
-function readField<T>(
-  schema: ZodType<T>,
+function readCost(
   value: unknown,
-  fallback: T,
-): T {
+  language: UserPreferences["language"],
+): UserPreferences["cost"] {
+  const fallback = defaultCostPreferences(language);
+
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return fallback;
+  }
+
+  const entries = value as Record<string, unknown>;
+  const shape = CostPreferencesSchema.shape;
+
+  return {
+    currency: readField(shape.currency, entries.currency, fallback.currency),
+    electricityPrice: readField(
+      shape.electricityPrice,
+      entries.electricityPrice,
+      fallback.electricityPrice,
+    ),
+    printerPower: readRecord(entries.printerPower, PrinterPowerSchema),
+    filamentPrices: readRecord(entries.filamentPrices, CostPriceSchema),
+  };
+}
+
+/** The valid entries of a record of numbers by id; the others left out */
+function readRecord(
+  value: unknown,
+  schema: ZodType<number>,
+): Record<string, number> {
+  const record: Record<string, number> = {};
+
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return record;
+  }
+
+  for (const [key, entry] of Object.entries(value)) {
+    const id = key.trim();
+    const result = schema.safeParse(entry);
+
+    // "__proto__" would change the prototype of the record, not add a key
+    if (
+      id.length > 0 &&
+      id.length <= 200 &&
+      id !== "__proto__" &&
+      result.success
+    ) {
+      record[id] = result.data;
+    }
+  }
+
+  return record;
+}
+
+function readField<T>(schema: ZodType<T>, value: unknown, fallback: T): T {
   const result = schema.safeParse(value);
 
   return result.success ? result.data : fallback;

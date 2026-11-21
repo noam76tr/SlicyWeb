@@ -55,6 +55,7 @@ DATA_SCHEMA.md (priority 0) is the source of truth for the fields of a filament 
 - A profile file is a Repository Data Schema envelope (id, type "filament", version of the profile, source, data, validated); data is the filament.
 - Sources: written by SlicyWeb from the technical data sheet of the manufacturer, never copied from a profile file of a slicer (ADR-033 D1). The sheet and the date of verification of each filament are listed in data/filaments/SOURCES.md. Source types used: Official (shipped filaments) and Custom User Profile (filaments entered by the user, Manage Filaments, Phase 8 lot 71). Community sources are not used.
 - The sections of this document without a field in DATA_SCHEMA.md (Profile Structure, metadata, verified, profileVersion, manufacturer and source, printing, quality, visual, moisture, stringing, warp risk, layer adhesion, surface finish, special requirements, cost settings other than pricePerKg) are future: they are not part of a profile until DATA_SCHEMA.md defines them.
+- Price (Phase 12, ADR-037): the cost estimation uses pricePerKg, in the currency of the preferences. A shipped filament keeps pricePerKg null in its profile; the price the user gives for it in the Costs section is kept in the preferences (cost.filamentPrices, DATA_SCHEMA.md 3.15.0, User Preferences Schema; USER_SETTINGS_SPEC.md 2.3.0, Cost Settings). The price of a filament of the user is its field pricePerKg. The block cost of Cost Settings stays future.
 
 
 

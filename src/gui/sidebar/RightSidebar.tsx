@@ -4,7 +4,8 @@
  *
  * Sections of GUI_SPEC.md (Properties Sections), in three tabs since
  * lot 93 (Properties Tabs): Project above the tabs; Printer, Material,
- * Filament; Object, Transform, Analysis; Print Preset, Recommendations.
+ * Filament, Costs; Object, Transform, Analysis; Print Preset,
+ * Recommendations, Estimation.
  *
  * Phase 3 (GUI Foundation): each section shows the current selection
  * read from the stores, or an empty state. The detailed contents of
@@ -29,6 +30,12 @@
  * Print Preset section shows its preset, "—" when no object or several
  * objects are selected, or when the object has no recommendation (a
  * display only, the choice of a preset comes in Phase 15).
+ *
+ * Phase 12 (ADR-037, Q11 and Q12 A): the Costs section of the Printer tab
+ * keeps the currency, the price of a kWh, the power of the printer and
+ * the price per kg of the filament (CostSection.tsx); the Estimation
+ * section of the Settings tab shows the estimation of the selected
+ * objects (EstimationSection.tsx).
  *
  * Lot 93 (GUI_SPEC.md, Properties Tabs; PASSATION.md decision 90, Q1 to
  * Q6 A): the Project line stays above three tabs (shadcn Tabs, text
@@ -67,6 +74,8 @@ import {
 import { useTranslation } from "../hooks/useTranslation";
 
 import AnalysisSection from "./AnalysisSection";
+import CostSection from "./CostSection";
+import EstimationSection from "./EstimationSection";
 import FilamentSection from "./FilamentSection";
 import MaterialSection from "./MaterialSection";
 import { getDisplayNames } from "./objectNames";
@@ -216,6 +225,10 @@ export default function RightSidebar(): JSX.Element {
           <SidebarSection title={t("filament.title")}>
             <FilamentSection />
           </SidebarSection>
+
+          <SidebarSection title={t("cost.title")}>
+            <CostSection />
+          </SidebarSection>
         </TabsContent>
 
         <TabsContent {...panelProps("object")}>
@@ -251,6 +264,10 @@ export default function RightSidebar(): JSX.Element {
 
           <SidebarSection title={t("recommendation.title")}>
             <RecommendationSection objectIds={selectedObjectIds} />
+          </SidebarSection>
+
+          <SidebarSection title={t("estimation.title")}>
+            <EstimationSection objectIds={selectedObjectIds} />
           </SidebarSection>
         </TabsContent>
       </Tabs>

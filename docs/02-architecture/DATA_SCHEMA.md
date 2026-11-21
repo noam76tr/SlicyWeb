@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.14.0
+Version: 3.15.0
 
 Status: Approved
 
@@ -910,7 +910,7 @@ brand and name: the brand and the product line, as written by the manufacturer (
 material is the family of the filament: the category of a material (as "PLA")
 color is a name chosen by the user, or null; a shipped filament is a product line, its color is null
 diameter in mm (1.75 or 2.85)
-density (g/cm3) and pricePerKg are numbers, or null when not published; pricePerKg of a shipped filament is null (it depends on the country and the seller), the user gives it for their own filaments; its currency is the one of the user preferences
+density (g/cm3) and pricePerKg are numbers, or null when not published; pricePerKg of a shipped filament is null (it depends on the country and the seller), the user gives it for their own filaments; its currency is the one of the user preferences (cost.currency, 3.15.0); a price of a shipped filament given by the user is kept in the preferences (cost.filamentPrices), never in the filament (3.15.0, ADR-037)
 temperature has the structure of Material Thermal Properties: the ranges published by the manufacturer, in degrees Celsius; each value is a number, or null when not published; the four values are required (not null) for a shipped filament
 manufacturerSettings has exactly these five fields: retractionDistance (mm), retractionSpeed (mm/s), fanSpeed (percent), nozzleTemperature and bedTemperature (degrees Celsius); each is a single value published by the manufacturer, or null (a range only is kept in temperature, never turned into a single value)
 recommendedProfile stays {}: the recommendation of Phase 10 does not use it (ADR-035; the values of the filament come from temperature and manufacturerSettings)
@@ -2202,6 +2202,61 @@ Compatibility: no field is added or removed; no change of the WYPROJ format (3.0
 
 ```
 
+Cost Estimation Rules and Print Estimation Rules (3.15.0, ADR-037, Phase 12; answers of Noam to lot 107, Q1 to Q16 A):
+
+```text
+Place:
+  never stored: not in the Project Schema, not in a recommendation, not
+  in a WYPROJ file; computed again from the analysis and the
+  recommendation of the object, for each object whose recommendation is
+  up to date (status generated); kept in memory only
+
+Without slicing (an estimation, shown with "≈"):
+  w (width of a line) = diameter of the nozzle of the printer x 1.1
+  areas of the faces of the placed object (Web Worker of the analysis,
+  not part of the Analysis Schema): up = faces turned up, down = faces
+  turned down (less than 45 degrees from the horizontal), side = the
+  others
+  walls = side x wallCount x w (the outer wall is one of them)
+  top = up x topLayers x layerHeight; bottom = down x bottomLayers x
+  layerHeight
+  shell = walls + top + bottom, at most geometry.volume (the three parts
+  reduced together)
+  infill = (geometry.volume - shell) x infillDensity / 100
+  volume of plastic = shell + infill
+  not counted: supports, brim, skirt, raft
+  no estimation when geometry.volume is 0 (mesh not closed)
+
+filamentLength: mm; volume of plastic / (pi x (diameter / 2)^2) of the
+  filament of the recommendation; null without a filament
+filamentWeight: g; volume of plastic (cm3) x density of the filament;
+  null without a filament or without a density
+
+printTime: seconds, whole number:
+  length of the lines of a part = its volume / (w x layerHeight)
+  outer wall / speed.outerWall + inner walls / speed.innerWall
+  + (top + bottom + infill) / speed.infill, times 1.5 (speed factor)
+  at least layerCount x cooling.minimumLayerTime
+layerCount: height of the placed object / layerHeight, rounded up (at
+  least 1)
+
+Costs, in the currency of the preferences (cost.currency), rounded to
+its decimals (0 for JPY, 2 for the others):
+  materialCost = filamentWeight / 1000 x price per kg; null without a
+    weight or a price (price: pricePerKg of a filament of the user, or
+    cost.filamentPrices of the preferences for a shipped filament)
+  electricityCost = average power of the printer (W) / 1000 x printTime
+    (h) x cost.electricityPrice; null without a power or a price
+  totalCost = the known costs added; null when both are missing
+null means not known, never 0
+
+Several objects (the selection, or the visible objects of the plate):
+  printTime and each value added; layerCount = the highest; a value
+  missing for one object is missing for the sum
+```
+
+Compatibility: no field is added to a project; no change of the WYPROJ format (3.0.0).
+
 
 ---
 
@@ -2335,6 +2390,18 @@ The index is refused, and no profile is used, when one of these rules fails, whe
 
      "autoloadLastMaterial": true
 
+   },
+
+   "cost": {
+
+     "currency": "EUR",
+
+     "electricityPrice": null,
+
+     "printerPower": {},
+
+     "filamentPrices": {}
+
    }
 
  }
@@ -2347,6 +2414,8 @@ The index is refused, and no profile is used, when one of these rules fails, whe
 printer (3.5.0, ADR-032, USER_SETTINGS_SPEC.md Printer Settings): defaultPrinter is the id of the last printer selected, or null when none was selected (null = not chosen yet, as for the selections of the Project Schema); when autoloadLastPrinter is true, this printer is selected again at startup. A defaultPrinter that is no longer in the printer database is ignored (no printer selected).
 
 material (3.7.0, ADR-033 D9, USER_SETTINGS_SPEC.md Material Settings): defaultMaterial is the id of the last material selected, or null; defaultFilament is the id of the last filament selected, or null; when autoloadLastMaterial is true, they are selected again at startup. An id that is no longer in the material or filament database is ignored (nothing selected). A settings.json without material loads with these defaults.
+
+cost (3.15.0, ADR-037, USER_SETTINGS_SPEC.md Cost Settings; answers of Noam to lot 107, Q7 to Q10 A): currency is one of EUR, USD, ILS, GBP, CHF, CAD, AUD, JPY (ISO 4217); a settings.json without cost takes the currency of its language (EUR for fr, ILS for he, USD for en), and then only the choice of the user counts; prices typed before are not converted when it changes. electricityPrice is the price of a kWh in this currency, from 0 to 1 000 000, or null (not given). printerPower gives the average power of a printer in W (above 0, at most 10 000), by printer id; a printer without an entry has no power. filamentPrices gives the price per kg (0 to 1 000 000) of a shipped filament, by filament id (a shipped filament cannot be changed; a filament of the user keeps its price in its own pricePerKg). Each field is read on its own, and each entry of printerPower and filamentPrices on its own: an invalid one takes its default value or is left out. settings:update replaces cost as a whole.
 
 printer.autoCheckProfiles (3.6.0, ADR-032 D5, decision of Noam): boolean, true by default. When true, the SlicyWeb profile repository is checked at start, at most once every 24 hours; when false, it is checked only with Printer > Refresh Profiles. A settings.json without this field loads with true.
 

@@ -14,7 +14,10 @@
  *   the messages of the import, until closed;
  * - overhangTriangles: triangles beyond 45 degrees found by the last
  *   analysis of each object, drawn in red by the 3D viewport while that
- *   analysis is up to date (GUI_SPEC.md, Overhang Display, lot 82).
+ *   analysis is up to date (GUI_SPEC.md, Overhang Display, lot 82);
+ * - faceAreas: areas of the faces turned up, turned down and of the side
+ *   found by the last analysis of each object, for the estimation of
+ *   Phase 12 (ADR-037), used while that analysis is up to date.
  *
  * No business logic.
  *
@@ -26,6 +29,8 @@
  */
 
 import { create } from "zustand";
+
+import type { FaceAreas } from "../types/CostEstimation";
 
 export type AnalysisMessageCode = "ANA_001" | "ANA_002";
 
@@ -61,6 +66,9 @@ interface AnalysisTaskState {
    */
   overhangTriangles: Record<string, Uint32Array>;
 
+  /** Areas of the faces of the last analysis, by objectId (Phase 12) */
+  faceAreas: Record<string, FaceAreas>;
+
   setPending: (objectIds: string[]) => void;
 
   /** Keeps (true) or clears (false) the warning ANA_002 of an object */
@@ -71,6 +79,9 @@ interface AnalysisTaskState {
 
   /** Keeps the triangles beyond 45 degrees of the last analysis */
   setOverhangTriangles: (objectId: string, triangles: Uint32Array) => void;
+
+  /** Keeps the areas of the faces of the last analysis */
+  setFaceAreas: (objectId: string, areas: FaceAreas) => void;
 
   addMessage: (message: AnalysisMessage) => void;
 
@@ -90,6 +101,8 @@ export const useAnalysisTaskStore = create<AnalysisTaskState>((set) => ({
   messages: [],
 
   overhangTriangles: {},
+
+  faceAreas: {},
 
   setPending: (objectIds) =>
     set({
@@ -122,6 +135,14 @@ export const useAnalysisTaskStore = create<AnalysisTaskState>((set) => ({
       },
     })),
 
+  setFaceAreas: (objectId, areas) =>
+    set((state) => ({
+      faceAreas: {
+        ...state.faceAreas,
+        [objectId]: areas,
+      },
+    })),
+
   addMessage: (message) =>
     set((state) => ({
       messages: [...state.messages, message],
@@ -140,6 +161,10 @@ export const useAnalysisTaskStore = create<AnalysisTaskState>((set) => ({
 
       delete overhangTriangles[objectId];
 
+      const faceAreas = { ...state.faceAreas };
+
+      delete faceAreas[objectId];
+
       return {
         pendingObjectIds: state.pendingObjectIds.filter(
           (id) => id !== objectId,
@@ -151,6 +176,7 @@ export const useAnalysisTaskStore = create<AnalysisTaskState>((set) => ({
           (id) => id !== objectId,
         ),
         overhangTriangles,
+        faceAreas,
       };
     }),
 }));

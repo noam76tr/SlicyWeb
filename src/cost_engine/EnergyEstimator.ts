@@ -1,69 +1,44 @@
 /**
  * SlicyWeb
- * Energy Estimator Definition
+ * Energy Estimator
+ *
+ * Cost of the electricity of one print (ADR-037, Q8 A, Q9 A;
+ * DATA_SCHEMA.md 3.15.0, Cost Estimation Rules): average power of the
+ * printer (W, given by the user for each printer) ÷ 1000 × print time
+ * (h) × price of a kWh, rounded to the decimals of the currency; null
+ * when the power or the price is not given.
+ *
+ * Pure functions, no state. No Electron (KI-024).
+ *
+ * Domain: Cost Estimation.
  *
  * Based on:
- * - ARCHITECTURE.md
- * - DATA_SCHEMA.md
- * - AI_ENGINE_SPEC.md
+ * - DATA_SCHEMA.md (3.15.0: Cost Estimation Rules)
+ * - DECISIONS.md (ADR-037)
  */
 
-export interface EnergyEstimationResult {
-  powerConsumption: number;
-
-  printTimeHours: number;
-
-  energyConsumption: number;
-
-  electricityCost: number;
-}
+import { roundAmount } from "./MaterialEstimator";
 
 export class EnergyEstimator {
-  public estimate(
-    powerConsumption: number,
-    printTimeHours: number,
-    pricePerKwh: number
-  ): EnergyEstimationResult {
-    const energyConsumption =
-      this.calculateEnergyConsumption(
-        powerConsumption,
-        printTimeHours
-      );
-
-    const electricityCost =
-      this.calculateElectricityCost(
-        energyConsumption,
-        pricePerKwh
-      );
-
-    return {
-      powerConsumption,
-
-      printTimeHours,
-
-      energyConsumption,
-
-      electricityCost
-    };
+  /** Energy of the print in kWh */
+  public energy(powerW: number, printTimeSeconds: number): number {
+    return (powerW / 1000) * (printTimeSeconds / 3600);
   }
 
-  private calculateEnergyConsumption(
-    powerConsumption: number,
-    printTimeHours: number
-  ): number {
-    return (
-      (powerConsumption / 1000) *
-      printTimeHours
-    );
-  }
+  /** Cost of the electricity, or null without power or price */
+  public electricityCost(
+    powerW: number | null,
+    printTimeSeconds: number,
+    pricePerKwh: number | null,
+    digits: number,
+  ): number | null {
+    if (powerW === null || pricePerKwh === null) {
+      return null;
+    }
 
-  private calculateElectricityCost(
-    energyConsumption: number,
-    pricePerKwh: number
-  ): number {
-    return (
-      energyConsumption *
-      pricePerKwh
+    return roundAmount(
+      this.energy(powerW, printTimeSeconds) * pricePerKwh,
+      digits,
     );
   }
 }

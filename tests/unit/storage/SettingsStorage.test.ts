@@ -11,10 +11,13 @@
  * material takes its default value only (Phase 8 lot 70). A file written
  * by lot 93 (3.11.0), with gui.propertiesTab, loads without error and
  * keeps every setting; gui is ignored and no longer written (3.12.0,
- * lot 95, Q3 B).
+ * lot 95, Q3 B). A file written before 3.15.0, without cost, takes the
+ * currency of its language and no price; the fields of cost are read one
+ * by one, each entry of printerPower and filamentPrices on its own
+ * (Phase 12, lot 108, ADR-037, Q7 A).
  *
  * Based on:
- * - DATA_SCHEMA.md (User Preferences Schema 3.5.0, 3.7.0, 3.12.0)
+ * - DATA_SCHEMA.md (User Preferences Schema 3.5.0, 3.7.0, 3.12.0, 3.15.0)
  * - USER_SETTINGS_SPEC.md (Printer Settings, Material Settings)
  * - TEST_PLAN.md
  */
@@ -62,6 +65,13 @@ describe("Settings storage", () => {
         defaultMaterial: null,
         defaultFilament: null,
         autoloadLastMaterial: true,
+      },
+      // No cost before 3.15.0: the currency of the language (Q7 A)
+      cost: {
+        currency: "ILS",
+        electricityPrice: null,
+        printerPower: {},
+        filamentPrices: {},
       },
     });
   });
@@ -129,6 +139,12 @@ describe("Settings storage", () => {
         defaultMaterial: null,
         defaultFilament: null,
         autoloadLastMaterial: true,
+      },
+      cost: {
+        currency: "USD",
+        electricityPrice: null,
+        printerPower: {},
+        filamentPrices: {},
       },
     };
 
@@ -198,6 +214,12 @@ describe("Settings storage", () => {
         defaultFilament: "bambu_petg_hf",
         autoloadLastMaterial: false,
       },
+      cost: {
+        currency: "ILS",
+        electricityPrice: null,
+        printerPower: {},
+        filamentPrices: {},
+      },
     };
     const storage = new SettingsStorage(filePath);
 
@@ -229,5 +251,69 @@ describe("Settings storage", () => {
     const loaded = new SettingsStorage(filePath).load();
     expect(loaded).not.toHaveProperty("gui");
     expect(loaded.language).toBe("fr");
+  });
+
+  it("gives the currency of the language to a settings.json without cost", () => {
+    for (const [language, currency] of [
+      ["fr", "EUR"],
+      ["he", "ILS"],
+      ["en", "USD"],
+    ]) {
+      writeSettings({
+        preferences: { theme: "dark", language, units: "metric" },
+      });
+
+      expect(new SettingsStorage(filePath).load().cost.currency).toBe(currency);
+    }
+  });
+
+  it("keeps the cost settings and leaves out each invalid value alone", () => {
+    writeSettings({
+      preferences: {
+        theme: "dark",
+        language: "fr",
+        units: "metric",
+        cost: {
+          currency: "CHF",
+          electricityPrice: 0.27,
+          printerPower: {
+            prusa_mk4s: 120,
+            broken: -5,
+            tooHigh: 20000,
+            text: "100",
+          },
+          filamentPrices: { prusament_pla: 24.99, free: 0, wrong: -1 },
+        },
+      },
+    });
+    const storage = new SettingsStorage(filePath);
+    const loaded = storage.load();
+
+    expect(loaded.cost).toEqual({
+      currency: "CHF",
+      electricityPrice: 0.27,
+      printerPower: { prusa_mk4s: 120 },
+      filamentPrices: { prusament_pla: 24.99, free: 0 },
+    });
+
+    // Saved again as read
+    storage.save(loaded);
+    expect(new SettingsStorage(filePath).load().cost).toEqual(loaded.cost);
+
+    // An unknown currency or a negative price: the default of that field
+    writeSettings({
+      preferences: {
+        theme: "dark",
+        language: "fr",
+        units: "metric",
+        cost: { currency: "BTC", electricityPrice: -1 },
+      },
+    });
+    expect(new SettingsStorage(filePath).load().cost).toEqual({
+      currency: "EUR",
+      electricityPrice: null,
+      printerPower: {},
+      filamentPrices: {},
+    });
   });
 });

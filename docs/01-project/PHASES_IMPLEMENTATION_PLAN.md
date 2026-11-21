@@ -1905,6 +1905,28 @@ Reliability Maintained
 
 # COST ESTIMATION
 
+Status: In Progress (lot 108 delivered 2026-11-20, waiting for the checks of Noam)
+
+Decisions (ADR-037, answers of Noam Q1 to Q16, 2026-11-20, all A; analysis of lot 107, LOT107-QUESTIONS.md; slicer of the comparison: OrcaSlicer):
+
+- Scope: for each object whose recommendation is up to date: print time, layer count, filament length and weight, cost of the filament, cost of the electricity, total; the sum of the visible objects of the plate; supports, brim, skirt and raft not counted; no warning for a long print; the optimization of time and material stays in Phase 15
+- Without slicing: line width = nozzle x 1.1; walls, top and bottom from the areas of the faces (Web Worker of the analysis); shell at most the volume; infill = the rest x infill density; time of the lines at the speeds of the recommendation x 1.5, at least the minimum layer time for each layer
+- Accuracy: at most 15 % on the weight and 30 % on the time against OrcaSlicer with the same settings, on 3 models of Noam; a larger gap: a new speed factor or line width proposed before the closure
+- Costs: block cost of the User Preferences Schema (DATA_SCHEMA.md 3.15.0): currency (8, the one of the language at the first start, not converted), price of a kWh, power of each printer, price per kg of the shipped filaments; total = the known costs
+- Interface: section Costs (Printer tab), section Estimation (Settings tab), Plate in the status bar; computed by itself, no menu, no button
+- Nothing stored; WYPROJ 3.0.0 unchanged; 29 IPC channels; the four files of src/cost_engine/ rewritten, getMaterialCostRatio, getElectricityCostRatio and calculateTotalCost removed; KI-031 (Cost API of API_SPEC.md)
+
+Order of the lots (one delivery for the whole phase, rule of the subjects of Noam, 2026-11-18):
+
+- Lot 107: analysis (inventory, questions Q1 to Q16)
+- Lot 108: documentation, computation, interface, tests and one series of manual checks, with the comparison against OrcaSlicer on 3 models of Noam
+- Closure: with the checks of Noam; a new speed factor or line width only if a gap is larger than the target (with his answer)
+
+Progress:
+
+- Analysis (lot 107, no CHANGELOG entry: analysis only)
+- Lot 108 (CHANGELOG 0.1.108): delivered, waiting for the checks of Noam
+
 
 
 ---

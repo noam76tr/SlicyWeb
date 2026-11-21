@@ -66,6 +66,7 @@ export function snapshotObjects(
       geometry,
       analysis: analyses[object.objectId] ?? null,
       overhangTriangles: task.overhangTriangles[object.objectId] ?? null,
+      faceAreas: task.faceAreas[object.objectId] ?? null,
       openMesh: task.openMeshObjectIds.includes(object.objectId),
       nonManifold: task.nonManifoldObjectIds.includes(object.objectId),
     };
@@ -145,6 +146,10 @@ export function putBack(snapshots: Record<string, ObjectSnapshot>): boolean {
 
     if (entry.overhangTriangles) {
       task.setOverhangTriangles(objectId, entry.overhangTriangles);
+    }
+
+    if (entry.faceAreas) {
+      task.setFaceAreas(objectId, entry.faceAreas);
     }
 
     task.setOpenMesh(objectId, entry.openMesh);

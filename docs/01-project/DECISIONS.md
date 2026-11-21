@@ -2784,6 +2784,92 @@ Reason:
 ---
 
 
+# ADR-037
+
+Title: Cost Estimation
+
+Status: Accepted
+
+Date: 2026-11-20
+
+## Context
+
+Phase 12 (Cost Estimation) must estimate the filament usage, the material weight, the material cost, the electricity cost and the print duration (PHASES_IMPLEMENTATION_PLAN.md), with "Values Consistent". The documents give only the names of the values: no method, no line width, no currency, no price of the electricity and no power of the printer in DATA_SCHEMA.md; the Cost Estimation Schema and the Print Estimation Schema have no rules and no place in the project; the shipped filaments have no price (pricePerKg null) and cannot be changed; no screen is described. The four files of src/cost_engine/ are never called and compute nothing (a time given is converted from hours to minutes). SlicyWeb does not slice the model: the exact time and weight are known only in the slicer. The analysis already gives the volume, the area and the height of each object, and the recommendation gives the layer height, the walls, the top and bottom layers, the infill and the speeds. Analysis: lot 107 (LOT107-QUESTIONS.md), answers of Noam Q1 to Q16 (2026-11-20, all A); slicer of the comparison: OrcaSlicer.
+
+## Decision
+
+- Scope (Q1): for each object whose recommendation is up to date: print time, layer count, filament length and weight, cost of the filament, cost of the electricity, total cost; and the sum of the plate. Supports, brim, skirt and raft are not counted (Q5); no warning for a long print (Q15: no threshold is documented); the optimization of time and material stays in Phase 15.
+- Filament (Q2): without slicing. Width of a line w = diameter of the nozzle x 1.1. The Web Worker of the analysis gives the areas of the faces turned up, turned down (less than 45 degrees from the horizontal) and of the side. Walls = side area x wall count x w; top = up area x top layers x layer height; bottom = down area x bottom layers x layer height; the shell is at most the volume of the object (a small object is full); infill = (volume - shell) x infill density. Length = volume of plastic / section of the filament; weight = volume (cm3) x density.
+- Time (Q3): length of the lines of each part = its volume / (w x layer height); outer wall at the outer wall speed, inner walls at the inner wall speed, top, bottom and infill at the infill speed (speeds of the recommendation); time of the lines x 1.5 (speed factor: accelerations, turns, travel; a hypothesis); at least the minimum layer time for each layer; layer count = height / layer height, rounded up.
+- Accuracy (Q4): target at most 15 % on the weight and 30 % on the time against OrcaSlicer with the same settings, on 3 models of Noam (manual checks); when a gap is larger, a new speed factor or line width is proposed before the closure. Each estimated value is shown with "≈".
+- Without a filament (Q6): time, layers and electricity only; length, weight and cost of the filament "—".
+- Costs (Q7 to Q10): a currency of a list of 8 (EUR, USD, ILS, GBP, CHF, CAD, AUD, JPY), the one of the language at the first start (EUR in French, ILS in Hebrew, USD in English), prices not converted when it changes; a price of a kWh; an average power for each printer (W); a price per kg for any filament (its field pricePerKg for a filament of the user, an entry of the preferences for a shipped filament). All in the new block cost of the User Preferences Schema (DATA_SCHEMA.md 3.15.0). Electricity = power x time x price of a kWh. Total = filament + electricity; when one is missing, the other alone, and the interface says which one is not counted; "—" when both are missing. Amounts rounded to the decimals of the currency (0 for the yen).
+- Interface (Q11 to Q13): a section Costs in the Printer tab, under Filament (currency, electricity price, power of the selected printer, price per kg of the selected filament), until a Preferences window exists; a section Estimation in the Settings tab, under Recommendations (the selected objects, their sum when several); the sum of the visible objects in the status bar (Plate). Computed by itself when the recommendation is up to date, again when a cost setting changes; "—" while the recommendation is outdated. No menu, no button.
+- Data (Q14): the estimation is not stored (computed again from the analysis and the recommendation, as the Optimization Result of ADR-036); DATA_SCHEMA.md 3.15.0 gives the rules of the Cost Estimation Schema and the Print Estimation Schema and the block cost of the User Preferences Schema. No change of the WYPROJ format (3.0.0), no new IPC channel (29 channels).
+- Files and documents (Q16): MaterialEstimator.ts, TimeEstimator.ts, EnergyEstimator.ts and CostCalculator.ts rewritten under the same names; getMaterialCostRatio, getElectricityCostRatio and calculateTotalCost removed; CostEstimation with null. The Cost API of API_SPEC.md (energyCost) is not implemented and DATA_SCHEMA.md wins (electricityCost): KI-031. The blocks power of PRINTER_PROFILE_SPEC.md and cost of MATERIAL_PROFILE_SPEC.md and FILAMENT_SETTINGS_SPEC.md are not in DATA_SCHEMA.md: a note in each document.
+
+## Consequences
+
+Advantages:
+
+- An estimation as soon as the recommendation is there, before the export, with every number written
+- A cost for the shipped filaments, without changing their profiles
+- No new field in a project, no new IPC channel, no change of the WYPROJ format
+
+Disadvantages:
+
+- An estimation, not the result of a slicer: the gap is measured on the models of Noam and the factor can be changed
+- Supports, brim, skirt and raft are not counted
+- The power of each printer and the prices are typed by the user
+
+## Alternatives Considered
+
+Cut of the object layer by layer (Q2, option B)
+
+Rejected
+
+Reason:
+
+- About twice the code and a longer computation, for an estimation that stays an estimation
+
+Estimated supports and brim (Q5, option B)
+
+Rejected
+
+Reason:
+
+- No volume of supports and no width of a brim is defined: the numbers would be invented
+
+A power field in the Printer Schema (Q9, option B)
+
+Rejected
+
+Reason:
+
+- No shipped printer would have a cost of electricity before its profile is updated
+
+Preferences window created now (Q11, option B)
+
+Rejected
+
+Reason:
+
+- More interface code; the Costs section moves to that window when it exists
+
+## Related Documents
+
+- DATA_SCHEMA.md 3.15.0 (Cost Estimation Schema, Print Estimation Schema and their rules; User Preferences Schema: cost; Filament Schema)
+- USER_SETTINGS_SPEC.md 2.3.0 (Cost Settings)
+- GUI_SPEC.md (Cost Section, Estimation Section, Filament Section, Status Bar)
+- PRINTER_PROFILE_SPEC.md, MATERIAL_PROFILE_SPEC.md, FILAMENT_SETTINGS_SPEC.md (notes on power and cost)
+- API_SPEC.md (Cost API, KI-031), TEST_PLAN.md (Cost Engine Unit Tests)
+- PHASES_IMPLEMENTATION_PLAN.md (Phase 12)
+- ADR-026, ADR-033, ADR-035, ADR-036
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-033)
+
+---
+
+
 # Future Decision Template
 
 Copy and complete:

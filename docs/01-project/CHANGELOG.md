@@ -4068,6 +4068,60 @@ Date:
 
 ---
 
+# VERSION 0.1.108
+
+Release Type:
+Feature (Phase 12, Cost Estimation), Data Schema (User Preferences Schema: cost; rules of the Cost Estimation Schema and the Print Estimation Schema), Graphical User Interface (Costs section, Estimation section, Plate in the status bar)
+
+Status:
+In Progress
+
+Date:
+2026-11-20
+
+## Added
+
+- Phase 12, Cost Estimation, in one delivery (ADR-037; analysis of lot 107, LOT107-QUESTIONS.md; decision 116: Q1 to Q16 A, slicer of the comparison OrcaSlicer):
+  - estimation without slicing for each object whose recommendation is up to date: print time, layer count, filament length and weight, cost of the filament, cost of the electricity, total (Q1 A, Q2 A, Q3 A; DATA_SCHEMA.md 3.15.0, Cost Estimation Rules and Print Estimation Rules); width of a line = nozzle x 1.1; areas of the faces turned up, turned down and of the side computed in the Web Worker of the analysis (not stored); shell at most the volume of the object; infill = the rest x infill density; time of the lines at the speeds of the recommendation x 1.5, at least the minimum layer time for each layer; supports, brim, skirt and raft not counted (Q5 A)
+  - without a filament: time, layers and electricity only (Q6 A); total = the known costs, with what is not counted; "—" when both costs are missing (Q10 A); amounts rounded to the decimals of the currency (0 for the yen)
+  - cost settings: block cost of the User Preferences Schema (DATA_SCHEMA.md 3.15.0; USER_SETTINGS_SPEC.md 2.3.0, Cost Settings): currency (EUR, USD, ILS, GBP, CHF, CAD, AUD, JPY; the one of the language at the first start; prices not converted), price of a kWh, average power of each printer, price per kg of the shipped filaments (Q7 to Q10 A); the price of a filament of the user stays its field pricePerKg
+  - section Costs in the Printer tab, under Filament (Q11 A; GUI_SPEC.md, Cost Section); section Estimation in the Settings tab, under Recommendations (Q12 A; GUI_SPEC.md, Estimation Section); Plate in the status bar, sum of the visible objects, never shortened (Q13 A); the price per kg of the Filament section with the currency
+  - computed by itself, again when a cost setting changes; nothing stored in a project (Q14 A); no warning for a long print (Q15 A); the WYPROJ format stays 3.0.0; 29 IPC channels
+  - accuracy target: at most 15 % on the weight and 30 % on the time against OrcaSlicer with the same settings, on 3 models of Noam (Q4 A; manual checks of lot 108)
+- src/constants/CostConstants.ts; src/services/CostSettingsService.ts, src/services/CostEstimationService.ts; src/state/costSettingsStore.ts, src/state/estimationStore.ts; src/gui/sidebar/CostSection.tsx, src/gui/sidebar/EstimationSection.tsx, src/gui/sidebar/estimationFormat.ts
+- 37 keys in en, fr and he: cost.* (19), estimation.* (16), statusBar.plate, statusBar.withoutEstimation (540 keys)
+- KNOWN ISSUES: KI-031 added (HTTP Cost API of API_SPEC.md)
+
+## Changed
+
+- src/cost_engine/MaterialEstimator.ts, TimeEstimator.ts, EnergyEstimator.ts and CostCalculator.ts rewritten under the same names (Q16 A); src/types/CostEstimation.ts rewritten (values null when not known)
+- src/model_analysis/GeometryAnalyzer.ts (analyzeFaceAreas), src/model_analysis/ModelAnalyzer.ts (faceAreas in the result of the Worker), src/state/analysisTaskStore.ts (faceAreas), src/services/AnalysisService.ts, src/state/historyStore.ts and src/scene/ObjectSnapshots.ts (areas kept with Delete and its undo)
+- src/types/UserPreferences.ts, src/schemas/UserPreferencesSchema.ts and src/storage/SettingsStorage.ts (block cost; an invalid value left out alone; reset)
+- src/i18n/NumberFormatter.ts (formatMoney, currencySymbol, formatDuration; amounts in Hebrew as in English, kept left to right)
+- src/gui/App.tsx, src/gui/sidebar/RightSidebar.tsx, src/gui/sidebar/FilamentSection.tsx, src/gui/statusbar/StatusBar.tsx
+- DECISIONS.md (ADR-037), ARCHITECTURE_DECISION_MATRIX.md 2.9.0 (ADM-033), DATA_SCHEMA.md 3.15.0, USER_SETTINGS_SPEC.md 2.3.0, GUI_SPEC.md (Properties Tabs, Filament Section, Cost Section, Estimation Section, Status Bar), PRINTER_PROFILE_SPEC.md, MATERIAL_PROFILE_SPEC.md and FILAMENT_SETTINGS_SPEC.md (notes: power and cost are not fields of a profile), TEST_PLAN.md, PHASES_IMPLEMENTATION_PLAN.md (Phase 12 In Progress), FILE_STRUCTURE.md, DIRECTORY_PURPOSES.md
+- PASSATION.md: decision 116
+- docs/lots/LOT108.md
+
+## Removed
+
+- CostCalculator.getMaterialCostRatio, CostCalculator.getElectricityCostRatio, CostCalculator.calculateTotalCost and the old content of the four files of src/cost_engine/ (never called; Q16 A)
+
+## Tests
+
+- tests/unit/cost_engine/CostEngine.test.ts (18 tests): volumes of a cube computed by hand, small object full, filament, cost rounded to the currency, layers, time, minimum layer time, electricity, one object, total with one cost missing, without a filament, not counted, sum, same result, areas of the faces
+- tests/unit/services/CostEstimation.test.ts (10 tests): estimation as soon as the recommendation is up to date, prices and power, filament of the user, without a filament, outdated recommendation, object without volume, visible objects of the plate, values typed in the Costs section, currency outside Electron
+- tests/unit/storage/SettingsStorage.test.ts (2 tests): currency of the language without cost; cost kept, each invalid value left out alone
+- tests/e2e/estimation.spec.ts (2 tests): the cube estimated by itself, costs given and counted, value refused, Plate in the status bar, settings kept after a new start; amounts in French, English and Hebrew (669 + 1 tests, 76 e2e)
+- tests/e2e/app.spec.ts (price per kg with its currency) and tests/e2e/printer.spec.ts (settings.json with cost; the size of the plate in the viewport told apart from Plate of the status bar): adapted, none removed
+
+## Validation Result
+
+- Linux (2026-11-20): npm run check:locales 540 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 670 tests passed (669 + 1 skipped on Windows), npm run test:e2e 76 tests passed, npm run build
+- Windows 11 and manual checks (with the comparison against OrcaSlicer): waiting for Noam
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -5051,6 +5105,20 @@ Issue: API_SPEC.md describes an HTTP Optimization API (/api/optimization/orienta
 Resolve Before: Implementation of an HTTP API
 
 Planned Resolution: Documentation lot: align the Optimization API of API_SPEC.md on ADR-036 (orientation only, result of DATA_SCHEMA.md 3.13.0), with the decision on the API_SPEC.md version (KI-007).
+
+---
+
+Identifier: KI-031
+
+Since: 0.1.108
+
+Affected Module: docs/02-architecture/API_SPEC.md (Cost API)
+
+Issue: API_SPEC.md describes an HTTP Cost API (POST /api/cost/estimate, response materialCost, energyCost, totalCost, printTime). No HTTP API exists in the application (as KI-007 and KI-030); Phase 12 estimates in the interface (ADR-037), and the name energyCost contradicts electricityCost of the Cost Estimation Schema of DATA_SCHEMA.md (priority 0, which wins).
+
+Resolve Before: Implementation of an HTTP API
+
+Planned Resolution: Documentation lot: align the Cost API of API_SPEC.md on DATA_SCHEMA.md 3.15.0 (electricityCost, values null when not known), with the decision on the API_SPEC.md version (KI-007).
 
 ---
 

@@ -37,6 +37,7 @@ import { MAX_HISTORY_SIZE } from "../constants/HistoryConstants";
 import type { BufferGeometry } from "three";
 
 import type { Analysis } from "../types/Analysis";
+import type { FaceAreas } from "../types/CostEstimation";
 import type { Object3D, Transform } from "../types/Object3D";
 
 /**
@@ -84,6 +85,9 @@ export interface ObjectSnapshot {
 
   /** Triangles beyond 45 degrees of its analysis, or null */
   overhangTriangles: Uint32Array | null;
+
+  /** Areas of the faces of its analysis (Phase 12), or null */
+  faceAreas: FaceAreas | null;
 
   /** Its last analysis found a mesh not closed (ANA_002) */
   openMesh: boolean;

@@ -176,7 +176,9 @@ test("shows the numbers in the format of the language", async ({
 
   await openTab(window, "printer");
   await expect(rowValue(window, en["printer.nozzle"])).toHaveText("0.4 mm");
-  await expect(rowValue(window, en["filament.pricePerKg"])).toHaveText("24.99");
+  await expect(rowValue(window, en["filament.pricePerKg"])).toHaveText(
+    "$24.99",
+  );
   await expect(rowValue(window, en["filament.retractionDistance"])).toHaveText(
     "0.8 mm",
   );
@@ -192,7 +194,9 @@ test("shows the numbers in the format of the language", async ({
   await expect(rowValue(window, fr["printer.maxAcceleration"])).toHaveText(
     "20\u202f000 mm/s²",
   );
-  await expect(rowValue(window, fr["filament.pricePerKg"])).toHaveText("24,99");
+  await expect(rowValue(window, fr["filament.pricePerKg"])).toHaveText(
+    /^24,99\s\$US$/,
+  );
   await expect(rowValue(window, fr["filament.retractionDistance"])).toHaveText(
     "0,8 mm",
   );
@@ -215,6 +219,8 @@ test("shows the numbers in the format of the language", async ({
     .click();
   await expect(positionX).toHaveValue("-7.25");
   await openTab(window, "printer");
-  await expect(rowValue(window, en["filament.pricePerKg"])).toHaveText("24.99");
+  await expect(rowValue(window, en["filament.pricePerKg"])).toHaveText(
+    "$24.99",
+  );
   expect(errors).toEqual([]);
 });

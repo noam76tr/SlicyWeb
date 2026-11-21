@@ -411,7 +411,7 @@ They are on GitHub with the lot, for the reviewer of Noam. They describe a deliv
 
 | File | Role |
 |------|------|
-| `StatusBar.tsx` | Status bar with the nine fields of GUI_SPEC.md (Status Bar), read from the stores |
+| `StatusBar.tsx` | Status bar with the fields of GUI_SPEC.md (Status Bar), read from the stores; Plate (Phase 12 lot 108): sum of the estimations of the visible objects, never shortened |
 
 ---
 
@@ -427,11 +427,14 @@ They are on GitHub with the lot, for the reviewer of Noam. They describe a deliv
 | `RightSidebar.tsx` | Properties Panel content: the nine sections of GUI_SPEC.md (Properties Sections) with the current selection; since lot 93, the Project line above three tabs (Printer, Object, Settings; GUI_SPEC.md, Properties Tabs), the tab chosen only by the user, a red dot on Settings for a critical warning of the selected object, scroll kept for each tab |
 | `SidebarSection.tsx` | Reusable titled section of a side panel |
 | `MaterialSection.tsx` | Material section of the Properties Panel (Phase 8 lot 70): selector of the families with "No material" first; nozzle and bed ranges, fan and density, "Not published" for null; warning "Not listed by the printer manufacturer" when the selected printer lists materials without this family (GUI_SPEC.md, Material Section); Material > Select Material moves the focus to the selector |
-| `FilamentSection.tsx` | Filament section of the Properties Panel (Phase 8 lot 70): selector of the filaments of the selected family (all without a family), "My filaments" first, then by brand; a filament selects its family; brand, color ("Not specified" for a product line), ranges and the values of the manufacturer, "Not published" for null (GUI_SPEC.md, Filament Section); Filament > Select Filament moves the focus to the selector; price per kg ("Not specified" for null) and "Manage…" (Filament Manager, lot 71) |
+| `FilamentSection.tsx` | Filament section of the Properties Panel (Phase 8 lot 70): selector of the filaments of the selected family (all without a family), "My filaments" first, then by brand; a filament selects its family; brand, color ("Not specified" for a product line), ranges and the values of the manufacturer, "Not published" for null (GUI_SPEC.md, Filament Section); Filament > Select Filament moves the focus to the selector; price per kg ("Not specified" for null; the price used by the estimation, with the currency, Phase 12 lot 108) and "Manage…" (Filament Manager, lot 71) |
 | `profileRows.tsx` | Rows of the Material and Filament sections: a value or a range with its unit, "Not published" for null |
 | `PrinterSection.tsx` | Printer section of the Properties Panel: selector by brand, then model, with "No printer" first; Brand, Model, Build Volume, Nozzle and Printer Limits of the selected printer, "Not published" for a null value (GUI_SPEC.md, Printer Section, Printer Selector); printers of the user in the group "My printers"; "Manage…" opens the Printer Manager; calls PrinterSelectionService |
 | `TransformSection.tsx` | Transform section of the Properties Panel: position X, Y (Z computed), rotation in degrees, scale in % with a lock, size in mm, Reset and Center On Bed, rows chosen by the mode of the gizmo (GUI_SPEC.md, Transform Section); calls TransformService |
 | `AnalysisSection.tsx` | Analysis section of the Properties Panel (GUI_SPEC.md, Analysis Section, Phase 9 lot 80): status (Up to date, Outdated, Analyzing…, No analysis), dimensions, volume in cm³, surface area in cm², mesh, overhangs, bridges, thin walls, stability with the level of the tip risk; warning of a mesh not closed (ANA_002); "Select a single object" for several objects; numbers in the format of the language |
+| `CostSection.tsx` | Costs section of the Printer tab, under Filament (Phase 12 lot 108, GUI_SPEC.md, Cost Section): currency, electricity price, power of the selected printer, price per kg of the selected filament; empty = not given; Enter or leaving the field keeps the value, Escape gives it back, a value refused shows its error; through CostSettingsService |
+| `EstimationSection.tsx` | Estimation section of the Settings tab, under Recommendations (Phase 12 lot 108, GUI_SPEC.md, Estimation Section): time, layers, filament, costs and total of the selected objects (their sum when several), what is not counted, objects without an estimation |
+| `estimationFormat.ts` | Values of the estimation with "≈": duration, length, weight, amount in the currency (Phase 12 lot 108) |
 | `RecommendationSection.tsx` | Recommendation section of the Properties Panel (GUI_SPEC.md, Recommendation Section, Phase 10 lot 88, ADR-035 D12 option B): status; Object type ("Automatic (<category>)" then the 15 categories) with the confidence level of the automatic classification; preset; warnings (most severe first, critical in red); recommendation confidence; the values under "Details", folded by default; "Select a printer and a material"; REC_001 and REC_002; "Select a single object" for several objects; the Print Preset section and the status bar use its presetKey |
 | `objectNames.ts` | Display names of the objects: the name given by the user (lot 106), otherwise the source file name; "cube (1)", "cube (2)" for every name shown twice (IMPORT_EXPORT_SPEC.md, Duplicate Names) |
 | `renameStore.ts` | Object whose name is edited in its row of the Object Panel (lot 106): startRename (double-click, F2, context menu), renameSelection (one object selected), request counter that opens a collapsed Object Panel |
@@ -683,7 +686,7 @@ SupportOptimizer.ts, SpeedOptimizer.ts and MaterialOptimizer.ts (numbers without
 |------|------|
 | `LanguageManager.ts` | Manages the current language and validates supported languages |
 | `LocalizationService.ts` | Translation service with parameter support and fallback |
-| `NumberFormatter.ts` | Numbers shown in the format of the language (lot 81): decimal separator (comma in French), digit grouping for a value only read, no grouping in a field, 2 decimals at most; used by every section of the interface. Values with a unit (lot 89): formatQuantity, formatQuantities, formatQuantityRange, isolateValue ("200 mm/s" in every language, kept left to right in Hebrew by a left-to-right isolate) |
+| `NumberFormatter.ts` | Numbers shown in the format of the language (lot 81): decimal separator (comma in French), digit grouping for a value only read, no grouping in a field, 2 decimals at most; used by every section of the interface. Values with a unit (lot 89): formatQuantity, formatQuantities, formatQuantityRange, isolateValue ("200 mm/s" in every language, kept left to right in Hebrew by a left-to-right isolate). Amounts and durations (Phase 12 lot 108): formatMoney (decimals and symbol of the currency; in Hebrew as in English), currencySymbol, formatDuration |
 | `TranslationLoader.ts` | Loads translation dictionaries with caching and fallback |
 
 ---
@@ -783,7 +786,7 @@ FilamentValidator.ts was replaced by FilamentSchema and deleted (Phase 8 lot 68,
 |------|------|
 | `AnalysisError.ts` | Analysis errors with their code of ERROR_CODES_SPEC.md (ANA_001); AnalysisCancelledError when a computation is no longer needed |
 | `AnalysisRunner.ts` | Runs the analysis of one object in the Web Worker: copy of the triangle data transferred, worker terminated at the end, AbortSignal to drop the computation (ADR-034 D7); used by AnalysisService from lot 80 |
-| `GeometryAnalyzer.ts` | Dimensions (bounding box of the placed object), volume enclosed by the mesh, surface area, center of gravity relative to the center of the object (center of the surface when the volume is 0) |
+| `GeometryAnalyzer.ts` | Dimensions (bounding box of the placed object), volume enclosed by the mesh, surface area, center of gravity relative to the center of the object (center of the surface when the volume is 0); areas of the faces turned up, turned down and of the side for the estimation (analyzeFaceAreas, Phase 12 lot 108, not stored) |
 | `MeshAnalyzer.ts` | Welded vertices (same stored coordinates = one vertex), object as placed on the build plate (scale and rotation, position ignored), mesh vertices and triangles |
 | `MeshValidator.ts` | Triangle data readable (ANA_001 when empty, not 9 numbers per triangle, or not finite); open edges, not shared by exactly two triangles (ANA_002, non-blocking) |
 | `ModelAnalyzer.ts` | Analysis of one object (Phase 9: dimensions, geometry, mesh, stability, overhangs, bridges, mesh closed or not), answer to the messages of the worker |
@@ -892,23 +895,24 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 
 **Purpose:** Cost Computation
 
-**Role:** Print cost calculation engine (material, energy, time).
+**Role:** Estimation of the print without slicing (Phase 12, ADR-037; DATA_SCHEMA.md 3.15.0, Cost Estimation Rules): time, layers, filament, costs. Pure functions, no state, no Electron (KI-024).
 
 **Contains:**
 
-- Material Cost Calculation
-- Energy Cost Estimation
-- Time Estimation
-- Total Cost Computation
+- Volumes of plastic (walls, top, bottom, infill)
+- Filament length and weight, filament cost
+- Print time and layer count
+- Electricity cost
+- Total cost and sum of several objects
 
 **Files:**
 
 | File | Role |
 |------|------|
-| `CostCalculator.ts` | Calculates the total print cost and cost ratios |
-| `EnergyEstimator.ts` | Estimates energy consumption and electricity cost |
-| `MaterialEstimator.ts` | Estimates material cost from the filament quantity |
-| `TimeEstimator.ts` | Estimates print time (hours to minutes conversion) |
+| `CostCalculator.ts` | Estimation of one object (estimateObject) and sum of several objects (sum): total = the known costs, null when both are missing (Q10 A); supports, brim and raft named, not counted (Q5 A). getMaterialCostRatio, getElectricityCostRatio and calculateTotalCost removed in lot 108 (Q16 A) |
+| `EnergyEstimator.ts` | Electricity: power (W) ÷ 1000 × time (h) × price of a kWh, rounded to the decimals of the currency; null without power or price |
+| `MaterialEstimator.ts` | Volumes of plastic from the volume and the areas of the faces (line width = nozzle × 1.1; shell at most the volume), length and weight of the filament, cost of the filament; roundAmount |
+| `TimeEstimator.ts` | Print time: length of the lines of each part at its speed × 1.5, at least the minimum layer time for each layer; layer count = height ÷ layer height, rounded up |
 
 ---
 
@@ -1043,6 +1047,8 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `TransformService.ts` | The only way to change the transform of an object (fields, actions, gizmos): refuses invalid values, places the object on the plate (except the live steps of a rotation with the gizmo), writes the object store; records each change for undo and redo (a gesture is one action), undo(), redo() (also of Delete and Duplicate through ObjectSnapshots, lot 100) groups of objects (moveGroup, rotateGroup, scaleGroup, setGroupSize, groupInfo); option actionType of applyMany: the orientations of the optimization recorded as one action OPTIMIZATION (Phase 11 lot 98); |
 | `ObjectEditService.ts` | Edit > Delete and Edit > Duplicate (lot 100): objects deleted as one history action DELETE; a copy of each object (new objectId, no analysis, Object Reference Rule 7, own geometry) placed as a block at a free place inside the plate, to the right of the group when free, otherwise the nearest one (lot 101, PlateLayout.findFreePlace; no free place or no printer: right of the group, 5 mm from it), selected, one action DUPLICATE; nothing during a gesture |
 | `ObjectStateService.ts` | Rename, Hide and Show, Lock and Unlock (lot 106): name given (trimmed, 100 characters, empty = file name), visibility and lock of objects, the line of the menu for the selection (Hide or Show, Lock or Unlock), Show All; one history action RENAME, VISIBILITY or LOCK each; nothing during a gesture |
+| `CostSettingsService.ts` | Cost settings (Phase 12 lot 108, USER_SETTINGS_SPEC.md 2.3.0): reads cost from settings.json, changes the currency, the electricity price, the power of a printer, the price of a filament (pricePerKg of a filament of the user through MaterialSelectionService, an entry of cost.filamentPrices for a shipped filament), saves cost as a whole (settings:update); parseCostField reads a value typed |
+| `CostEstimationService.ts` | Estimation of the objects (Phase 12 lot 108, ADR-037): for each object whose recommendation is up to date, with its volume, height and areas of the faces, the printer, the filament and the cost settings, through CostCalculator; computed again when one of them changes; written in estimationStore; totalOf (selection) and plateObjectIds (visible objects) |
 | `ArrangeService.ts` | Edit > Arrange, key A, button Arrange (lot 101): all the objects placed on the plate without contact (PlateLayout.arrangeLayout), X and Y only, selection kept, one history action ARRANGE; nothing during a gesture; hidden objects left out, locked objects left in place as obstacles (lot 106) |
 | `PlateCheckService.ts` | Plate Check (lot 101): the objects out of the build volume of the selected printer after every change of the objects or of the printer, written in plateCheckStore (live list during a gesture, reported list at its end); none without a printer |
 | `MaterialSelectionService.ts` | Materials and filaments of the window (Phase 8 lot 70): reads material:getAll and filament:getAll (checked with MaterialSchema and FilamentSchema), materials in the order of the families, filaments by brand and name; last material and filament selected again (material.autoloadLastMaterial); a filament selects its family, a material of another family clears the filament; each choice saved (settings:update); filament:add, update and remove (lot 71), then the filaments read again, the selected filament follows its update or is cleared |
@@ -1098,7 +1104,7 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | File | Role |
 |------|------|
 | `analysisStore.ts` | Zustand store for analysis state |
-| `analysisTaskStore.ts` | Zustand store of the computation of the analyses (Phase 9 lot 80): objects being analyzed or waiting, objects with a mesh not closed (ANA_002), messages ANA_001 and ANA_002, triangles beyond 45 degrees of the last analysis of each object (Overhang Display, lot 82); not saved |
+| `analysisTaskStore.ts` | Zustand store of the computation of the analyses (Phase 9 lot 80): objects being analyzed or waiting, objects with a mesh not closed (ANA_002), messages ANA_001 and ANA_002, triangles beyond 45 degrees of the last analysis of each object (Overhang Display, lot 82), areas of the faces of each object (Phase 12 lot 108); not saved |
 | `filamentStore.ts` | Zustand store for filaments (list and selection) |
 | `materialStore.ts` | Zustand store for materials (list and selection) |
 | `objectStore.ts` | Zustand store for 3D objects (list, selection of one or several objects, add, remove; several removed or put back at their place at once, lot 100) |
@@ -1110,6 +1116,8 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `importStore.ts` | Zustand store for the imports in progress (file, phase, progress, error code) |
 | `sceneStore.ts` | Zustand store for the 3D scene (scene of the project) |
 | `viewportStore.ts` | Zustand store for the viewport (projection, requested view preset, mode of the gizmo, lock of the scale, Overhang Display on or off, lot 82) |
+| `costSettingsStore.ts` | Zustand store of the cost settings (Phase 12 lot 108): currency, electricity price, powers, prices of the shipped filaments, as read from the preferences |
+| `estimationStore.ts` | Zustand store of the estimations (Phase 12 lot 108): estimation of each object, objects without volume; not saved |
 | `plateCheckStore.ts` | Zustand store of the Plate Check (lot 101): objects out of the build volume now (orange in the viewport) and at the end of the last gesture (message SCN_001, icon of the Object Panel); not saved |
 | `historyStore.ts` | Zustand store of undo and redo: two stacks of actions (UNDO_REDO_SPEC.md, History Entry Schema), 50 actions at most; types MOVE, ROTATE, SCALE and OPTIMIZATION (Phase 11 lot 98), DELETE and DUPLICATE (lot 100: the objects taken out or put back, ObjectSnapshot) |
 | `propertiesPanelStore.ts` | Zustand store of the open tab of the Properties Panel (lot 93): tab, Printer at start, chooseTab (lot 95) |
@@ -1169,6 +1177,7 @@ No other store keeps a copy of a selection.
 | File | Role |
 |------|------|
 | `AnalysisConstants.ts` | Analysis constants (score ranges, risk and confidence levels, object categories) |
+| `CostConstants.ts` | Numbers of the estimation (line width factor 1.1, 45 degrees, speed factor 1.5), the 8 currencies, the currency of each language, decimals of a currency, limits of a price and a power (Phase 12, ADR-037) |
 | `ApplicationConstants.ts` | Global application constants (name, version, language, theme, autosave) |
 | `MaterialConstants.ts` | Material constants (categories, warping risks, cooling ranges) |
 | `PresetConstants.ts` | Preset constants (categories, infill patterns, support types without organic, adhesion, layer heights) |
@@ -1264,7 +1273,7 @@ No other store keeps a copy of a selection.
 |------|------|
 | `Analysis.ts` | Types for 3D model analysis (geometry, mesh, stability, overhangs, bridges, thin walls) |
 | `Classification.ts` | Types for object classification (categories, confidence levels) |
-| `CostEstimation.ts` | Types for print cost estimation (filament, energy, time) |
+| `CostEstimation.ts` | Types of the estimation (Phase 12, DATA_SCHEMA.md 3.15.0): CostEstimation and PrintEstimation (null when not known), FaceAreas, NotCounted, ObjectEstimation, EstimationTotal |
 | `Filament.ts` | Types for filaments (brand, material, properties, price) |
 | `Material.ts` | Types for materials (temperature, cooling, parameters) |
 | `Notification.ts` | Types for user notifications (type, message, timestamp) |

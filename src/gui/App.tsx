@@ -64,6 +64,8 @@ import { DirectionProvider } from "@base-ui/react/direction-provider";
 
 import { formatQuantities } from "../i18n/NumberFormatter";
 import { AnalysisService } from "../services/AnalysisService";
+import { CostEstimationService } from "../services/CostEstimationService";
+import { CostSettingsService } from "../services/CostSettingsService";
 import { MaterialSelectionService } from "../services/MaterialSelectionService";
 import { PlateCheckService } from "../services/PlateCheckService";
 import { PrinterSelectionService } from "../services/PrinterSelectionService";
@@ -108,6 +110,7 @@ export default function App(): JSX.Element {
     void PrinterSelectionService.load();
     void MaterialSelectionService.load();
     void RecommendationService.loadPresets();
+    void CostSettingsService.load();
   }, []);
 
   useEffect(() => AnalysisService.start(), []);
@@ -115,6 +118,8 @@ export default function App(): JSX.Element {
   useEffect(() => RecommendationService.start(), []);
 
   useEffect(() => PlateCheckService.start(), []);
+
+  useEffect(() => CostEstimationService.start(), []);
 
   const header = (
     <header className="shrink-0">

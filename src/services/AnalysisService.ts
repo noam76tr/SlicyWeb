@@ -227,6 +227,7 @@ export function createAnalysisService(
       ...task.openMeshObjectIds,
       ...task.nonManifoldObjectIds,
       ...Object.keys(task.overhangTriangles),
+      ...Object.keys(task.faceAreas),
     ])) {
       if (!ids.has(objectId)) {
         useAnalysisTaskStore.getState().forgetObject(objectId);
@@ -372,6 +373,9 @@ export function createAnalysisService(
     useAnalysisTaskStore
       .getState()
       .setOverhangTriangles(object.objectId, result.overhangTriangles);
+    useAnalysisTaskStore
+      .getState()
+      .setFaceAreas(object.objectId, result.faceAreas);
     useAnalysisStore.getState().setAnalysis(analysis);
     useAnalysisTaskStore
       .getState()

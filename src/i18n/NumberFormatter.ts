@@ -141,3 +141,95 @@ export function formatQuantityRange(
 ): string {
   return formatQuantities([min, max], " – ", unit, language);
 }
+
+/**
+ * Language of the format of an amount: Hebrew is shown as English (left
+ * to right, symbol before the number), like every value with a unit
+ * (lot 89)
+ */
+function moneyLanguage(language: SupportedLanguage): SupportedLanguage {
+  return RIGHT_TO_LEFT.includes(language) ? "en" : language;
+}
+
+const moneyFormatters = new Map<string, Intl.NumberFormat>();
+
+function moneyFormatter(
+  currency: string,
+  digits: number,
+  language: SupportedLanguage,
+): Intl.NumberFormat {
+  const key = `${language}|${currency}|${digits}`;
+  let format = moneyFormatters.get(key);
+
+  if (!format) {
+    format = new Intl.NumberFormat(moneyLanguage(language), {
+      style: "currency",
+      currency,
+      currencyDisplay: "symbol",
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    });
+    moneyFormatters.set(key, format);
+  }
+
+  return format;
+}
+
+/**
+ * An amount in a currency (Phase 12, GUI_SPEC.md, Estimation Section):
+ * "1,01 €" in French, "€1.01" in English and in Hebrew (kept left to
+ * right); digits: decimals of the currency (0 for the yen)
+ */
+export function formatMoney(
+  value: number,
+  currency: string,
+  digits: number,
+  language: SupportedLanguage,
+): string {
+  const rounded = Math.round(value * 10 ** digits) / 10 ** digits;
+
+  return isolateValue(
+    moneyFormatter(currency, digits, language).format(
+      rounded === 0 ? 0 : rounded,
+    ),
+    language,
+  );
+}
+
+/** Symbol of a currency: "€", "$", "₪", "CHF"… */
+export function currencySymbol(
+  currency: string,
+  language: SupportedLanguage,
+): string {
+  return (
+    moneyFormatter(currency, 0, language)
+      .formatToParts(1)
+      .find((part) => part.type === "currency")?.value ?? currency
+  );
+}
+
+/**
+ * A print time (Phase 12): "2 h 35 min", "45 min", "< 1 min" under a
+ * minute; hours and minutes written as in English in every language, kept
+ * left to right in Hebrew (lot 89)
+ */
+export function formatDuration(
+  seconds: number,
+  language: SupportedLanguage,
+): string {
+  const minutes = Math.round(seconds / 60);
+
+  if (seconds < 60 && minutes < 1) {
+    return isolateValue("< 1 min", language);
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+
+  return isolateValue(
+    hours > 0
+      ? `${formatNumber(hours, language)} h ${formatNumber(rest, language)} min`
+      : `${formatNumber(rest, language)} min`,
+    language,
+  );
+}

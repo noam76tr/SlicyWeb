@@ -2,7 +2,7 @@
 
 # ARCHITECTURE DECISION MATRIX
 
-Version: 2.8.0
+Version: 2.9.0
 
 Status: Approved
 
@@ -184,6 +184,7 @@ Requires:
 | ADM-030 | Model Analysis Definitions and Methods | Analysis | High | Approved |
 | ADM-031 | Classification and Recommendation Rules | Recommendation | High | Approved |
 | ADM-032 | Orientation Optimization | Optimization | High | Approved |
+| ADM-033 | Cost Estimation | Cost Estimation | Medium | Approved |
 
 ---
 
@@ -933,6 +934,31 @@ Benefits:
 
 - Fewer supports and a lower tip risk, measured with the same definitions as the Analysis section
 - Undone with Ctrl+Z; no new stored field and no new IPC channel
+
+---
+
+ADM-033
+
+Title:
+
+Cost Estimation
+
+Decision:
+
+Phase 12 estimates, without slicing, the print time, the layer count, the length and the weight of the filament and the costs of each object whose recommendation is up to date: volumes of plastic from the areas of the faces (found by the Web Worker of the analysis), a line width of 1.1 x the nozzle, the settings of the recommendation, a speed factor of 1.5 and the minimum layer time; currency, price of a kWh, power of each printer and price of the shipped filaments in the preferences (block cost); a section Costs (Printer tab), a section Estimation (Settings tab) and the plate in the status bar; computed by itself, never stored; supports, brim, skirt and raft not counted.
+
+Rationale:
+
+The documents named the values without a method, a currency or a power; every number must be written, and checked against a slicer (OrcaSlicer) on the models of Noam before the closure.
+
+Reference:
+
+ADR-037 (DECISIONS.md)
+
+Benefits:
+
+- An estimation before the export, from data already computed
+- No new field in a project, no new IPC channel
 
 ---
 

@@ -152,6 +152,12 @@ test("keeps the language of a settings.json without printer", async ({
       defaultFilament: null,
       autoloadLastMaterial: true,
     },
+    cost: {
+      currency: "EUR",
+      electricityPrice: null,
+      printerPower: {},
+      filamentPrices: {},
+    },
   });
   expect(errors).toEqual([]);
 });
@@ -173,9 +179,7 @@ test("chooses a printer, shows its plate and keeps it", async ({ launch }) => {
     page.locator("div").filter({ hasText: en["printer.maxJerk"] }).last(),
   ).toContainText(en["printer.notPublished"]);
   await expect(
-    page.getByText(
-      en["viewport.plate"].replace("{size}", "256 × 256 mm"),
-    ),
+    page.getByText(en["viewport.plate"].replace("{size}", "256 × 256 mm")),
   ).toBeVisible();
   await expect(page.locator("footer")).toContainText("Bambu Lab X1 Carbon");
 
@@ -201,7 +205,7 @@ test("chooses a printer, shows its plate and keeps it", async ({ launch }) => {
   await expect(
     second.window.getByText(en["printer.noSelection"]),
   ).toBeVisible();
-  await expect(second.window.getByText(/^Plate:/)).toHaveCount(0);
+  await expect(second.window.getByText(/^Plate: \d/)).toHaveCount(0);
   const settings = (await second.window.evaluate(() =>
     window.slicyWeb.invoke("settings:get"),
   )) as Response;
@@ -335,9 +339,7 @@ test("enters a printer of the user, uses it and deletes it", async ({
   ).toHaveText(["Test Home"]);
   await selector.selectOption({ label: "Test Home" });
   await expect(
-    page.getByText(
-      en["viewport.plate"].replace("{size}", "180 × 170.5 mm"),
-    ),
+    page.getByText(en["viewport.plate"].replace("{size}", "180 × 170.5 mm")),
   ).toBeVisible();
   expect(first.errors).toEqual([]);
   await first.app.close();
@@ -395,7 +397,7 @@ test("enters a printer of the user, uses it and deletes it", async ({
   await expect(manager.getByText(en["printerManager.empty"])).toBeVisible();
   expect(fs.readdirSync(path.join(userDataDir, "printers"))).toEqual([]);
   await expect(again.getByLabel(en["printer.selector"])).toHaveValue("");
-  await expect(again.getByText(/^Plate:/)).toHaveCount(0);
+  await expect(again.getByText(/^Plate: \d/)).toHaveCount(0);
   expect(second.errors).toEqual([]);
 });
 

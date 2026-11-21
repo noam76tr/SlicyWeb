@@ -7,6 +7,8 @@
  * - USER_SETTINGS_SPEC.md
  */
 
+import type { Currency } from "../constants/CostConstants";
+
 export type Theme =
   | "dark"
   | "light"
@@ -55,6 +57,24 @@ export interface MaterialPreferences {
  * Tab of the Properties Panel (GUI_SPEC.md, Properties Tabs). Not stored
  * in the user preferences since lot 95 (DATA_SCHEMA.md 3.12.0).
  */
+/**
+ * Cost settings (DATA_SCHEMA.md 3.15.0, User Preferences Schema: cost;
+ * ADR-037, Q7 to Q10 A)
+ */
+export interface CostPreferences {
+  /** ISO 4217 code of the list of the Cost Section */
+  currency: Currency;
+
+  /** Price of a kWh in the currency, or null (not given) */
+  electricityPrice: number | null;
+
+  /** Average power of each printer, W, by printer id */
+  printerPower: Record<string, number>;
+
+  /** Price per kg of shipped filaments, by filament id */
+  filamentPrices: Record<string, number>;
+}
+
 export type PropertiesTab =
   | "printer"
   | "object"
@@ -70,4 +90,5 @@ export interface UserPreferences {
   printer: PrinterPreferences;
 
   material: MaterialPreferences;
+  cost: CostPreferences;
 }

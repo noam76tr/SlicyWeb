@@ -14,6 +14,8 @@
  * 8. open edges: meshClosed false = warning ANA_002 (non-blocking);
  *    non-manifold edges: meshManifold false = information ANA_005;
  * 9. the triangles beyond 45 degrees, for the display in red (lot 82);
+ *    the areas of the faces turned up, turned down and of the side, for
+ *    the estimation of Phase 12 (ADR-037);
  * 10. the classification (Phase 10 lot 85), on the same placed mesh, by
  *    the classifier given by the Web Worker of the analysis: this domain
  *    never imports the Classification Domain
@@ -46,9 +48,10 @@ import type {
   ThinWalls,
 } from "../types/Analysis";
 import type { Classification } from "../types/Classification";
+import type { FaceAreas } from "../types/CostEstimation";
 
 import { AnalysisError } from "./AnalysisError";
-import { analyzeGeometry } from "./GeometryAnalyzer";
+import { analyzeFaceAreas, analyzeGeometry } from "./GeometryAnalyzer";
 import {
   meshStatistics,
   placeVertices,
@@ -136,6 +139,13 @@ export interface ModelAnalysisResult {
   overhangTriangles: Uint32Array;
 
   /**
+   * Areas of the faces turned up, turned down and of the side, for the
+   * estimation of Phase 12 (ADR-037, Q2 A). Not part of the analysis
+   * (DATA_SCHEMA.md): never stored in a project.
+   */
+  faceAreas: FaceAreas;
+
+  /**
    * Automatic classification of the object (Phase 10 lot 85,
    * OBJECT_CLASSIFICATION_SPEC.md 1.2.0); null when no classifier was
    * given (the analysis alone).
@@ -195,6 +205,7 @@ export function analyzeModel(
     meshClosed: edges.open === 0,
     meshManifold: edges.nonManifold === 0,
     overhangTriangles: overhangTriangles(down),
+    faceAreas: analyzeFaceAreas(placed, welded.corners),
     classification: null,
   };
 

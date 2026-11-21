@@ -398,6 +398,9 @@ src/gui/
 │   ├── FilamentSection.tsx    = Filament section of the Properties Panel (Phase 8)
 │   ├── AnalysisSection.tsx    = Analysis section of the Properties Panel (Phase 9)
 │   ├── RecommendationSection.tsx = Recommendation section of the Properties Panel (Phase 10)
+│   ├── CostSection.tsx        = Costs section of the Printer tab: currency, prices, power (Phase 12)
+│   ├── EstimationSection.tsx  = Estimation section of the Settings tab (Phase 12)
+│   ├── estimationFormat.ts    = values of the estimation with "≈" and their unit (Phase 12)
 │   ├── profileRows.tsx        = rows of values of the Material and Filament sections (Phase 8)
 │   ├── TransformSection.tsx   = Transform section of the Properties Panel (Phase 6)
 │   ├── objectNames.ts         = display names of the objects: name given or file name, "cube (1)" (lot 106)
@@ -750,10 +753,10 @@ src/recovery/
 ```text
 src/cost_engine/
 
-├── CostCalculator.ts
-├── MaterialEstimator.ts
-├── EnergyEstimator.ts
-└── TimeEstimator.ts
+├── CostCalculator.ts          = estimation of one object and sum of several objects (Phase 12, ADR-037)
+├── MaterialEstimator.ts       = volumes of plastic without slicing, length, weight and cost of the filament (Phase 12)
+├── EnergyEstimator.ts         = cost of the electricity (Phase 12)
+└── TimeEstimator.ts           = print time and layer count (Phase 12)
 ```
 
 ---
@@ -801,6 +804,8 @@ src/services/
 ├── ObjectEditService.ts       = Edit > Delete and Edit > Duplicate, one history action each (lot 100), copy inside the plate (lot 101)
 ├── ObjectStateService.ts      = Rename, Hide and Show, Lock and Unlock, one history action each (lot 106)
 ├── ArrangeService.ts          = Edit > Arrange, one history action (lot 101)
+├── CostSettingsService.ts     = currency, prices and powers of the cost settings, saved in the preferences (Phase 12)
+├── CostEstimationService.ts   = estimation of the objects whose recommendation is up to date, sum of the plate (Phase 12)
 ├── PlateCheckService.ts       = objects out of the build volume, as soon as they go out (lot 101)
 ├── TransformService.ts        = the only way to change the transform of an object (Phase 6)
 ├── PrinterSelectionService.ts = printers of the window, last printer (Phase 7)
@@ -825,13 +830,15 @@ src/state/
 ├── printerStore.ts
 ├── materialStore.ts
 ├── analysisStore.ts
-├── analysisTaskStore.ts       = objects being analyzed, warnings and messages of the analysis (Phase 9), triangles beyond 45 degrees (lot 82)
+├── analysisTaskStore.ts       = objects being analyzed, warnings and messages of the analysis (Phase 9), triangles beyond 45 degrees (lot 82), areas of the faces (Phase 12)
 ├── recommendationStore.ts
 ├── recommendationTaskStore.ts = errors of the last generation of each recommendation (Phase 10), not saved
 ├── optimizationTaskStore.ts   = orientation search running, messages of the result (Phase 11), not saved
 ├── importStore.ts             = imports in progress and their result
 ├── historyStore.ts            = undo and redo stacks (Phase 6; Delete and Duplicate, lot 100; Arrange, lot 101)
 ├── plateCheckStore.ts         = objects out of the build volume (lot 101), not saved
+├── costSettingsStore.ts       = cost settings read from the preferences (Phase 12)
+├── estimationStore.ts         = estimations of the objects (Phase 12), not saved
 ├── propertiesPanelStore.ts    = open tab of the Properties Panel (lot 93)
 └── viewportStore.ts           = projection and view presets of the viewport, Overhang Display on or off (lot 82)
 ```
@@ -921,6 +928,7 @@ src/constants
 
 ├── AnalysisConstants.ts
 ├── ApplicationConstants.ts
+├── CostConstants.ts           = numbers of the estimation, currencies (Phase 12)
 ├── MaterialConstants.ts
 ├── PresetConstants.ts
 ├── PrinterConstants.ts
@@ -951,6 +959,8 @@ src/utils/
 tests/
 
 ├── unit/
+│   ├── cost_engine/
+│   │   └── CostEngine.test.ts = volumes, time, electricity, sum, areas of the faces (Phase 12)
 │   ├── electron/
 │   │   ├── MaterialIPC.test.ts = material:getAll, filament:* channels (Phase 8)
 │   │   └── PrinterIPC.test.ts = printer:* channels (Phase 7)
@@ -989,9 +999,10 @@ tests/
 │   ├── schemas/
 │   │   └── AnalysisSchema.test.ts = Complete Analysis Schema, classification null (Phase 9)
 │   ├── storage/
-│   │   └── SettingsStorage.test.ts = settings.json, printer, material and gui settings (Phases 7 and 8, lot 93)
+│   │   └── SettingsStorage.test.ts = settings.json, printer, material and gui settings (Phases 7 and 8, lot 93), cost (Phase 12)
 │   └── services/
 │       ├── Arrange.test.ts = Plate Check, Arrange, copy inside the plate (lot 101)
+│       ├── CostEstimation.test.ts = estimation of the objects, prices and powers, values typed in the Costs section (Phase 12)
 │       ├── AnalysisService.test.ts = automatic analysis, gesture, dropped computation, ANA_001, ANA_002, Tools menu (Phase 9)
 │       ├── GroupTransform.test.ts = several objects selected (Phase 6)
 │       ├── ObjectEdit.test.ts = Delete and Duplicate, undo and redo (lot 100)
@@ -1007,6 +1018,7 @@ tests/
     ├── fixtures.ts = starts the built application, test files, opens a tab of the Properties Panel
     ├── analysis.spec.ts = analysis shown after the import and a change of scale, ANA_002, Tools menu (Phase 9)
     ├── app.spec.ts = main window, languages, numbers in the format of the language
+    ├── estimation.spec.ts = Estimation section, Costs section, Plate in the status bar, amounts in three languages (Phase 12)
     ├── edit.spec.ts = Edit > Delete and Edit > Duplicate, Delete key, Ctrl+D, confirmation, undo (lot 100)
     ├── import.spec.ts = STL and 3MF import, refused files
     ├── object-state.spec.ts = Rename, Hide, Unhide All (Alt+H in three languages), Lock, click in the empty part of the Object Panel (lot 106)

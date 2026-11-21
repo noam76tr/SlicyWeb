@@ -1419,9 +1419,9 @@ Lot 93 (idea of Noam, 2026-11-07; PASSATION.md decision 90, answers Q1 to Q6 A):
 
 ```text
 Project            above the tabs, always visible (one line)
-Printer tab        Printer, Material, Filament
+Printer tab        Printer, Material, Filament, Costs (Phase 12)
 Object tab         Object, Transform, Analysis
-Settings tab       Print Preset, Recommendations
+Settings tab       Print Preset, Recommendations, Estimation (Phase 12)
 ```
 
 - Tabs: text only, on one line at the top of the panel (shadcn Tabs, Base UI); in right-to-left, the order is reversed (Printer on the right).
@@ -1631,7 +1631,29 @@ Cooling Overrides
 Retraction Profile
 ```
 
-Phase 8 (ADR-033 D9; lot 70): a selector of the filaments of the selected family (all the filaments when no material is selected), with "No filament" first, grouped by brand ("My filaments" first for the filaments of the user); choosing a filament also chooses its family. Then the brand, the color and the price per kg ("Not specified" when they are null, as for a shipped filament, a product line; lot 71), the temperature ranges of the manufacturer and its single values (manufacturerSettings, "Values of the manufacturer"); a value not published shows "Not published". Filament > Select Filament opens this selector; Filament > Manage Filaments and a "Manage…" button under the selector open the Filament Manager (lot 71). The last choice is kept in the settings.
+Phase 8 (ADR-033 D9; lot 70): a selector of the filaments of the selected family (all the filaments when no material is selected), with "No filament" first, grouped by brand ("My filaments" first for the filaments of the user); choosing a filament also chooses its family. Then the brand, the color and the price per kg ("Not specified" when they are null, as for a shipped filament, a product line; lot 71), the temperature ranges of the manufacturer and its single values (manufacturerSettings, "Values of the manufacturer"); a value not published shows "Not published". Filament > Select Filament opens this selector; Filament > Manage Filaments and a "Manage…" button under the selector open the Filament Manager (lot 71). The last choice is kept in the settings. Phase 12 (ADR-037, Q10 A): the price per kg is the one given in the Costs section for a shipped filament, shown with the currency of the preferences ("25,00 €", Estimation Section, number format).
+
+---
+
+# Cost Section
+
+Phase 12 (ADR-037; answers of Noam to lot 107, Q7 to Q11 A; USER_SETTINGS_SPEC.md 2.3.0, Cost Settings). Section "Costs" of the Printer tab, under Filament. It moves to the Preferences window when that window exists.
+
+```text
+Currency                       list: Euro (EUR), US dollar (USD), Israeli shekel (ILS),
+                               Pound sterling (GBP), Swiss franc (CHF), Canadian dollar (CAD),
+                               Australian dollar (AUD), Japanese yen (JPY)
+                               then the line "Changing the currency does not convert the prices already typed."
+Electricity price      €/kWh   field (symbol of the currency)
+Average power of the printer W field, for the selected printer ("Select a printer to give its power." without one)
+Price per kg of the filament €/kg field, for the selected filament ("Select a filament to give its price." without one)
+```
+
+- An empty field is "Not given" (placeholder): no value.
+- A value is kept when the field is left (Tab, a click elsewhere) or with Enter; Escape gives the saved value back. A comma is accepted as decimal separator; the value is shown with the decimal separator of the language.
+- A value refused (a price below 0 or above 1 000 000, a power of 0 or above 10 000 W, words) shows its error under the field, in red, and is not kept.
+- The price of a filament of the user is its field pricePerKg (the same as in the Filament Manager); the price of a shipped filament is kept in the preferences.
+- Each change computes the estimations again (Estimation Section).
 
 ---
 
@@ -1945,11 +1967,29 @@ Under "Details" (folded by default):
 
 Lot 88 details: the list Object type appears once the object has been analyzed (its classification exists), also without a printer or a material; before, the section shows only its status. "Classification confidence" is the level of the automatic classification, also when the user chose a category (the category chosen has the confidence 100). Colors of the warnings: critical in red, high and medium in orange (warning color), low in the color of the text, info in gray. The infill pattern, the support type and the adhesion are translated. REC_001 (in red) and REC_002 are shown in the section only. The Print Preset section and the status bar show "—" when no preset can be shown.
 
-
-
 ---
 
+# Estimation Section
 
+Phase 12 (ADR-037; answers of Noam to lot 107, Q6, Q10, Q12 and Q13 A; DATA_SCHEMA.md 3.15.0, Cost Estimation Rules). Section "Estimation" of the Settings tab, under Recommendations, for the selected objects:
+
+```text
+Print time          ≈ 2 h 35 min
+Layers              512
+Filament            ≈ 12.40 m · ≈ 37 g
+Filament cost       ≈ €0.93
+Electricity         ≈ €0.08
+Total               ≈ €1.01
+then the lines "… not counted" and the objects without an estimation
+```
+
+- Computed by itself as soon as the recommendation of the object is up to date, and again when a value of the Costs section changes; no menu, no button. While the recommendation is outdated or missing: "The estimation comes after the recommendation."; an object without volume (mesh not closed): "No estimation: the volume of the object cannot be measured (mesh not closed)."
+- Several selected objects: their sum (print times and values added, the highest layer count), with "Objects without an estimation: n" when some have none.
+- A value not known is "—": without a filament, the length, the weight and the filament cost, with "Select a filament for the weight and the cost."; without a price or a power, the cost concerned. The total counts the known costs and then says "Electricity not counted" or "Filament not counted"; "—" when both are missing.
+- "Supports not counted" when the recommendation enables the supports; "Brim not counted" or "Raft not counted" for that adhesion (a skirt is not named).
+- Format: "≈" before each estimated value; hours and minutes ("< 1 min" under a minute); meters with 2 decimals; whole grams (one decimal under 10 g); amounts with the decimals of the currency (0 for the yen) and its symbol, in the format of the language ("1,01 €" in French, "€1.01" in English); in Hebrew, as in English and kept left to right, as every value with a unit (Localization Support, Number Format).
+
+---
 
 # Notification Area
 
@@ -2019,6 +2059,8 @@ Selected Filament
 
 Active Preset
 
+Plate Estimation
+
 Current Language
 
 Project Status
@@ -2029,6 +2071,8 @@ Analysis Status (Phase 9, ADR-034 D7; lot 80): "Analyzing…" while an analysis 
 Phase 11 (ADR-036 D4): "Optimizing…" in the same place while an orientation search runs.
 
 Active Preset (Phase 10, ADR-035 D12): the preset of the recommendation of the selected object, "—" otherwise (same rule as the Print Preset section).
+
+Plate Estimation (Phase 12, ADR-037, Q12 A): "Plate: ≈ 5 h 10 min · ≈ 74 g · ≈ €2.02", the sum of the estimations of the visible objects (a hidden object is not counted, as at export); the weight and the total only when known; "(n without an estimation)" when a visible object has none yet; "—" when no object has one. This field is never shortened: the other fields are shortened first in a narrow window.
 
 
 

@@ -3,7 +3,7 @@
 # USER SETTINGS SPECIFICATION
 
 
-Version: 2.2.0
+Version: 2.3.0
 
 Status: Approved
 
@@ -57,6 +57,8 @@ Viewport
 Printer
 
 Material
+
+Cost
 
 AI
 
@@ -332,6 +334,45 @@ defaultMaterial: id of the last material (family) selected, or null (none select
 
 
 
+# Cost Settings
+
+
+
+```json
+
+{
+
+  "cost": {
+
+    "currency": "EUR",
+
+    "electricityPrice": null,
+
+    "printerPower": {},
+
+    "filamentPrices": {}
+
+  }
+
+}
+
+```
+
+Phase 12 (ADR-037; DATA_SCHEMA.md 3.15.0, User Preferences Schema; answers of Noam to lot 107, Q7 to Q11 A). Set in the Costs section of the Printer tab (GUI_SPEC.md, Cost Section), until a Preferences window exists; each value is saved when its field is left or with Enter:
+
+- currency: EUR, USD, ILS, GBP, CHF, CAD, AUD or JPY. At the first start (no cost in settings.json): EUR in French, ILS in Hebrew, USD in English; then only the choice of the user counts (a change of language does not change it). The prices typed before are not converted when it changes.
+- electricityPrice: price of a kWh in the currency, from 0 to 1 000 000; empty (null) = not given: no cost of electricity.
+- printerPower: average power of each printer while it prints, in W (above 0, at most 10 000), by printer id; given for the selected printer. A printer without a value has no cost of electricity.
+- filamentPrices: price per kg of a shipped filament (0 to 1 000 000), by filament id; given for the selected filament. A filament of the user keeps its price in its own field pricePerKg (Filament Manager, or the same field of the Costs section).
+
+A value refused (a negative price, a power of 0, words) shows its error under the field and is not saved.
+
+
+
+---
+
+
+
 # AI Settings
 
 
@@ -473,7 +514,7 @@ The language choice is saved at each change and restored at the next start.
 
 Old settings must migrate automatically.
 
-A settings.json without printer (written before DATA_SCHEMA.md 3.5.0) loads without error: theme, language and units are kept, printer takes its default value (defaultPrinter null, autoloadLastPrinter true, autoCheckProfiles true). A printer without autoCheckProfiles (written before DATA_SCHEMA.md 3.6.0) keeps its other fields, with autoCheckProfiles true. A settings.json without material (written before DATA_SCHEMA.md 3.7.0) loads in the same way, with defaultMaterial null, defaultFilament null and autoloadLastMaterial true. A settings.json written by lot 93 (DATA_SCHEMA.md 3.11.0), with gui (propertiesTab), loads without error: gui is ignored, every other setting is kept, and gui is no longer in the file after the next write; the Printer tab is open, as at every start (3.12.0, lot 95). An invalid field takes its default value; the other fields are kept.
+A settings.json without printer (written before DATA_SCHEMA.md 3.5.0) loads without error: theme, language and units are kept, printer takes its default value (defaultPrinter null, autoloadLastPrinter true, autoCheckProfiles true). A printer without autoCheckProfiles (written before DATA_SCHEMA.md 3.6.0) keeps its other fields, with autoCheckProfiles true. A settings.json without material (written before DATA_SCHEMA.md 3.7.0) loads in the same way, with defaultMaterial null, defaultFilament null and autoloadLastMaterial true. A settings.json written by lot 93 (DATA_SCHEMA.md 3.11.0), with gui (propertiesTab), loads without error: gui is ignored, every other setting is kept, and gui is no longer in the file after the next write; the Printer tab is open, as at every start (3.12.0, lot 95). A settings.json without cost (written before DATA_SCHEMA.md 3.15.0) loads without error, with the currency of its language, no price and no power; each entry of printerPower and filamentPrices is read on its own, an invalid one is left out (Phase 12, lot 108). An invalid field takes its default value; the other fields are kept.
 
 
 

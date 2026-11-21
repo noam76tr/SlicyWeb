@@ -964,7 +964,51 @@ Cost Calculation
 
 ```
 
+Phase 12 (lot 108, ADR-037; DATA_SCHEMA.md 3.15.0, Cost Estimation Rules):
 
+```text
+Cost engine (unit, tests/unit/cost_engine/CostEngine.test.ts):
+  volumes of a cube of 20 mm computed by hand (walls, top, bottom,
+    infill); a small object is full (shell at most its volume); length
+    and weight of the filament, none without a filament, no weight
+    without a density; filament cost rounded to the currency (0 decimals
+    for the yen), null without a price
+  layers: 20 mm in layers of 0.2 mm give 100; time of the lines at their
+    speeds x 1.5; minimum layer time for each layer
+  electricity: power x time x price, null without power or price
+  one object: time, filament, costs, total; the known cost alone in the
+    total, null when both are missing; time without a filament; supports,
+    brim and raft named, never a skirt; sum of several objects (times and
+    values added, highest layer count); same result for the same object
+  areas of the faces (analysis): faces up, down and side of a cube; same
+    areas with the corners in the other order; a face at 30 degrees from
+    the horizontal counted with the top
+
+Estimation service (unit, tests/unit/services/CostEstimation.test.ts):
+  estimated as soon as the recommendation is up to date; price given for
+    a shipped filament and power of the printer used; price of a filament
+    of the user from the filament; time without a filament; nothing while
+    the recommendation is outdated; nothing for an object without volume;
+    the plate counts the visible objects only
+  values typed in the Costs section: a price, a power, an empty field, a
+    comma; a negative price, a power of 0 and words refused; the currency
+    kept outside Electron, prices not converted
+
+Settings (unit, tests/unit/storage/SettingsStorage.test.ts): the block
+  cost by default (currency of the language) for a settings.json without
+  it; kept, each invalid value left out alone
+
+End to end (tests/e2e/estimation.spec.ts): a cube estimated by itself in
+  the Estimation section (time, layers, filament, "—" for the costs), then
+  the costs given in the Costs section (electricity price, power, price
+  per kg) counted in the total and in Plate of the status bar; a value
+  refused shows its error; amounts in the format of French, English and
+  Hebrew
+
+Manual (Noam, lot 108): the estimation against OrcaSlicer with the same
+  settings on 3 models of Noam: weight at most 15 % away, time at most
+  30 % away (ADR-037, Q4 A)
+```
 
 ---
 
