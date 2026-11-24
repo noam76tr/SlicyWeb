@@ -93,7 +93,9 @@ test("estimates the cube by itself, then counts the costs given", async ({
 
   // A power of 0 is refused, its error is shown
   await type(window, en["cost.printerPower"], "0");
-  await expect(costs.getByRole("alert")).toHaveText(en["cost.error.power"]);
+  await expect(costs.getByRole("alert")).toHaveText(
+    en["cost.error.power"].replace("{limit}", "10,000 W"),
+  );
 
   await type(window, en["cost.printerPower"], "120");
   await expect(costs.getByRole("alert")).toHaveCount(0);

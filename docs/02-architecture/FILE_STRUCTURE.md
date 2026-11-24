@@ -1019,6 +1019,7 @@ tests/
     ├── analysis.spec.ts = analysis shown after the import and a change of scale, ANA_002, Tools menu (Phase 9)
     ├── app.spec.ts = main window, languages, numbers in the format of the language
     ├── estimation.spec.ts = Estimation section, Costs section, Plate in the status bar, amounts in three languages (Phase 12)
+    ├── hebrew-units.spec.ts = in Hebrew, every number drawn at the left of its unit, on every screen (lot 109)
     ├── edit.spec.ts = Edit > Delete and Edit > Duplicate, Delete key, Ctrl+D, confirmation, undo (lot 100)
     ├── import.spec.ts = STL and 3MF import, refused files
     ├── object-state.spec.ts = Rename, Hide, Unhide All (Alt+H in three languages), Lock, click in the empty part of the Object Panel (lot 106)

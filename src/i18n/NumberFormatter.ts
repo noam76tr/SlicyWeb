@@ -143,9 +143,9 @@ export function formatQuantityRange(
 }
 
 /**
- * Language of the format of an amount: Hebrew is shown as English (left
- * to right, symbol before the number), like every value with a unit
- * (lot 89)
+ * Language of the format of an amount: Hebrew uses the digits and the
+ * symbols of English (formatMoney then writes the symbol after the
+ * number, lot 109)
  */
 function moneyLanguage(language: SupportedLanguage): SupportedLanguage {
   return RIGHT_TO_LEFT.includes(language) ? "en" : language;
@@ -177,8 +177,10 @@ function moneyFormatter(
 
 /**
  * An amount in a currency (Phase 12, GUI_SPEC.md, Estimation Section):
- * "1,01 €" in French, "€1.01" in English and in Hebrew (kept left to
- * right); digits: decimals of the currency (0 for the yen)
+ * "1,01 €" in French, "€1.01" in English; in Hebrew the number first,
+ * then the symbol, as every value with a unit: "1.01 €", "1.01 ₪", kept
+ * left to right (request of Noam, 2026-11-24, lot 109); digits: decimals
+ * of the currency (0 for the yen)
  */
 export function formatMoney(
   value: number,
@@ -187,11 +189,24 @@ export function formatMoney(
   language: SupportedLanguage,
 ): string {
   const rounded = Math.round(value * 10 ** digits) / 10 ** digits;
+  const amount = rounded === 0 ? 0 : rounded;
+
+  if (RIGHT_TO_LEFT.includes(language)) {
+    const parts = moneyFormatter(currency, digits, language).formatToParts(
+      amount,
+    );
+    const symbol =
+      parts.find((part) => part.type === "currency")?.value ?? currency;
+    const number = parts
+      .filter((part) => part.type !== "currency" && part.type !== "literal")
+      .map((part) => part.value)
+      .join("");
+
+    return isolateValue(`${number} ${symbol}`, language);
+  }
 
   return isolateValue(
-    moneyFormatter(currency, digits, language).format(
-      rounded === 0 ? 0 : rounded,
-    ),
+    moneyFormatter(currency, digits, language).format(amount),
     language,
   );
 }

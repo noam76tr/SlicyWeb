@@ -22,15 +22,22 @@
 
 import { X } from "lucide-react";
 
+import { formatQuantity } from "../../i18n/NumberFormatter";
 import { ImportService } from "../../services/ImportService";
 import { useImportStore, type ImportTask } from "../../state/importStore";
 import { useTranslation } from "../hooks/useTranslation";
 
 function useTaskText(): (task: ImportTask) => string {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   return (task) => {
-    const params = { name: task.fileName };
+    // Lot 109: the limits are values with a unit (number first in Hebrew)
+    const params = {
+      name: task.fileName,
+      limit: formatQuantity(1, t("unit.gigabyte"), language),
+      partLimit: formatQuantity(500, t("unit.megabyte"), language),
+      totalLimit: formatQuantity(1, t("unit.gigabyte"), language),
+    };
 
     switch (task.status) {
       case "waiting":

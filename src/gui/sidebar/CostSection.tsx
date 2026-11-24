@@ -26,8 +26,16 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 
-import { CURRENCIES, type Currency } from "../../constants/CostConstants";
-import { currencySymbol, formatFieldNumber } from "../../i18n/NumberFormatter";
+import {
+  COST_LIMITS,
+  CURRENCIES,
+  type Currency,
+} from "../../constants/CostConstants";
+import {
+  currencySymbol,
+  formatFieldNumber,
+  formatQuantity,
+} from "../../i18n/NumberFormatter";
 import {
   CostSettingsService,
   parseCostField,
@@ -147,7 +155,9 @@ function CostField({
       />
       {error && (
         <p id={`${id}-error`} className="text-destructive" role="alert">
-          {t(error)}
+          {t(error, {
+            limit: formatQuantity(COST_LIMITS.MAX_POWER_W, "W", language),
+          })}
         </p>
       )}
     </div>

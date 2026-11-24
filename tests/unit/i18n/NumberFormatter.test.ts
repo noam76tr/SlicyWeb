@@ -20,6 +20,7 @@ import { describe, expect, it } from "vitest";
 import {
   decimalSeparator,
   formatFieldNumber,
+  formatMoney,
   formatNumber,
   formatQuantities,
   formatQuantity,
@@ -98,5 +99,15 @@ describe("Number formatter", () => {
     expect(isolateValue("0.8 mm, 35 mm/s", "he")).toBe(
       `${LRI}0.8 mm, 35 mm/s${PDI}`,
     );
+  });
+
+  it("an amount: number then symbol in Hebrew, as in French (lot 109)", () => {
+    expect(formatMoney(1.01, "EUR", 2, "fr")).toMatch(/^1,01\s€$/);
+    expect(formatMoney(1.01, "EUR", 2, "en")).toBe("€1.01");
+    expect(formatMoney(1.01, "EUR", 2, "he")).toBe(`${LRI}1.01 €${PDI}`);
+    expect(formatMoney(25, "ILS", 2, "he")).toBe(`${LRI}25.00 ₪${PDI}`);
+    expect(formatMoney(1234.5, "USD", 2, "he")).toBe(`${LRI}1,234.50 $${PDI}`);
+    expect(formatMoney(1234.4, "JPY", 0, "he")).toBe(`${LRI}1,234 ¥${PDI}`);
+    expect(formatMoney(0.001, "EUR", 2, "he")).toBe(`${LRI}0.00 €${PDI}`);
   });
 });

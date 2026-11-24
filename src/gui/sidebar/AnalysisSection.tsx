@@ -42,6 +42,15 @@ import { useTranslation } from "../hooks/useTranslation";
 
 import { ProfileRow } from "./profileRows";
 
+/**
+ * Angle beyond which a face is an overhang (ADR-034, the same 45 degrees
+ * as the analysis), written in the text of the Overhangs row
+ */
+const OVERHANG_LIMIT_DEG = 45;
+
+/** Thickness under which a wall is thin (the same 0.8 mm as the analysis) */
+const THIN_WALL_LIMIT_MM = 0.8;
+
 interface AnalysisSectionProps {
   /** Selected objects */
   objectIds: string[];
@@ -152,6 +161,8 @@ export default function AnalysisSection({
               ? t("analysis.overhangsValue", {
                   angle: quantity(overhangs.maxAngle, "°"),
                   percent: quantity(overhangs.percentage, "%"),
+                  // Lot 109: the number before its unit in Hebrew too
+                  limit: quantity(OVERHANG_LIMIT_DEG, "°"),
                 })
               : none
           }
@@ -180,7 +191,11 @@ export default function AnalysisSection({
       </dl>
 
       {thinWalls.detected && (
-        <p className="text-warning">{t("analysis.thinWallsDetected")}</p>
+        <p className="text-warning">
+          {t("analysis.thinWallsDetected", {
+            limit: quantity(THIN_WALL_LIMIT_MM, "mm"),
+          })}
+        </p>
       )}
 
       <p className="font-medium text-foreground">{t("analysis.stability")}</p>

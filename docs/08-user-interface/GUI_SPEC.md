@@ -1987,7 +1987,7 @@ then the lines "… not counted" and the objects without an estimation
 - Several selected objects: their sum (print times and values added, the highest layer count), with "Objects without an estimation: n" when some have none.
 - A value not known is "—": without a filament, the length, the weight and the filament cost, with "Select a filament for the weight and the cost."; without a price or a power, the cost concerned. The total counts the known costs and then says "Electricity not counted" or "Filament not counted"; "—" when both are missing.
 - "Supports not counted" when the recommendation enables the supports; "Brim not counted" or "Raft not counted" for that adhesion (a skirt is not named).
-- Format: "≈" before each estimated value; hours and minutes ("< 1 min" under a minute); meters with 2 decimals; whole grams (one decimal under 10 g); amounts with the decimals of the currency (0 for the yen) and its symbol, in the format of the language ("1,01 €" in French, "€1.01" in English); in Hebrew, as in English and kept left to right, as every value with a unit (Localization Support, Number Format).
+- Format: "≈" before each estimated value; hours and minutes ("< 1 min" under a minute); meters with 2 decimals; whole grams (one decimal under 10 g); amounts with the decimals of the currency (0 for the yen) and its symbol, in the format of the language ("1,01 €" in French, "€1.01" in English); in Hebrew, the number first then the symbol, with the digits of English, kept left to right as every value with a unit: "1.01 €", "25.00 ₪" (lot 109; Localization Support, Number Format).
 
 ---
 
@@ -2552,6 +2552,7 @@ Values with a unit (lot 89, remark of Noam on lot 88, 2026-11-07):
 - A value with its unit is shown as in English and French in every language: the number, then the unit ("200 mm/s", "210 °C", "15 %", "8 cm³"; "45°" for an angle). The symbols of the units are the same in the three languages (mm, mm/s, °C, %, cm³, cm²).
 - In Hebrew, the value (with a range "190 – 230 °C" or several values "256 × 256 × 256 mm") is wrapped in a left-to-right isolate (U+2066 … U+2069), so that it is not shown "mm/s 200" or "230 – 190". English and French are not changed.
 - One place does it for the whole interface: NumberFormatter (formatQuantity, formatQuantities, formatQuantityRange, isolateValue). The labels of the fields ("Position (mm)") are not values and are not changed.
+- In Hebrew, the number is always drawn before its unit or its currency, at its left, as in French (request of Noam, 2026-11-24, lot 109): "25.00 €", "14 min", "4.5 g", "200 mm/s", "120 W". Amounts too (formatMoney: "1.01 €", not "€1.01"). A value written inside a sentence of a translation ("under 0.8 mm", "beyond 45°", "larger than 1 GB", "at most 10,000 W") is a parameter of the text, formatted by NumberFormatter, never typed in the translation. The units of a size of file are translated (MB and GB, Mo and Go in French). An end-to-end test in Hebrew measures, on every screen, that each number is drawn at the left of its unit.
 
 ---
 

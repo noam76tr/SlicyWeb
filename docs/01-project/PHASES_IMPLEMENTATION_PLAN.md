@@ -1905,13 +1905,13 @@ Reliability Maintained
 
 # COST ESTIMATION
 
-Status: In Progress (lot 108 delivered 2026-11-20, waiting for the checks of Noam)
+Status: Completed (2026-11-24, lot 109; closed by Noam after his checks of lot 108)
 
 Decisions (ADR-037, answers of Noam Q1 to Q16, 2026-11-20, all A; analysis of lot 107, LOT107-QUESTIONS.md; slicer of the comparison: OrcaSlicer):
 
 - Scope: for each object whose recommendation is up to date: print time, layer count, filament length and weight, cost of the filament, cost of the electricity, total; the sum of the visible objects of the plate; supports, brim, skirt and raft not counted; no warning for a long print; the optimization of time and material stays in Phase 15
 - Without slicing: line width = nozzle x 1.1; walls, top and bottom from the areas of the faces (Web Worker of the analysis); shell at most the volume; infill = the rest x infill density; time of the lines at the speeds of the recommendation x 1.5, at least the minimum layer time for each layer
-- Accuracy: at most 15 % on the weight and 30 % on the time against OrcaSlicer with the same settings, on 3 models of Noam; a larger gap: a new speed factor or line width proposed before the closure
+- Accuracy: first a target of 15 % on the weight and 30 % on the time (Q4 A); changed to Q4 C by Noam (2026-11-24): indicative estimation ("≈"), no target in numbers, speed factor 1.5 kept; accuracy of the time not measured (KI-032, Phase 14)
 - Costs: block cost of the User Preferences Schema (DATA_SCHEMA.md 3.15.0): currency (8, the one of the language at the first start, not converted), price of a kWh, power of each printer, price per kg of the shipped filaments; total = the known costs
 - Interface: section Costs (Printer tab), section Estimation (Settings tab), Plate in the status bar; computed by itself, no menu, no button
 - Nothing stored; WYPROJ 3.0.0 unchanged; 29 IPC channels; the four files of src/cost_engine/ rewritten, getMaterialCostRatio, getElectricityCostRatio and calculateTotalCost removed; KI-031 (Cost API of API_SPEC.md)
@@ -1920,12 +1920,21 @@ Order of the lots (one delivery for the whole phase, rule of the subjects of Noa
 
 - Lot 107: analysis (inventory, questions Q1 to Q16)
 - Lot 108: documentation, computation, interface, tests and one series of manual checks, with the comparison against OrcaSlicer on 3 models of Noam
-- Closure: with the checks of Noam; a new speed factor or line width only if a gap is larger than the target (with his answer)
+- Lot 109: closure; in Hebrew the number before its unit everywhere (request of Noam on check I of lot 108), Q4 C and KI-032
 
 Progress:
 
 - Analysis (lot 107, no CHANGELOG entry: analysis only)
-- Lot 108 (CHANGELOG 0.1.108): delivered, waiting for the checks of Noam
+- Lot 108 (CHANGELOG 0.1.108): checks of Noam (2026-11-24): H passed; I: units before their number in Hebrew (lot 109); J: one try against Cura, weight +12.5 %, time -42 % (minimum layer time 10 s in Cura against 5 s), Q4 changed to C
+- Lot 109 (CHANGELOG 0.1.109): Hebrew (amounts "0.12 €", values inside the texts formatted as parameters, end-to-end test on every screen), Q4 C, KI-032; Phase 12 Completed
+
+Validation result (checks of Noam on lot 108, 2026-11-24):
+
+- Filament Usage, Material Weight, Material Cost, Electricity Cost, Print Duration: shown for each object and for the plate (lot 108); the cube of 20 mm against Cura: weight +12.5 %, length +10 %, time -42 %
+- Values Consistent: the same result for the same object (unit tests); total = the known costs; the sum of several objects; check H (currency changed, values kept after a new start) passed
+- Hebrew: lot 109, end-to-end test on every screen
+
+Open issues after the closure: accuracy of the time not measured (KI-032, Phase 14); the Cost API of API_SPEC.md (KI-031); supports, brim and raft not counted; the cost settings move to the Preferences window when it exists. Next: Phase 13 (Project Persistence).
 
 
 

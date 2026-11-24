@@ -1005,9 +1005,21 @@ End to end (tests/e2e/estimation.spec.ts): a cube estimated by itself in
   refused shows its error; amounts in the format of French, English and
   Hebrew
 
-Manual (Noam, lot 108): the estimation against OrcaSlicer with the same
-  settings on 3 models of Noam: weight at most 15 % away, time at most
-  30 % away (ADR-037, Q4 A)
+Manual (Noam, lot 108): the estimation against a slicer with the same
+  settings (Q4 C, lot 109: one try, no target in numbers; accuracy of the
+  time not measured, KI-032, Phase 14)
+
+Values with a unit in Hebrew (lot 109):
+  unit (NumberFormatter.test.ts): formatMoney in Hebrew, number then
+    symbol ("1.01 €", "25.00 ₪", "1,234 ¥"), isolated left to right
+  end to end (tests/e2e/hebrew-units.spec.ts): in Hebrew, the three tabs
+    and their sections (Analysis of an object with overhangs and thin
+    walls, Recommendations with Details, Estimation of one and of three
+    objects), the error of a power refused, the status bar, the size of
+    the plate, the messages over the viewport, the menus, the Printer
+    Manager and the Filament Manager: every number followed by a unit is
+    measured, drawn at the left of its unit; a currency or a unit written
+    before its number is refused
 ```
 
 ---

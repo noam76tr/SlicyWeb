@@ -4074,7 +4074,7 @@ Release Type:
 Feature (Phase 12, Cost Estimation), Data Schema (User Preferences Schema: cost; rules of the Cost Estimation Schema and the Print Estimation Schema), Graphical User Interface (Costs section, Estimation section, Plate in the status bar)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-20
@@ -4118,7 +4118,50 @@ Date:
 ## Validation Result
 
 - Linux (2026-11-20): npm run check:locales 540 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 670 tests passed (669 + 1 skipped on Windows), npm run test:e2e 76 tests passed, npm run build
-- Windows 11 and manual checks (with the comparison against OrcaSlicer): waiting for Noam
+- Windows 11 (2026-11-24): lot 108 on GitHub (0b8be53, identical to the lot: 51 files) (Noam)
+- Manual checks (Noam, 2026-11-24): H passed; I: units before their number in some places in Hebrew, corrected by lot 109 for the whole interface; J: one try only, a cube of 20 mm on a BIQU B1 against Cura (SlicyWeb 14 min, 1.50 m, 4.5 g; Cura 24 min, 1.36 m, 4 g): weight +12.5 %, time -42 % (minimum layer time 10 s in Cura against 5 s); Q4 changed to C (lot 109)
+
+---
+
+# VERSION 0.1.109
+
+Release Type:
+Graphical User Interface (values with a unit in Hebrew), Closure of Phase 12 (Cost Estimation)
+
+Status:
+In Progress
+
+Date:
+2026-11-24
+
+## Added
+
+- Hebrew: every number is drawn before its unit or its currency, at its left, as in French (request of Noam on check I of lot 108, 2026-11-24; GUI_SPEC.md, Localization Support, Number Format; Estimation Section):
+  - amounts: "0.12 €", "25.00 ₪" instead of "€0.12" (formatMoney); English and French unchanged
+  - values written inside a text become parameters formatted by NumberFormatter: "Thin walls detected (under {limit})" (in Hebrew "0.8 מ״מ" was drawn unit first), "beyond {limit}" (45°), the errors IMP_002 and MF_004 ({limit}, {partLimit}, {totalLimit}: 1 GB, 500 MB), the error of a power refused ({limit}: 10,000 W)
+  - 2 keys in en, fr and he: unit.megabyte (MB, Mo, MB), unit.gigabyte (GB, Go, GB) (542 keys)
+- KNOWN ISSUES: KI-032 added (accuracy of the print time not measured)
+
+## Changed
+
+- ADR-037, Q4 changed to C (Noam, 2026-11-24): the estimation stays indicative ("≈"), without a target in numbers; the speed factor stays 1.5; one try only (cube of 20 mm on a BIQU B1 against Cura: weight +12.5 %, time -42 %, with a minimum layer time of 10 s in Cura against 5 s)
+- src/i18n/NumberFormatter.ts (formatMoney in Hebrew), src/gui/sidebar/AnalysisSection.tsx, src/gui/import/ImportStatus.tsx, src/gui/sidebar/CostSection.tsx
+- en.json, fr.json, he.json: analysis.thinWallsDetected, analysis.overhangsValue, import.error.IMP_002, import.error.MF_004, cost.error.power with a parameter (same texts in English and French)
+- DECISIONS.md (ADR-037, Q4 C), GUI_SPEC.md (Number Format, Estimation Section), PHASES_IMPLEMENTATION_PLAN.md (Phase 12 Completed), TEST_PLAN.md, FILE_STRUCTURE.md
+- PASSATION.md: decision 117
+- 0.1.108 Completed with the results of Noam
+- docs/lots/LOT109.md
+
+## Tests
+
+- tests/unit/i18n/NumberFormatter.test.ts (1 test): amounts in Hebrew, number then symbol
+- tests/e2e/estimation.spec.ts: the message of a power refused read with its value (10,000 W)
+- tests/e2e/hebrew-units.spec.ts (1 test, new): in Hebrew, every screen (three tabs, Analysis with overhangs and thin walls, Recommendations with Details, Estimation of one and three objects, error of a power refused, status bar, size of the plate, messages over the viewport, menus, Printer Manager, Filament Manager): each number followed by a unit is measured, drawn at the left of its unit; a currency or a unit before its number is refused (670 + 1 tests, 77 e2e)
+
+## Validation Result
+
+- Linux (2026-11-24): see LOT109.md
+- Windows 11 and the manual check in Hebrew: waiting for Noam
 
 ---
 
@@ -5119,6 +5162,20 @@ Issue: API_SPEC.md describes an HTTP Cost API (POST /api/cost/estimate, response
 Resolve Before: Implementation of an HTTP API
 
 Planned Resolution: Documentation lot: align the Cost API of API_SPEC.md on DATA_SCHEMA.md 3.15.0 (electricityCost, values null when not known), with the decision on the API_SPEC.md version (KI-007).
+
+---
+
+Identifier: KI-032
+
+Since: 0.1.109
+
+Affected Module: src/cost_engine/TimeEstimator.ts (speed factor 1.5), DECISIONS.md (ADR-037, Q4)
+
+Issue: The accuracy of the estimated print time is not measured. One try only (cube of 20 mm, BIQU B1, Cura): time -42 %, mostly from the minimum layer time (10 s in Cura, 5 s in the recommendation); the weight was +12.5 %. The estimation is indicative ("≈"), without a target in numbers (Q4 C, Noam, 2026-11-24).
+
+Resolve Before: Phase 14 - Target Slicer Export (technical plan)
+
+Planned Resolution: When the export writes the settings for the slicer, compare the estimation with the slicer on the same settings, automatically if possible, and adjust the speed factor (and the line width) with the answer of Noam.
 
 ---
 
