@@ -4129,7 +4129,7 @@ Release Type:
 Graphical User Interface (values with a unit in Hebrew), Closure of Phase 12 (Cost Estimation)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-24
@@ -4161,7 +4161,8 @@ Date:
 ## Validation Result
 
 - Linux (2026-11-24): see LOT109.md
-- Windows 11 and the manual check in Hebrew: waiting for Noam
+- Windows 11 (2026-11-24): lot 109 on GitHub (5ac819b, identical to the lot: 18 files); npm run check:locales 542 keys, npm run check:ipc 29 channels, npm run typecheck and npm run lint with no errors, npm test 670 passed + 1 skipped, npm run test:e2e 77 tests passed (Noam)
+- Manual check in Hebrew (Noam, 2026-11-24): lines 1 to 15 passed; Phase 12 closed
 
 ---
 
