@@ -38,6 +38,7 @@
 
 import * as THREE from "three";
 
+import { normalizeName } from "../constants/ObjectConstants";
 import { ObjectFactory } from "../object_manager/ObjectFactory";
 import { useObjectStore } from "../state/objectStore";
 import { usePrinterStore } from "../state/printerStore";
@@ -68,6 +69,12 @@ export interface ImportedMesh {
 
   /** mm² */
   surfaceArea: number;
+
+  /**
+   * Name of the object in its file (3MF attribute name; lot 111, Q21 A:
+   * KI-020); null or absent: the name made from the file name
+   */
+  name?: string | null;
 }
 
 /**
@@ -168,6 +175,10 @@ export function registerImportedObjects(
     geometry.computeBoundingSphere();
 
     const object = ObjectFactory.create(crypto.randomUUID(), fileName, fileType);
+
+    // The name of the object in a 3MF file (KI-020), as a name given by
+    // the user: trimmed, 100 characters at most (lot 111, Q21 A)
+    object.name = mesh.name ? normalizeName(mesh.name, fileName) : null;
 
     // Position of the center in the group (ADR-028 frame): the group stands
     // on the plate

@@ -2,7 +2,7 @@
 
 # UNDO REDO SPECIFICATION
 
-Version: 2.6.0
+Version: 2.7.0
 
 Status: Approved
 
@@ -249,6 +249,8 @@ Lot 100 (2.4.0, outside the phases, request of Noam): Delete and Duplicate are u
 Lot 101 (2.5.0, outside the phases, request of Noam): Arrange Objects is undoable (Arrange Actions).
 
 Lot 106 (2.6.0, outside the phases, decision 112 of Noam, Q17 A): Rename, Hide and Show, Lock and Unlock are undoable (Visibility Actions, Rename Actions).
+
+Phase 13 (2.7.0, ADR-038; lot 111, decision 119 of Noam, Q11 and Q15 A): New Project, Close Project, Open Project, a recent project, a project dropped and Recover empty the Undo / Redo history (Project Loading); Save and Save As do not change it (Project Saving). The place of the history at the save is kept: Undo or Redo back to that place removes the "modified" mark of the project (GUI_SPEC.md, File Menu).
 
 
 
@@ -923,6 +925,8 @@ but do not modify project data or scene state.
 
 Loading a WYPROJ project replaces the active workspace.
 
+Phase 13: the history is emptied when a project is opened (Open Project, a recent project, a project dropped, Recover) and at New Project and Close Project. The analyses and recommendations of the file are shown as they were saved; their computing is never recorded.
+
 Undo:
 
 ```text
@@ -952,6 +956,8 @@ Entire Workspace Replaced
 
 
 # Project Saving
+
+Phase 13: Save and Save As keep the history. The id of the last action of the history (its top) is kept at the save; the project is modified while the top differs from it, or while a change outside the history was made (import, printer, material, filament, type of object).
 
 
 

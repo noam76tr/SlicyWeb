@@ -200,10 +200,31 @@ async function readFilaments(bridge: Bridge): Promise<Filament[] | null> {
 
 /** Material of a family, among the loaded materials */
 function materialOfFamily(family: string): Material | null {
+  const store = useMaterialStore.getState();
+
   return (
-    useMaterialStore
-      .getState()
-      .materials.find((material) => material.category === family) ?? null
+    store.materials.find((material) => material.category === family) ??
+    (store.projectMaterial?.category === family ? store.projectMaterial : null)
+  );
+}
+
+/** A material of the list, or the material of the project (lot 111, Q3 A) */
+function findMaterial(materialId: string): Material | null {
+  const store = useMaterialStore.getState();
+
+  return (
+    store.materials.find((item) => item.id === materialId) ??
+    (store.projectMaterial?.id === materialId ? store.projectMaterial : null)
+  );
+}
+
+/** A filament of the list, or the filament of the project (lot 111, Q3 A) */
+function findFilament(filamentId: string): Filament | null {
+  const store = useFilamentStore.getState();
+
+  return (
+    store.filaments.find((item) => item.id === filamentId) ??
+    (store.projectFilament?.id === filamentId ? store.projectFilament : null)
   );
 }
 
@@ -235,6 +256,11 @@ async function followSelection(filaments: Filament[]): Promise<void> {
   }
 
   const current = filaments.find((item) => item.id === selected.id);
+
+  // The filament of the project stays chosen (lot 111, Q3 A)
+  if (!current && selected === useFilamentStore.getState().projectFilament) {
+    return;
+  }
 
   if (!current) {
     await MaterialSelectionService.selectFilament(null);
@@ -350,7 +376,11 @@ export const MaterialSelectionService = {
 
       const selected = useMaterialStore.getState().selectedMaterial;
       const material = selected
-        ? (materials.find((item) => item.id === selected.id) ?? null)
+        ? (materials.find((item) => item.id === selected.id) ??
+          // The material of the project stays chosen (lot 111, Q3 A)
+          (selected === useMaterialStore.getState().projectMaterial
+            ? selected
+            : null))
         : null;
 
       if (selected && !material) {
@@ -371,12 +401,7 @@ export const MaterialSelectionService = {
    * it belongs to this family.
    */
   async selectMaterial(materialId: string | null): Promise<void> {
-    const material =
-      materialId === null
-        ? null
-        : (useMaterialStore
-            .getState()
-            .materials.find((item) => item.id === materialId) ?? null);
+    const material = materialId === null ? null : findMaterial(materialId);
 
     if (materialId !== null && !material) {
       return;
@@ -404,9 +429,7 @@ export const MaterialSelectionService = {
       return;
     }
 
-    const filament = useFilamentStore
-      .getState()
-      .filaments.find((item) => item.id === filamentId);
+    const filament = findFilament(filamentId);
 
     if (!filament) {
       return;

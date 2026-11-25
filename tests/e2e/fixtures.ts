@@ -12,6 +12,8 @@
  * - app, window: the application started once for the test;
  * - files: writes test files (STL cube, text file) in a folder of the
  *   test;
+ * - at the end, the windows are destroyed before the application is
+ *   closed: a project modified would stop the close (lot 111);
  * - openTab(): opens a tab of the Properties Panel (lot 93); the Printer
  *   tab is open at start.
  *
@@ -133,6 +135,21 @@ export function cubeStl(name: string, size: number): string {
   return lines.join("\n");
 }
 
+/**
+ * Closes the application. A project modified stops a normal close ("Save
+ * the changes?", lot 111): the windows are destroyed first.
+ */
+export async function closeApp(app: ElectronApplication): Promise<void> {
+  await app
+    .evaluate(({ BrowserWindow }) => {
+      for (const window of BrowserWindow.getAllWindows()) {
+        window.destroy();
+      }
+    })
+    .catch(() => undefined);
+  await app.close();
+}
+
 export const test = base.extend<{
   userDataDir: string;
   launch: () => Promise<Started>;
@@ -171,7 +188,7 @@ export const test = base.extend<{
     });
 
     for (const app of running) {
-      await app.close().catch(() => undefined);
+      await closeApp(app).catch(() => undefined);
     }
   },
 

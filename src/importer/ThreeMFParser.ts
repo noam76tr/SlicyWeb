@@ -26,7 +26,11 @@
  *   merged into it, with their transforms (build item transform x
  *   component transforms);
  * - units (attribute unit of the root model) are converted to millimeters;
- * - the build item transforms are kept: the objects keep their layout.
+ * - the build item transforms are kept: the objects keep their layout;
+ * - the name of the object of each build item (attribute name, when it
+ *   is given) is kept: it becomes the name of the object (lot 111,
+ *   decision 119 of Noam, Q21 A: KI-020). The other metadata of the file
+ *   (author, date, application) are not kept.
  *
  * Security (SECURITY_SPEC.md, 3MF Validation, 3MF Rejection Conditions,
  * Archive Extraction Limits):
@@ -65,6 +69,9 @@ import { extractZipParts, readZipDirectory } from "./ZipReader";
 export interface ThreeMFObject extends TriangleData {
   /** Vertices of the meshes used by the object (shared vertices counted once per mesh use) */
   vertexCount: number;
+
+  /** Name of the object in the file (attribute name); null when none */
+  name: string | null;
 }
 
 export interface ThreeMFParseResult {
@@ -131,6 +138,8 @@ interface MeshData {
 
 interface ObjectDefinition {
   type: string;
+  /** Attribute name of the object, entities decoded; null when none */
+  name: string | null;
   mesh?: MeshData;
   components: Reference[];
 }
@@ -139,6 +148,37 @@ interface ModelPart {
   unit: string;
   objects: Map<string, ObjectDefinition>;
   build: Reference[];
+}
+
+/** The five entities of XML (entities are not processed by the parser) */
+const XML_ENTITIES: Record<string, string> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+};
+
+/**
+ * Text of an attribute: the entities of XML and the character references
+ * decoded, the control characters removed
+ */
+export function xmlText(value: string): string {
+  return value
+    .replace(/&(#x[0-9a-fA-F]+|#[0-9]+|[a-z]+);/g, (entity, body: string) => {
+      if (body.startsWith("#")) {
+        const code = body.startsWith("#x")
+          ? Number.parseInt(body.slice(2), 16)
+          : Number.parseInt(body.slice(1), 10);
+
+        return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : "";
+      }
+
+      return XML_ENTITIES[body] ?? entity;
+    })
+    .split("")
+    .filter((character) => character.charCodeAt(0) >= 32)
+    .join("");
 }
 
 function corrupted(message: string): ImportError {
@@ -253,7 +293,15 @@ export function parse3mf(
       counter,
     );
 
-    objects.push({ ...collector.data(), vertexCount: counter.vertices });
+    objects.push({
+      ...collector.data(),
+      vertexCount: counter.vertices,
+      name: resolve(
+        getModel(item.path ?? rootName),
+        item.objectId,
+        item.path ?? rootName,
+      ).name,
+    });
     built += triangles;
     onProgress(
       UNZIP_SHARE + XML_SHARE + ((1 - UNZIP_SHARE - XML_SHARE) * built) /
@@ -527,14 +575,14 @@ function parseModelPart(
   let components: Reference[] = [];
 
   /** Object being read: its tags follow its opening tag */
-  let current: { id: string; type: string } | undefined;
+  let current: { id: string; type: string; name: string | null } | undefined;
 
   const finishObject = (): void => {
     if (!current) {
       return;
     }
 
-    const { id, type } = current;
+    const { id, type, name: objectName } = current;
     const vertexCount = vertices.length / 3;
     let mesh: MeshData | undefined;
 
@@ -555,7 +603,7 @@ function parseModelPart(
       };
     }
 
-    model.objects.set(id, { type, mesh, components });
+    model.objects.set(id, { type, name: objectName, mesh, components });
 
     current = undefined;
     vertices = new FloatList();
@@ -617,7 +665,11 @@ function parseModelPart(
             throw corrupted(`Duplicate object id ${id} in ${name}.`);
           }
 
-          current = { id, type: attrs?.type ?? "model" };
+          current = {
+            id,
+            type: attrs?.type ?? "model",
+            name: attrs?.name === undefined ? null : xmlText(attrs.name),
+          };
           break;
         }
 

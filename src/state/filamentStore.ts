@@ -19,6 +19,17 @@ interface FilamentState {
 
   selectedFilament: Filament | null;
 
+  /**
+   * Filament of the project opened that is not in the list (lot 111,
+   * decision 119 of Noam, Q3 A): group "This project" of the selector,
+   * for this project only; null otherwise.
+   */
+  projectFilament: Filament | null;
+
+  setProjectFilament: (
+    filament: Filament | null
+  ) => void;
+
   setFilaments: (
     filaments: Filament[]
   ) => void;
@@ -45,6 +56,13 @@ export const useFilamentStore =
     userFilamentIds: [],
 
     selectedFilament: null,
+
+    projectFilament: null,
+
+    setProjectFilament: (filament) =>
+      set({
+        projectFilament: filament
+      }),
 
     setFilaments: (filaments) =>
       set({

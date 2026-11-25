@@ -2,6 +2,10 @@
  * SlicyWeb
  * Storage Manager Definition
  *
+ * Phase 13 (lot 111, Q22 A and answer of Noam): ProjectStorage (a project
+ * kept in memory, never used) is removed with its three methods; projects
+ * are read and written by ProjectManager (src/project/).
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
@@ -9,10 +13,8 @@
  * - USER_SETTINGS_SPEC.md (Storage Location)
  */
 
-import type { Project } from "../types/Project";
 import type { UserPreferences } from "../types/UserPreferences";
 
-import { ProjectStorage } from "./ProjectStorage";
 import { CacheStorage } from "./CacheStorage";
 import type { SettingsStorage } from "./SettingsStorage";
 
@@ -26,28 +28,8 @@ export class StorageManager {
     private readonly settingsStorage: SettingsStorage | null = null,
   ) {}
 
-  private readonly projectStorage =
-    new ProjectStorage();
-
   private readonly cacheStorage =
     new CacheStorage();
-
-  public saveProject(
-    project: Project
-  ): void {
-    this.projectStorage.save(
-      project
-    );
-  }
-
-  public loadProject():
-    Project | null {
-    return this.projectStorage.load();
-  }
-
-  public clearProjects(): void {
-    this.projectStorage.clear();
-  }
 
   public saveCache(
     key: string,

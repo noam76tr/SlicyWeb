@@ -8,6 +8,10 @@
  * are accepted: invoke() rejects any other channel, send() and on()
  * throw an error. on() returns a function that removes its listener.
  *
+ * getPathForFile() gives the path of a file dropped on the window (a
+ * .wyproj project, project:openPath; lot 111, Q15 and Q20 A); "" when the
+ * file has no path.
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - TECH_STACK.md
@@ -18,6 +22,7 @@
 import {
   contextBridge,
   ipcRenderer,
+  webUtils,
   type IpcRendererEvent,
 } from "electron";
 
@@ -78,6 +83,14 @@ contextBridge.exposeInMainWorld(
       );
     },
 
+    getPathForFile: (file: File): string => {
+      try {
+        return webUtils.getPathForFile(file);
+      } catch {
+        return "";
+      }
+    },
+
     on: (
       channel: string,
       callback: (
@@ -122,6 +135,7 @@ declare global {
       send: (channel: string, data?: unknown) => void;
       invoke: (channel: string, data?: unknown) => Promise<unknown>;
       on: (channel: string, callback: (data: unknown) => void) => () => void;
+      getPathForFile: (file: File) => string;
     };
   }
 }

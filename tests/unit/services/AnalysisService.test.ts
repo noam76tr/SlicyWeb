@@ -222,6 +222,7 @@ beforeEach(() => {
     openMeshObjectIds: [],
     messages: [],
     overhangTriangles: {},
+    faceAreas: {},
   });
   h = harness();
   stop = h.service.start();
@@ -495,6 +496,59 @@ describe("AnalysisService (Phase 9 lot 80, ADR-034 D7)", () => {
     await settle(h);
     expect(h.calls).toHaveLength(2);
     expect(analysisOf("a").status).toBe("generated");
+  });
+
+  it("an analysis up to date read from a project is not changed: only the overhangs and the areas of the faces are computed (lot 111, Q7 A)", async () => {
+    // The analysis of the object, as saved in a project file
+    addObject(h, "a", box(20, 10, 30));
+    await settle(h);
+    const saved = {
+      ...analysisOf("a"),
+      // A value the computation would not give: it must stay
+      thinWalls: { detected: true, minimumThickness: 1.5 },
+    };
+
+    // The project is opened: the analysis first, then the object
+    useObjectStore.getState().clearObjects();
+    useAnalysisStore.getState().clearAnalysis();
+    useAnalysisTaskStore.setState({ overhangTriangles: {}, faceAreas: {} });
+    await settle(h);
+    h.calls.length = 0;
+
+    useAnalysisStore.setState({ analysis: { a: saved } });
+    addObject(h, "a", box(20, 10, 30));
+    await settle(h);
+
+    expect(h.calls).toHaveLength(1);
+    expect(analysisOf("a")).toBe(saved);
+    expect(useAnalysisTaskStore.getState().overhangTriangles.a).toBeInstanceOf(
+      Uint32Array,
+    );
+    expect(useAnalysisTaskStore.getState().faceAreas.a).toBeDefined();
+
+    // Once computed, nothing more
+    h.service.analyzeModels();
+    await settle(h);
+    expect(h.calls).toHaveLength(1);
+  });
+
+  it("an outdated analysis read from a project is computed again in full", async () => {
+    addObject(h, "a", box(10, 10, 10));
+    await settle(h);
+    const saved = { ...analysisOf("a"), status: "outdated" as const };
+
+    useObjectStore.getState().clearObjects();
+    useAnalysisStore.getState().clearAnalysis();
+    await settle(h);
+    h.calls.length = 0;
+
+    useAnalysisStore.setState({ analysis: { a: saved } });
+    addObject(h, "a", box(10, 10, 10));
+    await settle(h);
+
+    expect(h.calls).toHaveLength(1);
+    expect(analysisOf("a").status).toBe("generated");
+    expect(analysisOf("a").analysisId).toBe(saved.analysisId);
   });
 
   it("stops watching the scene when stopped", async () => {

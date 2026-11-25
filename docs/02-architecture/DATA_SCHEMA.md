@@ -1,6 +1,6 @@
 # DATA SCHEMA
 
-Version: 3.15.0
+Version: 3.16.0
 
 Status: Approved
 
@@ -950,6 +950,25 @@ A file with another version, or without a version, is refused at load (ERROR_COD
 
 No migration exists from WYPROJ 2.0.0: no 2.0.0 file was distributed.
 
+Phase 13 (3.16.0, lot 111, ADR-038; PASSATION.md decision 119 of Noam, Q1 to Q22 A):
+
+```text
+container  exactly format, version, project and metadata; any other
+           field refuses the file (PROJ_002)
+metadata   { "application": "SlicyWeb Smart Slicer" }; author is
+           optional, never written by SlicyWeb (Q21 A), accepted when a
+           file has it (text)
+version    stays 3.0.0 (Q5 A): no WYPROJ file was ever written before
+           phase 13, so meshData (Object Schema) and the scene without
+           its selections (Scene Schema) break no file
+future     a file of an older version is opened through a conversion,
+           written with the version that changes the format; a file of
+           a newer version is refused with PROJ_003 ("created by a newer
+           version of SlicyWeb")
+size       a file larger than 500 MB is refused before it is read
+           (PROJ_005)
+```
+
 ---
 
 # Project Schema
@@ -971,10 +990,10 @@ Represents an entire workspace.
   "settings": {},
   "analysis": {},
   "recommendations": {},
-  "preset": {},
-  "printer": {},
-  "material": {},
-  "filament": {}
+  "preset": null,
+  "printer": null,
+  "material": null,
+  "filament": null
 }
 
 ```
@@ -1010,13 +1029,27 @@ A new project starts with these four fields set to null.
 
 null means "not yet selected". It never means "unknown" or "invalid".
 
-Known Duplication:
+Source Of Truth (3.16.0, lot 111, ADR-038, Q3 and Q4 A; ends the Known Duplication of 3.15.0 and PASSATION.md decision 4):
 
-The four selections (printer, material, filament, preset) exist both in the Project Schema and in the Scene Schema.
+```text
+printer    a full copy of the selected printer (Complete Printer Schema),
+           or null
+material   a full copy of the selected material (Complete Material
+           Schema), or null
+filament   a full copy of the selected filament (Filament Schema), or
+           null; when material is not null, filament.material equals
+           material.category
+preset     always null: the preset is chosen for each object, in its
+           recommendation (Phase 10)
+settings   always {} (no setting of its own yet); any field is refused
+scene      its objects only (Scene Schema)
+```
 
-This duplication is known and is not resolved yet.
+At opening (Q3 A): a profile of the same id in the lists of the user, identical to the copy, is selected; a profile of the same id that changed is selected and the recommendations become outdated (rule 11), with a message; an id missing from the lists selects the copy of the project, for this project only (group "This project" of the selector, GUI_SPEC.md), with a message. Opening a project never changes the choices kept in the User Preferences Schema.
 
-A later change must define which of the two is the source of truth.
+Validation (3.16.0): the Project Schema is strict; an unknown field, a duplicate objectId, a filament of another family than the material, or a reference that breaks Object Reference Rules 3 to 5 refuses the file (PROJ_002).
+
+Not saved (Q6 A): the selection of the objects, the camera, the open tab, the display of the overhangs, the history of Undo and Redo, the estimations and the costs.
 
 
 
@@ -1034,15 +1067,7 @@ A later change must define which of the two is the source of truth.
 
  "scene": {
 
-   "objects": [],
-
-   "printer": {},
-
-   "material": {},
-
-   "filament": {},
-
-   "preset": {}
+   "objects": []
 
  }
 
@@ -1050,13 +1075,7 @@ A later change must define which of the two is the source of truth.
 
 ```
 
-Selection Fields:
-
-scene.printer, scene.material, scene.filament and scene.preset are null while no selection has been made.
-
-null means "not yet selected". It never means "unknown" or "invalid".
-
-The same four selections also exist in the Project Schema (see Known Duplication in the Project Schema).
+3.16.0 (lot 111, ADR-038, Q4 A): the scene holds its objects only. scene.printer, scene.material, scene.filament and scene.preset are removed: the selections are those of the Project Schema (Source Of Truth). No WYPROJ file was ever written with them; a file that has them is refused (unknown field, PROJ_002).
 
 
 
@@ -1111,6 +1130,53 @@ locked    true: the position, the rotation and the scale of the object
           and Optimize Orientation leave it as it is). It can still be
           deleted, duplicated, renamed and hidden.
 ```
+
+Object In A Project File (3.16.0, lot 111, ADR-038, Q2 A):
+
+```json
+
+{
+
+ "objectId": "",
+
+ "fileName": "",
+
+ "name": null,
+
+ "fileType": "stl",
+
+ "visible": true,
+
+ "locked": false,
+
+ "transform": {},
+
+ "geometry": {},
+
+ "mesh": { "vertices": 0, "triangles": 0 },
+
+ "meshData": ""
+
+}
+
+```
+
+```text
+transform  Transform Schema
+geometry   Model Geometry Schema
+mesh       Mesh Statistics Schema; triangles from 1 to 20 000 000
+fileType   "stl" or "3mf"
+meshData   the triangles of the object: 9 numbers per triangle (the
+           3 vertices x, y, z), in millimeters, in the coordinate system
+           of the object (relative to its local origin, Transform Rules),
+           as 32-bit floating point numbers, little-endian, written in
+           base64 (RFC 4648, padded). Its length is the one of
+           mesh.triangles x 36 bytes. Every value must be a finite
+           number. The normals are not written: they are computed again
+           at opening.
+```
+
+Every field is required; any other field refuses the file (PROJ_002). Size: about 48 MB for an object of 1 000 000 triangles.
 
 
 
@@ -2019,6 +2085,8 @@ Reference: ADR-026
 10. An outdated analysis or recommendation must be recomputed before any export. Export is blocked for an object whose recommendation is missing or outdated (SLICER_EXPORT_SPEC.md, error EXP_003). A hidden object (visible false, 3.14.0) is not exported and does not block the export.
 
 11. Selection Change (3.10.0, ADR-035 D11): when the selected printer, material or filament changes, the recommendations of all the objects become outdated; when the category chosen for an object changes (classification.source), the recommendation of this object becomes outdated. They are generated again at once when an analysis up to date, a printer and a material exist; otherwise they stay outdated. The analyses do not change.
+
+12. Project Opening (3.16.0, lot 111, ADR-038, Q7 A): the analyses and the recommendations of a project file are shown as saved, with their status. An analysis up to date is not computed again: only what the file does not hold (triangles beyond 45 degrees, areas of the faces, mesh not closed) is computed, without changing it. An outdated analysis is computed again (rule 9). A recommendation is generated again only when it is outdated, or when the printer, the material or the filament differs from the copy of the project (rule 11).
 ```
 
 
@@ -2402,6 +2470,20 @@ The index is refused, and no profile is used, when one of these rules fails, whe
 
      "filamentPrices": {}
 
+   },
+
+   "project": {
+
+     "autoSave": true,
+
+     "autoSaveInterval": 300
+
+   },
+
+   "files": {
+
+     "recentProjects": []
+
    }
 
  }
@@ -2409,6 +2491,10 @@ The index is refused, and no profile is used, when one of these rules fails, whe
 }
 
 ```
+
+project (3.16.0, lot 111, ADR-038, Q18 A; USER_SETTINGS_SPEC.md Project Settings): autoSave is a boolean, true by default: a copy of the project modified is written in the recovery folder of the user data folder (never in the file of the user). autoSaveInterval is the time between two copies, in seconds, an integer from 5 to 3600, 300 by default. Each field is read on its own; an invalid one takes its default value. Not shown in the GUI yet (Preferences window, later).
+
+files (3.16.0, lot 111, Q17 A; USER_SETTINGS_SPEC.md File Settings): recentProjects is the list of the paths of the last projects opened or saved, the most recent first, 10 at most, without repeats (texts of 1 to 4096 characters; an invalid entry is left out). Written by the main process only: settings:update refuses files.
 
 
 printer (3.5.0, ADR-032, USER_SETTINGS_SPEC.md Printer Settings): defaultPrinter is the id of the last printer selected, or null when none was selected (null = not chosen yet, as for the selections of the Project Schema); when autoloadLastPrinter is true, this printer is selected again at startup. A defaultPrinter that is no longer in the printer database is ignored (no printer selected).

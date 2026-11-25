@@ -49,6 +49,9 @@
  *   the name of the tab then says "critical warning" to a screen reader.
  * - The tabs stay mounted and each one keeps its own scroll position.
  *
+ * Lot 111 (Phase 13, Q12 A): the Project line shows the name of the
+ * project ("Untitled" before the first save), then "modified" when it is.
+ *
  * No business logic.
  *
  * Based on:
@@ -62,6 +65,7 @@ import { formatNumber } from "../../i18n/NumberFormatter";
 import { PropertiesTabSchema } from "../../schemas/UserPreferencesSchema";
 import { PropertiesTabService } from "../../services/PropertiesTabService";
 import { useObjectStore } from "../../state/objectStore";
+import { useIsModified, useProjectStore } from "../../state/projectStore";
 import { usePropertiesPanelStore } from "../../state/propertiesPanelStore";
 import { useRecommendationStore } from "../../state/recommendationStore";
 import type { PropertiesTab } from "../../types/UserPreferences";
@@ -72,6 +76,7 @@ import {
   TabsTrigger,
 } from "../components/ui/tabs";
 import { useTranslation } from "../hooks/useTranslation";
+import { projectDisplayName } from "../project/projectFormat";
 
 import AnalysisSection from "./AnalysisSection";
 import CostSection from "./CostSection";
@@ -157,6 +162,9 @@ export default function RightSidebar(): JSX.Element {
     ) ?? false;
 
   const noObject = t("object.noSelection");
+  // Project line (lot 111, Q12 A): its name, and "modified"
+  const projectName = useProjectStore((state) => state.projectName);
+  const modified = useIsModified();
   const settingsLabel = t("properties.tab.settings");
 
   return (
@@ -166,9 +174,14 @@ export default function RightSidebar(): JSX.Element {
         data-properties-project
       >
         <span className="text-sm font-semibold">{t("project.title")}</span>
-        <span className="truncate text-muted-foreground">
-          {t("project.none")}
+        <span className="truncate text-muted-foreground" dir="auto">
+          {projectDisplayName(projectName, t("project.untitled"))}
         </span>
+        {modified && (
+          <span className="shrink-0 text-[0.7rem] text-muted-foreground">
+            {t("project.modified")}
+          </span>
+        )}
       </div>
 
       <Tabs

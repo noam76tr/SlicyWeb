@@ -3,7 +3,8 @@
  * WYPROJ Exporter
  *
  * Responsible for:
- * - WYPROJ file creation
+ * - WYPROJ file creation (fields in the order of DATA_SCHEMA.md,
+ *   ProjectSerializer)
  * - Project serialization to WYPROJ format
  * - Blob generation for download
  * - Safe filename generation
@@ -20,13 +21,21 @@
 
 import type { Project } from "../types/Project";
 
+import { ProjectSerializer } from "./ProjectSerializer";
+
 /**
- * WYPROJ file metadata (IMPORT_EXPORT_SPEC.md, Metadata).
+ * WYPROJ file metadata (IMPORT_EXPORT_SPEC.md 3.2.0, Metadata): author is
+ * never written (lot 111, decision 119 of Noam, Q21 A: SlicyWeb does not
+ * know the name of the user, and a file sent to someone must not hold it
+ * without the user knowing); a file that has it is still read.
  */
 export interface WYPROJMetadata {
   application: string;
   author?: string;
 }
+
+/** Name of the application in metadata */
+export const WYPROJ_APPLICATION = "SlicyWeb Smart Slicer";
 
 export interface WYPROJFile {
   format: "WYPROJ";
@@ -58,9 +67,9 @@ export class WYPROJExporter {
     return {
       format: "WYPROJ",
       version: project.version,
-      project,
+      project: new ProjectSerializer().normalize(project),
       metadata: {
-        application: "SlicyWeb Smart Slicer",
+        application: WYPROJ_APPLICATION,
       },
     };
   }

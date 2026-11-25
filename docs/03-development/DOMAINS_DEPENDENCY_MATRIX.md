@@ -2,7 +2,7 @@
 
 # DOMAINS DEPENDENCY MATRIX
 
-Version: 2.1.0
+Version: 2.2.0
 
 Status: Approved
 
@@ -692,6 +692,8 @@ Access Remote Sources
 Access Storage Directly
 ```
 
+Phase 13 (2.2.0, ADR-038): ProjectIPC uses the Project Management Domain as its service in the main process (ProjectManager, AutoSaveService, RecoveryManager), as PresetIPC uses PresetLoader. The list of recent projects (RecentProjectsStorage, files.recentProjects of settings.json) is given to ProjectIPC at its creation by main.ts, as SettingsIPC is given its storage through StorageService: ProjectIPC only calls its add, remove, list and clear.
+
 ---
 
 # REPOSITORY DOMAIN
@@ -903,7 +905,12 @@ Can Depend On:
 Storage Domain
 Validation Domain
 Scene Domain
+Analysis Domain (data only)
+Recommendation Domain (data only)
+Profiles Domain (data only)
 ```
+
+Phase 13 (2.2.0; DECISIONS.md, ADR-038; decision 119 of Noam, Q22 A): Project Management reads and writes the analyses, the recommendations and the copies of the printer, material and filament profiles of a project (their schemas and types), and never computes them: the analysis, the recommendation and the selection of the profiles stay in their domains.
 
 Cannot Depend On:
 

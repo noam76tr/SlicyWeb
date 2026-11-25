@@ -16,6 +16,17 @@ interface MaterialState {
 
   selectedMaterial: Material | null;
 
+  /**
+   * Material of the project opened that is not in the list (lot 111,
+   * decision 119 of Noam, Q3 A): group "This project" of the selector,
+   * for this project only; null otherwise.
+   */
+  projectMaterial: Material | null;
+
+  setProjectMaterial: (
+    material: Material | null
+  ) => void;
+
   setMaterials: (
     materials: Material[]
   ) => void;
@@ -36,6 +47,13 @@ export const useMaterialStore =
     materials: [],
 
     selectedMaterial: null,
+
+    projectMaterial: null,
+
+    setProjectMaterial: (material) =>
+      set({
+        projectMaterial: material
+      }),
 
     setMaterials: (materials) =>
       set({

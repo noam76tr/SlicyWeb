@@ -12,8 +12,9 @@
  * analysis of the selected object; "Optimizing…" while an orientation
  * search runs (Phase 11 lot 98, ADR-036 D4). Active Preset (Phase 10 lot
  * 88, ADR-035 D12): the preset of the recommendation of the selected object, "—"
- * otherwise (same rule as the Print Preset section). Project Status shows "None" until
- * the project state is available to the GUI. Plate Estimation (Phase 12,
+ * otherwise (same rule as the Print Preset section). Project Status (Phase 13, lot 111,
+ * Q10 and Q12 A): "Saving…", "Project saved" for a few seconds, then
+ * "Modified", "Saved at 14:32", "Opened" or "Not saved". Plate Estimation (Phase 12,
  * ADR-037, Q12 and Q13 A): sum of the estimations of the visible objects
  * (a hidden object is not counted, as at export): print time, weight and
  * total cost when known; "(n without an estimation)" when a visible object
@@ -39,8 +40,10 @@ import { useMaterialStore } from "../../state/materialStore";
 import { useObjectStore } from "../../state/objectStore";
 import { useOptimizationTaskStore } from "../../state/optimizationTaskStore";
 import { usePrinterStore } from "../../state/printerStore";
+import { useIsModified, useProjectStore } from "../../state/projectStore";
 import { useRecommendationStore } from "../../state/recommendationStore";
 import { LANGUAGE_NAME_KEYS, useTranslation } from "../hooks/useTranslation";
+import { formatTime } from "../project/projectFormat";
 import { getDisplayNames } from "../sidebar/objectNames";
 import {
   aboutDuration,
@@ -126,6 +129,27 @@ export default function StatusBar(): JSX.Element {
 
   const none = t("statusBar.none");
 
+  // Project field (lot 111, Q10 and Q12 A)
+  const busy = useProjectStore((state) => state.busy);
+  const justSaved = useProjectStore((state) => state.justSaved);
+  const lastSavedAt = useProjectStore((state) => state.lastSavedAt);
+  const token = useProjectStore((state) => state.token);
+  const modified = useIsModified();
+  const projectStatus =
+    busy === "saving"
+      ? t("project.status.saving")
+      : justSaved
+        ? t("project.status.saved")
+        : modified
+          ? t("project.status.modified")
+          : lastSavedAt
+            ? t("project.status.savedAt", {
+                time: formatTime(lastSavedAt, language),
+              })
+            : token
+              ? t("project.status.opened")
+              : t("project.status.notSaved");
+
   const estimations = useEstimationStore((state) => state.estimations);
   const currency = useCostSettingsStore((state) => state.settings.currency);
   const plate = useMemo(() => {
@@ -209,7 +233,11 @@ export default function StatusBar(): JSX.Element {
         label={t("statusBar.language")}
         value={t(LANGUAGE_NAME_KEYS[language])}
       />
-      <StatusField label={t("statusBar.projectStatus")} value={none} />
+      <StatusField
+        label={t("statusBar.projectStatus")}
+        value={projectStatus}
+        testId="project-status"
+      />
     </footer>
   );
 }

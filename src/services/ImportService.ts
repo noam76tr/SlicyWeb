@@ -26,6 +26,8 @@ import { ImportCancelledError, ImportError } from "../importer/ImportError";
 import { ImportManager } from "../importer/ImportManager";
 import { useImportStore } from "../state/importStore";
 
+import { ProjectService } from "./ProjectService";
+
 /** Time a successful import stays displayed, in milliseconds */
 const DONE_DISPLAY_MS = 3000;
 
@@ -96,6 +98,9 @@ async function importOne(taskId: string, file: File): Promise<void> {
     );
 
     controllers.delete(taskId);
+
+    // An import is a change of the project (lot 111, Q11 A)
+    ProjectService.markChanged();
 
     store.updateTask(taskId, { status: "done", progress: 1 });
 

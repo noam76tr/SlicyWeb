@@ -2,7 +2,7 @@
 
 # DIRECTORY PURPOSES
 
-Version: 2.1.0
+Version: 2.2.0
 
 Status: Approved  
 
@@ -372,6 +372,7 @@ They are on GitHub with the lot, for the reviewer of Noam. They describe a deliv
 | `hooks/useTranslation.ts` | Hook giving GUI components the translated texts, the current language and the language change |
 | `hooks/useEditShortcuts.ts` | Keyboard shortcuts Delete and Ctrl+D (lot 100): delete (confirmation for several objects) and duplicate the selected objects; not in a text field, nor in an open window or menu |
 | `hooks/useObjectStateShortcuts.ts` | Keyboard shortcuts F2, H and Alt+H (lot 106): rename the selected object in its row, hide the selected objects (Show when they are all hidden), show all; not in a text field, nor in an open window or menu; H also read by its key position (Hebrew) |
+| `hooks/useProjectShortcuts.ts` | Keyboard shortcuts Ctrl+N, Ctrl+O, Ctrl+S and Ctrl+Shift+S (Phase 13 lot 111): New Project, Open Project, Save, Save As through ProjectService; also in a text field; not in an open window or menu; the letter also read by its key position (Hebrew) |
 | `hooks/useSelectAllShortcut.ts` | Keyboard shortcut Ctrl+A: selects all the objects; not in a text field |
 | `hooks/useUndoRedoShortcuts.ts` | Keyboard shortcuts Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z (undo, redo through TransformService); not in a text field, where the fields of the Transform section use the same keys (`undoRedoCommand`, UNDO_REDO_SPEC.md) |
 
@@ -491,6 +492,19 @@ They are on GitHub with the lot, for the reviewer of Noam. They describe a deliv
 
 ---
 
+## src/gui/project/
+
+**Purpose:** Project User Interface (Phase 13)
+
+**Files:**
+
+| File | Role |
+|------|------|
+| `ProjectMessages.tsx` | Messages of the project over the viewport (GUI_SPEC.md, File Menu; lot 111): "Opening the project…", errors PROJ_001 to PROJ_005, profile of the project missing or changed, a project dropped with other files; Close button |
+| `projectFormat.ts` | Name of the project shown ("Untitled" before the first save), date and time in the format of the language (Recovery Dialog, status bar) |
+
+---
+
 ## src/gui/dialogs/
 
 **Purpose:** Dialogs of the main window
@@ -504,6 +518,8 @@ They are on GitHub with the lot, for the reviewer of Noam. They describe a deliv
 | `filamentForm.ts` | Values of the form of the Filament Manager and their conversion to a filament: required fields, empty value = null, empty color = null, comma as decimal separator, minimum not above its maximum, fan 0 to 100 %, errors by field (translation keys) |
 | `PrinterManagerDialog.tsx` | Printer Manager (GUI_SPEC.md, Printer Manager, Phase 7): list of the printers of the user, New printer, Copy a printer, form ("Edit: name" or "New printer" at its top; errors shown as soon as a value is typed, Save disabled while an error is shown; lot 71), Save, Delete with a confirmation; opened by Printer > Manage Printers and by "Manage…" (openPrinterManager), on the selected printer when it is one of the user; calls PrinterSelectionService |
 | `printerForm.ts` | Values of the form of the Printer Manager and their conversion to a printer: required fields, empty limit = null, comma as decimal separator, lists, errors by field (translation keys) |
+| `RecoveryDialog.tsx` | Recovery Dialog (GUI_SPEC.md, Phase 13 lot 111): "SlicyWeb did not close normally", name, date and time of the copy, Recover or Ignore; calls ProjectService |
+| `UnsavedChangesDialog.tsx` | Unsaved Changes Dialog (GUI_SPEC.md, Phase 13 lot 111): "Save the changes to “name”?", Save (focused), Don't Save, Cancel (Escape); answers the action that waited through ProjectService |
 
 ---
 
@@ -949,14 +965,12 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 
 **Purpose:** Persistence Layer
 
-**Role:** Storage layer: generic cache and project storage.
+**Role:** Storage layer: generic cache, user settings and recent projects.
 
 **Contains:**
 
 - StorageManager
-- ProjectStorage
 - CacheStorage
-- Project Persistence
 - Local Storage
 - Cache Management
 
@@ -967,9 +981,11 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `CacheStorage.ts` | Generic cache storage using a Map |
 | `PrinterProfileCache.ts` | Cache of the downloaded profiles of one list in cache/printers/, cache/materials/ or cache/filaments/ of the user data folder (index valid only with the type of its list, Phase 8 lot 72): profile files and index.json (folder replaced at once), cache.json (Cache Schema), sync.json (last check, RepositorySync Result Schema); validated again before use (CACHE_001 when it fails); main process only |
 | `PrinterProfileStorage.ts` | Reads the *.json printer profile files of a folder, and the material and filament profile files the same way (Phase 8 lot 68) (1 MB at most, links and subfolders not followed; index.json is not a profile); writes (temporary file, then renamed) and deletes a file of the printers of the user, by file name only; main process only |
-| `ProjectStorage.ts` | Project-specific storage |
+| `RecentProjectsStorage.ts` | The 10 last projects opened or saved, files.recentProjects of settings.json (Phase 13 lot 111): the most recent first, paths compared without case on Windows; main process only |
 | `SettingsStorage.ts` | Reads and writes the user preferences in settings.json (user data folder), printer settings included; main process only |
-| `StorageManager.ts` | Orchestrates storage (projects, cache and user settings) |
+| `StorageManager.ts` | Orchestrates storage (cache and user settings) |
+
+ProjectStorage.ts removed in Phase 13 (lot 111, Q22 A): projects are read and written by src/project/ (ProjectManager).
 
 ---
 
@@ -977,23 +993,23 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 
 **Purpose:** Project Recovery System
 
-**Role:** Project recovery: autosave, recovery management, session validation.
+**Role:** Project recovery: autosave, recovery management, validation of the copy.
 
 **Contains:**
 
 - Auto Save Service
 - Recovery Files
-- Session Restoration
 - Recovery Validation
 
 **Files:**
 
 | File | Role |
 |------|------|
-| `AutoSaveService.ts` | Manages automatic project autosave |
-| `RecoveryManager.ts` | Manages project recovery and restoration |
-| `RecoveryValidator.ts` | Validates project integrity for recovery |
-| `SessionRestorer.ts` | Restores sessions and validates them |
+| `AutoSaveService.ts` | Writes the copy of the automatic save (Phase 13 lot 111): autosave.wyproj and autosave.json in recovery/ of the user data folder, each through a temporary file; main process only |
+| `RecoveryManager.ts` | The copy at start (Phase 13 lot 111): validated in full and offered, restored, set aside in recovery/quarantine/ when damaged, removed (also at once when the window closes); main process only |
+| `RecoveryValidator.ts` | Validates the description of the copy (autosave.json: format, version, savedAt, projectName, projectPath) |
+
+SessionRestorer.ts removed in Phase 13 (lot 111, Q22 A): a normal start opens an empty scene.
 
 ---
 
@@ -1008,11 +1024,13 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | File | Role |
 |------|------|
 | `ProjectDeserializer.ts` | Deserializes projects from JSON with normalization |
-| `ProjectManager.ts` | Manages the complete project lifecycle |
+| `ProjectManager.ts` | The only creator of a project (Phase 13 lot 111, ADR-038): project from the content of the window, open and save a file (temporary file, then renamed; PROJ_004), name of a project from its file |
+| `ProjectError.ts` | Project errors with their code (PROJ_001 to PROJ_005) and their values |
+| `MeshDataCodec.ts` | Triangles of an object to meshData (base64 of 32-bit numbers, little-endian) and back; refuses a text not base64, a value not finite, a count that is not 9 numbers per triangle |
 | `ProjectSerializer.ts` | Serializes projects to JSON |
 | `ProjectValidator.ts` | Complete validation of projects and metadata |
 | `WYPROJExporter.ts` | Exports projects to the WYPROJ format |
-| `WYPROJImporter.ts` | Imports WYPROJ files with validation |
+| `WYPROJImporter.ts` | Imports WYPROJ files with validation: size limit (500 MB, PROJ_005), format version (PROJ_003), ProjectSchema, triangles (PROJ_002) |
 
 ---
 
@@ -1041,9 +1059,9 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `FilamentService.ts` | Filament service: add, remove, retrieve filaments |
 | `MaterialService.ts` | Material service: add, remove, retrieve materials |
 | `PrinterService.ts` | Printer service: add, remove, retrieve printers |
-| `ProjectService.ts` | Project service: complete lifecycle (creation, validation, serialization) |
+| `ProjectService.ts` | Project service of the window (Phase 13 lot 111, ADR-038): New, Open, a recent project, a project dropped, Save, Save As, Close, Exit through the project channels; "Save the changes?" before an action when the project is modified; content of the scene collected for a save and put back at an opening (profiles of the project: same, changed or missing, Q3 A); automatic save every 5 minutes while modified; recovery at start |
 | `RecommendationService.ts` | Recommendation service (Phase 10 lots 87 and 88, ADR-035 D3, D11): reads the presets (preset:getAll, PresetSchema); generates the recommendation of each object with the RecommendationEngine once its analysis is up to date and a printer and a material are selected, and again after a change of the selection or of the object type (rule 11); Tools > Generate Recommendations; object type chosen by the user or Automatic; REC_001 and REC_002 in recommendationTaskStore |
-| `StorageService.ts` | Storage service for projects, cache and user settings |
+| `StorageService.ts` | Storage service for the cache and the user settings |
 | `TransformService.ts` | The only way to change the transform of an object (fields, actions, gizmos): refuses invalid values, places the object on the plate (except the live steps of a rotation with the gizmo), writes the object store; records each change for undo and redo (a gesture is one action), undo(), redo() (also of Delete and Duplicate through ObjectSnapshots, lot 100) groups of objects (moveGroup, rotateGroup, scaleGroup, setGroupSize, groupInfo); option actionType of applyMany: the orientations of the optimization recorded as one action OPTIMIZATION (Phase 11 lot 98); |
 | `ObjectEditService.ts` | Edit > Delete and Edit > Duplicate (lot 100): objects deleted as one history action DELETE; a copy of each object (new objectId, no analysis, Object Reference Rule 7, own geometry) placed as a block at a free place inside the plate, to the right of the group when free, otherwise the nearest one (lot 101, PlateLayout.findFreePlace; no free place or no printer: right of the group, 5 mm from it), selected, one action DUPLICATE; nothing during a gesture |
 | `ObjectStateService.ts` | Rename, Hide and Show, Lock and Unlock (lot 106): name given (trimmed, 100 characters, empty = file name), visibility and lock of objects, the line of the menu for the selection (Hide or Show, Lock or Unlock), Show All; one history action RENAME, VISIBILITY or LOCK each; nothing during a gesture |
@@ -1121,6 +1139,7 @@ PresetManager.ts, PresetRepository.ts, PresetSelector.ts, PresetValidator.ts and
 | `plateCheckStore.ts` | Zustand store of the Plate Check (lot 101): objects out of the build volume now (orange in the viewport) and at the end of the last gesture (message SCN_001, icon of the Object Panel); not saved |
 | `historyStore.ts` | Zustand store of undo and redo: two stacks of actions (UNDO_REDO_SPEC.md, History Entry Schema), 50 actions at most; types MOVE, ROTATE, SCALE and OPTIMIZATION (Phase 11 lot 98), DELETE and DUPLICATE (lot 100: the objects taken out or put back, ObjectSnapshot) |
 | `propertiesPanelStore.ts` | Zustand store of the open tab of the Properties Panel (lot 93): tab, Printer at start, chooseTab (lot 95) |
+| `projectStore.ts` | Zustand store of the project of the window (Phase 13 lot 111): token of its file, projectId and createdAt, name, place of the history at the save, change outside the history, last save, saving, messages, recent projects, copy to recover, action waiting for "Save the changes?"; isModified |
 
 **Selection Reference:** each selection is stored once, in the store of its domain, next to its list (KI-014 resolved, CHANGELOG 0.1.41):
 
@@ -1186,6 +1205,8 @@ No other store keeps a copy of a selection.
 | `PrinterConstants.ts` | Printer constants (nozzles, build volume, temperatures, extruder types) |
 | `ViewportConstants.ts` | Viewport constants (coordinate system, default workspace, grid, colors, camera) |
 | `HistoryConstants.ts` | Undo and redo: MAX_HISTORY_SIZE (50 actions) |
+| `ObjectConstants.ts` | Name of an object: MAX_NAME_LENGTH (100) and the name kept for a text (lot 106; also the project file and the names of a 3MF, Phase 13) |
+| `ProjectConstants.ts` | Project (Phase 13): extension .wyproj, largest file opened (500 MB), recovery folder, its files and its quarantine |
 
 ---
 
@@ -1358,7 +1379,7 @@ No other store keeps a copy of a selection.
 | `MaterialIPC.ts` | IPC communication for the materials: material:getAll (Phase 8 lot 68) |
 | `PresetIPC.ts` | IPC communication for the print presets: preset:getAll (Phase 10 lot 86) |
 | `PrinterIPC.ts` | IPC communication for printer operations (get, get all, add, update, remove, count) |
-| `ProjectIPC.ts` | IPC communication for project operations (create, load, save, delete) |
+| `ProjectIPC.ts` | Project channels (Phase 13 lot 111, API_SPEC.md, ProjectIPC Channels): Open and Save As dialogs of Windows, open (dialog, recent, dropped), save, recent projects, automatic save, recovery; the file of a project known by a token, never a path sent by the window; main process only |
 | `SettingsIPC.ts`| IPC communication for user settings (get, update, reset, theme, language) |
 | `StorageIPC.ts` | IPC communication for storage operations (save, load, delete, clear) |
 

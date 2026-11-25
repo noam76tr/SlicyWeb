@@ -30,6 +30,10 @@
  *   Hebrew, USD in English, Q7 A), no price and no power; the fields of
  *   cost are read one by one, and each entry of printerPower and
  *   filamentPrices on its own (an invalid entry is left out).
+ * - project and files (3.16.0, lot 111): a settings.json written before
+ *   3.16.0 takes the automatic save every 300 s and no recent project;
+ *   each field is read on its own, and each path of recentProjects on its
+ *   own (an invalid one, or a repeat, is left out; 10 at most).
  * - gui (written by lot 93, DATA_SCHEMA.md 3.11.0, gui.propertiesTab) is
  *   no longer part of the preferences (3.12.0, lot 95): it is ignored at
  *   reading, the other fields are kept, and it is no longer in the file
@@ -51,6 +55,7 @@ import path from "node:path";
 
 import type { ZodType } from "zod";
 
+import { MAX_RECENT_PROJECTS } from "../constants/ApplicationConstants";
 import {
   CostPreferencesSchema,
   CostPriceSchema,
@@ -59,6 +64,8 @@ import {
   MaterialPreferencesSchema,
   PrinterPowerSchema,
   PrinterPreferencesSchema,
+  ProjectPreferencesSchema,
+  RecentProjectSchema,
   UserPreferencesSchema,
 } from "../schemas/UserPreferencesSchema";
 
@@ -85,6 +92,8 @@ export class SettingsStorage {
         printer: readPrinter(undefined),
         material: readMaterial(undefined),
         cost: readCost(undefined, DEFAULT_USER_PREFERENCES.language),
+        project: readProject(undefined),
+        files: readFiles(undefined),
       };
     }
 
@@ -111,6 +120,8 @@ export class SettingsStorage {
       printer: readPrinter(entries.printer),
       material: readMaterial(entries.material),
       cost: readCost(entries.cost, language),
+      project: readProject(entries.project),
+      files: readFiles(entries.files),
     };
   }
 
@@ -148,6 +159,8 @@ export class SettingsStorage {
       printer: { ...DEFAULT_USER_PREFERENCES.printer },
       material: { ...DEFAULT_USER_PREFERENCES.material },
       cost: defaultCostPreferences(DEFAULT_USER_PREFERENCES.language),
+      project: { ...DEFAULT_USER_PREFERENCES.project },
+      files: { recentProjects: [] },
     });
   }
 
@@ -260,6 +273,49 @@ function readCost(
     printerPower: readRecord(entries.printerPower, PrinterPowerSchema),
     filamentPrices: readRecord(entries.filamentPrices, CostPriceSchema),
   };
+}
+
+function readProject(value: unknown): UserPreferences["project"] {
+  const fallback = DEFAULT_USER_PREFERENCES.project;
+
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return { ...fallback };
+  }
+
+  const entries = value as Record<string, unknown>;
+  const shape = ProjectPreferencesSchema.shape;
+
+  return {
+    autoSave: readField(shape.autoSave, entries.autoSave, fallback.autoSave),
+    autoSaveInterval: readField(
+      shape.autoSaveInterval,
+      entries.autoSaveInterval,
+      fallback.autoSaveInterval,
+    ),
+  };
+}
+
+/** The valid paths of the recent projects, without repeats, 10 at most */
+function readFiles(value: unknown): UserPreferences["files"] {
+  const recentProjects: string[] = [];
+  const list =
+    typeof value === "object" && value !== null && !Array.isArray(value)
+      ? (value as Record<string, unknown>).recentProjects
+      : undefined;
+
+  if (Array.isArray(list)) {
+    for (const entry of list) {
+      if (
+        RecentProjectSchema.safeParse(entry).success &&
+        !recentProjects.includes(entry as string) &&
+        recentProjects.length < MAX_RECENT_PROJECTS
+      ) {
+        recentProjects.push(entry as string);
+      }
+    }
+  }
+
+  return { recentProjects };
 }
 
 /** The valid entries of a record of numbers by id; the others left out */

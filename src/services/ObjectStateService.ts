@@ -46,18 +46,10 @@ import type { Object3D } from "../types/Object3D";
 
 import { TransformService } from "./TransformService";
 
-/** Longest name given by the user, in characters (Q3 A) */
-export const MAX_NAME_LENGTH = 100;
-
-/**
- * Name kept for a text typed: trimmed, MAX_NAME_LENGTH characters at
- * most; null (name of the file) when empty or equal to the file name
- */
-export function normalizeName(text: string, fileName: string): string | null {
-  const name = [...text.trim()].slice(0, MAX_NAME_LENGTH).join("").trim();
-
-  return name === "" || name === fileName ? null : name;
-}
+// Longest name and name kept for a text typed (shared with the project
+// file and the 3MF import since lot 111)
+import { normalizeName } from "../constants/ObjectConstants";
+export { MAX_NAME_LENGTH, normalizeName } from "../constants/ObjectConstants";
 
 function objectsOf(objectIds: string[]): Object3D[] {
   const wanted = new Set(objectIds);

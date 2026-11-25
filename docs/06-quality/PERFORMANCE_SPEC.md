@@ -4,7 +4,7 @@
 
 
 
-Version: 1.4.1
+Version: 1.5.0
 
 
 
@@ -464,6 +464,8 @@ Auto Save < 1 second
 
 Recovery Load < 3 seconds
 ```
+
+Measured on Linux in lot 111 (1.5.0; Phase 13, ADR-038), in the unit tests of the main process (Node.js, 4 processors), one object of 1 000 000 triangles: copy of the automatic save (autosave.wyproj and autosave.json written) about 0.6 s; check of the copy at start and loading of the project (read, validated in full, triangles decoded) about 0.8 s; file of about 48 MB (meshData in base64). Not measured in the application: the copy of the triangles between the window and the main process, and the analysis of the overhang triangles after an opening (Web Worker, as after an import), come on top. The durations on the PC of Noam are checked at the closure of the phase (lot 112).
 
 ---
 

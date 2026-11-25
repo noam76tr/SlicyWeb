@@ -3,7 +3,7 @@
 # ERROR CODES SPECIFICATION
 
 
-Version: 2.7.0
+Version: 2.8.0
 
 Status: Approved
 
@@ -775,6 +775,63 @@ Project Corrupted
 Project Version Mismatch
 
 ```
+
+
+
+---
+
+
+
+## PROJ_004
+
+
+
+```text
+
+Project Save Failed
+
+```
+
+2.8.0 (lot 111, ADR-038; PASSATION.md decision 119 of Noam, Q16 A): the project could not be written (disk full, protected folder, file open in another application). The file is written through a temporary file renamed at the end: the existing file is not changed.
+
+
+
+---
+
+
+
+## PROJ_005
+
+
+
+```text
+
+Project Too Large
+
+```
+
+2.8.0 (lot 111, Q16 A): the project file is larger than 500 MB. It is refused before it is read (a JavaScript text cannot hold much more).
+
+
+
+---
+
+Project Errors In The Window (2.8.0, lot 111, Q16 A): a file refused changes nothing in the scene. The message is shown over the viewport, translated, with its code:
+
+```text
+PROJ_001  "Project not found": a project moved or deleted; a recent
+          project not found is removed from the list
+PROJ_002  "Damaged project": not a .wyproj, JSON not readable, a field
+          missing, unknown or not valid, a reference to an object
+          missing, triangles not readable, a version missing
+PROJ_003  "created by a newer version of SlicyWeb (format x). This
+          version opens format 3.0.0", or an older format that this
+          version cannot open
+PROJ_004  "The project could not be saved"
+PROJ_005  "Project too large": larger than 500 MB
+```
+
+Each error of the main process is sent as success false, errors [message starting with the code], data { code, params } (API_SPEC.md, ProjectIPC Channels).
 
 
 

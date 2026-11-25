@@ -2,13 +2,25 @@
  * SlicyWeb
  * Project Manager
  *
- * Responsible for:
- * - Project lifecycle management
- * - Project creation
- * - Project loading
- * - Project saving
- * - Project state management
- * - Project events emission
+ * Responsible for (Phase 13, lot 111, ADR-038; decision 119 of Noam, Q1 to
+ * Q22 A):
+ * - Project creation: the only creator of a project (PASSATION.md decision
+ *   6). A project is created from the content of the window (objects with
+ *   their triangles, analyses, recommendations, selected printer, material
+ *   and filament) and its identity (projectId, createdAt), or a new
+ *   identity for a project never saved.
+ * - Project saving: the project is validated in full, serialized
+ *   (WYPROJExporter), then written through a temporary file in the same
+ *   folder, renamed at the end: an interruption never leaves a file half
+ *   written; a failure (PROJ_004) leaves the existing file as it was
+ *   (Q10 A, Q16 A).
+ * - Project loading: WYPROJImporter (size, version, validation, triangles).
+ *
+ * The name of the project is the name of its file, without .wyproj
+ * (Q9 A); "" for a copy of a project never saved (automatic save).
+ *
+ * Main process only (Node.js file system). The window never gives the
+ * path of a file to write (Q20 A): ProjectIPC chooses it.
  *
  * No business logic.
  * No AI logic.
@@ -17,342 +29,224 @@
  * Based on:
  * - ARCHITECTURE.md
  * - PROJECT_SPEC.md
- * - IMPORT_EXPORT_SPEC.md
- * - DATA_SCHEMA.md
+ * - IMPORT_EXPORT_SPEC.md 3.2.0 (WYPROJ Project Lifecycle, Save Operations)
+ * - DATA_SCHEMA.md 3.16.0
+ * - SECURITY_SPEC.md (Project Security)
  */
 
-import { EventEmitter } from "events";
+import { randomUUID } from "node:crypto";
+import { promises as fs } from "node:fs";
+import path from "node:path";
+
 import { WYPROJ_FORMAT_VERSION } from "../constants/ApplicationConstants";
-import { ProjectSerializer } from "./ProjectSerializer";
-import { ProjectDeserializer } from "./ProjectDeserializer";
-import { ProjectValidator } from "./ProjectValidator";
-import type { Project } from "../types/Project";
-import type { Scene } from "../types/Scene";
+import { PROJECT_EXTENSION } from "../constants/ProjectConstants";
 import type { Analysis } from "../types/Analysis";
+import type { Filament } from "../types/Filament";
+import type { Material } from "../types/Material";
+import type { Object3D } from "../types/Object3D";
+import type { Printer } from "../types/Printer";
+import type { Project, ProjectObject } from "../types/Project";
 import type { Recommendation } from "../types/Recommendation";
-import type { Object3D, Transform } from "../types/Object3D";
-import { ObjectDuplicator } from "../object_manager/ObjectDuplicator";
-import { TransformValidator } from "../transform/TransformValidator";
+
+import { MeshDataCodec } from "./MeshDataCodec";
+import { ProjectDeserializer } from "./ProjectDeserializer";
+import { ProjectError } from "./ProjectError";
+import { ProjectValidator } from "./ProjectValidator";
+import { WYPROJExporter } from "./WYPROJExporter";
+import { WYPROJImporter, type ImportedProject } from "./WYPROJImporter";
 
 export { WYPROJ_FORMAT_VERSION };
 
-export class ProjectManager extends EventEmitter {
-  private currentProject: Project | null = null;
+/** What the window sends to save a project */
+export interface ProjectContent {
+  objects: Object3D[];
+  /** Triangle data of each object, by objectId (9 numbers per triangle) */
+  meshes: Record<string, Float32Array>;
+  analysis: Record<string, Analysis>;
+  recommendations: Record<string, Recommendation>;
+  printer: Printer | null;
+  material: Material | null;
+  filament: Filament | null;
+}
+
+/** Identity of a project already saved */
+export interface ProjectIdentity {
+  projectId: string;
+  createdAt: string;
+}
+
+/** A project written */
+export interface SavedProject extends ProjectIdentity {
+  projectName: string;
+  updatedAt: string;
+}
+
+/** Name of a project: the name of its file, without .wyproj (Q9 A) */
+export function projectNameOf(filePath: string): string {
+  const base = path.basename(filePath);
+
+  return base.toLowerCase().endsWith(PROJECT_EXTENSION)
+    ? base.slice(0, -PROJECT_EXTENSION.length)
+    : base;
+}
+
+/** A project without the text of its triangles (sent to the window) */
+export type ProjectForWindow = Omit<Project, "scene"> & {
+  scene: { objects: Object3D[] };
+};
+
+/** The project without the triangles (they travel as numbers) */
+export function withoutMeshData(project: Project): ProjectForWindow {
+  return {
+    ...project,
+    scene: {
+      objects: project.scene.objects.map((object) => {
+        const copy: Partial<ProjectObject> = { ...object };
+
+        delete copy.meshData;
+
+        return copy as Object3D;
+      }),
+    },
+  };
+}
+
+export class ProjectManager {
+  private readonly importer: WYPROJImporter;
 
   constructor(
-    private readonly serializer: ProjectSerializer,
-    private readonly deserializer: ProjectDeserializer,
-    private readonly validator: ProjectValidator
+    private readonly validator: ProjectValidator = new ProjectValidator(),
+    deserializer: ProjectDeserializer = new ProjectDeserializer(),
+    maxBytes?: number,
   ) {
-    super();
+    this.importer = new WYPROJImporter(deserializer, validator, maxBytes);
   }
 
-  public createProject(projectName: string, scene: Scene): Project {
+  /**
+   * Creates the project of a content: the only creator of a project. A
+   * new projectId and createdAt when identity is null; updatedAt is now.
+   * Throws PROJ_002 when the content is not a valid project.
+   */
+  public createProject(
+    content: ProjectContent,
+    identity: ProjectIdentity | null,
+    projectName: string,
+  ): Project {
     const timestamp = new Date().toISOString();
+    const objectIds = new Set(content.objects.map((object) => object.objectId));
 
-    this.currentProject = {
-      projectId: crypto.randomUUID(),
+    const project: Project = {
+      projectId: identity?.projectId ?? randomUUID(),
       projectName,
       projectFormat: "WYPROJ",
-      createdAt: timestamp,
+      createdAt: identity?.createdAt ?? timestamp,
       updatedAt: timestamp,
       version: WYPROJ_FORMAT_VERSION,
-      scene,
+      scene: {
+        objects: content.objects.map((object) => {
+          const positions = content.meshes[object.objectId];
+
+          if (!positions) {
+            throw new ProjectError(
+              "PROJ_002",
+              `The object ${object.objectId} has no triangles.`,
+            );
+          }
+
+          return {
+            objectId: object.objectId,
+            fileName: object.fileName,
+            name: object.name,
+            fileType: object.fileType,
+            visible: object.visible,
+            locked: object.locked,
+            transform: object.transform,
+            geometry: object.geometry,
+            mesh: object.mesh,
+            meshData: MeshDataCodec.encode(positions),
+          };
+        }),
+      },
       settings: {},
-      analysis: {},
-      recommendations: {},
+      // Only the results of the objects of the scene (rule 4)
+      analysis: Object.fromEntries(
+        Object.entries(content.analysis).filter(([id]) => objectIds.has(id)),
+      ),
+      recommendations: Object.fromEntries(
+        Object.entries(content.recommendations).filter(
+          ([id]) =>
+            objectIds.has(id) &&
+            content.analysis[id]?.analysisId ===
+              content.recommendations[id].analysisId,
+        ),
+      ),
       preset: null,
-      printer: null,
-      material: null,
-      filament: null,
+      printer: content.printer,
+      material: content.material,
+      filament: content.filament,
     };
 
-    this.emit("project:created", this.currentProject);
-
-    return this.currentProject;
-  }
-
-  public loadProject(projectContent: string): Project {
-    const project = this.deserializer.deserialize(projectContent);
-
     this.validator.validate(project);
-
-    this.currentProject = project;
-
-    this.emit("project:loaded", project);
 
     return project;
   }
 
-  public saveProject(): string {
-    this.ensureProjectLoaded();
-
-    this.currentProject!.updatedAt = new Date().toISOString();
-
-    this.validator.validate(this.currentProject!);
-
-    const content = this.serializer.serialize(this.currentProject!);
-
-    this.emit("project:saved", this.currentProject);
-
-    return content;
-  }
-
-  public closeProject(): void {
-    const project = this.currentProject;
-
-    this.currentProject = null;
-
-    this.emit("project:closed", project);
-  }
-
-  public getProject(): Project | null {
-    return this.currentProject;
-  }
-
-  public updateScene(scene: Scene): void {
-    this.ensureProjectLoaded();
-
-    this.currentProject!.scene = scene;
-
-    this.touch();
-
-    this.emit("project:scene-updated", scene);
-  }
-
-  public updateAnalysis(analysis: Record<string, Analysis>): void {
-    this.ensureProjectLoaded();
-
-    this.currentProject!.analysis = analysis;
-
-    this.touch();
-
-    this.emit("project:analysis-updated", analysis);
-  }
-
   /**
-   * Object Reference Rule 6: removing an object removes
-   * its analysis and its recommendation.
+   * Writes a project in a file (temporary file, then renamed): PROJ_004
+   * when it cannot be written; the existing file is then not changed.
    */
-  public removeObject(objectId: string): void {
-    this.ensureProjectLoaded();
+  public async save(
+    filePath: string,
+    content: ProjectContent,
+    identity: ProjectIdentity | null,
+    projectName: string = projectNameOf(filePath),
+  ): Promise<SavedProject> {
+    const project = this.createProject(content, identity, projectName);
 
-    const project = this.currentProject!;
+    await this.write(filePath, WYPROJExporter.serialize(project));
 
-    project.scene = {
-      ...project.scene,
-      objects: project.scene.objects.filter(
-        (object) => object.objectId !== objectId
-      ),
+    return {
+      projectId: project.projectId,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      projectName: project.projectName,
     };
-
-    const analysis = { ...project.analysis };
-    delete analysis[objectId];
-    project.analysis = analysis;
-
-    const recommendations = { ...project.recommendations };
-    delete recommendations[objectId];
-    project.recommendations = recommendations;
-
-    this.touch();
-
-    this.emit("project:object-removed", objectId);
   }
 
-  /**
-   * Object Reference Rule 7: the copy receives a new objectId
-   * and inherits no analysis and no recommendation.
-   */
-  public duplicateObject(objectId: string): Object3D {
-    this.ensureProjectLoaded();
+  /** Reads and validates a project file (WYPROJImporter) */
+  public open(filePath: string): Promise<ImportedProject> {
+    return this.importer.importFromFile(filePath);
+  }
 
-    const project = this.currentProject!;
+  /** Reads and validates the text of a project file */
+  public openText(content: string): ImportedProject {
+    return this.importer.importFromString(content);
+  }
 
-    const original = project.scene.objects.find(
-      (object) => object.objectId === objectId
+  /** Writes a text through a temporary file of the same folder */
+  public async write(filePath: string, text: string): Promise<void> {
+    const temporaryPath = path.join(
+      path.dirname(filePath),
+      `.${path.basename(filePath)}.${randomUUID()}.tmp`,
     );
 
-    if (!original) {
-      throw new Error(`Object not found in the scene: ${objectId}`);
-    }
+    try {
+      await fs.mkdir(path.dirname(filePath), { recursive: true });
+      await fs.writeFile(temporaryPath, text, "utf8");
+      await fs.rename(temporaryPath, filePath);
+    } catch (error) {
+      await fs.rm(temporaryPath, { force: true }).catch(() => undefined);
 
-    const copy = new ObjectDuplicator().duplicate(original);
-
-    project.scene = {
-      ...project.scene,
-      objects: [...project.scene.objects, copy],
-    };
-
-    this.touch();
-
-    this.emit("project:object-duplicated", copy);
-
-    return copy;
-  }
-
-  /**
-   * Object Reference Rule 8: a change of rotation or scale makes the
-   * analysis and the recommendation of the object outdated.
-   * A change of position alone does not change their status.
-   */
-  public updateObjectTransform(
-    objectId: string,
-    transform: Transform
-  ): void {
-    this.ensureProjectLoaded();
-
-    const project = this.currentProject!;
-
-    const object = project.scene.objects.find(
-      (candidate) => candidate.objectId === objectId
-    );
-
-    if (!object) {
-      throw new Error(`Object not found in the scene: ${objectId}`);
-    }
-
-    const orientationChanged = TransformValidator.changesOrientation(
-      object.transform,
-      transform
-    );
-
-    project.scene = {
-      ...project.scene,
-      objects: project.scene.objects.map((candidate) =>
-        candidate.objectId === objectId
-          ? { ...candidate, transform }
-          : candidate
-      ),
-    };
-
-    if (orientationChanged) {
-      this.markResultsOutdated(objectId);
-    }
-
-    this.touch();
-
-    this.emit("project:object-transformed", objectId);
-  }
-
-  /**
-   * Stores the analysis of one object (computed or recomputed).
-   * A recomputed analysis keeps the analysisId of the object
-   * (Object Reference Rule 5). Object Reference Rule 9: the
-   * recommendation of the same object becomes outdated.
-   */
-  public setObjectAnalysis(analysis: Analysis): Analysis {
-    this.ensureProjectLoaded();
-
-    const project = this.currentProject!;
-
-    const previous = project.analysis[analysis.objectId];
-
-    const stored: Analysis = previous
-      ? { ...analysis, analysisId: previous.analysisId }
-      : analysis;
-
-    project.analysis = {
-      ...project.analysis,
-      [analysis.objectId]: stored,
-    };
-
-    this.markRecommendationOutdated(analysis.objectId);
-
-    this.touch();
-
-    this.emit("project:analysis-updated", project.analysis);
-
-    return stored;
-  }
-
-  /**
-   * Object Reference Rules 8 and 9: the analysis of the object
-   * becomes outdated, and so does its recommendation.
-   */
-  public markAnalysisOutdated(objectId: string): void {
-    this.ensureProjectLoaded();
-
-    this.markResultsOutdated(objectId);
-
-    this.touch();
-
-    this.emit("project:analysis-updated", this.currentProject!.analysis);
-  }
-
-  public updateRecommendations(
-    recommendations: Record<string, Recommendation>
-  ): void {
-    this.ensureProjectLoaded();
-
-    this.currentProject!.recommendations = recommendations;
-
-    this.touch();
-
-    this.emit("project:recommendations-updated", recommendations);
-  }
-
-  public updateSettings(settings: Record<string, unknown>): void {
-    this.ensureProjectLoaded();
-
-    this.currentProject!.settings = {
-      ...this.currentProject!.settings,
-      ...settings,
-    };
-
-    this.touch();
-
-    this.emit("project:settings-updated", settings);
-  }
-
-  public validateCurrentProject(): boolean {
-    this.ensureProjectLoaded();
-
-    return this.validator.validate(this.currentProject!);
-  }
-
-  public hasOpenProject(): boolean {
-    return this.currentProject !== null;
-  }
-
-  private markResultsOutdated(objectId: string): void {
-    const project = this.currentProject!;
-
-    const analysis = project.analysis[objectId];
-
-    if (analysis) {
-      project.analysis = {
-        ...project.analysis,
-        [objectId]: { ...analysis, status: "outdated" },
-      };
-    }
-
-    this.markRecommendationOutdated(objectId);
-  }
-
-  private markRecommendationOutdated(objectId: string): void {
-    const project = this.currentProject!;
-
-    const recommendation = project.recommendations[objectId];
-
-    if (recommendation) {
-      project.recommendations = {
-        ...project.recommendations,
-        [objectId]: { ...recommendation, status: "outdated" },
-      };
-    }
-  }
-
-  private touch(): void {
-    if (!this.currentProject) {
-      return;
-    }
-
-    this.currentProject.updatedAt = new Date().toISOString();
-  }
-
-  private ensureProjectLoaded(): void {
-    if (!this.currentProject) {
-      throw new Error("No project is currently loaded.");
+      throw new ProjectError(
+        "PROJ_004",
+        `The project could not be written: ${filePath} (${
+          error instanceof Error ? error.message : "Unknown error"
+        })`,
+        {},
+        { cause: error },
+      );
     }
   }
 }
+
+export default ProjectManager;

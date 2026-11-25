@@ -1,7 +1,7 @@
 # SlicyWeb SMART SLICER
 # IMPORT EXPORT SPECIFICATION
 
-Version: 3.1.0
+Version: 3.2.0
 
 Status: Approved
 
@@ -206,12 +206,12 @@ Modern Additive Manufacturing Format
 ```text
 Geometry
 
-Metadata
-
 Units
 
 Object Names
 ```
+
+3.2.0 (lot 111, PASSATION.md decision 119 of Noam, Q21 A: KI-020 closed): the name of the object of each build item (attribute name, when it is given) becomes the name of the object (DATA_SCHEMA.md, Object Schema: name), as a name given by the user: spaces at the start and the end taken off, 100 characters at most, null when empty or equal to the file name. The other metadata of the 3MF file (author, date, application) are not kept.
 
 ---
 
@@ -360,6 +360,8 @@ Source File Name
 
 Name given by the user (3.1.0, lot 106, PASSATION.md decision 112 of Noam): an object renamed in the Object Panel shows its name (DATA_SCHEMA.md 3.14.0, Object Schema: name) instead of the file name; the file name is kept (fileName). An empty name gives the file name back. The name is written in the project, never translated.
 
+3MF (3.2.0, lot 111, Q21 A): the name of an object in the 3MF file is its name at import ("Support", "Base" instead of "plate (1)", "plate (2)").
+
 ---
 
 # Duplicate Names
@@ -498,6 +500,27 @@ ProjectValidator
 ↓
 Application State
 
+Phase 13 (3.2.0, lot 111, ADR-038; PASSATION.md decision 119 of Noam, Q1 to Q22 A):
+
+```text
+Window (ProjectService)                Main process (ProjectIPC)
+  objects, triangles, analyses,  ──►    ProjectManager.createProject
+  recommendations, printer,             (the only creator; validated in
+  material, filament                    full) → WYPROJExporter → file
+                                        written through a temporary file
+                                        of the same folder, renamed at
+                                        the end
+
+  scene replaced, history        ◄──    WYPROJImporter (extension, size,
+  cleared, profiles chosen              version, JSON, ProjectSchema,
+  (Q3 A)                                triangles) → project without
+                                        meshData + triangles as numbers
+```
+
+- The Windows dialogs, the reading and the writing of the files are done by the main process only. The window never sends a path to write: a project opened or saved is known by a token (SECURITY_SPEC.md, Project Security). Paths read: a number of the list of recent projects, and a .wyproj dropped on the viewport.
+- The name of the project is the name of its file, without .wyproj (Q9 A); "Untitled" before the first save (never written).
+- A file refused changes nothing in the window (Q16 A).
+
 ---
 
 # Includes
@@ -505,35 +528,38 @@ Application State
 ```text
 Scene
 
-Objects
+Objects (name, file name, visible, locked)
 
 Transforms
 
-Printer
+Triangles of each object (meshData, 3.2.0)
 
-Material
+Printer (full copy)
 
-Filament
+Material (full copy)
 
-Preset
+Filament (full copy)
 
-Settings
+Preset (always null: chosen for each object, in its recommendation)
+
+Settings (always {})
 
 Analysis
 
 Recommendations
 ```
 
+Not saved (Q6 A): the selection, the camera, the open tab, the overhangs shown, the history of Undo and Redo, the estimations, the costs (preferences of the user).
+
 Metadata:
 
 ```text
 "metadata": {
-  "application": "SlicyWeb Smart Slicer",
-  "author": ""
+  "application": "SlicyWeb Smart Slicer"
 }
 ```
 
-author is optional (see Metadata Handling).
+author is optional (see Metadata Handling): never written by SlicyWeb (3.2.0, Q21 A: SlicyWeb does not know the name of the user, and a file sent to someone must not hold it without the user knowing); a file that has it (text) is accepted.
 
 Project identity, version and dates are stored in the project itself (projectId, projectName, version, createdAt, updatedAt).
 
@@ -575,7 +601,7 @@ The WYPROJ file follows the Project File Schema and the Project Schema of DATA_S
     "createdAt": "",
     "updatedAt": "",
     "version": "3.0.0",
-    "scene": {},
+    "scene": { "objects": [] },
     "settings": {},
     "analysis": {
       "<objectId>": {}
@@ -583,17 +609,18 @@ The WYPROJ file follows the Project File Schema and the Project Schema of DATA_S
     "recommendations": {
       "<objectId>": {}
     },
-    "preset": {},
-    "printer": {},
-    "material": {},
-    "filament": {}
+    "preset": null,
+    "printer": null,
+    "material": null,
+    "filament": null
   },
   "metadata": {
-    "application": "SlicyWeb Smart Slicer",
-    "author": ""
+    "application": "SlicyWeb Smart Slicer"
   }
 }
 ```
+
+Each object of scene.objects holds its triangles (meshData, DATA_SCHEMA.md 3.16.0, Object Schema). A file of 1 000 000 triangles is about 48 MB. A file larger than 500 MB is refused before it is read (PROJ_005).
 
 analysis and recommendations are indexed by objectId (ADR-026, Object Reference Rules in DATA_SCHEMA.md).
 
@@ -613,6 +640,14 @@ Save As
 Auto Save
 ```
 
+3.2.0 (lot 111, Q10, Q17 and Q18 A):
+
+- Save (Ctrl+S) writes the file of the project; a project never saved opens Save As. Save As (Ctrl+Shift+S) opens the Windows dialog: the folder of the last project opened or saved, otherwise Documents; the name proposed is the name of the project, otherwise the name of the first object; Windows asks before replacing a file. ".wyproj" is added when it is missing.
+- The file is written through a temporary file in the same folder, renamed at the end: an interruption never leaves a file half written. A writing that fails gives PROJ_004; the existing file is not changed.
+- projectId and createdAt are kept at each save (Save As included); updatedAt is the time of the save.
+- A project opened or saved goes to the top of File > Recent Projects (10 at most, USER_SETTINGS_SPEC.md File Settings).
+- Auto Save: every 5 minutes (project.autoSaveInterval), only when the project is modified, a copy is written in the recovery folder of the user data folder (Windows: %APPDATA%\SlicyWeb\recovery), never in the file of the user: autosave.wyproj (a project file) and autosave.json (its description). The copy is removed at a save, at "Don't Save" and at a normal close.
+
 ---
 
 # Recovery System
@@ -624,6 +659,8 @@ Recovery Protection
 Project Persistence
 Session Recovery
 ```
+
+3.2.0 (lot 111, Q19 A): at start, when a copy of the automatic save is still there (crash, power cut, forced close), the window asks "SlicyWeb did not close normally. Recover “cube” (saved on 24/11 at 14:32)?": Recover opens the project, marked modified, attached to its file when it had one; Ignore removes the copy. A copy damaged (description or project not valid) is moved to recovery/quarantine/<time>/ with a message, never opened. A normal start shows an empty scene: the last project is not opened by itself.
 
 ---
 
@@ -692,7 +729,7 @@ An imported object is centered on the origin and placed on the build plate (lowe
 
 A 3MF file gives one object per build item; its objects keep the layout of the file, the group is centered on the origin and its lowest point is at Z = 0 (ADR-030). Each object has its own transform position; the first object is selected.
 
-Object names (Duplicate Names): the names "cube (1)", "cube (2)" are display names; the project keeps the file name of each object (DATA_SCHEMA.md, Object Schema). The objects of one 3MF file share its file name ("plate (1)", "plate (2)"); the object names and metadata stored in the 3MF file are not kept (KI-020).
+Object names (Duplicate Names): the names "cube (1)", "cube (2)" are display names; the project keeps the file name of each object (DATA_SCHEMA.md, Object Schema). The objects of one 3MF file share its file name ("plate (1)", "plate (2)") when the file gives no name to its objects; the name of an object in the 3MF file becomes its name (3.2.0, lot 111, Q21 A: KI-020 closed). The other metadata of the 3MF file are not kept.
 
 ---
 
@@ -750,14 +787,10 @@ When available:
 Store:
 
 ```text
-Author
-
-Creation Date
-
-Application
-
 Object Name
 ```
+
+3.2.0 (lot 111, Q21 A): only the name of each object of a 3MF file is kept (3MF Import). The author, the creation date and the application of a 3MF file are not kept: the Object Schema has no field for them. WYPROJ: metadata.application is written; metadata.author is never written.
 
 ---
 

@@ -10,6 +10,11 @@
  * - automatic: an object without analysis (after its import), or whose
  *   analysis became outdated (rotation or scale), is analyzed once the
  *   gesture is over or the value confirmed, never during a gesture;
+ * - an object of a project opened whose analysis is up to date, read
+ *   from the file (lot 111, decision 119 of Noam, Q7 A): the computation
+ *   gives only what the file does not hold (triangles beyond 45 degrees,
+ *   areas of the faces, mesh not closed); the analysis stored does not
+ *   change, and its recommendation stays as it is;
  * - Tools > Analyze Models (analyzeModels): all the objects without an
  *   analysis up to date, including those whose analysis failed;
  * - Tools > Recompute Analysis (recompute): the selected objects, even
@@ -135,11 +140,25 @@ function isUpToDate(objectId: string): boolean {
   return useAnalysisStore.getState().analysis[objectId]?.status === "generated";
 }
 
+/**
+ * The analysis is up to date but what a project file does not hold is
+ * missing: it was read from a project (lot 111, Q7 A)
+ */
+function needsExtras(objectId: string): boolean {
+  const task = useAnalysisTaskStore.getState();
+
+  return !task.overhangTriangles[objectId] || !task.faceAreas[objectId];
+}
+
 export function createAnalysisService(
   dependencies: AnalysisServiceDependencies,
 ): AnalysisServiceInstance {
-  /** Objects waiting, in order; true = computed even when up to date */
-  const queue = new Map<string, boolean>();
+  /**
+   * Objects waiting, in order: "auto" (analysis missing or outdated),
+   * "force" (computed even when up to date), "extras" (analysis up to
+   * date read from a project: what the file does not hold only)
+   */
+  const queue = new Map<string, "auto" | "force" | "extras">();
 
   /** Computation in progress */
   let current: {
@@ -181,20 +200,23 @@ export function createAnalysisService(
     });
   };
 
-  /** Objects to analyze by themselves (ADR-034 D7) */
+  /** Objects to analyze by themselves (ADR-034 D7; lot 111, Q7 A) */
   const collect = (): void => {
     for (const object of useObjectStore.getState().objects) {
       const { objectId } = object;
 
       if (
-        isUpToDate(objectId) ||
         queue.has(objectId) ||
         failedKeys.get(objectId) === orientationKey(object)
       ) {
         continue;
       }
 
-      queue.set(objectId, false);
+      if (!isUpToDate(objectId)) {
+        queue.set(objectId, "auto");
+      } else if (needsExtras(objectId)) {
+        queue.set(objectId, "extras");
+      }
     }
   };
 
@@ -257,21 +279,26 @@ export function createAnalysisService(
   };
 
   const next = (): void => {
-    for (const [objectId, force] of queue) {
+    for (const [objectId, mode] of queue) {
       queue.delete(objectId);
 
       const object = findObject(objectId);
 
-      if (!object || (!force && isUpToDate(objectId))) {
+      if (
+        !object ||
+        (mode === "auto" && isUpToDate(objectId)) ||
+        (mode === "extras" &&
+          (!isUpToDate(objectId) || !needsExtras(objectId)))
+      ) {
         continue;
       }
 
-      compute(object);
+      compute(object, mode === "extras");
       return;
     }
   };
 
-  const compute = (object: Object3D): void => {
+  const compute = (object: Object3D, extrasOnly = false): void => {
     const { objectId } = object;
     const key = orientationKey(object);
     const controller = new AbortController();
@@ -311,7 +338,12 @@ export function createAnalysisService(
           return;
         }
 
-        store(object, result);
+        if (extrasOnly) {
+          storeExtras(object, result);
+        } else {
+          store(object, result);
+        }
+
         failedKeys.delete(objectId);
       } catch (error) {
         if (
@@ -336,6 +368,22 @@ export function createAnalysisService(
         }
       }
     })();
+  };
+
+  /**
+   * What a project file does not hold, for an analysis up to date read
+   * from it (lot 111, Q7 A); the analysis itself does not change
+   */
+  const storeExtras = (object: Object3D, result: ModelAnalysisResult): void => {
+    const task = useAnalysisTaskStore.getState();
+
+    task.setOverhangTriangles(object.objectId, result.overhangTriangles);
+    task.setFaceAreas(object.objectId, result.faceAreas);
+    task.setOpenMesh(object.objectId, !result.meshClosed);
+    task.setNonManifold(
+      object.objectId,
+      result.meshClosed && !result.meshManifold,
+    );
   };
 
   /** Complete Analysis Schema, validated, then stored */
@@ -438,7 +486,7 @@ export function createAnalysisService(
         failedKeys.delete(object.objectId);
 
         if (!isUpToDate(object.objectId) && !queue.has(object.objectId)) {
-          queue.set(object.objectId, false);
+          queue.set(object.objectId, "auto");
         }
       }
 
@@ -458,7 +506,7 @@ export function createAnalysisService(
           continue;
         }
 
-        queue.set(objectId, true);
+        queue.set(objectId, "force");
       }
 
       update();

@@ -2,7 +2,7 @@
 
 # TEST PLAN
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -1022,6 +1022,86 @@ Values with a unit in Hebrew (lot 109):
     before its number is refused
 ```
 
+Project Persistence, Phase 13 (lot 111, ADR-038; DATA_SCHEMA.md 3.16.0, Project File; decision 119 of Noam, Q1 to Q22 A):
+
+```text
+Project file (unit, tests/unit/project/ProjectFile.test.ts):
+  meshData: the same numbers back; a text of another length, not base64,
+    a value not finite, a count that is not 9 numbers per triangle
+    refused
+  save then open: each object value by value, its triangles, analysis,
+    recommendation and profiles; projectId and createdAt kept at each
+    save, updatedAt changed; application in metadata, never author;
+    no temporary file left; only the results of the objects of the scene
+  errors: PROJ_001 file missing; PROJ_002 not a .wyproj, not JSON, an
+    unknown field, a damaged triangle, a reference to an object missing,
+    a content not valid; PROJ_003 newer or older format, with the
+    versions; PROJ_004 a writing that fails leaves the file as it was;
+    PROJ_005 a file larger than the limit is not read
+  a large object (500 000 triangles) saved and opened; the name of the
+    project is the name of its file; the same text at each export
+
+Recovery (unit, tests/unit/recovery/Recovery.test.ts): nothing without a
+  copy; the copy written, offered with its name and time, its project
+  given, then removed; a project never saved (no name, no path); removed
+  at once at a normal close; a damaged copy, a copy without description
+  or with a description not valid set aside in quarantine, never offered
+
+Recent projects (unit, tests/unit/storage/RecentProjects.test.ts): the
+  10 last, the most recent first; a project opened again moves to the
+  top; remove, clear; paths compared without case on Windows; the other
+  settings kept; only the valid paths of a damaged list read
+
+Project channels (unit, tests/unit/electron/ProjectIPC.test.ts): the 10
+  channels; Save As adds .wyproj, Save writes through the token; a
+  dialog cancelled writes nothing; a token not known and a path sent by
+  the window refused; a project read without meshData, triangles as
+  numbers, a new token; a .wyproj dropped opened, another file or a
+  relative path refused; a recent project not found gives PROJ_001 and
+  leaves the list; the copy offered, restored with the file of the
+  project, removed at a save; an invalid payload refused without
+  throwing; a file name without the characters Windows refuses
+
+Project service (unit, tests/unit/services/ProjectService.test.ts):
+  profiles: the same, the one of the list when it changed (recommendations
+    outdated, message), the copy in This project when it is missing
+    (message), compared whatever the order of their fields
+  the scene replaced, collected again to the same content
+  modified: a project recovered is modified, an empty project never saved
+    is not, Undo back to the place saved removes the mark, a change
+    outside the history stays until the save
+  questions: New asks first, Cancel changes nothing, Don't Save empties
+    the scene and keeps the printer, removes the copy; Save then does
+    what waited; Save on a project never saved opens Save As, cancelled
+    nothing else happens; a save that fails keeps the scene (PROJ_004);
+    PROJ_003 older or newer has its own message
+  drop: a project alone opened; with other files refused, the others
+    imported
+
+3MF names (unit, tests/unit/scene/ThreeMFNames.test.ts; KI-020): the
+  attribute name of each object read, null without it; given to the
+  object imported, trimmed, 100 characters at most; XML entities decoded,
+  control characters removed
+
+Analysis (unit, tests/unit/services/AnalysisService.test.ts): after an
+  opening, only the overhang triangles and the areas of the faces are
+  computed; the analysis saved is not changed
+
+End to end (tests/e2e/project.spec.ts): Save As, New, Open: the object
+  back with its name and position, title "• name — SlicyWeb" while
+  modified, status bar, recent projects with the full path on hover;
+  "Save the changes?": Save has the focus, Cancel and Escape keep the
+  scene, Don't Save empties it; the close button of the window asks; a
+  damaged file (PROJ_002) changes nothing; automatic save every 5 s
+  (settings of the test), process killed, Recover at the next start,
+  the copy removed after Exit and Don't Save, nothing offered at the
+  next start; Hebrew: texts, buttons mirrored
+
+Manual (Noam, lot 111, LOT111.md): forced close with the Task Manager
+  of Windows and recovery; the recovery folder emptied at a normal
+  close; a large model saved and opened on the PC of Noam
+```
+
 ---
 
 # Project Management Unit Tests
@@ -1064,7 +1144,6 @@ Test:
 Auto Save Creation
 Auto Save Validation
 Recovery File Validation
-Session Restoration
 Corrupted Recovery Rejection
 Safe State Restoration
 ```

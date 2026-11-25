@@ -158,6 +158,8 @@ test("keeps the language of a settings.json without printer", async ({
       printerPower: {},
       filamentPrices: {},
     },
+    project: { autoSave: true, autoSaveInterval: 300 },
+    files: { recentProjects: [] },
   });
   expect(errors).toEqual([]);
 });

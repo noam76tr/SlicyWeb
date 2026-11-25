@@ -11,6 +11,8 @@
  *   Settings, GUI Settings)
  * - DECISIONS.md (ADR-032, D8; ADR-033, D9; ADR-037)
  * - DATA_SCHEMA.md 3.15.0 (User Preferences Schema: cost)
+ * - DATA_SCHEMA.md 3.16.0 (User Preferences Schema: project, files;
+ *   lot 111, Q17 A and Q18 A)
  * - PASSATION.md (decision 90: tabs of the Properties Panel; lot 95, Q3 B:
  *   the open tab is not stored, gui is no longer part of the preferences)
  */
@@ -23,10 +25,13 @@ import {
   DEFAULT_CURRENCY_BY_LANGUAGE,
 } from "../constants/CostConstants";
 import {
+  AUTOSAVE_INTERVAL_SECONDS,
   DEFAULT_LANGUAGE,
   DEFAULT_THEME,
   DEFAULT_UNITS,
+  MAX_RECENT_PROJECTS,
 } from "../constants/ApplicationConstants";
+import { AUTOSAVE_INTERVAL_LIMITS } from "../constants/ProjectConstants";
 
 import type { UserPreferences } from "../types/UserPreferences";
 
@@ -85,6 +90,34 @@ export const CostPreferencesSchema = z
   .strict();
 
 /**
+ * Automatic save (DATA_SCHEMA.md 3.16.0, User Preferences Schema:
+ * project; lot 111, Q18 A)
+ */
+export const ProjectPreferencesSchema = z
+  .object({
+    autoSave: z.boolean(),
+    autoSaveInterval: z
+      .number()
+      .int()
+      .min(AUTOSAVE_INTERVAL_LIMITS.min)
+      .max(AUTOSAVE_INTERVAL_LIMITS.max),
+  })
+  .strict();
+
+/** A path of a recent project: a text of 1 to 4096 characters */
+export const RecentProjectSchema = z.string().min(1).max(4096);
+
+/**
+ * Files (DATA_SCHEMA.md 3.16.0, User Preferences Schema: files; Q17 A):
+ * the recent projects, 10 at most
+ */
+export const FilePreferencesSchema = z
+  .object({
+    recentProjects: z.array(RecentProjectSchema).max(MAX_RECENT_PROJECTS),
+  })
+  .strict();
+
+/**
  * Tabs of the Properties Panel (GUI_SPEC.md, Properties Tabs). Not stored
  * in settings.json since lot 95 (DATA_SCHEMA.md 3.12.0): the Printer tab
  * is open at every start.
@@ -102,6 +135,8 @@ export const UserPreferencesSchema = z
     printer: PrinterPreferencesSchema,
     material: MaterialPreferencesSchema,
     cost: CostPreferencesSchema,
+    project: ProjectPreferencesSchema,
+    files: FilePreferencesSchema,
   })
   .strict();
 
@@ -111,7 +146,13 @@ export const UserPreferencesSchema = z
  * and cost are replaced as a whole: an update of one of them gives all of
  * its fields.
  */
-export const UserPreferencesUpdateSchema = UserPreferencesSchema.partial();
+export const UserPreferencesUpdateSchema = UserPreferencesSchema.omit({
+  // The recent projects are written by the main process only (lot 111,
+  // Q20 A): the window never gives a path to open
+  files: true,
+})
+  .partial()
+  .strict();
 
 /**
  * Default preferences (ApplicationConstants)
@@ -131,6 +172,13 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
     autoloadLastMaterial: true,
   },
   cost: defaultCostPreferences(DEFAULT_LANGUAGE),
+  project: {
+    autoSave: true,
+    autoSaveInterval: AUTOSAVE_INTERVAL_SECONDS,
+  },
+  files: {
+    recentProjects: [],
+  },
 };
 
 /**

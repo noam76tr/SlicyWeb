@@ -2871,6 +2871,97 @@ Reason:
 ---
 
 
+# ADR-038
+
+Title: Project Persistence
+
+Status: Accepted
+
+Date: 2026-11-25
+
+## Context
+
+Phase 13 (Project Persistence) must save and open a project (PHASES_IMPLEMENTATION_PLAN.md). The WYPROJ format (ADR-020: one JSON file, all data in the file) had no field for the triangles of an object, so a project opened again had nothing to show. The project and the scene both had printer, material, filament and preset (decision 4 open, "Known Duplication"). ProjectManager, ProjectIPC (4 channels), AutoSaveService, RecoveryManager and SessionRestorer existed but were never called; no file was ever written. USER_SETTINGS_SPEC.md asked for 20 recent projects and restoreLastSession true. Analysis: lot 110 (LOT110-QUESTIONS.md), answers of Noam Q1 to Q22 (2026-11-25, all A; decision 119 of PASSATION.md).
+
+## Decision
+
+- Scope (Q1): New, Open, Save, Save As, Close; a .wyproj dropped; unsaved changes (mark and question); recent projects; automatic save and recovery after a crash. The Preferences window, the export to the slicer (Phase 14) and the cloud are outside Phase 13.
+- Triangles (Q2): in the .wyproj itself, new field meshData of the object: the vertices of the triangles, 32-bit numbers little-endian, in base64, in the frame of the object; normals computed again at the opening. About 48 MB for one million triangles.
+- Profiles (Q3): the project keeps a full copy of the printer, the material and the filament. At the opening: same id and same profile in the lists, it is chosen; same id but a changed profile, the profile of the list is chosen and the recommendations are made again, with a message; id missing, the copy is used for this project only, in a group "This project" of the selector, with a message. Opening a project never changes the last choice kept in the settings.
+- Source of truth (Q4): the project (project.printer, material, filament); scene.printer, material, filament and preset removed, the scene keeps objects only; project.preset stays null (the preset is in the recommendation of each object); project.settings stays {}. End of decision 4.
+- Version (Q5): the format stays 3.0.0 (no file was ever written). A newer version is refused (PROJ_003, with both versions); an older version will be opened by a conversion written with the future version, refused until then.
+- Saved (Q6): each object (name, file, visible, locked, transform, triangles), its analysis, its recommendation, the printer, the material and the filament. Not saved: selection, camera, tab, overhang display, history, estimation, costs.
+- Opening (Q7): the analyses and recommendations of the file are shown at once with their status; the Web Worker computes again only the overhang triangles and the areas of the faces, without changing the analysis; a recommendation is made again only when its profile changed.
+- File menu (Q8): New Ctrl+N, Open Ctrl+O, Recent Projects, Save Ctrl+S, Save As Ctrl+Shift+S, Import STL, Import 3MF, Close Project, Exit; Open WYPROJ and Export WYPROJ removed.
+- Name (Q9): the name of the file without .wyproj; "Untitled" before the first save, never written.
+- Save (Q10): Save writes the file of the project (Save As for a project never saved); Save As in the dialog of Windows (last folder, otherwise Documents); written through a temporary file renamed at the end; "Saving…", then "Project saved"; possible during an analysis.
+- Modified (Q11): every change written in the file; Undo or Redo back to the state saved removes the mark.
+- Display (Q12): title "• name — SlicyWeb", Project line with "modified", Project Status in the status bar.
+- Question (Q13): "Save the changes to “name”?" with Save (focused), Don't Save, Cancel (Escape) before New, Open, a recent project, a project dropped, Close, Exit and the close button of the window.
+- New and Close (Q14): empty scene, history emptied, "Untitled"; the printer, the material and the filament stay.
+- Open and drop (Q15): replaces the scene, without Undo; a .wyproj dropped alone is opened and keeps its path; dropped with STL or 3MF files, only the project is refused.
+- Errors (Q16): a file refused changes nothing; PROJ_001 to PROJ_003, new PROJ_004 Project Save Failed and PROJ_005 Project Too Large (500 MB).
+- Recent projects (Q17): 10, in files.recentProjects of the User Preferences Schema (DATA_SCHEMA.md 3.16.0); a project not found leaves the list.
+- Automatic save (Q18): every 5 minutes, only while modified, a copy in the recovery folder of the user data folder, never in the file of the user; removed at a save, at Don't Save and at a normal close. project.autoSave and project.autoSaveInterval in the User Preferences Schema.
+- Recovery (Q19): at start, a copy still there is offered (Recover, Ignore); a damaged copy goes to recovery/quarantine; a normal start opens an empty scene (restoreLastSession removed).
+- Security (Q20): the dialogs, the reading and the writing in the main process only; the window never sends a path to write (a token stands for the file); read paths: a number of the recent list, a .wyproj dropped; every file validated in full. 10 project channels replace the 4 old ones (35 channels).
+- KI-020 and author (Q21): the name of an object of a 3MF becomes its name at the import; author never written.
+- Code (Q22): ProjectManager, ProjectIPC, AutoSaveService, RecoveryManager, RecoveryValidator and ProjectService rewritten under the same names; the unused methods of ProjectManager and SessionRestorer.ts removed. The HTTP Project API of API_SPEC.md is not implemented: KI-033.
+- Taken alone in lot 111 (LOT111.md): the close button of the window is caught in the window (beforeunload) instead of a message from the main process; the main process removes the copy when the window is closed. Save As keeps the projectId of the project. The shortcuts of the File menu also work in a text field.
+
+## Consequences
+
+Advantages:
+
+- One file holds the whole project, opened on another computer even when the STL files are gone
+- A file refused or a save that fails never changes the scene or the existing file
+- Work lost after a crash is at most 5 minutes
+
+Disadvantages:
+
+- Large files (about 48 MB for one million triangles)
+- A project of an older format cannot be opened until its conversion is written
+- The copy of a profile in the project can grow old (message at the opening)
+
+## Alternatives Considered
+
+Only the paths of the STL and 3MF files (Q2, option B)
+
+Rejected
+
+Reason:
+
+- The project is lost when a file is moved, and does not open on another computer (ADR-020)
+
+A zip archive (Q2, option C)
+
+Rejected
+
+Reason:
+
+- No longer one JSON file: a new format for a smaller file only
+
+Automatic save in the file of the user (Q18, option B)
+
+Rejected
+
+Reason:
+
+- Nothing for a project never saved, and no recovery when the file is damaged
+
+## Related Documents
+
+- DATA_SCHEMA.md 3.16.0 (Project File, Project, Scene, Object meshData, Object Reference Rule 12, User Preferences project and files)
+- IMPORT_EXPORT_SPEC.md 3.2.0, USER_SETTINGS_SPEC.md 2.4.0, ERROR_CODES_SPEC.md 2.8.0
+- API_SPEC.md 2.2.0 (ProjectIPC Channels, KI-033), SECURITY_SPEC.md 2.1.0, GUI_SPEC.md 2.1.0, UNDO_REDO_SPEC.md 2.7.0
+- PERFORMANCE_SPEC.md 1.5.0, TEST_PLAN.md 2.1.0, DOMAINS_DEPENDENCY_MATRIX.md 2.2.0
+- PHASES_IMPLEMENTATION_PLAN.md (Phase 13)
+- ADR-020, ADR-029, ADR-035, ADR-037
+- ARCHITECTURE_DECISION_MATRIX.md (ADM-034)
+
+---
+
+
 # Future Decision Template
 
 Copy and complete:

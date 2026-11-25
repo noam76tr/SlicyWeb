@@ -233,6 +233,11 @@ async function followSelection(printers: Printer[]): Promise<void> {
 
   const current = printers.find((item) => item.id === selected.id);
 
+  // The printer of the project stays chosen (lot 111, Q3 A)
+  if (!current && selected === usePrinterStore.getState().projectPrinter) {
+    return;
+  }
+
   if (current) {
     usePrinterStore.getState().setSelectedPrinter(current);
   } else {
@@ -441,7 +446,10 @@ export const PrinterSelectionService = {
     const printer =
       printerId === null
         ? null
-        : (store.printers.find((item) => item.id === printerId) ?? null);
+        : (store.printers.find((item) => item.id === printerId) ??
+          (store.projectPrinter?.id === printerId
+            ? store.projectPrinter
+            : null));
 
     if (printerId !== null && !printer) {
       return;

@@ -4166,6 +4166,72 @@ Date:
 
 ---
 
+# VERSION 0.1.111
+
+Release Type:
+Project Persistence (Phase 13)
+
+Status:
+In Progress
+
+Date:
+2026-11-25
+
+## Added
+
+- Phase 13, Project Persistence, in one delivery (ADR-038; analysis of lot 110, LOT110-QUESTIONS.md; decision 119: Q1 to Q22 A):
+  - File menu (Q8 A): New Project Ctrl+N, Open Project Ctrl+O, Recent Projects, Save Ctrl+S, Save As Ctrl+Shift+S, Import STL, Import 3MF, Close Project, Exit; a .wyproj dropped on the viewport is opened (alone; with STL or 3MF files, only the project is refused; Q15 A)
+  - project file (DATA_SCHEMA.md 3.16.0, Project File; Q2 to Q6 A): one JSON file, format 3.0.0; the triangles of each object in meshData (base64 of 32-bit numbers); its analysis and its recommendation; full copies of the printer, the material and the filament; the scene keeps the objects only; written through a temporary file renamed at the end
+  - opening (Q3, Q7 A): analyses and recommendations shown at once; only the overhang triangles and the areas of the faces computed again; a profile changed is taken from the list (recommendations made again), a profile missing is used for this project only, in a group "This project" of the selector, with a message
+  - name and state (Q9, Q11, Q12 A): name = the file name, "Untitled" before the first save; title "• name — SlicyWeb" while modified; "modified" on the Project line; Project Status in the status bar ("Saving…", "Project saved", "Modified", "Saved at 14:32", "Opened", "Not saved"); Undo back to the state saved removes the mark
+  - "Save the changes?" (Q13 A): Save (focused), Don't Save, Cancel (Escape) before New, Open, a recent project, a project dropped, Close, Exit and the close button of the window; mirrored in Hebrew
+  - recent projects (Q17 A): the 10 last, Clear List; files.recentProjects of settings.json; a project not found (PROJ_001) leaves the list
+  - automatic save (Q18 A): every 5 minutes while modified, a copy in the recovery folder of the user data folder (Windows: %APPDATA%\SlicyWeb\recovery), removed at a save, at Don't Save and at a normal close; project.autoSave and project.autoSaveInterval in the preferences
+  - recovery (Q19 A): at start, "SlicyWeb did not close normally": Recover or Ignore; a damaged copy set aside in recovery/quarantine; a normal start opens an empty scene
+  - errors (Q16 A): PROJ_001 to PROJ_003 translated; new PROJ_004 Project Save Failed and PROJ_005 Project Too Large (500 MB) (ERROR_CODES_SPEC.md 2.8.0); a file refused changes nothing
+  - security (Q20 A): dialogs, reading and writing in the main process only; 10 project channels (project:open, openRecent, openPath, save, saveAs, recent, clearRecent, autosave, recovery, discardRecovery) replace project:create, delete, load and save (35 channels); the window knows a file by a token, never sends a path to write; getPathForFile in the preload bridge for a file dropped
+- 3MF (Q21 A, KI-020): the attribute name of an object becomes its name at the import ("Support", "Base" instead of "plate (1)", "plate (2)"); the other metadata of a 3MF are not kept; author is never written
+- src/constants/ObjectConstants.ts, src/constants/ProjectConstants.ts; src/project/MeshDataCodec.ts, src/project/ProjectError.ts; src/storage/RecentProjectsStorage.ts; src/state/projectStore.ts; src/gui/dialogs/UnsavedChangesDialog.tsx, src/gui/dialogs/RecoveryDialog.tsx; src/gui/project/ProjectMessages.tsx, src/gui/project/projectFormat.ts; src/gui/hooks/useProjectShortcuts.ts
+- 35 keys in en, fr and he: project.recent, clearRecent, modified, thisProject, opening, dropAlone, project.dialog.* (3), project.unsaved.* (3), project.recovery.* (5), project.status.* (6), project.error.* (6), project.message.* (6) (575 keys)
+- KNOWN ISSUES: KI-033 added (HTTP Project API of API_SPEC.md)
+
+## Changed
+
+- src/project/ProjectManager.ts, src/electron/ipc/ProjectIPC.ts, src/recovery/AutoSaveService.ts, src/recovery/RecoveryManager.ts, src/recovery/RecoveryValidator.ts and src/services/ProjectService.ts rewritten under the same names (Q22 A); src/project/WYPROJImporter.ts (size limit, triangles), ProjectValidator.ts, ProjectSerializer.ts, ProjectDeserializer.ts, WYPROJExporter.ts
+- src/schemas/ProjectSchema.ts (objects checked in full, meshData, isBase64), src/schemas/UserPreferencesSchema.ts, src/types/Project.ts, src/types/Scene.ts, src/types/UserPreferences.ts, src/storage/SettingsStorage.ts (project and files), src/storage/StorageManager.ts and src/services/StorageService.ts (without ProjectStorage)
+- src/electron/main.ts (ProjectIPC with the recovery folder and the recent projects; the copy removed when the window is closed), src/electron/preload.ts, src/electron/ipc/IpcChannels.ts, scripts/build/check-ipc-channels.mjs (this.handle)
+- src/state/printerStore.ts, materialStore.ts, filamentStore.ts (profile of the project); src/services/PrinterSelectionService.ts, MaterialSelectionService.ts; src/gui/sidebar/PrinterSection.tsx, MaterialSection.tsx, FilamentSection.tsx ("This project")
+- src/services/AnalysisService.ts (overhang triangles and areas of the faces only, after an opening), src/services/ImportService.ts, src/services/ObjectStateService.ts, src/scene/SceneFactory.ts, src/scene/SceneIntegration.ts, src/importer/ThreeMFParser.ts
+- src/gui/App.tsx, src/gui/menus/MenuBar.tsx, src/gui/sidebar/RightSidebar.tsx, src/gui/statusbar/StatusBar.tsx, src/gui/import/ImportDropZone.tsx
+- DECISIONS.md (ADR-038), ARCHITECTURE.md 2.0.1 (Storage Layer without ProjectStorage), ARCHITECTURE_DECISION_MATRIX.md 2.10.0 (ADM-034), DATA_SCHEMA.md 3.16.0, IMPORT_EXPORT_SPEC.md 3.2.0, USER_SETTINGS_SPEC.md 2.4.0 (restoreLastSession removed, 10 recent projects), ERROR_CODES_SPEC.md 2.8.0, API_SPEC.md 2.2.0 (ProjectIPC Channels, 35 channels), GUI_SPEC.md 2.1.0, UNDO_REDO_SPEC.md 2.7.0, SECURITY_SPEC.md 2.1.0, PERFORMANCE_SPEC.md 1.5.0, TEST_PLAN.md 2.1.0, DOMAINS_DEPENDENCY_MATRIX.md 2.2.0, FILE_STRUCTURE.md 2.1.0, DIRECTORY_PURPOSES.md 2.2.0, PHASES_IMPLEMENTATION_PLAN.md 2.2.0 (Phase 13 In Progress)
+- PASSATION.md: decision 119
+- docs/lots/LOT111.md
+
+## Removed
+
+- src/recovery/SessionRestorer.ts (Q19 and Q22 A: nothing is opened again by itself)
+- src/storage/ProjectStorage.ts (a project kept in memory, never used; Q22 A), with StorageManager.saveProject, loadProject, clearProjects and StorageService.saveProject, loadProject, clearProjects (answer of Noam, 2026-11-25)
+- ProjectManager: updateScene, updateAnalysis, removeObject, duplicateObject, updateObjectTransform, setObjectAnalysis, markAnalysisOutdated, updateRecommendations, updateSettings (never called; Q22 A)
+- Menu lines Open WYPROJ and Export WYPROJ, keys project.openWyproj and project.exportWyproj (Q8 A)
+- scene.printer, scene.material, scene.filament, scene.preset (DATA_SCHEMA.md 3.16.0; Q4 A)
+
+## Fixed
+
+- KI-020 resolved (3MF object names and metadata not kept)
+
+## Tests
+
+- tests/unit/project/ProjectFile.test.ts (16 tests), tests/unit/project/projectTestData.ts: meshData, save and open value by value, identity, no author, only the results of the scene, PROJ_001 to PROJ_005, an object of 500 000 triangles, the same text at each export
+- tests/unit/recovery/Recovery.test.ts (6 tests), tests/unit/storage/RecentProjects.test.ts (4 tests), tests/unit/electron/ProjectIPC.test.ts (13 tests), tests/unit/services/ProjectService.test.ts (17 tests), tests/unit/scene/ThreeMFNames.test.ts (3 tests), tests/unit/services/AnalysisService.test.ts (2 tests: after an opening)
+- tests/e2e/project.spec.ts (6 tests, new): Save As, New, Open, recent projects; "Save the changes?"; the close button of the window; a damaged file; automatic save, process killed, recovery, copy removed; Hebrew (731 + 1 tests, 83 e2e)
+- tests/unit/storage/SettingsStorage.test.ts, tests/e2e/app.spec.ts, printer.spec.ts, tabs.spec.ts, estimation.spec.ts, fixtures.ts (closeApp: a project modified stops a normal close): adapted, none removed
+
+## Validation Result
+
+- Linux (2026-11-25): see LOT111.md
+
+---
+
 # VERSION 0.2.0
 
 Release Type:
@@ -5011,22 +5077,6 @@ Planned Resolution: Read the plate of each object (Metadata/model_settings.confi
 ---
 
 
-Identifier: KI-020
-
-Since: 0.1.43
-
-Affected Module: DATA_SCHEMA.md (Object Schema), src/importer/ThreeMFParser.ts
-
-Issue: IMPORT_EXPORT_SPEC.md (3MF Import, Extracted Data; Metadata Handling) lists the object names and the metadata (author, creation date, application) of a 3MF file, but the Object Schema has no field for them. The import does not keep them: the objects of a 3MF file are named after the file ("plate (1)", "plate (2)").
-
-Resolve Before: Phase 13 - Project Persistence (technical plan)
-
-Planned Resolution: Decide whether the Object Schema gets a name field (and where the metadata of an imported file are stored), then read them in ThreeMFParser.ts; or remove them from IMPORT_EXPORT_SPEC.md.
-
-
----
-
-
 Identifier: KI-021
 
 Since: 0.1.51
@@ -5177,6 +5227,21 @@ Issue: The accuracy of the estimated print time is not measured. One try only (c
 Resolve Before: Phase 14 - Target Slicer Export (technical plan)
 
 Planned Resolution: When the export writes the settings for the slicer, compare the estimation with the slicer on the same settings, automatically if possible, and adjust the speed factor (and the line width) with the answer of Noam.
+
+---
+
+
+Identifier: KI-033
+
+Since: 0.1.111
+
+Affected Module: API_SPEC.md (Project API)
+
+Issue: API_SPEC.md describes an HTTP Project API (POST /api/project/save, /load, /new, /autosave, /recovery). No HTTP API exists in the application (as KI-007, KI-030 and KI-031); Phase 13 saves and opens the projects through the project channels of the IPC Layer (API_SPEC.md, ProjectIPC Channels; ADR-038).
+
+Resolve Before: Implementation of an HTTP API
+
+Planned Resolution: Documentation lot: align the Project API of API_SPEC.md on the project channels (open, save, recovery; DATA_SCHEMA.md 3.16.0, Project File), with the decision on the API_SPEC.md version (KI-007).
 
 ---
 

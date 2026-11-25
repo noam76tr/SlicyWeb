@@ -21,7 +21,14 @@ import type { Page } from "@playwright/test";
 import en from "../../public/locales/en.json";
 import fr from "../../public/locales/fr.json";
 
-import { cubeStl, expect, importFiles, openTab, test } from "./fixtures";
+import {
+  closeApp,
+  cubeStl,
+  expect,
+  importFiles,
+  openTab,
+  test,
+} from "./fixtures";
 
 /** Section of the Properties Panel with this title */
 function section(window: Page, title: string) {
@@ -134,7 +141,7 @@ test("estimates the cube by itself, then counts the costs given", async ({
   expect(started.errors).toEqual([]);
 
   // The cost settings are kept for the next start
-  await started.app.close();
+  await closeApp(started.app);
   const again = await launch();
   await openTab(again.window, "printer");
   await again.window

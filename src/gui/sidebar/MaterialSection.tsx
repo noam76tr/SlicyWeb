@@ -18,6 +18,9 @@
  * last material. Material > Select Material (menu) moves the focus to the
  * selector (MATERIAL_SELECTOR_ID).
  *
+ * The material of the project opened, when it is not in the list, is offered
+ * first in the group "This project" (lot 111, decision 119 of Noam, Q3 A).
+ *
  * No business logic.
  *
  * Based on:
@@ -45,6 +48,7 @@ export default function MaterialSection(): JSX.Element {
 
   const materials = useMaterialStore((state) => state.materials);
   const selected = useMaterialStore((state) => state.selectedMaterial);
+  const projectMaterial = useMaterialStore((state) => state.projectMaterial);
   const printer = usePrinterStore((state) => state.selectedPrinter);
 
   const notListed =
@@ -70,6 +74,11 @@ export default function MaterialSection(): JSX.Element {
           className={SELECT_CLASS}
         >
           <option value={NONE}>{t("material.none")}</option>
+          {projectMaterial && (
+            <optgroup label={t("project.thisProject")}>
+              <option value={projectMaterial.id}>{projectMaterial.name}</option>
+            </optgroup>
+          )}
           {materials.map((material) => (
             <option key={material.id} value={material.id}>
               {material.name}

@@ -8,7 +8,13 @@
  * Active items:
  * - Language: changes the interface language (saved in the user
  *   settings, I18nProvider);
- * - File > Exit: closes the application window;
+ * - File > New Project (Ctrl+N), Open Project (Ctrl+O), Recent Projects
+ *   (the 10 last projects, Clear List; disabled while the list is empty),
+ *   Save (Ctrl+S), Save As (Ctrl+Shift+S), Close Project (disabled while
+ *   the project is empty and never saved), Exit (Phase 13, lot 111,
+ *   decision 119 of Noam, Q8 A: Open WYPROJ and Export WYPROJ removed);
+ *   ProjectService asks "Save the changes?" first when the project is
+ *   modified (Q13 A);
  * - View (Phase 4): perspective or orthographic projection, the seven
  *   view presets and Reset View (viewport store); Show Overhangs (lot 82):
  *   turns the Overhang Display on and off, like the button Overhangs over
@@ -78,6 +84,7 @@ import { ArrangeService } from "../../services/ArrangeService";
 import { ObjectEditService } from "../../services/ObjectEditService";
 import { ObjectStateService } from "../../services/ObjectStateService";
 import { PrinterSelectionService } from "../../services/PrinterSelectionService";
+import { ProjectService } from "../../services/ProjectService";
 import { PropertiesTabService } from "../../services/PropertiesTabService";
 import { optimizeOrientation } from "../../services/OptimizationService";
 import { generateRecommendations } from "../../services/RecommendationService";
@@ -87,6 +94,7 @@ import { TransformService } from "../../services/TransformService";
 import { useHistoryStore } from "../../state/historyStore";
 import { useObjectStore } from "../../state/objectStore";
 import { useOptimizationTaskStore } from "../../state/optimizationTaskStore";
+import { useProjectStore } from "../../state/projectStore";
 import {
   useViewportStore,
   type ViewPreset,
@@ -102,6 +110,9 @@ import {
   MenubarRadioItem,
   MenubarSeparator,
   MenubarShortcut,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
   MenubarTrigger,
 } from "../components/ui/menubar";
 import { LANGUAGE_NAME_KEYS, useTranslation } from "../hooks/useTranslation";
@@ -141,7 +152,16 @@ interface MenuItemDefinition {
    * (recommend), or the scene has objects and no search runs (optimize),
    * or an object is hidden (hidden: View > Show All, lot 106)
    */
-  needs?: "objects" | "selection" | "recommend" | "optimize" | "hidden";
+  needs?:
+    | "objects"
+    | "selection"
+    | "recommend"
+    | "optimize"
+    | "hidden"
+    | "project";
+
+  /** The submenu of the recent projects (lot 111, Q17 A) */
+  recent?: boolean;
 }
 
 interface MenuDefinition {
@@ -160,8 +180,9 @@ function requestView(view: ViewPreset): () => void {
 
 function closeApplication(): void {
   // Closing the only window quits the application
-  // (src/electron/main.ts, window-all-closed).
-  window.close();
+  // (src/electron/main.ts, window-all-closed); "Save the changes?" first
+  // when the project is modified (lot 111, Q13 A).
+  void ProjectService.quit();
 }
 
 const MENUS: MenuDefinition[] = [
@@ -169,14 +190,29 @@ const MENUS: MenuDefinition[] = [
     key: "menu.file",
     groups: [
       [
-        { key: "project.new", shortcut: "Ctrl+N" },
-        { key: "project.open", shortcut: "Ctrl+O" },
-        { key: "project.openWyproj" },
+        {
+          key: "project.new",
+          shortcut: "Ctrl+N",
+          action: () => void ProjectService.newProject(),
+        },
+        {
+          key: "project.open",
+          shortcut: "Ctrl+O",
+          action: () => void ProjectService.open(),
+        },
+        { key: "project.recent", recent: true },
       ],
       [
-        { key: "project.save", shortcut: "Ctrl+S" },
-        { key: "project.saveAs" },
-        { key: "project.exportWyproj" },
+        {
+          key: "project.save",
+          shortcut: "Ctrl+S",
+          action: () => void ProjectService.save(),
+        },
+        {
+          key: "project.saveAs",
+          shortcut: "Ctrl+Shift+S",
+          action: () => void ProjectService.saveAs(),
+        },
       ],
       [
         {
@@ -188,7 +224,13 @@ const MENUS: MenuDefinition[] = [
           action: () => openImportDialog(IMPORT_ACCEPT.threeMf),
         },
       ],
-      [{ key: "project.close" }],
+      [
+        {
+          key: "project.close",
+          action: () => void ProjectService.closeProject(),
+          needs: "project",
+        },
+      ],
       [{ key: "app.exit", action: closeApplication }],
     ],
   },
@@ -402,6 +444,10 @@ export default function MenuBar(): JSX.Element {
   const canRecommend = hasPrinter && hasMaterial;
   const optimizing = useOptimizationTaskStore((state) => state.running);
   const focusTarget = useRef<string | null>(null);
+  const recentProjects = useProjectStore((state) => state.recentProjects);
+  const hasProject = useProjectStore(
+    (state) => state.token !== null,
+  ) || hasObjects;
 
   /**
    * Element of focusId of the item chosen, otherwise the menu title; when
@@ -429,7 +475,35 @@ export default function MenuBar(): JSX.Element {
     (item.needs === "selection" && !hasSelection) ||
     (item.needs === "recommend" && !(hasObjects && canRecommend)) ||
     (item.needs === "optimize" && !(hasObjects && !optimizing)) ||
-    (item.needs === "hidden" && !hasHidden);
+    (item.needs === "hidden" && !hasHidden) ||
+    (item.needs === "project" && !hasProject);
+
+  // File > Recent Projects (lot 111, Q17 A): name, full path on hover
+  const renderRecent = (item: MenuItemDefinition): JSX.Element => (
+    <MenubarSub key={item.key}>
+      <MenubarSubTrigger
+        disabled={recentProjects.length === 0}
+        data-recent-projects
+      >
+        {t(item.key)}
+      </MenubarSubTrigger>
+      <MenubarSubContent>
+        {recentProjects.map((project, index) => (
+          <MenubarItem
+            key={project.path}
+            title={project.path}
+            onClick={() => void ProjectService.openRecent(index)}
+          >
+            <span dir="auto">{project.name}</span>
+          </MenubarItem>
+        ))}
+        <MenubarSeparator />
+        <MenubarItem onClick={() => void ProjectService.clearRecent()}>
+          {t("project.clearRecent")}
+        </MenubarItem>
+      </MenubarSubContent>
+    </MenubarSub>
+  );
 
   const renderMenu = (
     menu: MenuDefinition,
@@ -446,7 +520,7 @@ export default function MenuBar(): JSX.Element {
           <Fragment key={group[0].key}>
             {(index > 0 || header) && <MenubarSeparator />}
 
-            {group.map((item) => (
+            {group.map((item) => item.recent ? renderRecent(item) : (
               <MenubarItem
                 key={item.key}
                 disabled={isDisabled(item)}

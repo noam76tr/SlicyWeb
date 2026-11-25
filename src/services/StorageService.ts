@@ -2,6 +2,10 @@
  * SlicyWeb
  * Storage Service Definition
  *
+ * Phase 13 (lot 111, answer of Noam): saveProject, loadProject and
+ * clearProjects removed with ProjectStorage; projects are saved and
+ * opened by ProjectService (window) and ProjectManager (main process).
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - DATA_SCHEMA.md
@@ -9,7 +13,6 @@
  * - USER_SETTINGS_SPEC.md
  */
 
-import type { Project } from "../types/Project";
 import type { UserPreferences } from "../types/UserPreferences";
 
 import { StorageManager } from "../storage/StorageManager";
@@ -19,23 +22,6 @@ export class StorageService {
     private readonly storageManager: StorageManager =
       new StorageManager()
   ) {}
-
-  public saveProject(
-    project: Project
-  ): void {
-    this.storageManager.saveProject(
-      project
-    );
-  }
-
-  public loadProject():
-    Project | null {
-    return this.storageManager.loadProject();
-  }
-
-  public clearProjects(): void {
-    this.storageManager.clearProjects();
-  }
 
   public saveCache(
     key: string,

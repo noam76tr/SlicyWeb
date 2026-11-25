@@ -12,13 +12,16 @@
  *   D5: profiles synchronized with the SlicyWeb profile repository;
  *   ADR-033, D6: material and filament profiles loaded by the main
  *   process; D7: synchronized with the same repository;
- *   ADR-035, D4: print presets loaded by the main process)
+ *   ADR-035, D4: print presets loaded by the main process;
+ *   ADR-038: projects read and written by the main process, copy of the
+ *   automatic save removed at a normal close)
  */
 
 import { app, BrowserWindow } from "electron";
 
 import path from "node:path";
 
+import { RECOVERY_FOLDER } from "../constants/ProjectConstants";
 import { FilamentService } from "../services/FilamentService";
 import { MaterialService } from "../services/MaterialService";
 import { PresetLoader } from "../preset_engine/PresetLoader";
@@ -36,6 +39,7 @@ import {
   PrinterProfileCache,
   readIndexTag,
 } from "../storage/PrinterProfileCache";
+import { RecentProjectsStorage } from "../storage/RecentProjectsStorage";
 import { SettingsStorage } from "../storage/SettingsStorage";
 import type { LoadedProfiles } from "../types/ProfileSync";
 import { StorageManager } from "../storage/StorageManager";
@@ -50,6 +54,8 @@ import { SettingsIPC } from "./ipc/SettingsIPC";
 import { StorageIPC } from "./ipc/StorageIPC";
 
 let mainWindow: BrowserWindow | null = null;
+
+let projectIPC: ProjectIPC | null = null;
 
 /**
  * Printer profiles: the Official list, then the printers of the user
@@ -205,9 +211,6 @@ function loadPresets(presetLoader: PresetLoader): void {
 }
 
 async function registerIPCHandlers(): Promise<void> {
-  const projectIPC = new ProjectIPC();
-  projectIPC.register();
-
   const importIPC = new ImportIPC();
   importIPC.register();
 
@@ -271,12 +274,11 @@ async function registerIPCHandlers(): Promise<void> {
   // User preferences: settings.json in the user data folder
   // (Windows: %APPDATA%\SlicyWeb), separate from WYPROJ project files
   // (USER_SETTINGS_SPEC.md, Storage Location).
+  const settingsStorage = new SettingsStorage(
+    path.join(app.getPath("userData"), "settings.json"),
+  );
   const storageService = new StorageService(
-    new StorageManager(
-      new SettingsStorage(
-        path.join(app.getPath("userData"), "settings.json"),
-      ),
-    ),
+    new StorageManager(settingsStorage),
   );
 
   const settingsIPC = new SettingsIPC(storageService);
@@ -284,6 +286,15 @@ async function registerIPCHandlers(): Promise<void> {
 
   const storageIPC = new StorageIPC();
   storageIPC.register();
+
+  // Projects (Phase 13, ADR-038): the copy of the automatic save in
+  // <user data folder>/recovery (Windows: %APPDATA%\SlicyWeb\recovery),
+  // the recent projects in settings.json.
+  projectIPC = new ProjectIPC({
+    recoveryFolder: path.join(app.getPath("userData"), RECOVERY_FOLDER),
+    recentProjects: new RecentProjectsStorage(settingsStorage),
+  });
+  projectIPC.register();
 }
 
 function createWindow(): void {
@@ -314,6 +325,15 @@ function createWindow(): void {
 
   mainWindow.on("closed", () => {
     mainWindow = null;
+
+    // A normal close: the copy of the automatic save is no longer needed
+    // (the window asked to save the changes first; lot 111, Q18 A). A
+    // forced close keeps it for the recovery at the next start (Q19 A).
+    try {
+      projectIPC?.discardRecovery();
+    } catch (error) {
+      console.warn("The copy of the automatic save was not removed.", error);
+    }
   });
 }
 

@@ -4,7 +4,9 @@
  *
  * Checks that the allow list of invoke channels
  * (src/electron/ipc/IpcChannels.ts, INVOKE_CHANNELS) contains exactly
- * the channels registered with ipcMain.handle in src/electron/ipc/.
+ * the channels registered with ipcMain.handle in src/electron/ipc/ (or
+ * with this.handle, the helper of ProjectIPC that calls ipcMain.handle;
+ * lot 111).
  *
  * Usage (any platform, including Windows PowerShell):
  *   npm run check:ipc
@@ -31,7 +33,8 @@ const ipcDir = join(
 
 const channelsFile = "IpcChannels.ts";
 
-// Channels registered with ipcMain.handle("channel", ...)
+// Channels registered with ipcMain.handle("channel", ...) or
+// this.handle("channel", ...)
 const registered = new Set();
 
 for (const file of readdirSync(ipcDir)) {
@@ -41,7 +44,7 @@ for (const file of readdirSync(ipcDir)) {
 
   const source = readFileSync(join(ipcDir, file), "utf8");
 
-  for (const match of source.matchAll(/ipcMain\.handle\(\s*["']([^"']+)["']/g)) {
+  for (const match of source.matchAll(/(?:ipcMain|this)\.handle\(\s*["']([^"']+)["']/g)) {
     registered.add(match[1]);
   }
 }

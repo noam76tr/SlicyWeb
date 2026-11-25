@@ -3,7 +3,7 @@
 # SECURITY SPECIFICATION
 
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -519,6 +519,8 @@ Invalid Structure
 Broken Relationships
 ```
 
+Phase 13 (lot 111; DECISIONS.md, ADR-038; decision 119 of Noam, Q16 and Q20 A): a WYPROJ file is read only by the main process (ProjectManager, WYPROJImporter) and validated in full before it is sent to the window: size at most 500 MB (PROJ_005, checked before reading), JSON, format and version (PROJ_003), ProjectSchema strict (every object, analysis, recommendation and profile; analysis and recommendation keys are objectIds of the scene), meshData decoded (base64, finite numbers, a multiple of 9 numbers; PROJ_002). A file refused changes nothing in the scene. A project file is written through a temporary file of the same folder, renamed at the end: an interruption never leaves a file half written, and a write that fails leaves the existing file unchanged (PROJ_004).
+
 ---
 
 # Geometry Validation
@@ -805,6 +807,8 @@ IPC error handling must never expose internal paths, raw stack traces, or sensit
 
 The preload bridge accepts only the channels of the allow list (API_SPEC.md, Allowed IPC Channels).
 
+Project channels (Phase 13, Q20 A; API_SPEC.md, ProjectIPC Channels): the window never sends a path to write. The Windows dialogs are opened by the main process; an opened or saved project is known by the window through a token (random UUID) that the main process maps to its path; a token not known is refused (PROJ_002). Only two paths are read from the window: a number of the list of recent projects, and the absolute path of a file dropped, accepted only when it ends with .wyproj. Every payload is validated with a strict schema; an invalid payload is refused with PROJ_002 without throwing.
+
 
 
 ---
@@ -1064,6 +1068,8 @@ Be Recoverable
 Be Isolated From Main Project
 ```
 
+Phase 13 (Q18 A): the copy is written in the recovery folder of the user data folder (Windows: %APPDATA%\SlicyWeb\recovery), never in the file of the user: autosave.wyproj (a project file, validated as any project) and autosave.json (its description: format, version, savedAt, projectName, projectPath), each written through a temporary file then renamed; the description is written last, so a copy without a valid description is never offered.
+
 ---
 
 # Recovery Security
@@ -1079,6 +1085,8 @@ Verify References
 
 Restore Safe State
 ```
+
+Phase 13 (Q19 A): at start, the description and the project of the copy are validated in full before the Recovery Dialog is shown (GUI_SPEC.md). A damaged copy is moved to recovery/quarantine/<time>/ and never opened. The copy is removed at a save, at "Don't Save", at Ignore and when the window is closed normally.
 
 ---
 

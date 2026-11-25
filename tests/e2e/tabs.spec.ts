@@ -29,7 +29,14 @@ import en from "../../public/locales/en.json";
 import fr from "../../public/locales/fr.json";
 import he from "../../public/locales/he.json";
 
-import { cubeStl, expect, importFiles, openTab, test } from "./fixtures";
+import {
+  closeApp,
+  cubeStl,
+  expect,
+  importFiles,
+  openTab,
+  test,
+} from "./fixtures";
 
 type Tab = "printer" | "object" | "settings";
 
@@ -55,7 +62,7 @@ test("opens Printer at every start, and never changes the tab by itself", async 
 
   // First start: Project above the tabs, Printer open
   await expect(page.locator("[data-properties-project]")).toContainText(
-    en["project.none"],
+    en["project.untitled"],
   );
   await expect(page.getByRole("tablist")).toHaveAccessibleName(
     en["properties.tabs"],
@@ -84,7 +91,7 @@ test("opens Printer at every start, and never changes the tab by itself", async 
     panel(page, "object").getByRole("heading", { name: en["analysis.title"] }),
   ).toBeVisible();
   expect(first.errors).toEqual([]);
-  await first.app.close();
+  await closeApp(first.app);
 
   // Next start: the Printer tab again (lot 95, Q3 B)
   const second = await launch();

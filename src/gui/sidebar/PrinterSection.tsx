@@ -7,7 +7,8 @@
  * - the selector lists the printers by brand, then by model
  *   (Brand └─ Models), with "No printer" first; the printers entered by
  *   the user come before the brands, in the group "My printers"
- *   (Phase 7 lot 61);
+ *   (Phase 7 lot 61); the printer of the project opened, when it is not
+ *   in the list, comes first in the group "This project" (lot 111, Q3 A);
  * - "Manage…" opens the Printer Manager (PrinterManagerDialog);
  * - under it, the origin and the tag of the Official profiles (SlicyWeb
  *   profile repository or copy of the application), then the message of
@@ -75,6 +76,7 @@ export default function PrinterSection(): JSX.Element {
   const printers = usePrinterStore((state) => state.printers);
   const userPrinterIds = usePrinterStore((state) => state.userPrinterIds);
   const selected = usePrinterStore((state) => state.selectedPrinter);
+  const projectPrinter = usePrinterStore((state) => state.projectPrinter);
   const profiles = usePrinterStore((state) => state.profiles);
   const profilesMessage = usePrinterStore((state) => state.profilesMessage);
   const autoCheckProfiles = usePrinterStore((state) => state.autoCheckProfiles);
@@ -111,6 +113,13 @@ export default function PrinterSection(): JSX.Element {
           className="h-7 w-full rounded border border-input bg-background px-1.5 text-xs text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
         >
           <option value={NONE}>{t("printer.none")}</option>
+          {projectPrinter && (
+            <optgroup label={t("project.thisProject")}>
+              <option value={projectPrinter.id}>
+                {projectPrinter.brand} {projectPrinter.model}
+              </option>
+            </optgroup>
+          )}
           {userPrinters.length > 0 && (
             <optgroup label={t("printer.myPrinters")}>
               {userPrinters.map((printer) => (

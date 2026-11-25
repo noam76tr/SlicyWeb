@@ -3,7 +3,7 @@
 # API SPECIFICATION
 
 
-Version: 2.1.0
+Version: 2.2.0
 
 Status: Approved
 
@@ -291,13 +291,39 @@ A refused preset file (SCH_001) is left out of the presets and reported in the l
 
 ---
 
+## ProjectIPC Channels
+
+Projects (DATA_SCHEMA.md 3.16.0, Project File; IMPORT_EXPORT_SPEC.md 3.2.0; DECISIONS.md, ADR-038; Phase 13 lot 111). The Windows dialogs, the reading and the writing of the files are done by the main process only (src/electron/ipc/ProjectIPC.ts). The window never sends a path to write: an opened or saved project is known by a token (random UUID) kept by the main process with its path; a new token is given at each opening and each Save As. Every file read is validated in full (ProjectManager, WYPROJImporter) before it is sent to the window.
+
+A project read is sent as `{ project, meshes, token, projectName, recentProjects }`: project without the meshData of its objects; meshes = the triangles of each object as a Float32Array, by objectId; projectName = the file name without .wyproj.
+
+content (sent by the window) = `{ objects, meshes, analysis, recommendations, printer, material, filament }`: meshes as Float32Array by objectId; printer, material and filament are the profiles of the project or null. identity = `{ projectId, createdAt }` of the project opened or saved, or null for a new project.
+
+| Channel | Payload | Response data |
+|---|---|---|
+| `project:open` | `{ dialog: { title, filterName } }` (texts of the Open dialog, translated by the window) | a project read; dialog cancelled: `{ cancelled: true }` |
+| `project:openRecent` | `{ index }` (0 to 9, number in the list of recent projects) | a project read; file not found: `PROJ_001`, and the file leaves the list |
+| `project:openPath` | `{ filePath }` (absolute path of a .wyproj dropped on the view) | a project read; another file or a relative path: `PROJ_002` |
+| `project:save` | `{ token, content, identity }` | `{ saved, token, recentProjects }`: saved = `{ projectId, createdAt, updatedAt, projectName }`; unknown token: `PROJ_002` |
+| `project:saveAs` | `{ content, identity, suggestedName, dialog }` | `{ saved, token, recentProjects }` with a new token; .wyproj added when missing; dialog cancelled: `{ cancelled: true }` |
+| `project:recent` | none | `{ recentProjects }`: `[{ name, path }]`, the most recent first |
+| `project:clearRecent` | none | `{ recentProjects: [] }` |
+| `project:autosave` | `{ content, identity, token, projectName }` (token null for a project never saved) | `{ savedAt }`: the copy of the automatic save is written in the recovery folder of the user data folder |
+| `project:recovery` | `{ action: "check" }` | `{ available: true, projectName, savedAt }`, or `{ available: false, quarantined }` (quarantined: an invalid copy was moved to recovery/quarantine) |
+| `project:recovery` | `{ action: "restore" }` | a project read (project, meshes, projectName) with the token of the file of the project, or null |
+| `project:discardRecovery` | none | `{}`: the copy is removed |
+
+Errors: `success: false`, `errors: [message]`, `data: { code, params }` with code PROJ_001 to PROJ_005 (ERROR_CODES_SPEC.md 2.8.0). An invalid payload returns PROJ_002 without throwing. A save adds the file to the recent projects and removes the copy of the automatic save. The main process removes the copy when the window is closed normally (after the question "Save the changes?").
+
+---
+
 ## Allowed IPC Channels
 
 The preload bridge (src/electron/preload.ts, window.slicyWeb) accepts only the channels of the allow list src/electron/ipc/IpcChannels.ts:
 
 | Bridge method | Allow list | Channels |
 |---|---|---|
-| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle: `filament:add`, `filament:getAll`, `filament:remove`, `filament:update`, `import:3mf`, `import:stl`, `import:validate`, `material:getAll`, `preset:getAll`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:refresh`, `printer:remove`, `printer:update`, `project:create`, `project:delete`, `project:load`, `project:save`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
+| `invoke(channel, payload)` | INVOKE_CHANNELS | the channels registered with ipcMain.handle (35): `filament:add`, `filament:getAll`, `filament:remove`, `filament:update`, `import:3mf`, `import:stl`, `import:validate`, `material:getAll`, `preset:getAll`, `printer:add`, `printer:count`, `printer:get`, `printer:getAll`, `printer:refresh`, `printer:remove`, `printer:update`, `project:autosave`, `project:clearRecent`, `project:discardRecovery`, `project:open`, `project:openPath`, `project:openRecent`, `project:recent`, `project:recovery`, `project:save`, `project:saveAs`, `settings:get`, `settings:language`, `settings:reset`, `settings:theme`, `settings:update`, `storage:clear`, `storage:delete`, `storage:load`, `storage:save` |
 | `send(channel, data)` | SEND_CHANNELS | none yet |
 | `on(channel, callback)` | RECEIVE_CHANNELS | none yet |
 
@@ -312,7 +338,7 @@ the callback of on receives the data only, never the Electron event
 
 The model import does not use the channels import:stl, import:3mf and import:validate: the files chosen by the user are read and parsed in the renderer (DECISIONS.md, ADR-029). These channels stay registered for a later use.
 
-A new IPC handler is added to the allow list in the same change. `npm run check:ipc` (scripts/build/check-ipc-channels.mjs) compares INVOKE_CHANNELS with the ipcMain.handle registrations of src/electron/ipc/.
+A new IPC handler is added to the allow list in the same change. `npm run check:ipc` (scripts/build/check-ipc-channels.mjs) compares INVOKE_CHANNELS with the ipcMain.handle and this.handle registrations of src/electron/ipc/ (this.handle: helper of ProjectIPC that calls ipcMain.handle).
 
 ---
 
@@ -1818,6 +1844,8 @@ POST
 Purpose:
 
 Save and load projects.
+
+Known issue KI-033 (CHANGELOG.md): no HTTP API exists in the application (as KI-007, KI-030 and KI-031). Projects are saved and opened through the ProjectIPC Channels (IPC Layer, Phase 13 lot 111, ADR-038); the HTTP routes below are not implemented.
 
 
 Supported Project Format:

@@ -26,14 +26,6 @@ export class SceneFactory {
   public static createEmptyScene(): Scene {
     return {
       objects: [],
-
-      printer: null,
-
-      material: null,
-
-      filament: null,
-
-      preset: null,
     };
   }
 }

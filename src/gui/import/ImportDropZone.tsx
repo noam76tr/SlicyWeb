@@ -5,9 +5,12 @@
  * Files can be dropped directly inside the viewport (GUI_SPEC.md,
  * Drag And Drop). The dropped files are sent to the import
  * (ImportService); a file of another format is refused by the import
- * with a message.
+ * with a message. A project (.wyproj) dropped alone is opened; dropped
+ * with other files, it is refused with a message and the others are
+ * imported (ProjectService.dropFiles; lot 111, Q15 A).
  *
  * Messages over the viewport, top end: the imports (ImportStatus), then
+ * the messages of the project (ProjectMessages, lot 111), then
  * the warning of the objects out of the build volume (PlateMessage, lot
  * 101), then the messages of the analysis (AnalysisMessages, Phase 9 lot
  * 80), then the messages of the optimization (OptimizationMessages, Phase
@@ -30,11 +33,13 @@
 import { useState, type DragEvent, type ReactNode } from "react";
 
 import { ImportService } from "../../services/ImportService";
+import { ProjectService } from "../../services/ProjectService";
 import { useTranslation } from "../hooks/useTranslation";
 
 import AnalysisMessages from "../analysis/AnalysisMessages";
 import OptimizationMessages from "../optimization/OptimizationMessages";
 import PlateMessage from "../plate/PlateMessage";
+import ProjectMessages from "../project/ProjectMessages";
 
 import ImportStatus from "./ImportStatus";
 
@@ -81,7 +86,13 @@ export default function ImportDropZone({
 
         event.preventDefault();
         setDragging(false);
-        ImportService.importFiles(Array.from(event.dataTransfer.files));
+        const files = ProjectService.dropFiles(
+          Array.from(event.dataTransfer.files),
+        );
+
+        if (files.length > 0) {
+          ImportService.importFiles(files);
+        }
       }}
     >
       {children}
@@ -102,6 +113,7 @@ export default function ImportDropZone({
           className="ms-auto me-1 mt-1 flex w-80 max-w-[calc(100%-0.25rem)] flex-col gap-2"
         >
           <ImportStatus />
+          <ProjectMessages />
           <PlateMessage />
           <AnalysisMessages />
           <OptimizationMessages />

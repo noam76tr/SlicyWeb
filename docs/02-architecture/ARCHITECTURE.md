@@ -1,6 +1,6 @@
 # SYSTEM ARCHITECTURE
 
-Version: 2.0.0
+Version: 2.0.1
 
 Status: Approved
 
@@ -573,9 +573,10 @@ Components:
 
 ```text
 StorageManager
-ProjectStorage
 CacheStorage
 ```
+
+Phase 13 (lot 111; DECISIONS.md, ADR-038): ProjectStorage (a project kept in memory, never used) is removed. Project files are read and written by the Project Management layer (src/project/ProjectManager.ts, main process); the list of recent projects is kept by RecentProjectsStorage (settings.json).
 
 Responsible for:
 

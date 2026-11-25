@@ -47,7 +47,8 @@ const MENUS = [
 test("opens the main window without error", async ({ started }) => {
   const { app, window, errors } = started;
 
-  expect(await window.title()).toBe("SlicyWeb");
+  // The name of the project, "Untitled" before a save (lot 111, Q12 A)
+  await expect(window).toHaveTitle(`${en["project.untitled"]} — SlicyWeb`);
   const menus = window.getByRole("menubar").getByRole("menuitem");
   await expect(menus).toHaveText(MENUS.map((key) => en[key]));
   await expect(

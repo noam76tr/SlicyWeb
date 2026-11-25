@@ -3,7 +3,7 @@
 # USER SETTINGS SPECIFICATION
 
 
-Version: 2.3.0
+Version: 2.4.0
 
 Status: Approved
 
@@ -113,8 +113,7 @@ he
 {
   "project": {
     "autoSave": true,
-    "autoSaveInterval": 300,
-    "restoreLastSession": true
+    "autoSaveInterval": 300
   }
 }
 ```
@@ -122,11 +121,18 @@ he
 Used By:
 
 ```text
-ProjectManager
-RecoveryManager
+ProjectService (window: when to write the copy)
 AutoSaveService
-SessionRestorer
+RecoveryManager
 ```
+
+2.4.0 (lot 111, ADR-038; PASSATION.md decision 119 of Noam, Q18 and Q19 A; DATA_SCHEMA.md 3.16.0, User Preferences Schema: project):
+
+- autoSave (true by default): a copy of the project modified is written every autoSaveInterval seconds, in the recovery folder of the user data folder (Windows: %APPDATA%\SlicyWeb\recovery), never in the file of the user. The copy is removed at a save, at "Don't Save" and at a normal close; after a forced close, it is offered at the next start (IMPORT_EXPORT_SPEC.md, Recovery System).
+- autoSaveInterval: seconds, an integer from 5 to 3600, 300 by default.
+- restoreLastSession is removed (Q19 A): a normal start shows an empty scene; the last project is not opened by itself. It may come back with the Preferences window (later).
+- These settings are not shown in the GUI yet (Preferences window, later).
+
 ---
 
 # Supported Languages
@@ -439,13 +445,15 @@ A value refused (a negative price, a power of 0, words) shows its error under th
 
   "files": {
 
-    "recentProjects": 20
+    "recentProjects": []
 
   }
 
 }
 
 ```
+
+2.4.0 (lot 111, Q17 A; DATA_SCHEMA.md 3.16.0, User Preferences Schema: files): recentProjects is the list of the paths of the last projects opened or saved, the most recent first, 10 at most (was "20", a number, before 2.4.0), shown in File > Recent Projects. A project opened again moves to the top; a project not found is removed (PROJ_001); Clear List empties the list. Written by the main process only (settings:update refuses files).
 
 
 

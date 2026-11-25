@@ -2,7 +2,7 @@
 
 # ARCHITECTURE DECISION MATRIX
 
-Version: 2.9.0
+Version: 2.10.0
 
 Status: Approved
 
@@ -185,6 +185,7 @@ Requires:
 | ADM-031 | Classification and Recommendation Rules | Recommendation | High | Approved |
 | ADM-032 | Orientation Optimization | Optimization | High | Approved |
 | ADM-033 | Cost Estimation | Cost Estimation | Medium | Approved |
+| ADM-034 | Project Persistence | Project Management | High | Approved |
 
 ---
 
@@ -959,6 +960,32 @@ Benefits:
 
 - An estimation before the export, from data already computed
 - No new field in a project, no new IPC channel
+
+---
+
+ADM-034
+
+Title:
+
+Project Persistence
+
+Decision:
+
+Phase 13 saves and opens a project as one .wyproj file (JSON, format 3.0.0) holding the triangles of each object (meshData, base64 of 32-bit numbers), its analysis, its recommendation and a full copy of the printer, the material and the filament; the scene keeps the objects only. The dialogs, the reading and the writing are in the main process only, behind 10 project channels: the window knows a file by a token, never sends a path to write, and every file read is validated in full. Unsaved changes are followed with the place of the history at the save; "Save the changes?" before every action that would lose them. A copy of the project modified is written every 5 minutes in the recovery folder of the user data folder and offered at the next start after a crash.
+
+Rationale:
+
+ADR-020 asks for one file holding all the data; a project must open on another computer and survive a crash, and the window must not be able to write anywhere on the disk.
+
+Reference:
+
+ADR-038 (DECISIONS.md)
+
+Benefits:
+
+- A project complete in one file, a file refused or a save that fails never changes the scene or the file
+- No path to write sent by the window
+- At most 5 minutes of work lost after a crash
 
 ---
 

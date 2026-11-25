@@ -2,7 +2,7 @@
 
 # FILE STRUCTURE
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -424,7 +424,12 @@ src/gui/
 │   ├── FilamentManagerDialog.tsx = Filament Manager: filaments entered by the user (Phase 8)
 │   ├── filamentForm.ts        = form of the Filament Manager and its conversion to a filament
 │   ├── PrinterManagerDialog.tsx = Printer Manager: printers entered by the user (Phase 7)
-│   └── printerForm.ts         = form of the Printer Manager and its conversion to a printer
+│   ├── printerForm.ts         = form of the Printer Manager and its conversion to a printer
+│   ├── RecoveryDialog.tsx     = "SlicyWeb did not close normally": Recover or Ignore (Phase 13)
+│   └── UnsavedChangesDialog.tsx = "Save the changes?": Save, Don't Save, Cancel (Phase 13)
+├── project/
+│   ├── ProjectMessages.tsx    = messages of the project over the viewport: PROJ_001 to PROJ_005, profiles (Phase 13)
+│   └── projectFormat.ts       = name of the project ("Untitled"), date and time of the language (Phase 13)
 ├── menus/
 │   ├── ContextMenu.tsx        = menu of the right click: object and scene (lot 105)
 │   └── MenuBar.tsx            = the nine menus of GUI_SPEC.md
@@ -438,6 +443,7 @@ src/gui/
 ├── hooks/
 │   ├── useEditShortcuts.ts    = Delete, Ctrl+D (lot 100)
 │   ├── useObjectStateShortcuts.ts = F2, H, Alt+H (lot 106)
+│   ├── useProjectShortcuts.ts = Ctrl+N, Ctrl+O, Ctrl+S, Ctrl+Shift+S (Phase 13)
 │   ├── useSelectAllShortcut.ts = Ctrl+A (Phase 6)
 │   ├── useTranslation.ts      = access to translations from GUI components
 │   └── useUndoRedoShortcuts.ts = Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z (Phase 6)
@@ -739,12 +745,13 @@ Phase 11 lot 97: SupportOptimizer.ts, SpeedOptimizer.ts and MaterialOptimizer.ts
 ```text
 src/recovery/
 
-├── RecoveryManager.ts
-├── AutoSaveService.ts
-├── SessionRestorer.ts
-├── RecoveryValidator.ts
+├── RecoveryManager.ts         = the copy of the automatic save at start: offered, restored, quarantine, removed (Phase 13)
+├── AutoSaveService.ts         = writes the copy of the automatic save in recovery/ (Phase 13)
+├── RecoveryValidator.ts       = description of the copy (autosave.json)
 └── backups/
 ```
+
+Phase 13 (lot 111, Q22 A): SessionRestorer.ts removed; a normal start opens an empty scene (Q19 A). The copy is in the recovery folder of the user data folder (Windows: %APPDATA%\SlicyWeb\recovery), not in src/recovery/backups/.
 
 ---
 
@@ -779,11 +786,13 @@ src/notifications/
 ```text
 src/project/
 
-├── ProjectManager.ts
+├── ProjectManager.ts          = the only creator of a project; open and save a file, written through a temporary file (Phase 13, ADR-038)
+├── ProjectError.ts            = project errors with their code (PROJ_001 to PROJ_005)
+├── MeshDataCodec.ts           = triangles of an object to meshData (base64 of 32-bit numbers) and back (Phase 13)
 ├── ProjectSerializer.ts
 ├── ProjectDeserializer.ts
 ├── ProjectValidator.ts
-├── WYPROJImporter.ts
+├── WYPROJImporter.ts          = reads and validates a file in full, size limit (PROJ_005)
 └── WYPROJExporter.ts
 ```
 
@@ -798,7 +807,7 @@ src/services/
 ├── FilamentService.ts
 ├── MaterialService.ts
 ├── PrinterService.ts
-├── ProjectService.ts
+├── ProjectService.ts          = New, Open, Save, Save As, Close, recent projects, automatic save and recovery for the window (Phase 13)
 ├── RecommendationService.ts  = recommendation of one object through the engine (Phase 10)
 ├── ImportService.ts           = import queue, progress, cancel and errors for the GUI (ADR-029)
 ├── ObjectEditService.ts       = Edit > Delete and Edit > Duplicate, one history action each (lot 100), copy inside the plate (lot 101)
@@ -840,6 +849,7 @@ src/state/
 ├── costSettingsStore.ts       = cost settings read from the preferences (Phase 12)
 ├── estimationStore.ts         = estimations of the objects (Phase 12), not saved
 ├── propertiesPanelStore.ts    = open tab of the Properties Panel (lot 93)
+├── projectStore.ts            = project of the window: token, name, place of the history saved, modified, messages, recent projects (Phase 13)
 └── viewportStore.ts           = projection and view presets of the viewport, Overhang Display on or off (lot 82)
 ```
 
@@ -914,10 +924,12 @@ src/storage/
 ├── CacheStorage.ts
 ├── PrinterProfileCache.ts     = cache of the downloaded profiles, cache/printers/ (Phase 7), cache/materials/ and cache/filaments/ (Phase 8)
 ├── PrinterProfileStorage.ts
-├── ProjectStorage.ts
+├── RecentProjectsStorage.ts   = the 10 last projects, files.recentProjects of settings.json (Phase 13)
 ├── SettingsStorage.ts
 └── StorageManager.ts
 ```
+
+Phase 13 (lot 111, Q22 A): ProjectStorage.ts removed (a project kept in memory, never used).
 
 ---
 
@@ -930,11 +942,13 @@ src/constants
 ├── ApplicationConstants.ts
 ├── CostConstants.ts           = numbers of the estimation, currencies (Phase 12)
 ├── MaterialConstants.ts
+├── ObjectConstants.ts         = longest name of an object, name kept for a text (lot 106, Phase 13)
 ├── PresetConstants.ts
 ├── PrinterConstants.ts
 ├── RecommendationConstants.ts = numbers of the recommendation rules (Phase 10)
 ├── OptimizationConstants.ts   = numbers of the orientation search (Phase 11)
 ├── HistoryConstants.ts        = MAX_HISTORY_SIZE (undo and redo)
+├── ProjectConstants.ts        = extension, size limit, recovery folder and files (Phase 13)
 └── ViewportConstants.ts       = coordinate system, colors and camera of the viewport (ADR-028)
 ```
 ---

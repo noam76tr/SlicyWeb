@@ -2,7 +2,7 @@
 
 # IMPLEMENTATION PLAN
 
-Version: 2.1.0
+Version: 2.2.0
 
 Status: Approved
 
@@ -2013,6 +2013,15 @@ Values Consistent
 # PHASE 13
 
 # PROJECT PERSISTENCE
+
+Status: In Progress (lot 111 delivered 2026-11-25; closure in lot 112, after the manual checks of Noam)
+
+Decisions (ADR-038, answers of Noam Q1 to Q22, 2026-11-25, all A; analysis of lot 110, LOT110-QUESTIONS.md; decision 119):
+
+- Scope: New, Open, Save, Save As, Close; a .wyproj dropped; unsaved changes; recent projects (10); automatic save every 5 minutes and recovery after a crash; the Preferences window, the export (Phase 14) and the cloud stay outside
+- Format: one JSON file, version 3.0.0; triangles in meshData (base64); full copies of the printer, the material and the filament; the scene keeps the objects only
+- Security: dialogs, reading and writing in the main process; 10 project channels (35 in all); a token for the file, never a path to write from the window
+- Lots: lot 110 (analysis and questions, CHANGELOG 0.1.110); lot 111 (the whole phase, CHANGELOG 0.1.111); lot 112 (closure)
 
 ## Objectives
 

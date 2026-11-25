@@ -2,7 +2,7 @@
 
 # GUI SPECIFICATION
 
-Version: 2.0.0
+Version: 2.1.0
 
 Status: Approved
 
@@ -342,13 +342,11 @@ New Project
 
 Open Project
 
-Open WYPROJ
+Recent Projects
 
 Save Project
 
 Save As
-
-Export WYPROJ
 
 Import STL
 
@@ -359,6 +357,30 @@ Close Project
 Exit
 
 ```
+
+Phase 13 (lot 111; DECISIONS.md, ADR-038; decision 119 of Noam, Q8 to Q19 A):
+
+- New Project (Ctrl+N) and Close Project do the same thing: empty scene, Undo / Redo history emptied, "Untitled", not modified. The printer, the material and the filament chosen stay chosen (Q14 A). Close Project is disabled while the project is empty and was never saved.
+- Open Project (Ctrl+O) opens the Open dialog of Windows, filtered on .wyproj. The project opened replaces the scene, without Undo (UNDO_REDO_SPEC.md, Project Operations). "Opening the project…" is shown above the viewport while the file is read. A file refused changes nothing in the scene (Q16 A); its message (PROJ_001 to PROJ_005, ERROR_CODES_SPEC.md 2.8.0) is shown above the viewport, as the messages of the import.
+- Recent Projects ▸: the 10 last projects opened or saved, the most recent first, with their name (the full path when the pointer rests on it), then "Clear List". Disabled while the list is empty. A project not found gives PROJ_001 and leaves the list (Q17 A).
+- Save Project (Ctrl+S) writes the file of the project; for a project never saved, it opens Save As. Save As (Ctrl+Shift+S) opens the Save dialog of Windows: folder proposed = the last folder used, otherwise Documents; name proposed = the name of the project, otherwise the name of the first object, otherwise "Untitled"; .wyproj is added when missing; Windows asks before replacing a file. Saving is possible during an analysis (Q10 A).
+- Open WYPROJ and Export WYPROJ are removed (Q8 A): WYPROJ is the only project format.
+- Exit (and the close button of the window) asks "Save the changes?" first when the project is modified.
+- Before New, Open, a recent project, a .wyproj dropped, Close and Exit, the Unsaved Changes Dialog is shown when the project is modified.
+
+Modified (Q11 A): the project is modified by every change written in the file: import, delete, duplicate, move, rotate, scale, rename, hide, lock, arrange, optimize, a change of printer, material or filament, a type of object chosen. The selection, the camera, the tab, the overhang display, the costs and the language do not count. Undo or Redo back to the state saved removes the mark (the place of the history at the save is kept). An empty project never saved is never modified.
+
+Window title (Q12 A): "name — SlicyWeb", with "• " before the name while the project is modified ("• cube — SlicyWeb"). The name of the project is the name of its file without .wyproj; before the first save, "Untitled" (translated, never written in a file; Q9 A).
+
+## Unsaved Changes Dialog
+
+Phase 13 (Q13 A). Title "Save the changes to “name”?", text "Your changes will be lost if you don't save them.", three buttons: Save (has the focus), Don't Save, Cancel. Escape is Cancel. Save on a project never saved opens Save As first; Save As cancelled: nothing happens. In Hebrew the buttons are mirrored (Save is at the left end).
+
+## Recovery Dialog
+
+Phase 13 (Q18 and Q19 A). Every 5 minutes (project.autoSave, project.autoSaveInterval; USER_SETTINGS_SPEC.md 2.4.0), and only while the project is modified, a recovery copy is written in the recovery folder of the user data folder, never in the file of the project; nothing is shown. The copy is removed at a save, at "Don't Save" and when SlicyWeb closes normally.
+
+At start, when a copy is still there (crash, power cut, forced close): "SlicyWeb did not close normally" — "Recover “name” (saved on date at time)?", with Recover and Ignore. Recover opens the project, marked modified, attached to its file when it had one (Ctrl+S writes in it). Ignore removes the copy. A damaged copy is moved to recovery/quarantine (SECURITY_SPEC.md) with the message "The recovery copy was damaged: it was set aside and not opened." A normal start opens an empty scene: the last project is not opened again by itself.
 
 
 
@@ -1439,18 +1461,10 @@ Displays:
 
 ```text
 Project Name
-Project Version
-Created Date
-Last Saved
-Project Format
-Application
+Modified
 ```
 
-Format:
-
-```text
-WYPROJ
-```
+Phase 13 (lot 111, Q12 A): the Project line, above the tabs, shows the name of the project ("Untitled" for a project never saved), then "modified" in small text while it is modified. The version, the creation date, the format and the application are not shown.
 
 ---
 
@@ -1551,6 +1565,8 @@ Prusa
 Phase 7: a list of the window (select), with "No printer" first, then one group per brand; brands and models in alphabetical order. The printers are those loaded by the main process (printer:getAll; ADR-032).
 
 The printer chosen is saved as the last printer (User Preferences, printer.defaultPrinter). At the next start, it is chosen again when autoloadLastPrinter is true and the printer is still loaded; otherwise no printer is selected. "No printer" clears the choice.
+
+A project opened whose printer is not in the list (Phase 13, Q3 A): the copy of the project is used for this project only, in a group "This project" right after "No printer", never added to the printers of the user; message "The printer X is not in your list: the one of the project is used." A printer of the list that changed since the save: the printer of the list is chosen and the recommendations are made again; message "The printer X has changed since the project was saved: recommendations made again." Opening a project never changes the last choice kept in the settings. The Material and Filament selectors follow the same rule.
 
 The printers entered by the user come right after "No printer", in a group "My printers" ("Brand Model", alphabetical order); the brand groups list only the Official printers. A "Manage…" button under the selector opens the Printer Manager.
 
@@ -2074,6 +2090,8 @@ Active Preset (Phase 10, ADR-035 D12): the preset of the recommendation of the s
 
 Plate Estimation (Phase 12, ADR-037, Q12 A): "Plate: ≈ 5 h 10 min · ≈ 74 g · ≈ €2.02", the sum of the estimations of the visible objects (a hidden object is not counted, as at export); the weight and the total only when known; "(n without an estimation)" when a visible object has none yet; "—" when no object has one. This field is never shortened: the other fields are shortened first in a narrow window.
 
+Project Status (Phase 13, Q10 and Q12 A): "Saving…" while the file is written, "Project saved" for a few seconds, then "Modified", "Saved at 14:32", "Opened" or "Not saved".
+
 
 
 ---
@@ -2116,6 +2134,8 @@ STL
 WYPROJ
 ```
 
+Phase 13 (Q15 A): a .wyproj dropped is opened as with Open Project (after the Unsaved Changes Dialog), and keeps its path: Ctrl+S writes in it. Dropped with STL or 3MF files, only the project is refused, with the message "Drop a project alone: the project was not opened."; the STL and 3MF files are imported.
+
 
 
 ---
@@ -2146,7 +2166,11 @@ CTRL + O     Open Project
 
 CTRL + S     Save Project
 
+CTRL + SHIFT + S     Save As
+
 ```
+
+Phase 13 (lot 111): these shortcuts also work while a text field has the focus; they are ignored while a dialog or a menu is open.
 
 
 

@@ -23,6 +23,9 @@
  * last filament. Filament > Select Filament (menu) moves the focus to
  * the selector (FILAMENT_SELECTOR_ID).
  *
+ * The filament of the project opened, when it is not in the list, is offered
+ * first in the group "This project" (lot 111, decision 119 of Noam, Q3 A).
+ *
  * No business logic.
  *
  * Based on:
@@ -73,6 +76,7 @@ export default function FilamentSection(): JSX.Element {
   const filaments = useFilamentStore((state) => state.filaments);
   const userFilamentIds = useFilamentStore((state) => state.userFilamentIds);
   const selected = useFilamentStore((state) => state.selectedFilament);
+  const projectFilament = useFilamentStore((state) => state.projectFilament);
   const material = useMaterialStore((state) => state.selectedMaterial);
   const costSettings = useCostSettingsStore((state) => state.settings);
   // Price of a filament of the user, or given in the Costs section
@@ -120,6 +124,14 @@ export default function FilamentSection(): JSX.Element {
           className={SELECT_CLASS}
         >
           <option value={NONE}>{t("filament.none")}</option>
+          {projectFilament &&
+            (!material || projectFilament.material === material.category) && (
+              <optgroup label={t("project.thisProject")}>
+                <option value={projectFilament.id}>
+                  {projectFilament.brand} {projectFilament.name}
+                </option>
+              </optgroup>
+            )}
           {userFilaments.length > 0 && (
             <optgroup label={t("filament.myFilaments")}>
               {userFilaments.map((filament) => (

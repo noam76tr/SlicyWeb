@@ -7,20 +7,14 @@
  * - ARCHITECTURE.md
  */
 
-import type { Printer } from "./Printer";
-import type { Material } from "./Material";
-import type { Filament } from "./Filament";
-import type { PrintPreset } from "./PrintPreset";
 import type { Object3D } from "./Object3D";
 
+/**
+ * Scene of a project (DATA_SCHEMA.md 3.16.0, Scene Schema): the objects
+ * only. The printer, the material and the filament are those of the
+ * project (lot 111, decision 119 of Noam, Q4 A: end of the Known
+ * Duplication).
+ */
 export interface Scene {
   objects: Object3D[];
-
-  printer: Printer | null;
-
-  material: Material | null;
-
-  filament: Filament | null;
-
-  preset: PrintPreset | null;
 }

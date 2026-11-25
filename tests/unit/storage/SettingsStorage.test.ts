@@ -73,6 +73,8 @@ describe("Settings storage", () => {
         printerPower: {},
         filamentPrices: {},
       },
+      project: { autoSave: true, autoSaveInterval: 300 },
+      files: { recentProjects: [] },
     });
   });
 
@@ -146,6 +148,8 @@ describe("Settings storage", () => {
         printerPower: {},
         filamentPrices: {},
       },
+      project: { autoSave: true, autoSaveInterval: 300 },
+      files: { recentProjects: [] },
     };
 
     expect(new SettingsStorage(filePath).load()).toEqual(defaults);
@@ -220,6 +224,8 @@ describe("Settings storage", () => {
         printerPower: {},
         filamentPrices: {},
       },
+      project: { autoSave: true, autoSaveInterval: 300 },
+      files: { recentProjects: [] },
     };
     const storage = new SettingsStorage(filePath);
 

@@ -75,6 +75,27 @@ export interface CostPreferences {
   filamentPrices: Record<string, number>;
 }
 
+/**
+ * Automatic save (DATA_SCHEMA.md 3.16.0, User Preferences Schema:
+ * project; lot 111, Q18 A): a copy of the project modified, every
+ * autoSaveInterval seconds, in the user data folder (never the file of the
+ * user). Not shown in the window until the Preferences window.
+ */
+export interface ProjectPreferences {
+  autoSave: boolean;
+  /** Seconds, 5 to 3600; 300 by default */
+  autoSaveInterval: number;
+}
+
+/**
+ * Files (DATA_SCHEMA.md 3.16.0, User Preferences Schema: files; Q17 A):
+ * the 10 last projects opened or saved, the most recent first (paths on
+ * the computer of the user)
+ */
+export interface FilePreferences {
+  recentProjects: string[];
+}
+
 export type PropertiesTab =
   | "printer"
   | "object"
@@ -91,4 +112,6 @@ export interface UserPreferences {
 
   material: MaterialPreferences;
   cost: CostPreferences;
+  project: ProjectPreferences;
+  files: FilePreferences;
 }

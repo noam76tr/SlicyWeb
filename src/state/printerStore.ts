@@ -34,6 +34,18 @@ interface PrinterState {
 
   selectedPrinter: Printer | null;
 
+  /**
+   * Printer of the project opened that is not in the list (its copy in
+   * the project; lot 111, decision 119 of Noam, Q3 A): offered in the
+   * group "This project" of the selector, for this project only; null
+   * otherwise.
+   */
+  projectPrinter: Printer | null;
+
+  setProjectPrinter: (
+    printer: Printer | null
+  ) => void;
+
   setPrinters: (
     printers: Printer[]
   ) => void;
@@ -78,6 +90,13 @@ export const usePrinterStore =
     autoCheckProfiles: true,
 
     selectedPrinter: null,
+
+    projectPrinter: null,
+
+    setProjectPrinter: (printer) =>
+      set({
+        projectPrinter: printer
+      }),
 
     setPrinters: (printers) =>
       set({

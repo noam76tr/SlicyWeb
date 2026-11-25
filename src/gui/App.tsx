@@ -53,6 +53,14 @@
  * (ContextMenu, lot 105): of the selection on an object, of the scene in
  * the empty space.
  *
+ * The project (Phase 13, lot 111, ADR-038): ProjectService starts at
+ * start (recent projects, recovery of a copy of the automatic save,
+ * automatic save, close of the window); the title of the window is the
+ * name of the project, with "•" when it is modified (Q12 A); Ctrl+N,
+ * Ctrl+O, Ctrl+S and Ctrl+Shift+S (useProjectShortcuts); the windows
+ * "Save the changes?" (UnsavedChangesDialog) and the recovery
+ * (RecoveryDialog).
+ *
  * Based on:
  * - ARCHITECTURE.md
  * - GUI_SPEC.md
@@ -69,16 +77,21 @@ import { CostSettingsService } from "../services/CostSettingsService";
 import { MaterialSelectionService } from "../services/MaterialSelectionService";
 import { PlateCheckService } from "../services/PlateCheckService";
 import { PrinterSelectionService } from "../services/PrinterSelectionService";
+import { ProjectService } from "../services/ProjectService";
 import { RecommendationService } from "../services/RecommendationService";
 import { TransformService } from "../services/TransformService";
 import { usePrinterStore } from "../state/printerStore";
+import { useIsModified, useProjectStore } from "../state/projectStore";
 
 import MainLayout from "./MainLayout";
 import DeleteObjectsDialog from "./dialogs/DeleteObjectsDialog";
 import FilamentManagerDialog from "./dialogs/FilamentManagerDialog";
 import PrinterManagerDialog from "./dialogs/PrinterManagerDialog";
+import RecoveryDialog from "./dialogs/RecoveryDialog";
+import UnsavedChangesDialog from "./dialogs/UnsavedChangesDialog";
 import { useEditShortcuts } from "./hooks/useEditShortcuts";
 import { useObjectStateShortcuts } from "./hooks/useObjectStateShortcuts";
+import { useProjectShortcuts } from "./hooks/useProjectShortcuts";
 import { useTranslation } from "./hooks/useTranslation";
 import { useSelectAllShortcut } from "./hooks/useSelectAllShortcut";
 import { useUndoRedoShortcuts } from "./hooks/useUndoRedoShortcuts";
@@ -92,6 +105,7 @@ import Toolbar from "./toolbars/Toolbar";
 import TransformModeBar from "./toolbars/TransformModeBar";
 import ImportDropZone from "./import/ImportDropZone";
 import Viewport from "./viewport/Viewport";
+import { projectDisplayName } from "./project/projectFormat";
 
 export default function App(): JSX.Element {
   const { t, direction, language } = useTranslation();
@@ -103,10 +117,32 @@ export default function App(): JSX.Element {
   useSelectAllShortcut();
   useEditShortcuts();
   useObjectStateShortcuts();
+  useProjectShortcuts();
+  const projectName = useProjectStore((state) => state.projectName);
+  const modified = useIsModified();
   const renameRequest = useRenameStore((state) => state.request);
 
+  // Title of the window (lot 111, Q12 A): "• cube — SlicyWeb" when the
+  // project is modified
+  const title = `${modified ? "• " : ""}${projectDisplayName(
+    projectName,
+    t("project.untitled"),
+  )} — SlicyWeb`;
+
   useEffect(() => {
-    document.title = "SlicyWeb";
+    document.title = title;
+  }, [title]);
+
+  // Texts of the Windows dialogs of the project, in the language shown
+  useEffect(() => {
+    ProjectService.setDialogTexts({
+      openTitle: t("project.dialog.openTitle"),
+      saveTitle: t("project.dialog.saveTitle"),
+      filterName: t("project.dialog.filterName"),
+    });
+  }, [t]);
+
+  useEffect(() => {
     void PrinterSelectionService.load();
     void MaterialSelectionService.load();
     void RecommendationService.loadPresets();
@@ -120,6 +156,8 @@ export default function App(): JSX.Element {
   useEffect(() => PlateCheckService.start(), []);
 
   useEffect(() => CostEstimationService.start(), []);
+
+  useEffect(() => ProjectService.start(), []);
 
   const header = (
     <header className="shrink-0">
@@ -186,6 +224,8 @@ export default function App(): JSX.Element {
       <PrinterManagerDialog />
       <FilamentManagerDialog />
       <DeleteObjectsDialog />
+      <UnsavedChangesDialog />
+      <RecoveryDialog />
       <ContextMenu />
     </DirectionProvider>
   );
