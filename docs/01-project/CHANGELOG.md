@@ -4172,7 +4172,7 @@ Release Type:
 Project Persistence (Phase 13)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-25
@@ -4229,6 +4229,36 @@ Date:
 ## Validation Result
 
 - Linux (2026-11-25): see LOT111.md
+- Windows 11 (2026-11-26): lot 111 version 2 on GitHub (bee73c8, the 93 files identical to the lot; SessionRestorer.ts and ProjectStorage.ts still on main, removed again by lot 112); npm run check:locales 575 keys, npm run check:ipc 35 channels, npm run typecheck and npm run lint with no errors, npm test 731 passed + 1 skipped, npm run test:e2e 83 tests passed (Noam). Version 1: one test over the 5 s of Vitest (5.6 s), 30 s given in version 2
+- Manual checks (Noam, 2026-11-26): A to G (recovery after a forced close with the Task Manager of Windows) and M (Hebrew) passed; H to L not made (covered by the automatic tests)
+
+---
+
+# VERSION 0.1.112
+
+Release Type:
+Closure of Phase 13 (Project Persistence)
+
+Status:
+In Progress
+
+Date:
+2026-11-26
+
+## Changed
+
+- PHASES_IMPLEMENTATION_PLAN.md 2.3.0: Phase 13 Completed (2026-11-26, after the checks of Noam on lot 111)
+- PASSATION.md: decision 120 (lot 111 validated, Phase 13 closed; rule of the manual checks: only what the automatic tests cannot check, at most 5 or 6 by delivery, the most important first)
+- 0.1.111 Completed with the results of Noam
+- docs/lots/LOT112.md
+
+## Removed
+
+- src/recovery/SessionRestorer.ts and src/storage/ProjectStorage.ts, removed by lot 111 (Q22 A) but still on main bee73c8
+
+## Validation Result
+
+- Linux (2026-11-26): see LOT112.md
 
 ---
 

@@ -2,7 +2,7 @@
 
 # IMPLEMENTATION PLAN
 
-Version: 2.2.0
+Version: 2.3.0
 
 Status: Approved
 
@@ -2014,14 +2014,17 @@ Values Consistent
 
 # PROJECT PERSISTENCE
 
-Status: In Progress (lot 111 delivered 2026-11-25; closure in lot 112, after the manual checks of Noam)
+Status: Completed (2026-11-26, lot 112; closed by Noam after his checks of lot 111)
 
 Decisions (ADR-038, answers of Noam Q1 to Q22, 2026-11-25, all A; analysis of lot 110, LOT110-QUESTIONS.md; decision 119):
 
 - Scope: New, Open, Save, Save As, Close; a .wyproj dropped; unsaved changes; recent projects (10); automatic save every 5 minutes and recovery after a crash; the Preferences window, the export (Phase 14) and the cloud stay outside
 - Format: one JSON file, version 3.0.0; triangles in meshData (base64); full copies of the printer, the material and the filament; the scene keeps the objects only
 - Security: dialogs, reading and writing in the main process; 10 project channels (35 in all); a token for the file, never a path to write from the window
-- Lots: lot 110 (analysis and questions, CHANGELOG 0.1.110); lot 111 (the whole phase, CHANGELOG 0.1.111); lot 112 (closure)
+- Lots: lot 110 (analysis and questions, no CHANGELOG entry); lot 111 (the whole phase, CHANGELOG 0.1.111; version 2: 30 s for the tests that read and write files); lot 112 (closure, CHANGELOG 0.1.112)
+- Checks of Noam (2026-11-26, Windows 11): 575 keys, 35 channels, 731 + 1 tests, 83 e2e; manual checks A to G (save, open, recent projects, "Save the changes?", recovery after a forced close with the Task Manager) and M (Hebrew) passed; H to L not made, covered by the automatic tests
+
+Open issues after the closure: the HTTP Project API of API_SPEC.md (KI-033); a project of an older format cannot be opened before its conversion is written (ADR-038); the durations of saving and opening a large project are measured on Linux only (PERFORMANCE_SPEC.md 1.5.0); the key project.none and SceneFactory, SceneSerializer, SceneValidator and sceneStore are not used (to decide later). Next: the Preferences window (request of Noam, 2026-11-19 and 2026-11-24: "after Phase 13") or Phase 14 (Target Slicer Export), as Noam chooses.
 
 ## Objectives
 
