@@ -2,7 +2,7 @@
 
 # TECHNOLOGY STACK
 
-Version: 2.1.0
+Version: 2.1.1
 
 Status: Approved
 
@@ -1557,6 +1557,7 @@ Installed since CHANGELOG 0.1.47: vitest 5.0.3 (development dependency; requires
 ```text
 Configuration: vitest.config.mts (separate from vite.config.mts: the Electron plugin and the Content Security Policy are not needed by the tests)
 Tests:         tests/unit/**/*.test.ts, environment node
+Delays:        30 s for each test and each hook (testTimeout, hookTimeout; lot 113)
 Command:       npm test (vitest run)
 ```
 

@@ -2024,7 +2024,7 @@ Decisions (ADR-038, answers of Noam Q1 to Q22, 2026-11-25, all A; analysis of lo
 - Lots: lot 110 (analysis and questions, no CHANGELOG entry); lot 111 (the whole phase, CHANGELOG 0.1.111; version 2: 30 s for the tests that read and write files); lot 112 (closure, CHANGELOG 0.1.112)
 - Checks of Noam (2026-11-26, Windows 11): 575 keys, 35 channels, 731 + 1 tests, 83 e2e; manual checks A to G (save, open, recent projects, "Save the changes?", recovery after a forced close with the Task Manager) and M (Hebrew) passed; H to L not made, covered by the automatic tests
 
-Open issues after the closure: the HTTP Project API of API_SPEC.md (KI-033); a project of an older format cannot be opened before its conversion is written (ADR-038); the durations of saving and opening a large project are measured on Linux only (PERFORMANCE_SPEC.md 1.5.0); the key project.none and SceneFactory, SceneSerializer, SceneValidator and sceneStore are not used (to decide later). Next: the Preferences window (request of Noam, 2026-11-19 and 2026-11-24: "after Phase 13") or Phase 14 (Target Slicer Export), as Noam chooses.
+Open issues after the closure: the HTTP Project API of API_SPEC.md (KI-033); a project of an older format cannot be opened before its conversion is written (ADR-038); the durations of saving and opening a large project are measured on Linux only (PERFORMANCE_SPEC.md 1.5.0); the key project.none and SceneFactory, SceneSerializer, SceneValidator and sceneStore are not used (to decide later). Next (choice of Noam, 2026-11-26): the Preferences window (with the gap between objects and the costs), then Phase 14 (Target Slicer Export).
 
 ## Objectives
 

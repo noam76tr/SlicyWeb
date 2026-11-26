@@ -4240,7 +4240,7 @@ Release Type:
 Closure of Phase 13 (Project Persistence)
 
 Status:
-In Progress
+Completed
 
 Date:
 2026-11-26
@@ -4259,6 +4259,32 @@ Date:
 ## Validation Result
 
 - Linux (2026-11-26): see LOT112.md
+- Windows 11 (2026-11-26): lot 112 on GitHub (5d47a26, the 4 files identical to the lot); npm test 730 passed + 1 skipped, 1 test over the 5 s of Vitest (Classification.test.ts, "repeatable: the same mesh gives the same classification twice"), not a failed check: delay of 30 s for all the unit tests in lot 113 (Noam). SessionRestorer.ts and ProjectStorage.ts still on main 5d47a26
+
+---
+
+# VERSION 0.1.113
+
+Release Type:
+Test Configuration (delays of the unit tests)
+
+Status:
+In Progress
+
+Date:
+2026-11-26
+
+## Changed
+
+- vitest.config.mts: testTimeout and hookTimeout 30 s for all the unit tests (Vitest: 5 s and 10 s by default); request of Noam, 2026-11-26: his PC is slower, a test of the classification went over 5 s after the tests of the project files in lot 111; what the tests check does not change
+- TECH_STACK.md 2.1.1 (Vitest, Delays); PHASES_IMPLEMENTATION_PLAN.md (after Phase 13: the Preferences window, then Phase 14)
+- PASSATION.md: decision 121 (Preferences window next, then Phase 14)
+- 0.1.112 Completed with the results of Noam
+- docs/lots/LOT113.md
+
+## Validation Result
+
+- Linux (2026-11-26): see LOT113.md
 
 ---
 
