@@ -47,7 +47,15 @@ afterEach(() => {
   fs.rmSync(path.dirname(folder), { recursive: true, force: true });
 });
 
-describe("Automatic save and recovery (Q18, Q19 A)", () => {
+
+/**
+ * These tests read and write real files (projects of several MB, copies
+ * of the automatic save): on a slower PC they can pass 5 s (Noam, lot
+ * 111: 5.6 s). A longer delay only; what they check does not change.
+ */
+const FILE_TEST_TIMEOUT_MS = 30_000;
+
+describe("Automatic save and recovery (Q18, Q19 A)", { timeout: FILE_TEST_TIMEOUT_MS }, () => {
   it("nothing to recover when there is no copy", async () => {
     expect(await recovery.check()).toEqual({
       available: false,

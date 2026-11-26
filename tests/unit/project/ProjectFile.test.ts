@@ -87,6 +87,14 @@ async function changedFile(
   return target;
 }
 
+
+/**
+ * These tests read and write real files (projects of several MB, copies
+ * of the automatic save): on a slower PC they can pass 5 s (Noam, lot
+ * 111: 5.6 s). A longer delay only; what they check does not change.
+ */
+const FILE_TEST_TIMEOUT_MS = 30_000;
+
 describe("MeshDataCodec (meshData, Q2 A)", () => {
   it("gives back the same numbers", () => {
     const positions = box(20, 10, 30);
@@ -117,7 +125,7 @@ describe("MeshDataCodec (meshData, Q2 A)", () => {
   });
 });
 
-describe("ProjectManager (save and open, Q6 A)", () => {
+describe("ProjectManager (save and open, Q6 A)", { timeout: FILE_TEST_TIMEOUT_MS }, () => {
   it("saves then opens a project: each object value by value, its triangles, analysis, recommendation and profiles", async () => {
     const manager = new ProjectManager();
     const filePath = path.join(folder, "Mon projet.wyproj");
@@ -258,7 +266,7 @@ describe("ProjectManager (save and open, Q6 A)", () => {
         Buffer.from(positions.buffer),
       ),
     ).toBe(0);
-  }, 30_000);
+  });
 
   it("names a project after its file (Q9 A)", () => {
     expect(projectNameOf(path.join("C:", "Projets", "cube.wyproj"))).toBe("cube");
@@ -266,7 +274,7 @@ describe("ProjectManager (save and open, Q6 A)", () => {
   });
 });
 
-describe("Files refused (Q16 A)", () => {
+describe("Files refused (Q16 A)", { timeout: FILE_TEST_TIMEOUT_MS }, () => {
   it("PROJ_001: the file does not exist", async () => {
     expect(
       await codeOf(new ProjectManager().open(path.join(folder, "none.wyproj"))),

@@ -4222,7 +4222,7 @@ Date:
 ## Tests
 
 - tests/unit/project/ProjectFile.test.ts (16 tests), tests/unit/project/projectTestData.ts: meshData, save and open value by value, identity, no author, only the results of the scene, PROJ_001 to PROJ_005, an object of 500 000 triangles, the same text at each export
-- tests/unit/recovery/Recovery.test.ts (6 tests), tests/unit/storage/RecentProjects.test.ts (4 tests), tests/unit/electron/ProjectIPC.test.ts (13 tests), tests/unit/services/ProjectService.test.ts (17 tests), tests/unit/scene/ThreeMFNames.test.ts (3 tests), tests/unit/services/AnalysisService.test.ts (2 tests: after an opening)
+- tests/unit/recovery/Recovery.test.ts (6 tests), tests/unit/storage/RecentProjects.test.ts (4 tests), tests/unit/electron/ProjectIPC.test.ts (13 tests); the tests of ProjectFile, ProjectIPC and Recovery read and write real files: 30 s delay each (version 2 of the lot: 5.6 s on the PC of Noam for one test, over the 5 s of Vitest), tests/unit/services/ProjectService.test.ts (17 tests), tests/unit/scene/ThreeMFNames.test.ts (3 tests), tests/unit/services/AnalysisService.test.ts (2 tests: after an opening)
 - tests/e2e/project.spec.ts (6 tests, new): Save As, New, Open, recent projects; "Save the changes?"; the close button of the window; a damaged file; automatic save, process killed, recovery, copy removed; Hebrew (731 + 1 tests, 83 e2e)
 - tests/unit/storage/SettingsStorage.test.ts, tests/e2e/app.spec.ts, printer.spec.ts, tabs.spec.ts, estimation.spec.ts, fixtures.ts (closeApp: a project modified stops a normal close): adapted, none removed
 
